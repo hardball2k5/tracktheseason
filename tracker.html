@@ -60,22 +60,25 @@ body{
 @media(min-width:480px){.nav-team-name{display:block}}
 
 /* ── HERO ────────────────────────────────── */
-.team-hero{padding:22px 0 0;display:flex;align-items:flex-end;gap:16px;flex-wrap:wrap}
-.hero-logo-wrap{width:68px;height:68px;flex-shrink:0;background:var(--logo-bg);border:1px solid var(--logo-border);border-radius:var(--r-lg);box-shadow:var(--logo-shadow);display:flex;align-items:center;justify-content:center;overflow:hidden}
-.hero-logo-wrap img{width:54px;height:54px;object-fit:contain}
+.team-hero{padding:14px 0 0;display:flex;align-items:flex-end;gap:12px;flex-wrap:wrap}
+@media(max-width:480px){.team-hero{padding:10px 0 0;gap:10px}}
+.hero-logo-wrap{width:56px;height:56px;flex-shrink:0;background:var(--logo-bg);border:1px solid var(--logo-border);border-radius:var(--r-lg);box-shadow:var(--logo-shadow);display:flex;align-items:center;justify-content:center;overflow:hidden}
+@media(max-width:480px){.hero-logo-wrap{width:48px;height:48px}}
+.hero-logo-wrap img{width:44px;height:44px;object-fit:contain}
+@media(max-width:480px){.hero-logo-wrap img{width:36px;height:36px}}
 .hero-text{flex:1;min-width:0}
-.hero-eyebrow{font-family:var(--mono);font-size:11px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--chalk);margin-bottom:4px}
-.hero-name{font-family:var(--mono);font-size:clamp(24px,5vw,42px);font-weight:700;letter-spacing:-.02em;line-height:.95;color:#e8edf8}
-.hero-record{font-family:var(--mono);font-size:clamp(13px,2vw,17px);font-weight:600;color:var(--chalk);margin-top:5px}
+.hero-eyebrow{font-family:var(--mono);font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--chalk);margin-bottom:3px}
+.hero-name{font-family:var(--mono);font-size:clamp(20px,5vw,42px);font-weight:700;letter-spacing:-.02em;line-height:.95;color:#e8edf8}
+.hero-record{font-family:var(--mono);font-size:clamp(12px,2vw,17px);font-weight:600;color:var(--chalk);margin-top:4px}
 .hero-record strong{color:#e8edf8}
-.hero-badge{padding:5px 13px;border-radius:var(--r-pill);font-family:var(--mono);font-size:12px;font-weight:600;align-self:flex-start;margin-top:2px}
+.hero-badge{padding:4px 10px;border-radius:var(--r-pill);font-family:var(--mono);font-size:11px;font-weight:600;align-self:flex-start;margin-top:2px}
 .badge-hot{background:var(--gain-bg);color:var(--gain-text);border:1px solid rgba(13,140,58,.2)}
 .badge-cold{background:var(--loss-bg);color:var(--loss-text);border:1px solid rgba(232,48,42,.2)}
 .badge-neu{background:var(--ink3);color:var(--chalk);border:1px solid var(--rule)}
 
 /* ── PAGE GRID ───────────────────────────── */
-.page-grid{display:grid;grid-template-columns:300px 1fr;gap:14px;padding:16px 0 48px;align-items:start}
-@media(max-width:860px){.page-grid{grid-template-columns:1fr}.controls-col{position:static!important}}
+.page-grid{display:grid;grid-template-columns:300px 1fr;gap:14px;padding:14px 0 48px;align-items:start}
+@media(max-width:860px){.page-grid{grid-template-columns:1fr;padding:10px 0 48px}.controls-col{position:static!important}}
 .controls-col{position:sticky;top:56px}
 
 /* ── CONTROLS ────────────────────────────── */
@@ -128,13 +131,14 @@ input[type="number"].ctrl-input::-webkit-inner-spin-button{-webkit-appearance:no
   .metric-cell:nth-child(2n){border-right:none}
   .metric-cell:nth-child(n+3){border-top:1px solid var(--rule)}
 }
-.metric-cell{padding:15px 13px;border-right:1px solid var(--rule);border-bottom:1px solid var(--rule)}
+.metric-cell{padding:12px 11px;border-right:1px solid var(--rule);border-bottom:1px solid var(--rule)}
+@media(max-width:560px){.metric-cell{padding:10px 10px}}
 .metric-cell:last-child{border-right:none}
 .metric-cell:nth-child(n+5){border-bottom:none}
-.m-label{font-family:var(--mono);font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.28);margin-bottom:5px}
-.m-val{font-family:var(--mono);font-size:clamp(18px,2.5vw,26px);font-weight:700;letter-spacing:-.02em;line-height:1;color:#e8edf8}
+.m-label{font-family:var(--mono);font-size:9px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:rgba(255,255,255,.28);margin-bottom:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.m-val{font-family:var(--mono);font-size:clamp(16px,2.5vw,26px);font-weight:700;letter-spacing:-.02em;line-height:1;color:#e8edf8}
 .m-val.green{color:var(--signal)}
-.m-sub{font-family:var(--mono);font-size:10px;color:rgba(255,255,255,.28);margin-top:4px}
+.m-sub{font-family:var(--mono);font-size:9px;color:rgba(255,255,255,.28);margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 
 /* ── KEY MOMENTS STRIP ───────────────────── */
 .moments-strip{padding:12px 14px;border-bottom:1px solid var(--rule);display:flex;align-items:center;gap:8px;flex-wrap:wrap}
@@ -295,12 +299,29 @@ svg.main-chart{width:100%;height:360px;display:block;overflow:visible}
 .tables-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:12px 14px 14px}
 @media(max-width:600px){.tables-grid{grid-template-columns:1fr}}
 .tbl-title{font-family:var(--mono);font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:rgba(255,255,255,.28);margin-bottom:7px}
+
+/* Scroll wrapper — lets table overflow cleanly on mobile */
+.tbl-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch;border-radius:var(--r-md);border:1px solid var(--rule)}
+.tbl-scroll table{border:none;border-radius:0;min-width:360px}
+
 table{width:100%;border-collapse:collapse;background:var(--ink3);border:1px solid var(--rule);border-radius:var(--r-md);overflow:hidden}
-th{text-align:left;padding:7px 10px;font-family:var(--mono);font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--chalk);background:var(--ink2);border-bottom:1px solid var(--rule)}
-td{padding:8px 10px;font-family:var(--mono);font-size:12px;color:rgba(255,255,255,.7);border-bottom:1px solid var(--rule2)}
+th{
+  text-align:left;padding:6px 8px;
+  font-family:var(--mono);font-size:9px;font-weight:700;
+  text-transform:uppercase;letter-spacing:.06em;color:var(--chalk);
+  background:var(--ink2);border-bottom:1px solid var(--rule);
+  white-space:nowrap;
+}
+td{
+  padding:7px 8px;
+  font-family:var(--mono);font-size:11px;
+  color:rgba(255,255,255,.7);
+  border-bottom:1px solid var(--rule2);
+  white-space:nowrap; /* prevents record wrapping */
+}
 tr:last-child td{border-bottom:none}
 tr.cur-row td{background:rgba(26,255,107,.05)}
-.pill{display:inline-block;padding:2px 7px;border-radius:var(--r-xs);font-size:11px;font-weight:700;background:var(--ink2)}
+.pill{display:inline-block;padding:2px 6px;border-radius:var(--r-xs);font-size:10px;font-weight:700;background:var(--ink2);white-space:nowrap}
 .pill-g{background:var(--gain-bg);color:var(--gain-text)}
 .pill-r{background:var(--loss-bg);color:var(--loss-text)}
 .pill-n{background:var(--ink3);color:var(--chalk)}
@@ -538,18 +559,22 @@ tr.cur-row td{background:rgba(26,255,107,.05)}
         <div class="result-card">
           <div class="tables-grid">
             <div>
-              <div class="tbl-title" id="throughTableTitle">Through game — · all seasons</div>
-              <table id="throughTable">
-                <thead><tr><th>Season</th><th>GP</th><th>Record</th><th>Win%</th><th>Δ</th><th>Final/proj.</th></tr></thead>
-                <tbody></tbody>
-              </table>
+            <div class="tbl-title" id="throughTableTitle">Through game — · all seasons</div>
+              <div class="tbl-scroll">
+                <table id="throughTable">
+                  <thead><tr><th>Season</th><th>GP</th><th>Record</th><th>Win%</th><th>Δ</th><th>Final/proj.</th></tr></thead>
+                  <tbody></tbody>
+                </table>
+              </div>
             </div>
             <div>
               <div class="tbl-title">Game range comparison</div>
-              <table id="rangeTable">
-                <thead><tr><th>Season</th><th>Range</th><th>Record</th><th>Win%</th><th>Pace</th></tr></thead>
-                <tbody></tbody>
-              </table>
+              <div class="tbl-scroll">
+                <table id="rangeTable">
+                  <thead><tr><th>Season</th><th>Range</th><th>Record</th><th>Win%</th><th>Pace</th></tr></thead>
+                  <tbody></tbody>
+                </table>
+              </div>
             </div>
           </div>
         </div>
@@ -884,12 +909,14 @@ function renderSinceCard(moment, games, teamName, teamId, season){
   $('sinceProj').textContent    = proj  ? `${proj}W` : '—';
   $('sinceText').innerHTML      = narrative;
 
-  /* Since URL preserves all tracker params plus the since date */
-  const baseUrl  = buildTrackerUrl();
-  const sinceUrl = `${baseUrl}&since=${moment.date}`;
+  /* Since URL — just team + season + since date, no range params needed */
+  const {team: tp, season: sp} = getCurrentTrackerParams();
+  const sinceUrl = `https://tracktheseason.com/tracker.html?team=${tp}&season=${sp}&since=${moment.date}`;
+
+  const teamSlug = (teamName.split(' ').pop()); /* "Phillies" not "PhiladelphiaPhillies" */
   const txt = rec.g
-    ? `${teamName} since ${moment.label}:\n${rec.w}–${rec.l} in ${rec.g} games (${fmtPct(pct)}).\nPace: ${proj??'—'} wins.\n\n${sinceUrl}\n\nvia @TrackTheSeason #TrackTheSeason`
-    : `${teamName} — ${moment.label} (${moment.date})\n${sinceUrl}`;
+    ? `${teamName} since ${moment.label}:\n${rec.w}–${rec.l} in ${rec.g} games (${fmtPct(pct)}).\nPace: ${proj??'—'} wins.\n\n${sinceUrl}\n\n#TrackTheSeason #${teamSlug} #MLB`
+    : `${teamName} — ${moment.label} (${moment.date})\n${sinceUrl}\n\n#TrackTheSeason #${teamSlug} #MLB`;
 
   $('sinceShare').innerHTML = `
     <button class="since-share-btn share-btn-primary" id="sinceShareBtn">⬆ Share</button>
@@ -1196,8 +1223,9 @@ function renderInsights(params){
   $('heroBadge').className       = `hero-badge ${momentum.chipCls}`;
   $('paceStoryText').innerHTML   = ins.story;
 
-  /* Always build URL from live params so team/season/rs/re are current */
+  /* Clean URL for share text — no UTM params visible to user */
   const urlStr  = buildTrackerUrl();
+  /* UTM URL used only for copy-link analytics tracking */
   const copyUrl = withUtm(urlStr, 'copy', 'social', 'share', buildUtmContent('copy'));
 
   /* Build dynamic share text */
@@ -1417,15 +1445,17 @@ function showShareMenu(triggerBtn, shareText, baseUrl){
   menu.style.left = `${left}px`;
 }
 
-/* Primary share — native sheet on mobile, menu on desktop */
-async function doShare(triggerBtn, shareText, baseUrl, shareTitle='Track The Season'){
+/* Primary share — native sheet on mobile, menu on desktop.
+   shareUrl is the CLEAN url shown to the user.
+   UTM is appended only for analytics tracking, never shown in share text. */
+async function doShare(triggerBtn, shareText, shareUrl, shareTitle='Track The Season'){
   const {team,season,rs,re} = getCurrentTrackerParams();
-  /* Use live URL (always up to date) instead of whatever was passed in */
-  const liveBase = buildTrackerUrl();
-  const shareUrl = withUtm(liveBase, 'native', 'social', 'share', buildUtmContent('native'));
+  /* UTM version used only for tracking — NOT put in share text */
+  const trackingUrl = withUtm(shareUrl, 'native', 'social', 'share', buildUtmContent('native'));
 
   if(navigator.share){
     try{
+      /* Pass clean shareUrl to native sheet — user sees a clean link */
       await navigator.share({ title: shareTitle, text: shareText, url: shareUrl });
       trackEvent('share_clicked',{
         share_type:  'native',
@@ -1433,14 +1463,13 @@ async function doShare(triggerBtn, shareText, baseUrl, shareTitle='Track The Sea
         season:      Number(season),
         start_game:  Number(rs),
         end_game:    Number(re),
-        url_shared:  shareUrl,
+        url_shared:  trackingUrl,
       });
     } catch(e){
       if(e.name !== 'AbortError') console.warn('Share failed:', e.message);
-      /* AbortError = user cancelled — do nothing, no event fired */
     }
   } else {
-    showShareMenu(triggerBtn, shareText, liveBase);
+    showShareMenu(triggerBtn, shareText, shareUrl);
   }
 }
 
