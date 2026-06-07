@@ -1,625 +1,487 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1"/>
-  <title>Team Tracker — Track The Season</title>
-  <meta name="description" content="Deep-dive pace tracker for any MLB team. Compare records, game ranges, and historical seasons."/>
-  <link rel="preconnect" href="https://fonts.googleapis.com"/>
-  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Barlow:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet"/>
-  <style>
-    /* ═══════════════════════════════════════
-       TOKENS — matches tracktheseason home
-    ═══════════════════════════════════════ */
-    :root {
-      --bg:        #07090f;
-      --bg2:       #0d1120;
-      --bg3:       #131926;
-      --bg4:       #1a2236;
-      --border:    rgba(255,255,255,.08);
-      --border2:   rgba(255,255,255,.05);
-      --text:      #e8edf8;
-      --muted:     #6b7a9c;
-      --muted2:    #3d4d6a;
-      --accent:    #3d7eff;
-      --accent-hi: #6fa0ff;
-      --green:     #38c96e;
-      --green-bg:  rgba(56,201,110,.12);
-      --red:       #f04f3e;
-      --red-bg:    rgba(240,79,62,.12);
-      --amber:     #f5b731;
-      --amber-bg:  rgba(245,183,49,.12);
-      --r:    14px;
-      --r-sm: 9px;
-      --shadow: 0 20px 60px rgba(0,0,0,.45);
-    }
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    html { scroll-behavior: smooth; }
-    body {
-      font-family: 'Barlow', ui-sans-serif, sans-serif;
-      background: var(--bg);
-      background-image:
-        url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.03'/%3E%3C/svg%3E"),
-        radial-gradient(ellipse 100% 50% at 50% 0%, rgba(61,126,255,.07) 0%, transparent 65%);
-      color: var(--text);
-      min-height: 100vh;
-    }
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Team Tracker — Track The Season</title>
+<meta name="description" content="Deep-dive MLB pace tracker. Compare records, game ranges, and historical seasons for any team."/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet"/>
+<style>
+/* ═══════════════════════════════════════════════════
+   TRACK THE SEASON — tracker.html
+   Style guide: IBM Plex Mono + Plex Sans
+   URL params: ?team=143&season=2026&through=71&rs=62&re=71
+═══════════════════════════════════════════════════ */
+:root{
+  --paper:#f5f3ee;--ink:#0f1014;--ink2:#1a1d24;--ink3:#252830;
+  --chalk:#8a8a82;--chalk2:#b4b2a9;
+  --rule:rgba(255,255,255,.07);--rule2:rgba(255,255,255,.04);
+  --signal:#1aff6b;--field:#0d8c3a;
+  --gain:#0d8c3a;--gain-bg:rgba(13,140,58,.13);--gain-text:#4ecb77;
+  --loss:#e8302a;--loss-bg:rgba(232,48,42,.13);--loss-text:#f47570;
+  --caution:#f5c842;--caution-bg:rgba(245,200,66,.13);--caution-text:#f9d96e;
+  --logo-bg:#ffffff;--logo-border:rgba(0,0,0,.10);--logo-shadow:0 2px 8px rgba(0,0,0,.18);
+  --r-xs:4px;--r-sm:6px;--r-md:10px;--r-lg:14px;--r-pill:999px;
+  --mono:'IBM Plex Mono',monospace;--sans:'IBM Plex Sans',sans-serif;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  font-family:var(--sans);background:var(--ink);color:#e8edf8;min-height:100vh;
+  background-image:radial-gradient(ellipse 120% 40% at 50% -5%,rgba(26,255,107,.05) 0%,transparent 60%);
+}
+.wrap{max-width:1300px;margin:0 auto;padding:0 16px}
 
-    /* ═══════════════════════════════════════
-       LAYOUT
-    ═══════════════════════════════════════ */
-    .wrap { max-width: 1300px; margin: 0 auto; padding: 0 16px; }
+/* ── NAV ─────────────────────────────── */
+.site-nav{
+  padding:11px 0;border-bottom:1px solid var(--rule);
+  position:sticky;top:0;z-index:100;
+  background:rgba(15,16,20,.94);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
+}
+.nav-inner{display:flex;align-items:center;gap:10px}
+.back-btn{
+  display:flex;align-items:center;gap:6px;text-decoration:none;
+  color:var(--chalk);font-family:var(--mono);font-size:12px;font-weight:600;
+  padding:6px 11px;border-radius:var(--r-sm);
+  border:1px solid var(--rule);background:var(--ink2);
+  transition:color .13s,border-color .13s;flex-shrink:0;
+}
+.back-btn:hover{color:#e8edf8;border-color:rgba(255,255,255,.18)}
+.nav-logo{display:flex;align-items:center;gap:8px;text-decoration:none}
+.nav-monogram{
+  width:28px;height:28px;background:var(--signal);border-radius:var(--r-sm);
+  display:flex;align-items:center;justify-content:center;
+  font-family:var(--mono);font-size:10px;font-weight:700;color:var(--ink);flex-shrink:0;
+}
+.nav-wordmark{font-family:var(--mono);font-size:14px;font-weight:700;color:#e8edf8}
+.nav-wordmark .accent{color:var(--signal)}
+.sport-tabs{display:flex;gap:2px;margin-left:12px}
+.sport-tab{
+  font-family:var(--mono);font-size:11px;font-weight:600;letter-spacing:.04em;
+  padding:4px 10px;border-radius:var(--r-sm);color:var(--chalk);
+  border:none;background:none;cursor:pointer;transition:background .12s,color .12s;
+}
+.sport-tab.active{background:var(--signal);color:var(--ink)}
+.sport-tab.soon{color:var(--ink3);cursor:default;pointer-events:none}
+.nav-team{display:none;align-items:center;gap:8px;margin-left:auto}
+.nav-team.visible{display:flex}
+.nav-team-logo{
+  width:26px;height:26px;background:var(--logo-bg);
+  border:1px solid var(--logo-border);border-radius:5px;
+  box-shadow:var(--logo-shadow);
+  display:flex;align-items:center;justify-content:center;overflow:hidden;
+}
+.nav-team-logo img{width:20px;height:20px;object-fit:contain}
+.nav-team-name{font-family:var(--mono);font-size:13px;font-weight:700;color:#e8edf8;display:none}
+@media(min-width:480px){.nav-team-name{display:block}}
+@media(max-width:520px){.sport-tabs{display:none}}
 
-    /* ═══════════════════════════════════════
-       NAV / HEADER
-    ═══════════════════════════════════════ */
-    .site-nav {
-      padding: 12px 0;
-      border-bottom: 1px solid var(--border);
-      position: sticky; top: 0; z-index: 100;
-      background: rgba(7,9,15,.93);
-      backdrop-filter: blur(14px);
-      -webkit-backdrop-filter: blur(14px);
-    }
-    .nav-inner {
-      display: flex; align-items: center; gap: 12px;
-    }
-    .back-btn {
-      display: flex; align-items: center; gap: 7px;
-      text-decoration: none;
-      color: var(--muted);
-      font-size: 13px; font-weight: 600;
-      padding: 7px 12px;
-      border-radius: var(--r-sm);
-      border: 1px solid var(--border);
-      background: var(--bg3);
-      transition: color .15s, border-color .15s;
-      flex-shrink: 0;
-    }
-    .back-btn:hover { color: var(--text); border-color: rgba(255,255,255,.18); }
-    .back-arrow { font-size: 15px; }
+/* ── TEAM HERO ───────────────────────── */
+.team-hero{
+  padding:22px 0 0;display:flex;align-items:flex-end;gap:16px;flex-wrap:wrap;
+}
+/* Hero logo — always white bg */
+.hero-logo-wrap{
+  width:68px;height:68px;flex-shrink:0;
+  background:var(--logo-bg);border:1px solid var(--logo-border);
+  border-radius:var(--r-lg);box-shadow:var(--logo-shadow);
+  display:flex;align-items:center;justify-content:center;overflow:hidden;
+}
+.hero-logo-wrap img{width:54px;height:54px;object-fit:contain}
+.hero-text{flex:1;min-width:0}
+.hero-eyebrow{
+  font-family:var(--mono);font-size:11px;font-weight:600;
+  letter-spacing:.1em;text-transform:uppercase;color:var(--chalk);margin-bottom:4px;
+}
+.hero-name{
+  font-family:var(--mono);font-size:clamp(24px,5vw,42px);
+  font-weight:700;letter-spacing:-.02em;line-height:.95;color:#e8edf8;
+}
+.hero-record{
+  font-family:var(--mono);font-size:clamp(13px,2vw,17px);
+  font-weight:600;color:var(--chalk);margin-top:5px;
+}
+.hero-record strong{color:#e8edf8}
+.hero-badge{
+  padding:5px 13px;border-radius:var(--r-pill);
+  font-family:var(--mono);font-size:12px;font-weight:600;
+  align-self:flex-start;margin-top:2px;
+}
+.badge-hot {background:var(--gain-bg);color:var(--gain-text);border:1px solid rgba(13,140,58,.2)}
+.badge-cold{background:var(--loss-bg);color:var(--loss-text);border:1px solid rgba(232,48,42,.2)}
+.badge-neu {background:var(--ink3);color:var(--chalk);border:1px solid var(--rule)}
 
-    .nav-logo {
-      display: flex; align-items: center; gap: 8px;
-      text-decoration: none;
-    }
-    .nav-logo-mark {
-      width: 26px; height: 26px;
-      background: var(--accent);
-      border-radius: 6px;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 14px;
-    }
-    .nav-logo-text {
-      font-family: 'Barlow Condensed', sans-serif;
-      font-size: 17px; font-weight: 800;
-      color: var(--text);
-    }
-    .nav-logo-text span { color: var(--accent-hi); }
+/* ── PAGE GRID ───────────────────────── */
+.page-grid{
+  display:grid;grid-template-columns:296px 1fr;
+  gap:14px;padding:16px 0 48px;align-items:start;
+}
+@media(max-width:860px){.page-grid{grid-template-columns:1fr}.controls-col{position:static!important}}
 
-    .nav-team-label {
-      margin-left: auto;
-      display: flex; align-items: center; gap: 8px;
-    }
-    .nav-team-logo {
-      width: 28px; height: 28px;
-      object-fit: contain;
-    }
-    .nav-team-name {
-      font-family: 'Barlow Condensed', sans-serif;
-      font-size: 16px; font-weight: 800;
-      color: var(--text);
-      display: none;
-    }
-    @media(min-width:480px){ .nav-team-name { display: block; } }
+/* ── CONTROLS ────────────────────────── */
+.controls-col{position:sticky;top:56px}
+.ctrl-card{
+  background:var(--ink2);border:1px solid var(--rule);
+  border-radius:var(--r-lg);padding:16px;margin-bottom:12px;
+}
+.ctrl-divider{height:1px;background:var(--rule);margin:14px 0}
+.ctrl-label{
+  display:block;font-family:var(--mono);font-size:10px;font-weight:700;
+  letter-spacing:.1em;text-transform:uppercase;
+  color:rgba(255,255,255,.28);margin-bottom:6px;
+}
+.ctrl-helper{font-family:var(--sans);font-size:11px;color:rgba(255,255,255,.2);margin-top:4px;line-height:1.4}
+.ctrl-input{
+  width:100%;background:var(--ink3);border:1px solid var(--rule);
+  border-radius:var(--r-sm);color:#e8edf8;
+  font-family:var(--mono);font-size:13px;padding:8px 11px;
+  outline:none;transition:border-color .13s;-webkit-appearance:none;
+}
+.ctrl-input:focus{border-color:var(--signal)}
+.ctrl-input option{background:var(--ink2)}
+.ctrl-sub-label{
+  font-family:var(--mono);font-size:10px;font-weight:600;
+  letter-spacing:.06em;text-transform:uppercase;
+  color:rgba(255,255,255,.2);display:block;margin-bottom:4px;
+}
+.input-row{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.checks{display:grid;grid-template-columns:1fr 1fr;gap:5px}
+.check-item{
+  display:flex;align-items:center;gap:7px;
+  background:var(--ink3);border:1px solid var(--rule);
+  border-radius:var(--r-sm);padding:8px 9px;cursor:pointer;
+  font-family:var(--mono);font-size:12px;color:rgba(255,255,255,.6);
+  transition:border-color .13s,background .13s;
+}
+.check-item:has(input:checked){border-color:var(--signal);background:rgba(26,255,107,.08);color:#e8edf8}
+.check-item input{width:13px;height:13px;accent-color:var(--signal);cursor:pointer;flex-shrink:0}
 
-    /* ═══════════════════════════════════════
-       TEAM HERO BANNER
-    ═══════════════════════════════════════ */
-    .team-hero {
-      padding: 24px 0 0;
-      display: flex; align-items: flex-end; gap: 18px;
-      flex-wrap: wrap;
-    }
-    .team-hero-logo {
-      width: 72px; height: 72px;
-      flex-shrink: 0;
-      object-fit: contain;
-      filter: drop-shadow(0 4px 16px rgba(0,0,0,.5));
-    }
-    .team-hero-logo-fallback {
-      width: 72px; height: 72px;
-      background: var(--bg3);
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 36px; flex-shrink: 0;
-    }
-    .team-hero-text { flex: 1; min-width: 0; }
-    .team-hero-eyebrow {
-      font-size: 12px; font-weight: 600;
-      text-transform: uppercase; letter-spacing: .08em;
-      color: var(--muted); margin-bottom: 5px;
-    }
-    .team-hero-name {
-      font-family: 'Barlow Condensed', sans-serif;
-      font-size: clamp(28px, 6vw, 48px);
-      font-weight: 800; letter-spacing: -.02em;
-      line-height: .95;
-    }
-    .team-hero-record {
-      font-family: 'Barlow Condensed', sans-serif;
-      font-size: clamp(16px, 3vw, 22px);
-      font-weight: 700; color: var(--muted);
-      margin-top: 6px;
-    }
-    .team-hero-record strong { color: var(--text); }
-    .momentum-chip {
-      padding: 6px 14px; border-radius: 999px;
-      font-size: 13px; font-weight: 700;
-      align-self: flex-start; margin-top: 4px;
-    }
-    .chip-hot  { background: var(--green-bg); color: var(--green); }
-    .chip-cold { background: var(--red-bg);   color: var(--red); }
-    .chip-warm { background: var(--amber-bg); color: var(--amber); }
-    .chip-neu  { background: var(--bg4); color: var(--muted); border: 1px solid var(--border); }
+/* Preset buttons */
+.preset-row{display:flex;flex-wrap:wrap;gap:5px;margin-top:8px}
+.preset-btn{
+  font-family:var(--mono);font-size:11px;font-weight:600;
+  padding:5px 11px;border-radius:var(--r-pill);
+  border:1px solid var(--rule);background:var(--ink3);
+  color:rgba(255,255,255,.4);cursor:pointer;transition:all .13s;
+  letter-spacing:.02em;
+}
+.preset-btn:hover{border-color:var(--signal);color:var(--signal);background:rgba(26,255,107,.07)}
+.preset-btn.active{background:var(--signal);border-color:var(--signal);color:var(--ink);font-weight:700}
 
-    /* ═══════════════════════════════════════
-       PAGE BODY GRID
-    ═══════════════════════════════════════ */
-    .page-grid {
-      display: grid;
-      grid-template-columns: 300px 1fr;
-      gap: 14px;
-      padding: 16px 0 48px;
-      align-items: start;
-    }
-    @media(max-width:860px){
-      .page-grid { grid-template-columns: 1fr; }
-      .controls-col { position: static !important; }
-    }
+.run-btn{
+  width:100%;padding:12px;border-radius:var(--r-sm);border:none;
+  background:var(--signal);color:var(--ink);
+  font-family:var(--mono);font-size:14px;font-weight:700;letter-spacing:.02em;
+  cursor:pointer;margin-top:16px;transition:filter .13s;
+}
+.run-btn:hover{filter:brightness(1.08)}
+.run-btn:active{filter:brightness(.93)}
 
-    /* ═══════════════════════════════════════
-       CONTROLS SIDEBAR
-    ═══════════════════════════════════════ */
-    .controls-col {
-      position: sticky; top: 62px;
-    }
-    .ctrl-card {
-      background: var(--bg2);
-      border: 1px solid var(--border);
-      border-radius: var(--r);
-      padding: 18px;
-    }
-    .ctrl-card + .ctrl-card { margin-top: 12px; }
+/* Reset button */
+.reset-btn{
+  width:100%;padding:8px;border-radius:var(--r-sm);
+  border:1px solid var(--rule);background:transparent;
+  color:var(--chalk);font-family:var(--mono);font-size:12px;
+  cursor:pointer;margin-top:8px;transition:all .13s;
+}
+.reset-btn:hover{border-color:rgba(255,255,255,.25);color:#e8edf8}
 
-    .ctrl-section { margin-bottom: 16px; }
-    .ctrl-section:last-child { margin-bottom: 0; }
-    .ctrl-divider { height: 1px; background: var(--border); margin: 16px 0; }
-    .ctrl-label {
-      display: block;
-      font-size: 11px; font-weight: 700;
-      text-transform: uppercase; letter-spacing: .08em;
-      color: var(--muted); margin-bottom: 7px;
-    }
-    .ctrl-helper { font-size: 12px; color: var(--muted2); margin-top: 5px; line-height: 1.4; }
+/* ── RESULTS ─────────────────────────── */
+.results-col{min-width:0}
+.result-card{
+  background:var(--ink2);border:1px solid var(--rule);
+  border-radius:var(--r-lg);overflow:hidden;margin-bottom:12px;
+}
+.hidden{display:none!important}
 
-    select, input[type="number"] {
-      width: 100%;
-      background: var(--bg3);
-      border: 1px solid var(--border);
-      border-radius: var(--r-sm);
-      color: var(--text);
-      font-family: 'Barlow', sans-serif;
-      font-size: 14px;
-      padding: 9px 11px;
-      outline: none;
-      transition: border-color .15s;
-      -webkit-appearance: none;
-    }
-    select:focus, input[type="number"]:focus { border-color: var(--accent); }
+/* Status / error states */
+.status-msg{
+  padding:28px 18px;display:flex;align-items:center;gap:12px;
+  font-family:var(--mono);font-size:13px;color:var(--chalk);
+}
+.spinner{
+  width:24px;height:24px;flex-shrink:0;border-radius:50%;
+  border:2px solid var(--rule);border-top-color:var(--signal);
+  animation:spin .7s linear infinite;
+}
+@keyframes spin{to{transform:rotate(360deg)}}
+.error-box{
+  margin:14px;padding:13px;border-radius:var(--r-md);
+  background:var(--loss-bg);border:1px solid rgba(232,48,42,.3);
+  color:#ffccc7;font-family:var(--sans);font-size:13px;line-height:1.6;
+}
 
-    .checks {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 6px;
-    }
-    .check-item {
-      display: flex; align-items: center; gap: 7px;
-      background: var(--bg3);
-      border: 1px solid var(--border);
-      border-radius: var(--r-sm);
-      padding: 8px 10px;
-      cursor: pointer; font-size: 13px;
-      transition: border-color .15s, background .15s;
-    }
-    .check-item:has(input:checked) {
-      border-color: var(--accent);
-      background: rgba(61,126,255,.10);
-    }
-    .check-item input {
-      width: 14px; height: 14px;
-      accent-color: var(--accent); cursor: pointer;
-      flex-shrink: 0;
-    }
+/* ── METRICS STRIP ───────────────────── */
+.metrics{display:grid;grid-template-columns:repeat(4,1fr)}
+@media(max-width:560px){
+  .metrics{grid-template-columns:1fr 1fr}
+  .metric-cell:nth-child(2n){border-right:none}
+  .metric-cell:nth-child(n+3){border-top:1px solid var(--rule)}
+}
+.metric-cell{
+  padding:15px 13px;border-right:1px solid var(--rule);
+  border-bottom:1px solid var(--rule);
+}
+.metric-cell:last-child{border-right:none}
+.metric-cell:nth-child(n+5){border-bottom:none}
+.m-label{
+  font-family:var(--mono);font-size:9px;font-weight:700;
+  letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.28);
+  margin-bottom:5px;
+}
+.m-val{
+  font-family:var(--mono);font-size:clamp(18px,2.5vw,26px);
+  font-weight:700;letter-spacing:-.02em;line-height:1;color:#e8edf8;
+}
+.m-val.green{color:var(--signal)}
+.m-sub{font-family:var(--mono);font-size:10px;color:rgba(255,255,255,.28);margin-top:4px}
 
-    .input-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+/* ── INSIGHTS ────────────────────────── */
+.insights-wrap{padding:14px 14px 0}
+.insights-header{display:flex;align-items:center;gap:8px;margin-bottom:12px}
+.insights-title{
+  font-family:var(--mono);font-size:16px;font-weight:700;
+  letter-spacing:.01em;color:#e8edf8;
+}
+.momentum-badge{
+  margin-left:auto;padding:4px 12px;border-radius:var(--r-pill);
+  font-family:var(--mono);font-size:11px;font-weight:700;
+}
+.badge-good{background:var(--gain-bg);color:var(--gain-text)}
+.badge-bad {background:var(--loss-bg);color:var(--loss-text)}
+.badge-warn{background:var(--caution-bg);color:var(--caution-text)}
 
-    .presets { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 8px; }
-    .preset-btn {
-      background: var(--bg3);
-      border: 1px solid var(--border);
-      border-radius: 999px;
-      color: var(--muted);
-      font-family: 'Barlow', sans-serif;
-      font-size: 12px; padding: 5px 11px;
-      cursor: pointer;
-      transition: all .15s;
-    }
-    .preset-btn:hover {
-      border-color: var(--accent);
-      color: var(--accent-hi);
-      background: rgba(61,126,255,.10);
-    }
+/* Pace story card — full width, prominent */
+.pace-story-card{
+  background:var(--ink3);border:1px solid rgba(26,255,107,.15);
+  border-radius:var(--r-md);padding:14px;margin-bottom:10px;
+}
+.pace-story-title{
+  font-family:var(--mono);font-size:9px;font-weight:700;
+  letter-spacing:.12em;text-transform:uppercase;color:var(--signal);
+  margin-bottom:8px;
+}
+.pace-story-text{
+  font-family:var(--sans);font-size:14px;line-height:1.6;color:#e8edf8;
+}
+.pace-story-text strong{color:var(--signal);font-weight:600}
 
-    .run-btn {
-      width: 100%; padding: 13px;
-      border-radius: var(--r-sm); border: 0;
-      background: linear-gradient(135deg, var(--accent), #5fa8ff);
-      color: #fff;
-      font-family: 'Barlow Condensed', sans-serif;
-      font-size: 17px; font-weight: 800; letter-spacing: .02em;
-      cursor: pointer; margin-top: 18px;
-      transition: filter .15s;
-    }
-    .run-btn:hover { filter: brightness(1.08); }
-    .run-btn:active { filter: brightness(.93); }
+/* Share row inside insights */
+.insight-share{display:flex;gap:7px;margin-top:12px;flex-wrap:wrap}
+.share-btn{
+  display:inline-flex;align-items:center;gap:5px;
+  font-family:var(--mono);font-size:11px;font-weight:600;
+  padding:6px 12px;border-radius:var(--r-sm);cursor:pointer;
+  transition:all .13s;letter-spacing:.02em;
+}
+.share-btn-x{background:var(--ink);color:#e8edf8;border:1px solid rgba(255,255,255,.18)}
+.share-btn-x:hover{border-color:rgba(255,255,255,.35)}
+.share-btn-copy{background:transparent;color:var(--chalk);border:1px solid var(--rule)}
+.share-btn-copy:hover{border-color:var(--signal);color:var(--signal)}
 
-    /* ═══════════════════════════════════════
-       RESULTS COLUMN
-    ═══════════════════════════════════════ */
-    .results-col { min-width: 0; }
+.insights-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding-bottom:14px}
+@media(max-width:500px){.insights-grid{grid-template-columns:1fr}}
+.insight-card{
+  background:var(--ink3);border:1px solid var(--rule);
+  border-radius:var(--r-md);padding:12px;
+}
+.insight-card-title{
+  font-family:var(--mono);font-size:9px;font-weight:700;
+  letter-spacing:.12em;text-transform:uppercase;
+  color:rgba(255,255,255,.28);margin-bottom:6px;
+}
+.insight-card-body{
+  font-family:var(--sans);font-size:13px;line-height:1.55;color:rgba(255,255,255,.78);
+}
+.insight-card-body strong{color:var(--signal);font-weight:600}
+.insight-caution{border-color:rgba(245,200,66,.18);background:rgba(245,200,66,.05)}
+.insight-caution .insight-card-body{color:var(--caution-text)}
+.insight-caution .insight-card-title{color:rgba(245,200,66,.4)}
 
-    .result-card {
-      background: var(--bg2);
-      border: 1px solid var(--border);
-      border-radius: var(--r);
-      overflow: hidden;
-      margin-bottom: 12px;
-      box-shadow: var(--shadow);
-    }
+/* ── CHART ───────────────────────────── */
+.chart-wrap{padding:14px 14px 6px}
+.chart-top{
+  display:flex;justify-content:space-between;align-items:center;
+  gap:10px;flex-wrap:wrap;margin-bottom:10px;
+}
+.chart-title{
+  font-family:var(--mono);font-size:15px;font-weight:700;
+  letter-spacing:.01em;color:#e8edf8;
+}
+.toggle-group{
+  display:flex;gap:2px;background:var(--ink3);
+  border-radius:var(--r-sm);padding:3px;
+}
+.toggle-btn{
+  background:none;border:none;border-radius:6px;
+  color:var(--chalk);font-family:var(--mono);font-size:11px;font-weight:600;
+  padding:5px 10px;cursor:pointer;transition:background .12s,color .12s;white-space:nowrap;
+}
+.toggle-btn.active{background:var(--signal);color:var(--ink);font-weight:700}
+.legend{display:flex;gap:10px;flex-wrap:wrap;font-family:var(--mono);font-size:11px;color:var(--chalk);margin-bottom:8px}
+.legend-dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:4px}
+svg.main-chart{width:100%;height:360px;display:block;overflow:visible}
+@media(max-width:560px){svg.main-chart{height:240px}}
 
-    /* Status / error */
-    .status-msg {
-      padding: 32px 20px;
-      display: flex; align-items: center; gap: 14px;
-      color: var(--muted); font-size: 14px;
-    }
-    .spinner {
-      width: 28px; height: 28px; flex-shrink: 0;
-      border-radius: 50%;
-      border: 3px solid var(--border);
-      border-top-color: var(--accent);
-      animation: spin .75s linear infinite;
-    }
-    @keyframes spin { to { transform:rotate(360deg); } }
-    .error-box {
-      margin: 16px; padding: 14px 16px;
-      border-radius: var(--r-sm);
-      background: var(--red-bg);
-      border: 1px solid rgba(240,79,62,.3);
-      color: #ffccc7; font-size: 13px; line-height: 1.6;
-    }
-    .hidden { display: none !important; }
+/* ── TABLES ──────────────────────────── */
+.tables-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:12px 14px 14px}
+@media(max-width:600px){.tables-grid{grid-template-columns:1fr}}
+.tbl-title{
+  font-family:var(--mono);font-size:11px;font-weight:700;
+  letter-spacing:.08em;text-transform:uppercase;
+  color:rgba(255,255,255,.28);margin-bottom:7px;
+}
+table{width:100%;border-collapse:collapse;background:var(--ink3);border:1px solid var(--rule);border-radius:var(--r-md);overflow:hidden}
+th{
+  text-align:left;padding:7px 10px;
+  font-family:var(--mono);font-size:9px;font-weight:700;
+  text-transform:uppercase;letter-spacing:.08em;color:var(--chalk);
+  background:var(--ink2);border-bottom:1px solid var(--rule);
+}
+td{
+  padding:8px 10px;font-family:var(--mono);font-size:12px;
+  color:rgba(255,255,255,.7);border-bottom:1px solid var(--rule2);
+}
+tr:last-child td{border-bottom:none}
+tr.cur-row td{background:rgba(26,255,107,.05)}
+.pill{display:inline-block;padding:2px 7px;border-radius:var(--r-xs);font-size:11px;font-weight:700;background:var(--ink2)}
+.pill-g{background:var(--gain-bg);color:var(--gain-text)}
+.pill-r{background:var(--loss-bg);color:var(--loss-text)}
+.pill-n{background:var(--ink3);color:var(--chalk)}
 
-    /* ── Metrics bar ────────────────────────────────── */
-    .metrics {
-      display: grid;
-      grid-template-columns: repeat(4,1fr);
-    }
-    @media(max-width:600px){ .metrics { grid-template-columns: 1fr 1fr; } }
-    .metric-cell {
-      padding: 16px 14px;
-      border-right: 1px solid var(--border);
-      border-bottom: 1px solid var(--border);
-    }
-    .metric-cell:nth-child(4n) { border-right: 0; }
-    @media(max-width:600px){
-      .metric-cell:nth-child(2n) { border-right: 0; }
-      .metric-cell:nth-child(n+3) { border-top: 0; }
-    }
-    .metric-cell:nth-child(n+5) { border-bottom: 0; }
-    .m-label {
-      font-size: 11px; font-weight: 700;
-      text-transform: uppercase; letter-spacing: .07em;
-      color: var(--muted);
-    }
-    .m-val {
-      font-family: 'Barlow Condensed', sans-serif;
-      font-size: clamp(20px, 3vw, 30px);
-      font-weight: 800; letter-spacing: -.02em;
-      line-height: 1.1; margin-top: 5px;
-    }
-    .m-sub { font-size: 12px; color: var(--muted); margin-top: 3px; }
+/* ── SOURCE NOTE ─────────────────────── */
+.source-note{
+  margin:0 14px 14px;padding:11px 13px;
+  border-radius:var(--r-sm);background:var(--ink3);border:1px solid var(--rule2);
+  font-family:var(--sans);font-size:11px;color:rgba(255,255,255,.2);line-height:1.65;
+}
+.source-note strong{color:rgba(255,255,255,.3);font-weight:500}
+.source-note code{font-family:var(--mono);font-size:10px;color:rgba(26,255,107,.4)}
 
-    /* ── Insights ───────────────────────────────────── */
-    .insights-wrap { padding: 16px 16px 0; }
-    .insights-header {
-      display: flex; align-items: center; gap: 8px;
-      margin-bottom: 12px;
-    }
-    .insights-title {
-      font-family: 'Barlow Condensed', sans-serif;
-      font-size: 18px; font-weight: 800; letter-spacing: .01em;
-    }
-    .momentum-badge {
-      margin-left: auto;
-      padding: 5px 13px; border-radius: 999px;
-      font-size: 12px; font-weight: 700;
-    }
-    .badge-good { background: var(--green-bg); color: var(--green); }
-    .badge-bad  { background: var(--red-bg);   color: var(--red); }
-    .badge-warn { background: var(--amber-bg); color: var(--amber); }
-
-    .insights-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 8px;
-      padding-bottom: 16px;
-    }
-    @media(max-width:560px){ .insights-grid { grid-template-columns: 1fr; } }
-
-    .insight-card {
-      background: var(--bg3);
-      border: 1px solid var(--border);
-      border-radius: var(--r-sm);
-      padding: 13px;
-    }
-    .insight-card-title {
-      font-size: 10px; font-weight: 700;
-      text-transform: uppercase; letter-spacing: .08em;
-      color: var(--muted); margin-bottom: 6px;
-    }
-    .insight-card-body {
-      font-size: 13px; line-height: 1.55; color: var(--text);
-    }
-    .insight-card-body strong { color: var(--accent-hi); }
-    .insight-caution {
-      grid-column: 1 / -1;
-      background: rgba(245,183,49,.07);
-      border-color: rgba(245,183,49,.2);
-    }
-    .insight-caution .insight-card-body { color: #f9d96e; }
-
-    /* ── Chart ──────────────────────────────────────── */
-    .chart-wrap { padding: 16px 16px 8px; }
-    .chart-top {
-      display: flex; justify-content: space-between;
-      align-items: center; gap: 10px;
-      flex-wrap: wrap; margin-bottom: 10px;
-    }
-    .chart-title {
-      font-family: 'Barlow Condensed', sans-serif;
-      font-size: 17px; font-weight: 800; letter-spacing: .01em;
-    }
-    .toggle-group {
-      display: flex; gap: 3px;
-      background: var(--bg3);
-      border-radius: var(--r-sm);
-      padding: 3px;
-    }
-    .toggle-btn {
-      background: none; border: 0;
-      border-radius: 7px;
-      color: var(--muted);
-      font-family: 'Barlow', sans-serif;
-      font-size: 12px; font-weight: 600;
-      padding: 5px 10px;
-      cursor: pointer;
-      transition: background .13s, color .13s;
-      white-space: nowrap;
-    }
-    .toggle-btn.active { background: var(--accent); color: #fff; font-weight: 700; }
-
-    .legend {
-      display: flex; gap: 10px;
-      flex-wrap: wrap; font-size: 12px; color: var(--muted);
-      margin-bottom: 8px;
-    }
-    .legend-dot {
-      display: inline-block; width: 9px; height: 9px;
-      border-radius: 999px; margin-right: 4px;
-    }
-
-    svg.main-chart {
-      width: 100%; height: 380px;
-      display: block; overflow: visible;
-    }
-    @media(max-width:600px){ svg.main-chart { height: 260px; } }
-
-    /* ── Tables ─────────────────────────────────────── */
-    .tables-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 12px;
-      padding: 14px 16px 16px;
-    }
-    @media(max-width:640px){ .tables-grid { grid-template-columns: 1fr; } }
-
-    .tbl-title {
-      font-family: 'Barlow Condensed', sans-serif;
-      font-size: 14px; font-weight: 800; letter-spacing: .03em;
-      margin-bottom: 7px; color: var(--muted);
-      text-transform: uppercase;
-    }
-    table {
-      width: 100%; border-collapse: collapse;
-      background: var(--bg3);
-      border: 1px solid var(--border);
-      border-radius: var(--r-sm);
-      overflow: hidden;
-    }
-    th {
-      text-align: left; padding: 8px 10px;
-      font-size: 10px; font-weight: 700;
-      text-transform: uppercase; letter-spacing: .06em;
-      color: var(--muted); background: var(--bg4);
-      border-bottom: 1px solid var(--border);
-    }
-    td {
-      padding: 8px 10px; font-size: 13px;
-      border-bottom: 1px solid var(--border2);
-    }
-    tr:last-child td { border-bottom: 0; }
-    tr.cur-row td { background: rgba(61,126,255,.07); }
-    .pill {
-      display: inline-block; padding: 2px 8px;
-      border-radius: 999px; font-size: 12px; font-weight: 700;
-      background: var(--bg4);
-    }
-    .pill-g { background: var(--green-bg); color: var(--green); }
-    .pill-r { background: var(--red-bg);   color: var(--red); }
-    .pill-n { background: var(--bg4);      color: var(--muted); }
-
-    /* ── Source note ─────────────────────────────────── */
-    .source-note {
-      margin: 0 16px 16px;
-      padding: 11px 13px;
-      border-radius: var(--r-sm);
-      background: var(--bg3);
-      border: 1px solid var(--border2);
-      font-size: 11px; color: var(--muted2); line-height: 1.6;
-    }
-    .source-note strong { color: var(--muted); }
-
-    /* ═══════════════════════════════════════
-       FOOTER
-    ═══════════════════════════════════════ */
-    .site-footer {
-      border-top: 1px solid var(--border);
-      padding: 18px 0 36px;
-      display: flex; flex-wrap: wrap; gap: 12px;
-      align-items: center; justify-content: space-between;
-    }
-    .footer-logo {
-      font-family: 'Barlow Condensed', sans-serif;
-      font-weight: 800; font-size: 16px; color: var(--muted);
-      text-decoration: none;
-    }
-    .footer-logo span { color: var(--accent-hi); }
-    .footer-note { font-size: 11px; color: var(--muted2); width: 100%; line-height: 1.6; }
-  </style>
+/* ── FOOTER ──────────────────────────── */
+.site-footer{
+  border-top:1px solid var(--rule);padding:16px 0 32px;
+  display:flex;flex-wrap:wrap;gap:10px;
+  align-items:center;justify-content:space-between;
+}
+.footer-logo{font-family:var(--mono);font-weight:700;font-size:13px;color:var(--chalk);text-decoration:none}
+.footer-logo .accent{color:var(--signal)}
+.footer-note{font-family:var(--sans);font-size:11px;color:rgba(255,255,255,.18);line-height:1.6;width:100%}
+</style>
 </head>
 <body>
 
-<!-- ══════════════════════════════════
-     NAV
-══════════════════════════════════ -->
-<nav class="site-nav">
+<!-- ══ NAV ══════════════════════════════ -->
+<nav class="site-nav" aria-label="Site navigation">
   <div class="wrap nav-inner">
-    <a href="index.html" class="back-btn" aria-label="Back to league board">
-      <span class="back-arrow">←</span> All Teams
-    </a>
+    <a href="index.html" class="back-btn">← All Teams</a>
     <a href="index.html" class="nav-logo">
-      <div class="nav-logo-mark">⚾</div>
-      <div class="nav-logo-text">Track<span>The</span>Season</div>
+      <div class="nav-monogram">TTS</div>
+      <div class="nav-wordmark">TRACK THE <span class="accent">SEASON</span></div>
     </a>
-    <div class="nav-team-label" id="navTeamLabel" style="display:none">
-      <img id="navTeamLogo" class="nav-team-logo" src="" alt="" onerror="this.style.display='none'"/>
+    <div class="sport-tabs">
+      <button class="sport-tab active">MLB</button>
+      <button class="sport-tab soon" title="Coming soon">NBA</button>
+      <button class="sport-tab soon" title="Coming soon">NFL</button>
+      <button class="sport-tab soon" title="Coming soon">NHL</button>
+    </div>
+    <div class="nav-team" id="navTeamWrap">
+      <div class="nav-team-logo">
+        <img id="navTeamLogo" src="" alt="" onerror="this.style.display='none'"/>
+      </div>
       <span id="navTeamName" class="nav-team-name"></span>
     </div>
   </div>
 </nav>
 
-<!-- ══════════════════════════════════
-     TEAM HERO
-══════════════════════════════════ -->
 <div class="wrap">
+  <!-- ══ HERO ════════════════════════════ -->
   <div class="team-hero" id="teamHero" style="display:none">
-    <img id="heroLogo" class="team-hero-logo" src="" alt=""
-      onerror="this.style.display='none'; document.getElementById('heroFallback').style.display='flex'"/>
-    <div id="heroFallback" class="team-hero-logo-fallback" style="display:none">⚾</div>
-    <div class="team-hero-text">
-      <div class="team-hero-eyebrow" id="heroEyebrow">MLB · —</div>
-      <div class="team-hero-name" id="heroName">—</div>
-      <div class="team-hero-record" id="heroRecord"></div>
+    <div class="hero-logo-wrap">
+      <img id="heroLogo" src="" alt=""
+        onerror="this.style.display='none';document.getElementById('heroFallback').style.display='block'"/>
+      <span id="heroFallback" style="display:none;font-size:34px">⚾</span>
     </div>
-    <span id="heroBadge" class="momentum-chip chip-neu"></span>
+    <div class="hero-text">
+      <div class="hero-eyebrow" id="heroEyebrow">MLB · — season</div>
+      <div class="hero-name" id="heroName">—</div>
+      <div class="hero-record" id="heroRecord"></div>
+    </div>
+    <span id="heroBadge" class="hero-badge badge-neu"></span>
   </div>
 
-  <!-- ══════════════════════════════
-       PAGE GRID
-  ══════════════════════════════ -->
+  <!-- ══ PAGE GRID ═══════════════════════ -->
   <div class="page-grid">
 
-    <!-- ── Controls sidebar ──────────── -->
+    <!-- ── Controls ───────────────────── -->
     <aside class="controls-col">
       <div class="ctrl-card">
-        <div class="ctrl-section">
+
+        <div style="margin-bottom:13px">
           <label class="ctrl-label" for="teamSelect">Team</label>
-          <select id="teamSelect"></select>
+          <select id="teamSelect" class="ctrl-input"></select>
         </div>
 
-        <div class="ctrl-section">
+        <div>
           <label class="ctrl-label" for="currentSeasonSelect">Current season</label>
-          <select id="currentSeasonSelect"></select>
+          <select id="currentSeasonSelect" class="ctrl-input"></select>
         </div>
 
         <div class="ctrl-divider"></div>
 
-        <div class="ctrl-section">
+        <div>
           <div class="ctrl-label">Compare seasons</div>
           <div id="seasonChecks" class="checks"></div>
         </div>
 
         <div class="ctrl-divider"></div>
 
-        <div class="ctrl-section">
-          <label class="ctrl-label" for="throughInput">Record through game #</label>
-          <input id="throughInput" type="number" min="1" max="162" value="63"/>
-          <p class="ctrl-helper">Evaluate the team's record through this game number.</p>
+        <div style="margin-bottom:13px">
+          <label class="ctrl-label" for="throughInput">Through game #</label>
+          <input id="throughInput" type="number" min="1" max="162" class="ctrl-input"/>
+          <p class="ctrl-helper">Defaults to completed games played. Adjust to evaluate any point in the season.</p>
         </div>
 
-        <div class="ctrl-section">
+        <div>
           <div class="ctrl-label">Game range</div>
           <div class="input-row">
             <div>
-              <label class="ctrl-label" for="rangeStartInput" style="font-size:10px;margin-bottom:4px">From</label>
-              <input id="rangeStartInput" type="number" min="1" max="162" value="28"/>
+              <span class="ctrl-sub-label">From game</span>
+              <input id="rangeStartInput" type="number" min="1" max="162" class="ctrl-input"/>
             </div>
             <div>
-              <label class="ctrl-label" for="rangeEndInput" style="font-size:10px;margin-bottom:4px">To</label>
-              <input id="rangeEndInput" type="number" min="1" max="162" value="63"/>
+              <span class="ctrl-sub-label">To game</span>
+              <input id="rangeEndInput" type="number" min="1" max="162" class="ctrl-input"/>
             </div>
           </div>
-          <p class="ctrl-helper">Analyze a specific stretch of games.</p>
-          <div class="presets">
-            <button class="preset-btn" data-rs="1"  data-re="10">Last 10</button>
-            <button class="preset-btn" data-rs="1"  data-re="20">Last 20</button>
-            <button class="preset-btn" data-rs="1"  data-re="27">G 1–27</button>
-            <button class="preset-btn" data-rs="28" data-re="63">G 28–63</button>
-            <button class="preset-btn" data-rs="1"  data-re="81">1st half</button>
-            <button class="preset-btn" data-rs="82" data-re="162">2nd half</button>
+          <p class="ctrl-helper">Select a stretch to analyze. Last 10 is selected by default.</p>
+          <div class="preset-row" id="presetRow">
+            <button class="preset-btn" data-preset="last10">Last 10</button>
+            <button class="preset-btn" data-preset="last20">Last 20</button>
+            <button class="preset-btn" data-preset="g127">G 1–27</button>
+            <button class="preset-btn" data-preset="g2863">G 28–63</button>
+            <button class="preset-btn" data-preset="first">1st half</button>
+            <button class="preset-btn" data-preset="second">2nd half</button>
           </div>
         </div>
 
         <button class="run-btn" id="runBtn">Update Tracker</button>
+        <button class="reset-btn" id="resetBtn">↺ Reset to current</button>
       </div>
     </aside>
 
-    <!-- ── Results ───────────────────── -->
+    <!-- ── Results ────────────────────── -->
     <div class="results-col">
 
-      <!-- Loading / error -->
       <div class="result-card" id="statusCard">
         <div class="status-msg" id="statusMsg">
           <div class="spinner"></div>
-          <span>Loading team data…</span>
+          <span id="statusText">Loading team data…</span>
         </div>
         <div class="error-box hidden" id="errorBox"></div>
       </div>
 
-      <!-- All results (hidden until loaded) -->
       <div id="resultsWrap" class="hidden">
 
         <!-- Metrics -->
@@ -627,35 +489,39 @@
           <div class="metrics">
             <div class="metric-cell">
               <div class="m-label">Team</div>
-              <div id="mTeam" class="m-val" style="font-size:18px;line-height:1.2">—</div>
+              <div id="mTeam" class="m-val" style="font-size:16px;line-height:1.2">—</div>
               <div id="mSeason" class="m-sub">—</div>
             </div>
             <div class="metric-cell">
-              <div class="m-label">Through game <span id="mThroughNum">—</span></div>
+              <div class="m-label" id="mThroughLabel">Through game —</div>
               <div id="mThrough" class="m-val">—</div>
               <div id="mThroughPct" class="m-sub">—</div>
             </div>
             <div class="metric-cell">
-              <div class="m-label">Range <span id="mRangeLabel">—</span></div>
-              <div id="mRange" class="m-val">—</div>
+              <div class="m-label" id="mRangeLabel">Range —</div>
+              <div id="mRange" class="m-val green">—</div>
               <div id="mRangePct" class="m-sub">—</div>
             </div>
             <div class="metric-cell">
-              <div class="m-label">Projected wins</div>
+              <div class="m-label">Current pace proj.</div>
               <div id="mProjection" class="m-val">—</div>
               <div id="mPace" class="m-sub">—</div>
             </div>
           </div>
         </div>
 
-        <!-- Insights -->
+        <!-- Insights + Pace Story -->
         <div class="result-card">
           <div class="insights-wrap">
             <div class="insights-header">
-              <span>⚡</span>
-              <div class="insights-title">Insights</div>
+              <div class="insights-title">⚡ Insights</div>
               <span id="momentumBadge" class="momentum-badge badge-warn"></span>
             </div>
+            <div class="pace-story-card" id="paceStoryCard">
+              <div class="pace-story-title">Today's pace story</div>
+              <div class="pace-story-text" id="paceStoryText">—</div>
+            </div>
+            <div class="insight-share" id="insightShare"></div>
             <div class="insights-grid" id="insightsGrid"></div>
           </div>
         </div>
@@ -667,7 +533,7 @@
               <div class="chart-title" id="chartTitle">Cumulative wins by game</div>
               <div class="toggle-group">
                 <button class="toggle-btn active" data-mode="cumulative">Cumulative</button>
-                <button class="toggle-btn" data-mode="range">Range</button>
+                <button class="toggle-btn" data-mode="range">Range wins</button>
                 <button class="toggle-btn" data-mode="pct">Win %</button>
               </div>
             </div>
@@ -682,335 +548,425 @@
             <div>
               <div class="tbl-title">Through-game comparison</div>
               <table id="throughTable">
-                <thead><tr>
-                  <th>Season</th><th>GP</th><th>Record</th><th>Win%</th><th>Δ</th><th>Final</th>
-                </tr></thead>
+                <thead><tr><th>Season</th><th>GP</th><th>Record</th><th>Win%</th><th>Δ</th><th>Final/proj.</th></tr></thead>
                 <tbody></tbody>
               </table>
             </div>
             <div>
               <div class="tbl-title">Game range comparison</div>
               <table id="rangeTable">
-                <thead><tr>
-                  <th>Season</th><th>Range</th><th>Record</th><th>Win%</th><th>Pace</th>
-                </tr></thead>
+                <thead><tr><th>Season</th><th>Range</th><th>Record</th><th>Win%</th><th>162-pace</th></tr></thead>
                 <tbody></tbody>
               </table>
             </div>
           </div>
         </div>
 
-        <!-- Source -->
+        <!-- Source attribution — required -->
         <div class="source-note">
-          <strong>Data:</strong> MLB Stats API —
-          <code>statsapi.mlb.com/api/v1/schedule?sportId=1&teamId={id}&season={year}&gameTypes=R</code><br>
-          Final regular-season games only. Live, postponed, and suspended games excluded until official final status.
-          Doubleheaders appear as separate entries. Not affiliated with or endorsed by MLB.
+          <strong>Data:</strong> MLB Stats API schedule endpoint —
+          <code>statsapi.mlb.com/api/v1/schedule?sportId=1&amp;teamId={id}&amp;season={year}&amp;gameTypes=R</code><br>
+          Final regular-season games only. Live, postponed, suspended, or non-final games are excluded until final.
+          Doubleheaders count as separate games. Not affiliated with or endorsed by MLB or its clubs.
         </div>
 
-      </div><!-- /resultsWrap -->
-    </div><!-- /results-col -->
-  </div><!-- /page-grid -->
+      </div>
+    </div>
+  </div>
 
   <footer class="site-footer">
-    <a href="index.html" class="footer-logo">Track<span>The</span>Season</a>
-    <div class="footer-note">
-      tracktheseason.com · Data: MLB Stats API · Not affiliated with MLB or its clubs
-    </div>
+    <a href="index.html" class="footer-logo">TRACK THE <span class="accent">SEASON</span></a>
+    <p class="footer-note">tracktheseason.com · Data: MLB Stats API · Not affiliated with MLB or its clubs</p>
   </footer>
-</div><!-- /wrap -->
+</div>
 
 <script>
 /* ═══════════════════════════════════════════════════════
-   tracker.html — Track The Season
-   Reads ?team=ID from URL to pre-select team.
-   Full pace tracker with insights, chart, and tables.
-   ═══════════════════════════════════════════════════════ */
+   TRACK THE SEASON — tracker.html
+   URL params: ?team=143&season=2026&through=71&rs=62&re=71
+   Defaults: throughGame=completedGP, range=last10
+   Architecture: constants → URL → data → defaults → calc → render
+═══════════════════════════════════════════════════════ */
 
-const API = 'https://statsapi.mlb.com/api/v1';
-const SEASON_COLORS = ['#3d7eff','#38c96e','#f5b731','#f04f3e','#c792ea','#2ec4b6','#ffa657','#b8e986'];
+/* ── Constants ──────────────────────────────────────── */
+const API          = 'https://statsapi.mlb.com/api/v1';
+const SEASON_GAMES = 162;
+const SEASON_COLORS= ['#1aff6b','#4a9eff','#f5c842','#f47570','#c792ea','#5dd8d8','#ffa657','#b8e986'];
+const DEFAULT_TEAM = 143; /* Phillies */
 
-const scheduleCache = new Map();
-const $ = id => document.getElementById(id);
+/* ── DOM helpers ────────────────────────────────────── */
+const $  = id => document.getElementById(id);
+const el = (t,a={})=>{const e=document.createElementNS('http://www.w3.org/2000/svg',t);for(const[k,v]of Object.entries(a))e.setAttribute(k,v);return e;};
 
-// ── URL param helpers ───────────────────────────────────
-function getUrlTeamId() {
+/* ── State ──────────────────────────────────────────── */
+const schedCache = new Map();
+let chartMode    = 'cumulative';
+let lastSeries   = [], lastRS = 1, lastRE = 10;
+let activePreset = 'last10';
+let userChangedInputs = false; /* true once user manually edits range/through */
+
+/* ══════════════════════════════════════════════════════
+   URL PARAMETER HANDLING
+   Supports: ?team=143&season=2026&through=71&rs=62&re=71
+   Legacy:   &range=54-63  (backwards compat)
+══════════════════════════════════════════════════════ */
+function getUrlParams(){
   const p = new URLSearchParams(window.location.search);
-  const v = p.get('team');
-  return v ? Number(v) : null;
+  /* Legacy range=start-end support */
+  const legacyRange = p.get('range');
+  let rs=null, re=null;
+  if(legacyRange){
+    const parts=legacyRange.split('-');
+    if(parts.length===2){rs=parseInt(parts[0]);re=parseInt(parts[1]);}
+  }
+  return{
+    team:   p.get('team')   ? Number(p.get('team'))   : null,
+    season: p.get('season') ? Number(p.get('season')) : null,
+    through:p.get('through')? Number(p.get('through')): null,
+    rs:     p.get('rs')     ? Number(p.get('rs'))      : rs,
+    re:     p.get('re')     ? Number(p.get('re'))      : re,
+  };
 }
-function setUrlTeamId(id) {
+
+/* Update URL without page reload — called on any user change */
+function setUrlParams(teamId, season, through, rs, re){
   const url = new URL(window.location.href);
-  url.searchParams.set('team', id);
+  url.searchParams.set('team',   teamId);
+  url.searchParams.set('season', season);
+  url.searchParams.set('through',through);
+  url.searchParams.set('rs',     rs);
+  url.searchParams.set('re',     re);
+  url.searchParams.delete('range'); /* remove legacy param if present */
   window.history.replaceState({}, '', url);
 }
 
-// ── Chart state ─────────────────────────────────────────
-let chartMode = 'cumulative';
-let lastSeries = [], lastRangeStart = 28, lastRangeEnd = 63;
-
 /* ══════════════════════════════════════════════════════
-   UTILITIES
+   DATA FETCHING
 ══════════════════════════════════════════════════════ */
-const winPct = (w,l) => (w+l) ? w/(w+l) : 0;
-const fmtPct = p => p.toFixed(3).replace(/^0/,'');
-const clamp  = (v,mn,mx) => Math.max(mn, Math.min(mx, Number(v)||mn));
-const curYear = () => new Date().getFullYear();
-
-async function fetchJSON(url) {
-  const r = await fetch(url);
-  if (!r.ok) throw new Error(`MLB API error ${r.status}`);
+async function fetchJSON(url){
+  const r=await fetch(url);
+  if(!r.ok) throw new Error(`MLB API error ${r.status}`);
   return r.json();
 }
 
-/* ══════════════════════════════════════════════════════
-   DATA
-══════════════════════════════════════════════════════ */
-async function loadTeams() {
-  const d = await fetchJSON(`${API}/teams?sportId=1&activeStatus=Y`);
-  return d.teams.filter(t => t.sport?.id === 1).sort((a,b) => a.name.localeCompare(b.name));
+async function loadTeams(){
+  const d=await fetchJSON(`${API}/teams?sportId=1&activeStatus=Y`);
+  return d.teams.filter(t=>t.sport?.id===1).sort((a,b)=>a.name.localeCompare(b.name));
 }
 
-async function loadSchedule(teamId, year) {
-  const key = `${teamId}:${year}`;
-  if (scheduleCache.has(key)) return scheduleCache.get(key);
-  const data = await fetchJSON(`${API}/schedule?sportId=1&teamId=${teamId}&season=${year}&gameTypes=R`);
-  const games = [];
-  for (const d of data.dates || []) {
-    for (const g of d.games || []) {
-      if (g.status?.abstractGameState !== 'Final') continue;
-      const home = g.teams?.home, away = g.teams?.away;
-      if (home?.score == null || away?.score == null || home.score === away.score) continue;
-      const isHome = String(home.team.id) === String(teamId);
-      const win = isHome ? home.score > away.score : away.score > home.score;
-      games.push({ date: g.officialDate, gamePk: g.gamePk, win,
-        opponent: isHome ? away.team.name : home.team.name });
+/* Load and process final regular-season games for teamId/year.
+   Only Final-status games with a decided score are included.
+   Doubleheaders sorted by gamePk within the same date. */
+async function loadSchedule(teamId, year){
+  const key=`${teamId}:${year}`;
+  if(schedCache.has(key)) return schedCache.get(key);
+  const data=await fetchJSON(`${API}/schedule?sportId=1&teamId=${teamId}&season=${year}&gameTypes=R`);
+  const games=[];
+  for(const d of data.dates||[]){
+    for(const g of d.games||[]){
+      if(g.status?.abstractGameState!=='Final') continue;
+      const h=g.teams?.home,a=g.teams?.away;
+      if(h?.score==null||a?.score==null||h.score===a.score) continue;
+      const isHome=String(h.team.id)===String(teamId);
+      games.push({date:g.officialDate,gamePk:g.gamePk,win:isHome?h.score>a.score:a.score>h.score,
+        opponent:isHome?a.team.name:h.team.name});
     }
   }
-  games.sort((a,b) => a.date.localeCompare(b.date) || a.gamePk - b.gamePk);
-  let cw=0, cl=0;
-  games.forEach((g,i) => {
-    if(g.win) cw++; else cl++;
-    g.gameNo=i+1; g.cumWins=cw; g.cumLosses=cl;
-  });
-  scheduleCache.set(key, games);
+  games.sort((a,b)=>a.date.localeCompare(b.date)||a.gamePk-b.gamePk);
+  let cw=0,cl=0;
+  games.forEach((g,i)=>{if(g.win)cw++;else cl++;g.gameNo=i+1;g.cumWins=cw;g.cumLosses=cl;});
+  schedCache.set(key,games);
   return games;
 }
 
 /* ══════════════════════════════════════════════════════
    CALCULATIONS
 ══════════════════════════════════════════════════════ */
-function recordThrough(games, n) {
-  const s = games.slice(0, Math.min(n, games.length));
-  const w = s.filter(g=>g.win).length;
-  return { w, l: s.length-w, g: s.length };
+const winPct=(w,l)=>(w+l)?w/(w+l):0;
+const fmtPct=p=>p.toFixed(3).replace(/^0/,'');
+const clamp=(v,mn,mx)=>Math.max(mn,Math.min(mx,Number(v)||mn));
+const curYear=()=>new Date().getFullYear();
+
+function recordThrough(games,n){
+  const s=games.slice(0,Math.min(n,games.length));
+  const w=s.filter(g=>g.win).length;
+  return{w,l:s.length-w,g:s.length};
 }
-function recordInRange(games, start, end) {
-  const s = games.filter(g => g.gameNo >= start && g.gameNo <= end);
-  const w = s.filter(g=>g.win).length;
-  return { w, l: s.length-w, g: s.length };
+
+function recordInRange(games,start,end){
+  const s=games.filter(g=>g.gameNo>=start&&g.gameNo<=end);
+  const w=s.filter(g=>g.win).length;
+  return{w,l:s.length-w,g:s.length};
 }
-function projectWins(rec) {
-  return rec.g ? Math.round((rec.w/rec.g)*162) : null;
+
+/* Project wins from a record. Returns null if no games. */
+function projectWins(rec){
+  if(!rec.g) return null;
+  return Math.round((rec.w/rec.g)*SEASON_GAMES);
 }
-function curveSimilarity(a, b, n) {
-  const lim = Math.min(n, a.length, b.length);
-  if (!lim) return Infinity;
+
+/* Curve similarity: mean absolute deviation of cumWins through N games.
+   Lower = more similar. Used to find closest historical comp. */
+function curveSimilarity(a,b,n){
+  const lim=Math.min(n,a.length,b.length);
+  if(!lim) return Infinity;
   let d=0;
-  for(let i=1;i<=lim;i++) d += Math.abs((a[i-1]?.cumWins||0)-(b[i-1]?.cumWins||0));
+  for(let i=1;i<=lim;i++) d+=Math.abs((a[i-1]?.cumWins||0)-(b[i-1]?.cumWins||0));
   return d/lim;
 }
 
-/* ══════════════════════════════════════════════════════
-   MOMENTUM
-══════════════════════════════════════════════════════ */
-function getMomentum(throughPct, rangePct, rangeGames) {
-  const diff = rangePct - throughPct;
-  const large = rangeGames >= 25;
-  if (rangePct >= .650) return { label:'🔥 Elite pace',    cls:'badge-good', chipCls:'chip-hot' };
-  if (rangePct >= .600 && diff >= .05) return { label:'📈 Heating up',    cls:'badge-good', chipCls:'chip-hot' };
-  if (rangePct >= .575) return { label:'✅ Strong stretch', cls:'badge-good', chipCls:'chip-hot' };
-  if (rangePct <= .350) return { label:'❄️ Struggling',     cls:'badge-bad',  chipCls:'chip-cold' };
-  if (rangePct <= .420 && diff <= -.05) return { label:'📉 Cooling off', cls:'badge-bad', chipCls:'chip-cold' };
-  if (diff >= .06 && large) return { label:'⬆️ Recovering',   cls:'badge-warn', chipCls:'chip-warm' };
-  if (Math.abs(diff) <= .025) return { label:'➡️ Stable',      cls:'badge-warn', chipCls:'chip-neu' };
-  if (diff > .025) return { label:'⬆️ Trending up',   cls:'badge-good', chipCls:'chip-hot' };
-  return { label:'⬇️ Trending down', cls:'badge-bad', chipCls:'chip-cold' };
+/* ── Preset range calculations ──────────────────────── */
+/* "Last 10" and "Last 20" are relative to throughGame, not a fixed range */
+function presetRanges(throughGame, completedGP){
+  return{
+    last10: { rs: Math.max(1,throughGame-9),  re: throughGame },
+    last20: { rs: Math.max(1,throughGame-19), re: throughGame },
+    g127:   { rs: 1,  re: 27  },
+    g2863:  { rs: 28, re: 63  },
+    first:  { rs: 1,  re: 81  },
+    second: { rs: 82, re: Math.min(SEASON_GAMES, Math.max(82,completedGP)) },
+  };
+}
+
+/* Detect which preset (if any) matches current range values */
+function detectPreset(rs, re, throughGame, completedGP){
+  const p = presetRanges(throughGame, completedGP);
+  for(const[key,{rs:pr,re:pe}] of Object.entries(p)){
+    if(rs===pr&&re===pe) return key;
+  }
+  return null;
+}
+
+/* ── Default values after loading a team's schedule ────
+   Sets throughGame = completed GP, range = last 10.
+   If URL params exist, use those instead. */
+function computeDefaults(completedGP, urlParams){
+  const through = urlParams.through ?? completedGP;
+  const rs      = urlParams.rs      ?? Math.max(1, completedGP-9);
+  const re      = urlParams.re      ?? completedGP;
+  return{ through: clamp(through,1,Math.max(1,completedGP)), rs: clamp(rs,1,162), re: clamp(re,1,162) };
+}
+
+/* ── Momentum label ─────────────────────────────────── */
+function getMomentum(tPct, rPct, rangeSize){
+  const d=rPct-tPct, large=rangeSize>=25;
+  if(rPct>=.650) return{label:'🔥 Elite pace',    cls:'badge-good',chipCls:'badge-hot'};
+  if(rPct>=.600&&d>=.05) return{label:'📈 Heating up',   cls:'badge-good',chipCls:'badge-hot'};
+  if(rPct>=.575) return{label:'✅ Strong stretch',cls:'badge-good',chipCls:'badge-hot'};
+  if(rPct<=.350) return{label:'❄️ Struggling',    cls:'badge-bad', chipCls:'badge-cold'};
+  if(rPct<=.420&&d<=-.05) return{label:'📉 Cooling off', cls:'badge-bad', chipCls:'badge-cold'};
+  if(d>=.06&&large) return{label:'⬆️ Recovering',  cls:'badge-good',chipCls:'badge-hot'};
+  if(Math.abs(d)<=.025) return{label:'➡️ Stable',    cls:'badge-warn',chipCls:'badge-neu'};
+  if(d>.025) return{label:'⬆️ Trending up',  cls:'badge-good',chipCls:'badge-hot'};
+  return{label:'⬇️ Trending down',cls:'badge-bad',chipCls:'badge-cold'};
 }
 
 /* ══════════════════════════════════════════════════════
-   INSIGHTS
+   INSIGHTS GENERATION
+   Returns plain-English text for each insight card
+   and a short "pace story" suitable for X/Twitter
 ══════════════════════════════════════════════════════ */
-function buildInsights({ teamName, currentYear, through, rangeStart, rangeEnd, curData, allData }) {
-  const curGames = curData.games;
-  const curThrough = recordThrough(curGames, through);
-  const curRange   = recordInRange(curGames, rangeStart, rangeEnd);
-  const curTPct    = winPct(curThrough.w, curThrough.l);
-  const curRPct    = winPct(curRange.w, curRange.l);
-  const prior      = allData.filter(d => d.year !== currentYear);
+function buildInsights({teamName, year, through, rs, re, curData, allData}){
+  const cg      = curData.games;
+  const cThru   = recordThrough(cg, through);
+  const cRange  = recordInRange(cg, rs, re);
+  const cTPct   = winPct(cThru.w, cThru.l);
+  const cRPct   = winPct(cRange.w, cRange.l);
+  const prior   = allData.filter(d=>d.year!==year);
 
-  // Through-game comparison
-  const tcomps = prior.map(d => {
-    const r = recordThrough(d.games, through);
-    return { year:d.year, w:r.w, g:r.g, delta: curThrough.w - r.w };
-  }).filter(c => c.g > 0);
+  /* Through-game comparison vs each prior season */
+  const tcomps  = prior.map(d=>{
+    const r=recordThrough(d.games,through);
+    return{year:d.year,w:r.w,g:r.g,delta:cThru.w-r.w};
+  }).filter(c=>c.g>0);
+
   const ahead  = tcomps.filter(c=>c.delta>0).map(c=>`${c.year} (+${c.delta})`);
   const behind = tcomps.filter(c=>c.delta<0).map(c=>`${c.year} (${c.delta})`);
   const tied   = tcomps.filter(c=>c.delta===0).map(c=>`${c.year}`);
-  let throughText = `Through ${curThrough.g} games, the ${currentYear} team is <strong>${curThrough.w}–${curThrough.l}</strong>.`;
-  if (ahead.length)  throughText += ` Ahead of: ${ahead.join(', ')}.`;
-  if (behind.length) throughText += ` Behind: ${behind.join(', ')}.`;
-  if (tied.length)   throughText += ` Even with: ${tied.join(', ')}.`;
-  if (!prior.length) throughText += ' Select comparison seasons to compare.';
 
-  // Range comparison
-  const rcomps = prior.map(d => {
-    const r = recordInRange(d.games, rangeStart, rangeEnd);
-    return { year:d.year, w:r.w, l:r.l, g:r.g, pct:winPct(r.w, r.l) };
+  let throughText=`Through ${cThru.g} games, the ${year} team is <strong>${cThru.w}–${cThru.l}</strong>.`;
+  if(ahead.length)  throughText+=` Ahead of: ${ahead.join(', ')}.`;
+  if(behind.length) throughText+=` Behind: ${behind.join(', ')}.`;
+  if(tied.length)   throughText+=` Even with: ${tied.join(', ')}.`;
+  if(!prior.length) throughText+=' Select comparison seasons to compare.';
+
+  /* Range comparison */
+  const rcomps  = prior.map(d=>{
+    const r=recordInRange(d.games,rs,re);
+    return{year:d.year,w:r.w,l:r.l,g:r.g,pct:winPct(r.w,r.l)};
   }).filter(c=>c.g>0);
-  const rankNum   = rcomps.filter(c=>c.pct>curRPct).length+1;
-  const rankTotal = rcomps.length+1;
-  let rangeText = `G${rangeStart}–${rangeEnd}: ${currentYear} went <strong>${curRange.w}–${curRange.l}</strong> (${fmtPct(curRPct)}).`;
-  if (rankTotal>1) rangeText += ` <strong>#${rankNum} of ${rankTotal}</strong> seasons in this range.`;
-  const bestR = [...rcomps].sort((a,b)=>b.pct-a.pct)[0];
-  if (bestR) rangeText += ` Best prior: ${bestR.year} (${bestR.w}–${bestR.l}).`;
+  const rankPos = rcomps.filter(c=>c.pct>cRPct).length+1;
+  const rankTot = rcomps.length+1;
+  let rangeText = `G${rs}–${re}: ${year} went <strong>${cRange.w}–${cRange.l}</strong> (${fmtPct(cRPct)}).`;
+  if(rankTot>1) rangeText+=` <strong>#${rankPos} of ${rankTot}</strong> seasons in this range.`;
+  const bestR=[...rcomps].sort((a,b)=>b.pct-a.pct)[0];
+  if(bestR) rangeText+=` Best prior: ${bestR.year} (${bestR.w}–${bestR.l}).`;
+  if(cRange.g===0) rangeText=`No completed games in this range yet (G${rs}–${re}). Try a different range.`;
 
-  // Closest comp
-  let closestText = 'Select more seasons to find a closest comp.';
-  if (prior.length) {
-    const sims = prior.map(d=>({ year:d.year, sim:curveSimilarity(curGames,d.games,through) }))
+  /* vs avg/best comparison */
+  let compText='Select comparison seasons to compare.';
+  if(tcomps.length){
+    const avg=tcomps.reduce((s,c)=>s+c.w,0)/tcomps.length;
+    const vsAvg=cThru.w-avg;
+    const best=tcomps.reduce((b,c)=>c.w>b.w?c:b);
+    compText=`vs. avg of selected seasons: <strong>${vsAvg>=0?'+':''}${vsAvg.toFixed(1)}W</strong> through game ${through}. Best comp season: <strong>${best.year}</strong> (${best.w}W).`;
+  }
+
+  /* Closest historical comp by curve similarity */
+  let closestText='Select more seasons to find a closest comp.';
+  if(prior.length){
+    const sims=prior.map(d=>({year:d.year,sim:curveSimilarity(cg,d.games,through)}))
       .filter(s=>isFinite(s.sim)).sort((a,b)=>a.sim-b.sim);
-    if (sims.length) {
-      const best = sims[0];
-      const bRec = recordThrough(allData.find(d=>d.year===best.year).games, through);
-      closestText = `Most similar through game ${through}: <strong>${best.year}</strong> (${bRec.w}–${bRec.l}). Avg divergence: ${best.sim.toFixed(1)} W/game.`;
+    if(sims.length){
+      const b=sims[0];
+      const br=recordThrough(allData.find(d=>d.year===b.year).games,through);
+      closestText=`Most similar through game ${through}: <strong>${b.year}</strong> (${br.w}–${br.l}). Avg divergence: ${b.sim.toFixed(1)} W/game.`;
     }
   }
 
-  // Projection
-  const seasProj  = projectWins(recordThrough(curGames, curGames.length));
-  const rangeProj = projectWins(curRange);
+  /* Pace projections — clearly labelled as pace-based, not predictive */
+  const curSeasRec = recordThrough(cg, cg.length);
+  const seasProj   = projectWins(curSeasRec);
+  const rangeProj  = projectWins(cRange);
   let projText = seasProj!=null ? `Full-season pace: <strong>${seasProj} wins</strong>.` : '';
-  if (rangeProj!=null) projText += ` Range pace: <strong>${rangeProj} wins</strong>.`;
-  if (!projText) projText = 'Insufficient games to project.';
+  if(rangeProj!=null) projText+=` At G${rs}–${re} pace: <strong>${rangeProj} wins</strong>.`;
+  if(!projText) projText='Insufficient games to project.';
+  projText+=` <em style="color:var(--chalk);font-size:12px">Pace-based calculation, not a predictive model.</em>`;
 
-  // vs avg / best
-  let compText = 'Select comparison seasons to compare.';
-  if (tcomps.length) {
-    const avg = tcomps.reduce((s,c)=>s+c.w,0)/tcomps.length;
-    const vsAvg = curThrough.w - avg;
-    const bestComp = tcomps.reduce((b,c)=>c.w>b.w?c:b);
-    compText = `vs. avg of selected seasons: <strong>${vsAvg>=0?'+':''}${vsAvg.toFixed(1)}W</strong> through game ${through}. Best comp: <strong>${bestComp.year}</strong> (${bestComp.w}W).`;
+  /* Last 10 record for sharing */
+  const l10g = cg.slice(-10), l10w=l10g.filter(g=>g.win).length;
+  const l10str = cg.length>=10 ? `${l10w}–${l10g.length-l10w}` : '—';
+
+  /* Today's pace story — short, suitable for X/Twitter */
+  let story=`Through ${cThru.g} games, the ${year} ${teamName} are <strong>${cThru.w}–${cThru.l}</strong>`;
+  if(tcomps.length){
+    const refYear=tcomps[0];
+    story+=refYear.delta>0?`, ${refYear.delta} win${refYear.delta!==1?'s':''} ahead of ${refYear.year} pace`
+      :refYear.delta<0?`, ${Math.abs(refYear.delta)} win${Math.abs(refYear.delta)!==1?'s':''} behind ${refYear.year} pace`
+      :`, matching ${refYear.year} pace`;
   }
+  story+=cRange.g>0 ? `. Their ${rs===Math.max(1,through-9)&&re===through?'last '+(re-rs+1)+'-game':('G'+rs+'–'+re)} record is <strong>${cRange.w}–${cRange.l}</strong>` : '';
+  story+=seasProj!=null?`. Current pace projects to <strong>${seasProj} wins</strong>.`
+    :'.'
 
-  return { throughText, rangeText, closestText, projText, compText };
+  return{throughText,rangeText,compText,closestText,projText,story,l10str,seasProj,curSeasRec};
 }
 
 /* ══════════════════════════════════════════════════════
-   CHART
+   SHARE HELPERS
 ══════════════════════════════════════════════════════ */
-const NS = 'http://www.w3.org/2000/svg';
-const el = (tag, a={}) => { const e=document.createElementNS(NS,tag); for(const[k,v] of Object.entries(a)) e.setAttribute(k,v); return e; };
+async function copyToClipboard(text){
+  try{ await navigator.clipboard.writeText(text); return true; }
+  catch{ window.prompt('Copy this:',text); return false; }
+}
 
-function drawChart(series, rs, re, mode) {
-  lastSeries=series; lastRangeStart=rs; lastRangeEnd=re;
-  const svg = $('mainChart'); svg.innerHTML='';
-  const W=1000, H=380, p={l:50,r:28,t:22,b:40};
+function buildShareText(teamName, w, l, gp, proj, l10str, url){
+  return `${teamName} Pace Check:\n${w}–${l} through ${gp} games.\nProjected finish: ${proj??'—'} wins.\nLast 10: ${l10str}.\nTrack the season: ${url}`;
+}
+
+function xShareUrl(text){
+  return 'https://x.com/intent/tweet?text='+encodeURIComponent(text);
+}
+
+/* ══════════════════════════════════════════════════════
+   CHART RENDERING
+══════════════════════════════════════════════════════ */
+function drawChart(series, rs, re, mode){
+  lastSeries=series; lastRS=rs; lastRE=re;
+  const svg=$('mainChart'); svg.innerHTML='';
+  const W=1000,H=360,p={l:48,r:28,t:20,b:38};
   svg.setAttribute('viewBox',`0 0 ${W} ${H}`);
-  const xMax=162, yMax=mode==='pct'?1:110;
+  const xMax=162, yMax=mode==='pct'?1:108;
   const sx=x=>p.l+(x/xMax)*(W-p.l-p.r);
   const sy=y=>H-p.b-(y/yMax)*(H-p.t-p.b);
 
-  // Range shading
-  svg.appendChild(el('rect',{ x:sx(rs-1), y:p.t, width:sx(re)-sx(rs-1), height:H-p.t-p.b, fill:'rgba(61,126,255,.07)' }));
-  for(const xv of [rs-1,re])
-    svg.appendChild(el('line',{ x1:sx(xv),x2:sx(xv),y1:p.t,y2:H-p.b, stroke:'rgba(61,126,255,.35)','stroke-width':1.5,'stroke-dasharray':'5 4' }));
-  const rl=el('text',{ x:sx((rs+re)/2), y:p.t-7, fill:'rgba(61,126,255,.65)','font-size':11,'text-anchor':'middle','font-family':'Barlow,sans-serif','font-weight':'700' });
-  rl.textContent=`G${rs}–${re}`; svg.appendChild(rl);
+  /* Range shading */
+  svg.appendChild(el('rect',{x:sx(rs-1),y:p.t,width:sx(re)-sx(rs-1),height:H-p.t-p.b,fill:'rgba(26,255,107,.06)'}));
+  [rs-1,re].forEach(xv=>svg.appendChild(el('line',{x1:sx(xv),x2:sx(xv),y1:p.t,y2:H-p.b,stroke:'rgba(26,255,107,.30)','stroke-width':1.5,'stroke-dasharray':'5 4'})));
+  const rlb=el('text',{x:sx((rs+re)/2),y:p.t-6,fill:'rgba(26,255,107,.55)','font-size':10,'text-anchor':'middle','font-family':'IBM Plex Mono,monospace','font-weight':'700'});
+  rlb.textContent=`G${rs}–${re}`; svg.appendChild(rlb);
 
-  // Y grid
-  const yTicks = mode==='pct' ? [0,.2,.4,.5,.6,.8,1] : [0,20,40,60,80,100];
+  /* Y grid */
+  const yTicks=mode==='pct'?[0,.2,.4,.5,.6,.8,1]:[0,20,40,60,80,100];
   for(const y of yTicks){
-    svg.appendChild(el('line',{ x1:p.l,x2:W-p.r,y1:sy(y),y2:sy(y), stroke:y===(mode==='pct'?.5:81)?'rgba(255,255,255,.14)':'rgba(255,255,255,.06)' }));
-    const t=el('text',{ x:p.l-5,y:sy(y)+4,fill:'#6b7a9c','font-size':11,'text-anchor':'end','font-family':'Barlow,sans-serif' });
+    svg.appendChild(el('line',{x1:p.l,x2:W-p.r,y1:sy(y),y2:sy(y),stroke:y===(mode==='pct'?.5:81)?'rgba(255,255,255,.12)':'rgba(255,255,255,.05)'}));
+    const t=el('text',{x:p.l-5,y:sy(y)+4,fill:'#8a8a82','font-size':10,'text-anchor':'end','font-family':'IBM Plex Mono,monospace'});
     t.textContent=mode==='pct'?fmtPct(y):y; svg.appendChild(t);
   }
-
-  // X axis
-  svg.appendChild(el('line',{ x1:p.l,x2:W-p.r,y1:H-p.b,y2:H-p.b,stroke:'rgba(255,255,255,.10)' }));
-  for(const x of [27,54,81,108,135,162]){
-    const t=el('text',{ x:sx(x),y:H-p.b+15,fill:'#6b7a9c','font-size':11,'text-anchor':'middle','font-family':'Barlow,sans-serif' });
+  /* X axis */
+  svg.appendChild(el('line',{x1:p.l,x2:W-p.r,y1:H-p.b,y2:H-p.b,stroke:'rgba(255,255,255,.08)'}));
+  [27,54,81,108,135,162].forEach(x=>{
+    const t=el('text',{x:sx(x),y:H-p.b+14,fill:'#8a8a82','font-size':10,'text-anchor':'middle','font-family':'IBM Plex Mono,monospace'});
     t.textContent=x; svg.appendChild(t);
-  }
+  });
 
-  // Series
+  /* Series lines */
   for(const s of series){
     if(!s.points.length) continue;
-    let pts;
-    if(mode==='cumulative')       pts=s.points;
-    else if(mode==='range')       pts=s.points.filter(pt=>pt.game>=rs&&pt.game<=re);
-    else                          pts=s.points;
+    const yKey=mode==='range'?'rw':mode==='pct'?'pct':'wins';
+    let pts=mode==='range'?s.points.filter(pt=>pt.game>=rs&&pt.game<=re):s.points;
     if(!pts.length) continue;
-
-    const yKey = mode==='range' ? 'rangeWins' : mode==='pct' ? 'pct' : 'wins';
-    const d = pts.map((pt,i)=>`${i?'L':'M'}${sx(pt.game).toFixed(1)},${sy(pt[yKey]??0).toFixed(1)}`).join(' ');
-    const path=el('path',{ d,fill:'none',stroke:s.color,'stroke-width':s.current?3:2,'stroke-linecap':'round','stroke-linejoin':'round' });
+    const d=pts.map((pt,i)=>`${i?'L':'M'}${sx(pt.game).toFixed(1)},${sy(pt[yKey]??0).toFixed(1)}`).join(' ');
+    const path=el('path',{d,fill:'none',stroke:s.color,'stroke-width':s.current?3:1.8,'stroke-linecap':'round','stroke-linejoin':'round'});
     if(s.projected) path.setAttribute('stroke-dasharray','7 5');
     svg.appendChild(path);
-    const last=pts[pts.length-1];
-    const lbl=el('text',{ x:sx(last.game)+4,y:sy(last[yKey]??0)+4,fill:s.color,'font-size':11,'font-weight':'700','font-family':'Barlow Condensed,sans-serif' });
-    lbl.textContent=s.label; svg.appendChild(lbl);
+    /* End label — only on current season to reduce clutter */
+    if(s.current){
+      const last=pts[pts.length-1];
+      const lbl=el('text',{x:sx(last.game)+4,y:sy(last[yKey]??0)+4,fill:s.color,'font-size':11,'font-weight':'700','font-family':'IBM Plex Mono,monospace'});
+      lbl.textContent=s.label; svg.appendChild(lbl);
+    }
   }
 }
 
-function buildSeries(allData, currentYear, rs, re) {
-  return allData.map((d,i) => {
-    const color=SEASON_COLORS[i%SEASON_COLORS.length], isCur=d.year===currentYear;
+function buildSeries(allData, year, rs, re){
+  return allData.map((d,i)=>{
+    const color=SEASON_COLORS[i%SEASON_COLORS.length];
+    const isCur=d.year===year;
     const pts=[]; let rw=0;
     d.games.forEach(g=>{
       if(g.gameNo>=rs&&g.gameNo<=re) rw+=g.win?1:0;
-      pts.push({ game:g.gameNo, wins:g.cumWins, pct:winPct(g.cumWins,g.cumLosses), rangeWins:g.gameNo>=rs?rw:null });
+      pts.push({game:g.gameNo,wins:g.cumWins,pct:winPct(g.cumWins,g.cumLosses),rw:g.gameNo>=rs?rw:null});
     });
-    if(isCur&&d.games.length>0&&d.games.length<162){
-      const lG=d.games[d.games.length-1];
+    if(isCur&&d.games.length>0&&d.games.length<SEASON_GAMES){
+      const lg=d.games[d.games.length-1];
       const pj=projectWins(recordThrough(d.games,d.games.length));
-      pts.push({ game:162,wins:pj,pct:winPct(lG.cumWins,lG.cumLosses),rangeWins:rw });
-      return { label:`${d.year}*`,color,points:pts,current:true,projected:true };
+      pts.push({game:SEASON_GAMES,wins:pj,pct:winPct(lg.cumWins,lg.cumLosses),rw});
+      return{label:`${d.year}*`,color,points:pts,current:true,projected:true};
     }
-    return { label:String(d.year),color,points:pts,current:isCur,projected:false };
+    return{label:String(d.year),color,points:pts,current:isCur,projected:false};
   });
 }
 
 /* ══════════════════════════════════════════════════════
    TABLE RENDERING
 ══════════════════════════════════════════════════════ */
-function renderThroughTable(allData, year, through) {
-  const curRec = recordThrough(allData.find(d=>d.year===year)?.games||[], through);
-  document.querySelector('#throughTable tbody').innerHTML = allData.map(d=>{
+function renderThroughTable(allData, year, through){
+  const curRec=recordThrough(allData.find(d=>d.year===year)?.games||[],through);
+  document.querySelector('#throughTable tbody').innerHTML=allData.map(d=>{
     const r=recordThrough(d.games,through), isCur=d.year===year;
     const delta=r.w-curRec.w;
     const dStr=isCur?'—':(delta>0?`+${delta}`:`${delta}`);
     const dCls=delta>0?'pill-g':delta<0?'pill-r':'pill-n';
     let fin;
-    if(isCur&&d.games.length<162){ const p=projectWins(recordThrough(d.games,d.games.length)); fin=p!=null?`${p}*`:'—'; }
-    else fin=d.games.length>=162?recordThrough(d.games,162).w:recordThrough(d.games,d.games.length).w;
-    return `<tr class="${isCur?'cur-row':''}">
-      <td><strong>${d.year}${isCur?' ★':''}</strong></td>
-      <td>${r.g}</td>
-      <td><span class="pill">${r.w}–${r.l}</span></td>
+    if(isCur&&d.games.length<SEASON_GAMES){ const p=projectWins(recordThrough(d.games,d.games.length)); fin=p!=null?`${p}*`:'—';}
+    else fin=d.games.length>=SEASON_GAMES?recordThrough(d.games,SEASON_GAMES).w:recordThrough(d.games,d.games.length).w;
+    return`<tr class="${isCur?'cur-row':''}">
+      <td><strong style="color:${isCur?'#1aff6b':'inherit'}">${d.year}${isCur?' ★':''}</strong></td>
+      <td>${r.g}</td><td><span class="pill">${r.w}–${r.l}</span></td>
       <td>${fmtPct(winPct(r.w,r.l))}</td>
       <td>${isCur?'—':`<span class="pill ${dCls}">${dStr}</span>`}</td>
       <td>${fin}</td></tr>`;
   }).join('');
 }
 
-function renderRangeTable(allData, year, rs, re) {
-  document.querySelector('#rangeTable tbody').innerHTML = allData.map(d=>{
+function renderRangeTable(allData, year, rs, re){
+  document.querySelector('#rangeTable tbody').innerHTML=allData.map(d=>{
     const r=recordInRange(d.games,rs,re), isCur=d.year===year;
-    const pct=winPct(r.w,r.l), pace=r.g?Math.round((r.w/r.g)*162):0;
+    const pct=winPct(r.w,r.l), pace=r.g?Math.round((r.w/r.g)*SEASON_GAMES):0;
     const cls=pct>=.580?'pill-g':pct<=.420?'pill-r':'';
-    return `<tr class="${isCur?'cur-row':''}">
-      <td><strong>${d.year}${isCur?' ★':''}</strong></td>
+    return`<tr class="${isCur?'cur-row':''}">
+      <td><strong style="color:${isCur?'#1aff6b':'inherit'}">${d.year}${isCur?' ★':''}</strong></td>
       <td>${rs}–${re}</td>
       <td><span class="pill ${cls}">${r.w}–${r.l}</span></td>
       <td>${fmtPct(pct)}</td>
@@ -1021,115 +977,168 @@ function renderRangeTable(allData, year, rs, re) {
 /* ══════════════════════════════════════════════════════
    RENDER INSIGHTS
 ══════════════════════════════════════════════════════ */
-function renderInsights(params) {
-  const { throughText, rangeText, closestText, projText, compText } = buildInsights(params);
-  const { curData, currentYear, through, rangeStart, rangeEnd } = params;
-  const curGames   = curData.games;
-  const curThrough = recordThrough(curGames, through);
-  const curRange   = recordInRange(curGames, rangeStart, rangeEnd);
-  const momentum   = getMomentum(winPct(curThrough.w,curThrough.l), winPct(curRange.w,curRange.l), rangeEnd-rangeStart+1);
+function renderInsights(params){
+  const{throughText,rangeText,compText,closestText,projText,story,l10str,seasProj,curSeasRec}=buildInsights(params);
+  const{year,through,rs,re,curData,teamName}=params;
+  const cg=curData.games;
+  const cThru=recordThrough(cg,through);
+  const cRange=recordInRange(cg,rs,re);
+  const momentum=getMomentum(winPct(cThru.w,cThru.l),winPct(cRange.w,cRange.l),re-rs+1);
 
-  $('momentumBadge').textContent = momentum.label;
-  $('momentumBadge').className   = `momentum-badge ${momentum.cls}`;
-  $('heroBadge').textContent     = momentum.label;
-  $('heroBadge').className       = `momentum-chip ${momentum.chipCls}`;
+  /* Momentum badge + hero badge */
+  $('momentumBadge').textContent=momentum.label;
+  $('momentumBadge').className=`momentum-badge ${momentum.cls}`;
+  $('heroBadge').textContent=momentum.label;
+  $('heroBadge').className=`hero-badge ${momentum.chipCls}`;
 
-  $('insightsGrid').innerHTML = [
-    { title:`Through game ${through}`,      text:throughText },
-    { title:`Range G${rangeStart}–${rangeEnd}`, text:rangeText },
-    { title:'vs. selected seasons',          text:compText },
-    { title:'Closest historical comp',       text:closestText },
-    { title:'Projection',                    text:projText },
-    { title:'⚠️ Range pace ≠ full season',   text:`A hot ${rangeEnd-rangeStart+1}-game stretch shows form, not guaranteed pace. Treat range projections as a ceiling.`, caution:true },
-  ].map(c=>`
-    <div class="insight-card${c.caution?' insight-caution':''}">
-      <div class="insight-card-title">${c.title}</div>
-      <div class="insight-card-body">${c.text}</div>
-    </div>`).join('');
+  /* Pace story */
+  $('paceStoryText').innerHTML=story;
+
+  /* Share row — X post + copy link + copy insight */
+  const gp=cg.length;
+  const urlStr='https://tracktheseason.com/'+
+    `tracker.html?team=${$('teamSelect').value}&season=${year}&through=${through}&rs=${rs}&re=${re}`;
+  const shareText=buildShareText(teamName,curSeasRec.w,curSeasRec.l,gp,seasProj,l10str,urlStr);
+  const xUrl=xShareUrl(shareText);
+  $('insightShare').innerHTML=`
+    <a class="share-btn share-btn-x" href="${xUrl}" target="_blank" rel="noopener">𝕏 Post to X</a>
+    <button class="share-btn share-btn-copy" id="copyLinkBtn">⧉ Copy link</button>
+    <button class="share-btn share-btn-copy" id="copyInsightBtn">✦ Copy insight</button>`;
+  $('copyLinkBtn').onclick=async()=>{const ok=await copyToClipboard(urlStr);$('copyLinkBtn').textContent=ok?'✓ Copied':'Link';};
+  $('copyInsightBtn').onclick=async()=>{const ok=await copyToClipboard(shareText);$('copyInsightBtn').textContent=ok?'✓ Copied':'Text';};
+
+  /* Insight cards */
+  $('insightsGrid').innerHTML=[
+    {title:`Through game ${through}`,    text:throughText},
+    {title:`Range G${rs}–${re}`,         text:rangeText},
+    {title:'vs. selected seasons',       text:compText},
+    {title:'Closest historical comp',    text:closestText},
+    {title:'Current pace projection',    text:projText},
+    {title:'⚠️ Range pace ≠ full season',text:`A ${re-rs+1}-game range reflects recent form, not guaranteed full-season pace. Treat range projections as a ceiling, not a forecast. This is a pace calculation — not a predictive model.`,caution:true},
+  ].map(c=>`<div class="insight-card${c.caution?' insight-caution':''}">
+    <div class="insight-card-title">${c.title}</div>
+    <div class="insight-card-body">${c.text}</div>
+  </div>`).join('');
+}
+
+/* ══════════════════════════════════════════════════════
+   PRESET BUTTON MANAGEMENT
+══════════════════════════════════════════════════════ */
+function setActivePreset(key){
+  activePreset=key;
+  document.querySelectorAll('.preset-btn').forEach(b=>b.classList.toggle('active',b.dataset.preset===key));
+}
+
+function clearActivePreset(){
+  activePreset=null;
+  document.querySelectorAll('.preset-btn').forEach(b=>b.classList.remove('active'));
+}
+
+function applyPreset(key){
+  const through=clamp($('throughInput').value,1,162);
+  const gp=Number($('throughInput').value)||through;
+  const completedGP=gp;
+  const ranges=presetRanges(through,completedGP);
+  const r=ranges[key];
+  if(!r) return;
+  $('rangeStartInput').value=r.rs;
+  $('rangeEndInput').value=r.re;
+  setActivePreset(key);
+  userChangedInputs=false;
 }
 
 /* ══════════════════════════════════════════════════════
    MAIN UPDATE
 ══════════════════════════════════════════════════════ */
-async function update() {
-  try {
+async function update(){
+  try{
     $('statusCard').style.display='';
     $('resultsWrap').classList.add('hidden');
     $('errorBox').classList.add('hidden');
     $('statusMsg').style.display='flex';
-    $('statusMsg').querySelector('span').textContent = 'Loading schedules…';
 
-    const teamId   = $('teamSelect').value;
-    const teamName = $('teamSelect').options[$('teamSelect').selectedIndex].text;
-    const year     = Number($('currentSeasonSelect').value);
-    const years    = [...$('seasonChecks').querySelectorAll('input:checked')]
-                       .map(e=>Number(e.value)).sort((a,b)=>b-a);
-    if(!years.length) throw new Error('Select at least one season to compare.');
+    const teamId  =$('teamSelect').value;
+    const teamName=$('teamSelect').options[$('teamSelect').selectedIndex]?.text||'—';
+    const year    =Number($('currentSeasonSelect').value);
+    const years   =[...$('seasonChecks').querySelectorAll('input:checked')]
+                    .map(e=>Number(e.value)).sort((a,b)=>b-a);
+    if(!years.length) throw new Error('Select at least one comparison season.');
 
-    const through   = clamp($('throughInput').value, 1, 162);
-    const rs        = clamp($('rangeStartInput').value, 1, 162);
-    const re        = clamp($('rangeEndInput').value, 1, 162);
-    const rangeStart = Math.min(rs,re), rangeEnd = Math.max(rs,re);
+    $('statusText').textContent=`Loading ${teamName} ${year}…`;
 
-    const allData = await Promise.all(years.map(async y => ({ year:y, games: await loadSchedule(teamId,y) })));
-    const curData = allData.find(d=>d.year===year);
-    if(!curData) throw new Error(`No ${year} data found.`);
+    /* Load all selected seasons */
+    const allData=await Promise.all(years.map(async y=>{
+      $('statusText').textContent=`Loading ${y} schedule…`;
+      return{year:y,games:await loadSchedule(teamId,y)};
+    }));
 
-    const curGames    = curData.games;
-    const curThrough  = recordThrough(curGames, through);
-    const curRange    = recordInRange(curGames, rangeStart, rangeEnd);
-    const curSeason   = recordThrough(curGames, curGames.length);
-    const proj        = projectWins(curSeason);
+    const curData=allData.find(d=>d.year===year);
+    if(!curData) throw new Error(`No ${year} data found for this team.`);
 
-    // Update URL
-    setUrlTeamId(teamId);
+    const through  =clamp($('throughInput').value,1,162);
+    const rs       =clamp($('rangeStartInput').value,1,162);
+    const re       =clamp($('rangeEndInput').value,1,162);
+    const rangeStart=Math.min(rs,re), rangeEnd=Math.max(rs,re);
 
-    // Hero
-    const logoUrl = `https://www.mlbstatic.com/team-logos/${teamId}.svg`;
-    $('heroLogo').src=logoUrl; $('heroLogo').alt=teamName;
-    $('heroFallback').style.display='none'; $('heroLogo').style.display='block';
+    const cg       =curData.games;
+    const cThru    =recordThrough(cg,through);
+    const cRange   =recordInRange(cg,rangeStart,rangeEnd);
+    const curSeason=recordThrough(cg,cg.length);
+    const proj     =projectWins(curSeason);
+
+    /* Update URL */
+    setUrlParams(teamId,year,through,rangeStart,rangeEnd);
+
+    /* Hero */
+    const logoUrl=`https://www.mlbstatic.com/team-logos/${teamId}.svg`;
+    $('heroLogo').src=logoUrl; $('heroLogo').alt=teamName+' logo';
+    $('heroLogo').style.display='block'; $('heroFallback').style.display='none';
     $('heroEyebrow').textContent=`MLB · ${year} season`;
     $('heroName').textContent=teamName;
-    $('heroRecord').innerHTML=`<strong>${curSeason.w}–${curSeason.l}</strong> · ${curGames.length} GP · Proj. ${proj??'—'}W`;
+    $('heroRecord').innerHTML=`<strong>${curSeason.w}–${curSeason.l}</strong> · ${cg.length} GP · Pace proj. ${proj??'—'}W`;
     $('teamHero').style.display='flex';
 
-    // Nav label
-    $('navTeamLogo').src=logoUrl;
+    /* Nav */
+    $('navTeamLogo').querySelector('img')&&($('navTeamLogo').querySelector('img').src=logoUrl);
     $('navTeamName').textContent=teamName;
-    $('navTeamLabel').style.display='flex';
-    document.title = `${teamName} — Track The Season`;
+    $('navTeamWrap').classList.add('visible');
+    document.title=`${teamName} — Track The Season`;
 
-    // Metrics
-    $('mTeam').textContent       = teamName;
-    $('mSeason').textContent     = `${year} regular season`;
-    $('mThroughNum').textContent = through;
-    $('mThrough').textContent    = `${curThrough.w}–${curThrough.l}`;
-    $('mThroughPct').textContent = `${fmtPct(winPct(curThrough.w,curThrough.l))} · ${curThrough.g} GP`;
-    $('mRangeLabel').textContent = `G${rangeStart}–${rangeEnd}`;
-    $('mRange').textContent      = `${curRange.w}–${curRange.l}`;
-    $('mRangePct').textContent   = `${fmtPct(winPct(curRange.w,curRange.l))} · ${curRange.g} games`;
-    $('mProjection').textContent = proj!=null ? `${proj} W` : '—';
-    $('mPace').textContent       = `${curSeason.w}–${curSeason.l} · ${curGames.length} GP`;
+    /* Metrics */
+    $('mTeam').textContent   =teamName;
+    $('mSeason').textContent =`${year} regular season`;
+    $('mThroughLabel').textContent=`Through game ${through}`;
+    $('mThrough').textContent=`${cThru.w}–${cThru.l}`;
+    $('mThroughPct').textContent=`${fmtPct(winPct(cThru.w,cThru.l))} · ${cThru.g} GP`;
+    $('mRangeLabel').textContent=`Range G${rangeStart}–${rangeEnd}`;
+    $('mRange').textContent  =cRange.g>0?`${cRange.w}–${cRange.l}`:'—';
+    $('mRangePct').textContent=cRange.g>0?`${fmtPct(winPct(cRange.w,cRange.l))} · ${cRange.g} games`:'No games in range';
+    $('mProjection').textContent=proj!=null?`${proj} W`:'—';
+    $('mPace').textContent   =`${curSeason.w}–${curSeason.l} · ${cg.length} GP`;
 
-    // Chart
-    const sorted = [...allData].sort((a,b)=>a.year===year?-1:b.year===year?1:b.year-a.year);
-    const series = buildSeries(sorted, year, rangeStart, rangeEnd);
-    drawChart(series, rangeStart, rangeEnd, chartMode);
-    $('chartLegend').innerHTML = series.map(s=>
-      `<span><span class="legend-dot" style="background:${s.color}"></span>${s.label}${s.projected?' (proj.)':''}</span>`
-    ).join('');
+    /* Chart */
+    const sorted=[...allData].sort((a,b)=>a.year===year?-1:b.year===year?1:b.year-a.year);
+    const series =buildSeries(sorted,year,rangeStart,rangeEnd);
+    drawChart(series,rangeStart,rangeEnd,chartMode);
+    const titles={cumulative:'Cumulative wins by game',range:`Wins inside G${rangeStart}–${rangeEnd}`,pct:'Win % by game'};
+    $('chartTitle').textContent=titles[chartMode];
+    $('chartLegend').innerHTML=series.map(s=>`<span><span class="legend-dot" style="background:${s.color}"></span>${s.label}${s.projected?' (proj.)':''}</span>`).join('');
 
-    // Tables
-    renderThroughTable(allData, year, through);
-    renderRangeTable(allData, year, rangeStart, rangeEnd);
+    /* Tables */
+    renderThroughTable(allData,year,through);
+    renderRangeTable(allData,year,rangeStart,rangeEnd);
 
-    // Insights
-    renderInsights({ teamName, currentYear:year, through, rangeStart, rangeEnd, curData, allData });
+    /* Insights */
+    renderInsights({teamName,year,through,rs:rangeStart,re:rangeEnd,curData,allData});
+
+    /* Update preset active state */
+    const matched=detectPreset(rangeStart,rangeEnd,through,cg.length);
+    if(matched) setActivePreset(matched);
 
     $('statusCard').style.display='none';
     $('resultsWrap').classList.remove('hidden');
 
-  } catch(err) {
+  }catch(err){
     $('statusMsg').style.display='none';
     $('errorBox').textContent=`Error: ${err.message}. If running locally, serve via a local server or deploy to Vercel/Netlify.`;
     $('errorBox').classList.remove('hidden');
@@ -1137,80 +1146,135 @@ async function update() {
 }
 
 /* ══════════════════════════════════════════════════════
-   INIT
+   INIT — load teams, read URL params, set defaults
 ══════════════════════════════════════════════════════ */
-function populateSeasons() {
-  const y = curYear();
-  $('currentSeasonSelect').innerHTML = Array.from({length:9},(_,i)=>y-i)
+function populateSeasons(){
+  const y=curYear();
+  $('currentSeasonSelect').innerHTML=Array.from({length:9},(_,i)=>y-i)
     .map(yr=>`<option value="${yr}">${yr}</option>`).join('');
-  $('currentSeasonSelect').value = y;
+  $('currentSeasonSelect').value=y;
   renderSeasonChecks();
 }
 
-function renderSeasonChecks() {
-  const y = Number($('currentSeasonSelect').value);
-  $('seasonChecks').innerHTML = Array.from({length:7},(_,i)=>y-i).map(yr=>`
+function renderSeasonChecks(){
+  const y=Number($('currentSeasonSelect').value);
+  $('seasonChecks').innerHTML=Array.from({length:7},(_,i)=>y-i).map(yr=>`
     <label class="check-item">
       <input type="checkbox" value="${yr}" ${yr>=y-4?'checked':''}/>
       ${yr}
     </label>`).join('');
 }
 
-async function init() {
-  try {
-    const teams = await loadTeams();
-    $('teamSelect').innerHTML = teams.map(t=>`<option value="${t.id}">${t.name}</option>`).join('');
+async function init(){
+  try{
+    const urlParams=getUrlParams();
+    const teams=await loadTeams();
+    $('teamSelect').innerHTML=teams.map(t=>`<option value="${t.id}">${t.name}</option>`).join('');
 
-    // Pre-select from URL param, then fallback to Phillies
-    const urlId = getUrlTeamId();
-    if (urlId && teams.find(t=>t.id===urlId)) {
-      $('teamSelect').value = urlId;
+    /* Pre-select team from URL, else default */
+    if(urlParams.team&&teams.find(t=>t.id===urlParams.team)){
+      $('teamSelect').value=urlParams.team;
     } else {
-      const phi = teams.find(t=>t.name==='Philadelphia Phillies');
-      if(phi) $('teamSelect').value = phi.id;
+      const def=teams.find(t=>t.id===DEFAULT_TEAM)||teams[0];
+      if(def) $('teamSelect').value=def.id;
     }
 
     populateSeasons();
+
+    /* Set season from URL if valid */
+    if(urlParams.season){
+      const yr=String(urlParams.season);
+      if([...$('currentSeasonSelect').options].some(o=>o.value===yr)){
+        $('currentSeasonSelect').value=yr;
+        renderSeasonChecks();
+      }
+    }
+
+    /* Load current season schedule to get completedGP for smart defaults */
+    const teamId=$('teamSelect').value;
+    const year=Number($('currentSeasonSelect').value);
+    const curGames=await loadSchedule(teamId,year);
+    const completedGP=curGames.length;
+
+    /* Apply defaults: URL params if present, else last-10 defaults */
+    const defaults=computeDefaults(completedGP,urlParams);
+    $('throughInput').value=defaults.through;
+    $('rangeStartInput').value=defaults.rs;
+    $('rangeEndInput').value=defaults.re;
+
+    /* Set active preset */
+    const matched=detectPreset(defaults.rs,defaults.re,defaults.through,completedGP);
+    if(matched) setActivePreset(matched);
+    else if(!urlParams.rs&&!urlParams.re) setActivePreset('last10');
+
     await update();
-  } catch(err) {
+  }catch(err){
     $('statusMsg').style.display='none';
     $('errorBox').textContent=err.message;
     $('errorBox').classList.remove('hidden');
   }
 }
 
-/* ── Event listeners ─────────────────────────────── */
-$('runBtn').addEventListener('click', update);
-$('currentSeasonSelect').addEventListener('change', renderSeasonChecks);
+/* ══════════════════════════════════════════════════════
+   EVENT LISTENERS
+══════════════════════════════════════════════════════ */
+$('runBtn').addEventListener('click',update);
 
-// Team select change → update URL immediately
-$('teamSelect').addEventListener('change', () => {
-  setUrlTeamId($('teamSelect').value);
+/* Reset to current defaults */
+$('resetBtn').addEventListener('click',async()=>{
+  userChangedInputs=false;
+  const teamId=$('teamSelect').value;
+  const year=Number($('currentSeasonSelect').value);
+  const cg=await loadSchedule(teamId,year);
+  const gp=cg.length;
+  $('throughInput').value=gp;
+  $('rangeStartInput').value=Math.max(1,gp-9);
+  $('rangeEndInput').value=gp;
+  setActivePreset('last10');
+  update();
 });
 
-// Chart toggle
-document.querySelectorAll('.toggle-btn').forEach(btn => {
-  btn.addEventListener('click', () => {
+/* Season change → re-render checks, recalculate defaults */
+$('currentSeasonSelect').addEventListener('change',()=>{renderSeasonChecks();});
+
+/* Team change → update URL param */
+$('teamSelect').addEventListener('change',()=>{
+  const url=new URL(window.location.href);
+  url.searchParams.set('team',$('teamSelect').value);
+  window.history.replaceState({}, '', url);
+});
+
+/* Chart toggles */
+document.querySelectorAll('.toggle-btn').forEach(btn=>{
+  btn.addEventListener('click',()=>{
     document.querySelectorAll('.toggle-btn').forEach(b=>b.classList.remove('active'));
     btn.classList.add('active');
-    chartMode = btn.dataset.mode;
-    const titles = { cumulative:'Cumulative wins by game', range:'Wins inside selected range', pct:'Win % by game number' };
-    $('chartTitle').textContent = titles[chartMode];
-    if(lastSeries.length) drawChart(lastSeries, lastRangeStart, lastRangeEnd, chartMode);
+    chartMode=btn.dataset.mode;
+    const titles={cumulative:'Cumulative wins by game',range:`Wins inside G${lastRS}–${lastRE}`,pct:'Win % by game'};
+    $('chartTitle').textContent=titles[chartMode];
+    if(lastSeries.length) drawChart(lastSeries,lastRS,lastRE,chartMode);
   });
 });
 
-// Preset range buttons
-document.querySelectorAll('.preset-btn').forEach(btn => {
-  btn.addEventListener('click', () => {
-    $('rangeStartInput').value = btn.dataset.rs;
-    $('rangeEndInput').value   = btn.dataset.re;
-    if(Number(btn.dataset.re) > Number($('throughInput').value))
-      $('throughInput').value = btn.dataset.re;
+/* Preset buttons */
+document.querySelectorAll('.preset-btn').forEach(btn=>{
+  btn.addEventListener('click',()=>{applyPreset(btn.dataset.preset);});
+});
+
+/* Range/through manual changes → clear preset active state */
+[$('rangeStartInput'),$('rangeEndInput'),$('throughInput')].forEach(inp=>{
+  inp.addEventListener('input',()=>{
+    userChangedInputs=true;
+    const through=clamp($('throughInput').value,1,162);
+    const rs=clamp($('rangeStartInput').value,1,162);
+    const re=clamp($('rangeEndInput').value,1,162);
+    const matched=detectPreset(Math.min(rs,re),Math.max(rs,re),through,through);
+    if(matched) setActivePreset(matched);
+    else clearActivePreset();
   });
 });
 
-// Boot
+/* Boot */
 init();
 </script>
 </body>
