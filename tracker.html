@@ -1304,22 +1304,31 @@ function renderInsights(params){
 
   /* Clean URL for share text — no UTM params visible to user */
   const urlStr  = buildTrackerUrl();
-  /* UTM URL used only for copy-link analytics tracking */
   const copyUrl = withUtm(urlStr, 'copy', 'social', 'share', buildUtmContent('copy'));
 
-  /* Build dynamic share text */
+  /* Build share params object — each platform generates its own copy */
   const allData  = params.allData;
   const prior    = allData.filter(d=>d.year!==year);
   const delta    = prior.length ? curRec.w - (prior[0].games.slice(0,curRec.g).filter(g=>g.win).length) : 0;
   const cmpYear  = prior.length ? prior[0].year : year-1;
-  const dynShare = buildDynamicShareText(params.teamName, curRec.w, curRec.l, curRec.g, delta, cmpYear);
+  const shareParams = {
+    teamName:    params.teamName,
+    w:           curRec.w,
+    l:           curRec.l,
+    gp:          curRec.g,
+    delta,
+    compareYear: cmpYear,
+    proj:        ins.seasProj,
+  };
+  /* Native share uses the default format */
+  const nativeText = buildShareTextForPlatform('default', shareParams.teamName, shareParams.w, shareParams.l, shareParams.gp, shareParams.delta, shareParams.compareYear, shareParams.proj, urlStr);
 
   $('insightShare').innerHTML=`
     <button class="share-btn share-btn-primary" id="insightShareBtn">⬆ Share</button>
     <button class="share-btn share-btn-copy"    id="copyLinkBtn">⧉ Copy link</button>`;
 
   $('insightShareBtn').addEventListener('click', function(){
-    doShare(this, dynShare, urlStr, `${params.teamName} — Track The Season`);
+    doShare(this, shareParams, nativeText, urlStr, `${params.teamName} — Track The Season`);
   });
   $('copyLinkBtn').addEventListener('click', function(){
     copyLinkWithFeedback(this, copyUrl);
@@ -1400,13 +1409,131 @@ function buildUtmContent(platform){
   return `team_${team}_g${rs}_${re}_${platform}`;
 }
 
-/* Dynamic share text per spec */
-function buildDynamicShareText(teamName, w, l, gp, delta, compareYear){
-  const paceDesc = delta > 0 ? `${delta} win${delta!==1?'s':''} ahead of their ${compareYear} pace`
-                 : delta < 0 ? `${Math.abs(delta)} win${Math.abs(delta)!==1?'s':''} behind their ${compareYear} pace`
-                 : `even with their ${compareYear} pace`;
-  const slug = teamName.replace(/\s+/g,'');
-  return `The ${teamName} are ${w}-${l} through ${gp} games, ${paceDesc}. Track every MLB team's season at TrackTheSeason.\n\n#TrackTheSeason #${slug} #MLB`;
+/* ═══════════════════════════════════════════════════════
+   SHARE TEXT SYSTEM
+   Each platform gets copy tuned to how it works:
+   - X/Threads/Bluesky: punchy, stat-led, hooks in line 1
+   - Facebook: narrative, conversational, fan-facing
+   - Reddit: factual, no hype, community-appropriate
+   - Native/copy: clean readable format
+═══════════════════════════════════════════════════════ */
+
+/* Momentum phrase from win% and delta */
+function momentumPhrase(w, l, delta){
+  const pct = w/(w+l||1);
+  if(pct >= .650) return 'on an absolute tear';
+  if(pct >= .600 && delta > 0) return 'heating up fast';
+  if(pct >= .580) return 'playing some of their best baseball';
+  if(pct <= .380) return 'in a serious funk';
+  if(pct <= .420 && delta < 0) return 'trending in the wrong direction';
+  if(delta >= 5) return 'way ahead of last year\'s pace';
+  if(delta <= -5) return 'well behind last year\'s pace';
+  return 'tracking close to last year';
+}
+
+/* Pace projection phrase */
+function pacePhrase(proj){
+  if(!proj) return '';
+  if(proj >= 100) return `They're on pace for ${proj} wins.`;
+  if(proj >= 90)  return `Projecting to ${proj} wins.`;
+  if(proj >= 85)  return `Current pace: ${proj} wins.`;
+  if(proj >= 75)  return `Pace: ${proj} wins — below .500 territory.`;
+  return `Pace: ${proj} wins.`;
+}
+
+/* Delta phrase */
+function deltaPhrase(delta, compareYear){
+  if(delta === 0) return `even with ${compareYear}`;
+  const abs = Math.abs(delta);
+  const wins = `win${abs!==1?'s':''}`;
+  return delta > 0
+    ? `${abs} ${wins} ahead of ${compareYear}`
+    : `${abs} ${wins} behind ${compareYear}`;
+}
+
+/* Club name from full name */
+function clubSlug(teamName){
+  return teamName.split(' ').pop(); /* "Phillies" from "Philadelphia Phillies" */
+}
+
+/* Build share text per platform */
+function buildShareTextForPlatform(platform, teamName, w, l, gp, delta, compareYear, proj, url){
+  const club   = clubSlug(teamName);
+  const hash   = `#TrackTheSeason #${club} #MLB`;
+  const record = `${w}–${l}`;
+  const pct    = (w/(w+l||1)*1000|0)/10; /* e.g. 53.1 */
+  const dPhrase= deltaPhrase(delta, compareYear);
+  const mPhrase= momentumPhrase(w, l, delta);
+  const pPhrase= pacePhrase(proj);
+
+  switch(platform){
+
+    case 'x':
+    case 'threads':
+    case 'bluesky': {
+      /* Short, punchy, hook in line 1. Under 240 chars so URL fits in X's 280 */
+      const lines = [];
+      if(delta > 3)  lines.push(`The ${club} are ${mPhrase} — ${delta} wins ahead of last year's pace.`);
+      else if(delta < -3) lines.push(`The ${club} are ${mPhrase} — ${Math.abs(delta)} wins behind last year.`);
+      else if(proj >= 95) lines.push(`The ${club} are on pace for ${proj} wins. 🔥`);
+      else if(proj && proj <= 72) lines.push(`The ${club} are struggling — pacing for just ${proj} wins.`);
+      else lines.push(`The ${club} are ${record} through ${gp} games.`);
+      lines.push(`${record} · ${gp} GP · ${dPhrase}`);
+      if(pPhrase) lines.push(pPhrase);
+      lines.push('');
+      lines.push(url);
+      lines.push('');
+      lines.push(hash);
+      return lines.join('\n');
+    }
+
+    case 'facebook': {
+      /* More conversational — Facebook users share with friends, not at a crowd */
+      return [
+        `${club} fans — here's where your team stands.`,
+        ``,
+        `The ${teamName} are ${record} through ${gp} games this season, ${dPhrase}.`,
+        `${pPhrase}`,
+        ``,
+        `Track The Season shows you every MLB team's pace vs prior seasons — updated after every game.`,
+        ``,
+        url,
+      ].filter(Boolean).join('\n');
+    }
+
+    case 'reddit': {
+      /* Reddit wants facts, no hype. Lead with the data. */
+      return [
+        `${teamName} pace check (through ${gp} games):`,
+        ``,
+        `Record: ${record} (${(w/(w+l||1)).toFixed(3).replace(/^0/,'')})`,
+        delta !== 0 ? `vs ${compareYear}: ${deltaPhrase(delta, compareYear)}` : null,
+        proj ? `162-game pace: ${proj} wins` : null,
+        ``,
+        `Full breakdown: ${url}`,
+      ].filter(Boolean).join('\n');
+    }
+
+    default: {
+      /* Native share / copy — clean, readable */
+      return [
+        `${teamName}: ${record} through ${gp} games.`,
+        `${dPhrase.charAt(0).toUpperCase() + dPhrase.slice(1)}.`,
+        pPhrase || null,
+        ``,
+        url,
+        ``,
+        hash,
+      ].filter(Boolean).join('\n');
+    }
+  }
+}
+
+/* Backwards-compatible wrapper used by renderInsights and buildStories */
+function buildDynamicShareText(teamName, w, l, gp, delta, compareYear, proj){
+  const club = clubSlug(teamName);
+  const url  = buildTrackerUrl ? buildTrackerUrl() : 'https://tracktheseason.com';
+  return buildShareTextForPlatform('default', teamName, w, l, gp, delta, compareYear, proj, url);
 }
 
 /* Copy URL with 2s timed feedback + GA4 event */
@@ -1426,14 +1553,22 @@ async function copyLinkWithFeedback(btn, url){
   });
 }
 
-/* Platform share URLs — each gets its own UTM source */
-function platformShareUrl(platform, shareText, baseUrl){
+/* Platform share URLs — each gets platform-optimised copy */
+function platformShareUrl(platform, shareTextOrParams, baseUrl){
+  /* shareTextOrParams can be a pre-built string (legacy) or a params object */
+  let text;
+  if(typeof shareTextOrParams === 'object' && shareTextOrParams !== null){
+    const {teamName,w,l,gp,delta,compareYear,proj} = shareTextOrParams;
+    text = buildShareTextForPlatform(platform, teamName, w, l, gp, delta, compareYear, proj, baseUrl);
+  } else {
+    text = shareTextOrParams; /* legacy string fallback */
+  }
   const utmUrl = withUtm(baseUrl, platform, 'social', 'share', buildUtmContent(platform));
-  const t = encodeURIComponent(shareText), u = encodeURIComponent(utmUrl);
+  const t = encodeURIComponent(text), u = encodeURIComponent(utmUrl);
   switch(platform){
     case 'x':        return `https://x.com/intent/tweet?text=${t}`;
-    case 'facebook': return `https://www.facebook.com/sharer/sharer.php?u=${u}`;
-    case 'reddit':   return `https://www.reddit.com/submit?url=${u}&title=${t}`;
+    case 'facebook': return `https://www.facebook.com/sharer/sharer.php?u=${u}&quote=${t}`;
+    case 'reddit':   return `https://www.reddit.com/submit?url=${u}&title=${encodeURIComponent(text.split('\n')[0])}`;
     case 'threads':  return `https://www.threads.net/intent/post?text=${t}`;
     case 'bluesky':  return `https://bsky.app/intent/compose?text=${t}`;
   }
@@ -1444,7 +1579,8 @@ function hideShareMenu(){
   document.getElementById('shareMenuPopup')?.remove();
 }
 
-function showShareMenu(triggerBtn, shareText, baseUrl){
+function showShareMenu(triggerBtn, shareParams, baseUrl){
+  /* shareParams: object {teamName,w,l,gp,delta,compareYear,proj} or plain string (since card) */
   hideShareMenu();
 
   const bd = document.createElement('div');
@@ -1462,19 +1598,19 @@ function showShareMenu(triggerBtn, shareText, baseUrl){
       <span class="share-menu-item-icon cp-icon">⧉</span>Copy link
     </button>
     <div class="share-menu-divider"></div>
-    <a class="share-menu-item" href="${platformShareUrl('x',shareText,baseUrl)}" target="_blank" rel="noopener" data-platform="x">
+    <a class="share-menu-item" href="${platformShareUrl('x',shareParams,baseUrl)}" target="_blank" rel="noopener" data-platform="x">
       <span class="share-menu-item-icon x-icon">𝕏</span>X (Twitter)
     </a>
-    <a class="share-menu-item" href="${platformShareUrl('threads',shareText,baseUrl)}" target="_blank" rel="noopener" data-platform="threads">
+    <a class="share-menu-item" href="${platformShareUrl('threads',shareParams,baseUrl)}" target="_blank" rel="noopener" data-platform="threads">
       <span class="share-menu-item-icon th-icon">@</span>Threads
     </a>
-    <a class="share-menu-item" href="${platformShareUrl('bluesky',shareText,baseUrl)}" target="_blank" rel="noopener" data-platform="bluesky">
+    <a class="share-menu-item" href="${platformShareUrl('bluesky',shareParams,baseUrl)}" target="_blank" rel="noopener" data-platform="bluesky">
       <span class="share-menu-item-icon bs-icon">🦋</span>Bluesky
     </a>
-    <a class="share-menu-item" href="${platformShareUrl('facebook',shareText,baseUrl)}" target="_blank" rel="noopener" data-platform="facebook">
+    <a class="share-menu-item" href="${platformShareUrl('facebook',shareParams,baseUrl)}" target="_blank" rel="noopener" data-platform="facebook">
       <span class="share-menu-item-icon fb-icon">f</span>Facebook
     </a>
-    <a class="share-menu-item" href="${platformShareUrl('reddit',shareText,baseUrl)}" target="_blank" rel="noopener" data-platform="reddit">
+    <a class="share-menu-item" href="${platformShareUrl('reddit',shareParams,baseUrl)}" target="_blank" rel="noopener" data-platform="reddit">
       <span class="share-menu-item-icon rd-icon">↑</span>Reddit
     </a>`;
   document.body.appendChild(menu);
@@ -1525,30 +1661,33 @@ function showShareMenu(triggerBtn, shareText, baseUrl){
 }
 
 /* Primary share — native sheet on mobile, menu on desktop.
-   shareUrl is the CLEAN url shown to the user.
-   UTM is appended only for analytics tracking, never shown in share text. */
-async function doShare(triggerBtn, shareText, shareUrl, shareTitle='Track The Season'){
+   shareParams: object for per-platform text, or plain string (since card).
+   nativeText:  pre-built text for native share sheet.
+   shareUrl:    clean URL shown to user (no UTM). */
+async function doShare(triggerBtn, shareParams, nativeText, shareUrl, shareTitle='Track The Season'){
+  /* Support legacy 4-arg calls: doShare(btn, text, url, title) */
+  if(typeof nativeText === 'string' && (nativeText.startsWith('http') || nativeText.startsWith('tracker'))){
+    /* Args shifted — old call pattern: doShare(btn, text, url, title) */
+    shareTitle  = shareUrl || shareTitle;
+    shareUrl    = nativeText;
+    nativeText  = typeof shareParams === 'string' ? shareParams : buildShareTextForPlatform('default', shareParams.teamName, shareParams.w, shareParams.l, shareParams.gp, shareParams.delta, shareParams.compareYear, shareParams.proj, shareUrl);
+  }
+
   const {team,season,rs,re} = getCurrentTrackerParams();
-  /* UTM version used only for tracking — NOT put in share text */
   const trackingUrl = withUtm(shareUrl, 'native', 'social', 'share', buildUtmContent('native'));
 
   if(navigator.share){
     try{
-      /* Pass clean shareUrl to native sheet — user sees a clean link */
-      await navigator.share({ title: shareTitle, text: shareText, url: shareUrl });
+      await navigator.share({ title: shareTitle, text: nativeText, url: shareUrl });
       trackEvent('share_clicked',{
-        share_type:  'native',
-        team_id:     Number(team),
-        season:      Number(season),
-        start_game:  Number(rs),
-        end_game:    Number(re),
-        url_shared:  trackingUrl,
+        share_type: 'native', team_id: Number(team), season: Number(season),
+        start_game: Number(rs), end_game: Number(re), url_shared: trackingUrl,
       });
     } catch(e){
       if(e.name !== 'AbortError') console.warn('Share failed:', e.message);
     }
   } else {
-    showShareMenu(triggerBtn, shareText, shareUrl);
+    showShareMenu(triggerBtn, shareParams, shareUrl);
   }
 }
 

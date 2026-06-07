@@ -749,12 +749,9 @@ body{
         <div class="hero-eyebrow-dot"></div>
         2026 MLB Season · Updated daily
       </div>
-      <!-- Hero headline -->
-      <div class="hero-hed">How is your<br>team <span class="accent">tracking?</span></div>
+      <div class="hero-hed">Every season<br>tells a <span class="accent">story.</span></div>
 
-      <!-- Emotional subheadline — two lines, second line emphasized -->
-      <!-- A/B alt: "Every team. Every game. The full story behind the standings." -->
-      <!-- A/B alt: "Not just where teams are. Where they're headed." -->
+      <!-- Emotional subheadline -->
       <p class="hero-sub">
         The standings tell you where teams are.<br>
         <strong class="hero-sub-strong">Track The Season tells you where they're headed.</strong>
@@ -1075,13 +1072,80 @@ async function copyToClipboard(text){
   catch{window.prompt('Copy this:',text);return false;}
 }
 
-/* Dynamic share text per spec */
-function buildDynamicShareText(teamName, w, l, gp, delta, compareYear){
-  const paceDesc = delta > 0 ? `${delta} win${delta!==1?'s':''} ahead of their ${compareYear} pace`
-                 : delta < 0 ? `${Math.abs(delta)} win${Math.abs(delta)!==1?'s':''} behind their ${compareYear} pace`
-                 : `even with their ${compareYear} pace`;
-  const slug = teamName.replace(/\s+/g,'');
-  return `The ${teamName} are ${w}-${l} through ${gp} games, ${paceDesc}. Track every MLB team's season at TrackTheSeason.\n\n#TrackTheSeason #${slug} #MLB`;
+/* ── Per-platform share text system ───────────────── */
+function momentumPhrase(w, l, delta){
+  const pct = w/(w+l||1);
+  if(pct >= .650) return 'on an absolute tear';
+  if(pct >= .600 && delta > 0) return 'heating up fast';
+  if(pct >= .580) return 'playing some of their best baseball';
+  if(pct <= .380) return 'in a serious funk';
+  if(pct <= .420 && delta < 0) return 'trending in the wrong direction';
+  if(delta >= 5) return 'way ahead of last year\'s pace';
+  if(delta <= -5) return 'well behind last year\'s pace';
+  return 'tracking close to last year';
+}
+function pacePhrase(proj){
+  if(!proj) return '';
+  if(proj >= 100) return `They're on pace for ${proj} wins.`;
+  if(proj >= 90)  return `Projecting to ${proj} wins.`;
+  if(proj >= 85)  return `Current pace: ${proj} wins.`;
+  return `Pace: ${proj} wins.`;
+}
+function deltaPhrase(delta, compareYear){
+  if(delta === 0) return `even with ${compareYear}`;
+  const abs = Math.abs(delta), wins=`win${abs!==1?'s':''}`;
+  return delta > 0 ? `${abs} ${wins} ahead of ${compareYear}` : `${abs} ${wins} behind ${compareYear}`;
+}
+function clubSlug(teamName){ return teamName.split(' ').pop(); }
+
+function buildShareTextForPlatform(platform, teamName, w, l, gp, delta, compareYear, proj, url){
+  const club   = clubSlug(teamName);
+  const hash   = `#TrackTheSeason #${club} #MLB`;
+  const record = `${w}–${l}`;
+  const dPhrase= deltaPhrase(delta, compareYear);
+  const mPhrase= momentumPhrase(w, l, delta);
+  const pPhrase= pacePhrase(proj);
+
+  switch(platform){
+    case 'x':
+    case 'threads':
+    case 'bluesky':{
+      const lines=[];
+      if(delta > 3)       lines.push(`The ${club} are ${mPhrase} — ${delta} wins ahead of last year's pace.`);
+      else if(delta < -3) lines.push(`The ${club} are ${mPhrase} — ${Math.abs(delta)} wins behind last year.`);
+      else if(proj >= 95) lines.push(`The ${club} are on pace for ${proj} wins. 🔥`);
+      else if(proj && proj <= 72) lines.push(`The ${club} are pacing for just ${proj} wins.`);
+      else lines.push(`The ${club} are ${record} through ${gp} games.`);
+      lines.push(`${record} · ${gp} GP · ${dPhrase}`);
+      if(pPhrase) lines.push(pPhrase);
+      lines.push(''); lines.push(url); lines.push(''); lines.push(hash);
+      return lines.join('\n');
+    }
+    case 'facebook':
+      return [`${club} fans — here's where your team stands.`,``,
+        `The ${teamName} are ${record} through ${gp} games this season, ${dPhrase}.`,
+        pPhrase,``,
+        `Track The Season shows you every MLB team's pace vs prior seasons — updated after every game.`,``,url
+      ].filter(Boolean).join('\n');
+    case 'reddit':
+      return [`${teamName} pace check (through ${gp} games):`,``,
+        `Record: ${record} (${(w/(w+l||1)).toFixed(3).replace(/^0/,'')})`,
+        delta !== 0 ? `vs ${compareYear}: ${dPhrase}` : null,
+        proj ? `162-game pace: ${proj} wins` : null,``,
+        `Full breakdown: ${url}`
+      ].filter(Boolean).join('\n');
+    default:
+      return [`${teamName}: ${record} through ${gp} games.`,
+        `${dPhrase.charAt(0).toUpperCase()+dPhrase.slice(1)}.`,
+        pPhrase||null,``,url,``,hash
+      ].filter(Boolean).join('\n');
+  }
+}
+
+/* Backwards compat */
+function buildDynamicShareText(teamName, w, l, gp, delta, compareYear, proj){
+  const url = `https://tracktheseason.com/tracker.html?team=${CURRENT_YEAR}`;
+  return buildShareTextForPlatform('default', teamName, w, l, gp, delta, compareYear, proj, url);
 }
 
 /* Copy URL with 2s timed feedback */
@@ -1093,12 +1157,16 @@ async function copyLinkWithFeedback(btn, url){
 }
 
 /* Platform share URLs */
-function platformShareUrl(platform, text, url){
-  const t=encodeURIComponent(text), u=encodeURIComponent(url);
+function platformShareUrl(platform, shareParams, shareUrl){
+  const isObj = typeof shareParams === 'object' && shareParams !== null;
+  const text = isObj
+    ? buildShareTextForPlatform(platform, shareParams.teamName, shareParams.w, shareParams.l, shareParams.gp, shareParams.delta, shareParams.compareYear, shareParams.proj, shareUrl)
+    : shareParams;
+  const t=encodeURIComponent(text), u=encodeURIComponent(shareUrl);
   switch(platform){
     case 'x':        return `https://x.com/intent/tweet?text=${t}`;
-    case 'facebook': return `https://www.facebook.com/sharer/sharer.php?u=${u}`;
-    case 'reddit':   return `https://www.reddit.com/submit?url=${u}&title=${t}`;
+    case 'facebook': return `https://www.facebook.com/sharer/sharer.php?u=${u}&quote=${t}`;
+    case 'reddit':   return `https://www.reddit.com/submit?url=${u}&title=${encodeURIComponent(text.split('\n')[0])}`;
     case 'threads':  return `https://www.threads.net/intent/post?text=${t}`;
     case 'bluesky':  return `https://bsky.app/intent/compose?text=${t}`;
   }
