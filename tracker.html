@@ -656,7 +656,7 @@ function parseCSVMoments(csv){
     moments.push({
       teamId:   Number(row.team_id),
       teamName: row.team_name || '',
-      date:     row.date.slice(0,10),  /* ISO YYYY-MM-DD */
+      date:     normalizeDate(row.date),
       type:     (row.type||'other').toLowerCase(),
       icon:     row.icon || '📌',
       label:    row.label || 'Notable moment',
@@ -664,6 +664,22 @@ function parseCSVMoments(csv){
     });
   }
   return moments;
+}
+
+/* Normalize a date string to YYYY-MM-DD regardless of how Sheets exports it.
+   Handles: 2026-04-28, 4/28/2026, 04/28/2026, April 28 2026, etc. */
+function normalizeDate(raw){
+  if(!raw) return '';
+  raw = raw.trim();
+  /* Already ISO */
+  if(/^\d{4}-\d{2}-\d{2}$/.test(raw)) return raw;
+  /* M/D/YYYY or MM/DD/YYYY */
+  const slash = raw.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
+  if(slash) return `${slash[3]}-${slash[1].padStart(2,'0')}-${slash[2].padStart(2,'0')}`;
+  /* Try native Date parse as fallback */
+  const d = new Date(raw);
+  if(!isNaN(d)) return d.toISOString().slice(0,10);
+  return raw.slice(0,10);
 }
 
 function parseCSVRow(line){
@@ -1242,7 +1258,8 @@ function applyPreset(key, games){
 
 async function init(){
   try{
-    loadMomentsFromSheet().then(m=>{ allMoments=m; });
+    /* Load moments from Google Sheets BEFORE update so they're ready on first render */
+    allMoments = await loadMomentsFromSheet();
 
     const urlParams = getUrlParams();
     const teams     = await loadTeams();
