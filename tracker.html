@@ -78,11 +78,80 @@ body{
 
 /* ── PAGE GRID ───────────────────────────── */
 .page-grid{display:grid;grid-template-columns:300px 1fr;gap:14px;padding:14px 0 48px;align-items:start}
-@media(max-width:860px){.page-grid{grid-template-columns:1fr;padding:10px 0 48px}.controls-col{position:static!important}}
+@media(max-width:860px){
+  .page-grid{
+    grid-template-columns:1fr;
+    padding:10px 0 48px;
+    /* On mobile: results first, controls second */
+    display:flex;flex-direction:column;
+  }
+  .controls-col{position:static!important;order:2}
+  .results-col{order:1}
+}
 .controls-col{position:sticky;top:56px}
 
-/* ── CONTROLS ────────────────────────────── */
-.ctrl-card{background:var(--ink2);border:1px solid var(--rule);border-radius:var(--r-lg);padding:16px;margin-bottom:12px}
+/* ── MOBILE CONTROLS ACCORDION ──────────── */
+
+/* The pill button that toggles controls open/closed on mobile */
+.ctrl-toggle-bar{
+  display:none; /* hidden on desktop */
+}
+@media(max-width:860px){
+  .ctrl-toggle-bar{
+    display:flex;align-items:center;gap:10px;
+    background:var(--ink2);border:1px solid var(--rule);
+    border-radius:var(--r-lg);padding:11px 14px;
+    cursor:pointer;width:100%;margin-bottom:10px;
+    transition:border-color .15s;
+    -webkit-tap-highlight-color:transparent;
+  }
+  .ctrl-toggle-bar:hover{border-color:rgba(255,255,255,.2)}
+  .ctrl-toggle-bar.open{border-color:var(--signal)}
+}
+.ctrl-toggle-summary{
+  flex:1;min-width:0;
+}
+.ctrl-toggle-label{
+  font-family:var(--mono);font-size:9px;font-weight:700;
+  letter-spacing:.12em;text-transform:uppercase;
+  color:rgba(255,255,255,.28);margin-bottom:3px;
+}
+.ctrl-toggle-value{
+  font-family:var(--mono);font-size:13px;font-weight:700;
+  color:#e8edf8;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.ctrl-toggle-arrow{
+  font-size:16px;color:var(--chalk);
+  transition:transform .2s cubic-bezier(.22,1,.36,1);flex-shrink:0;
+}
+.ctrl-toggle-bar.open .ctrl-toggle-arrow{transform:rotate(180deg)}
+
+/* The collapsible controls body */
+.ctrl-card{
+  background:var(--ink2);border:1px solid var(--rule);
+  border-radius:var(--r-lg);padding:16px;margin-bottom:12px;
+}
+@media(max-width:860px){
+  .ctrl-card{
+    overflow:hidden;
+    max-height:0;
+    padding:0 16px;
+    margin-bottom:0;
+    border-color:transparent;
+    transition:max-height .35s cubic-bezier(.22,1,.36,1),
+               padding .2s,
+               border-color .2s,
+               margin-bottom .2s;
+  }
+  .ctrl-card.open{
+    max-height:900px; /* tall enough for all content */
+    padding:16px;
+    border-color:var(--rule);
+    margin-bottom:12px;
+  }
+}
+
+/* ── CONTROLS INTERNALS ──────────────────── */
 .ctrl-divider{height:1px;background:var(--rule);margin:14px 0}
 .ctrl-label{display:block;font-family:var(--mono);font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.28);margin-bottom:6px}
 .ctrl-helper{font-family:var(--sans);font-size:11px;color:rgba(255,255,255,.2);margin-top:4px;line-height:1.4}
@@ -400,7 +469,17 @@ tr.cur-row td{background:rgba(26,255,107,.05)}
   <div class="page-grid">
     <!-- ── Controls ──────────────────────── -->
     <aside class="controls-col">
-      <div class="ctrl-card">
+
+      <!-- Mobile accordion toggle — hidden on desktop via CSS -->
+      <button class="ctrl-toggle-bar" id="ctrlToggleBar" aria-expanded="false" aria-controls="ctrlCard">
+        <div class="ctrl-toggle-summary">
+          <div class="ctrl-toggle-label">Change team / season / range</div>
+          <div class="ctrl-toggle-value" id="ctrlToggleValue">Loading…</div>
+        </div>
+        <span class="ctrl-toggle-arrow">⌄</span>
+      </button>
+
+      <div class="ctrl-card" id="ctrlCard">
         <div style="margin-bottom:13px">
           <label class="ctrl-label" for="teamSelect">Team</label>
           <select id="teamSelect" class="ctrl-input"></select>
@@ -1563,6 +1642,16 @@ async function update(){
     $('statusCard').style.display='none';
     $('resultsWrap').classList.remove('hidden');
 
+    /* Update the collapsed controls summary line */
+    updateCtrlSummary();
+
+    /* Auto-close the accordion on mobile after updating */
+    if(window.innerWidth <= 860){
+      ctrlCard.classList.remove('open');
+      ctrlToggleBar.classList.remove('open');
+      ctrlToggleBar.setAttribute('aria-expanded','false');
+    }
+
   }catch(err){
     $('statusMsg').style.display='none';
     $('errorBox').textContent=`Error: ${err.message}`;
@@ -1636,6 +1725,8 @@ async function init(){
     }
 
     await update();
+    /* Set initial summary after first load */
+    updateCtrlSummary();
   }catch(err){
     $('statusMsg').style.display='none';
     $('errorBox').textContent=err.message;
@@ -1646,6 +1737,26 @@ async function init(){
 /* ═══════════════════════════════════════════════════════
    EVENT LISTENERS
 ═══════════════════════════════════════════════════════ */
+/* ── Mobile controls accordion ───────────────────── */
+const ctrlToggleBar = $('ctrlToggleBar');
+const ctrlCard      = $('ctrlCard');
+
+ctrlToggleBar.addEventListener('click', ()=>{
+  const isOpen = ctrlCard.classList.toggle('open');
+  ctrlToggleBar.classList.toggle('open', isOpen);
+  ctrlToggleBar.setAttribute('aria-expanded', isOpen);
+});
+
+/* Update the summary line shown on the collapsed toggle */
+function updateCtrlSummary(){
+  const teamName  = $('teamSelect').options[$('teamSelect').selectedIndex]?.text || '—';
+  const season    = $('currentSeasonSelect').value || '—';
+  const rs        = $('gameFrom').value || '—';
+  const re        = $('gameTo').value   || '—';
+  const clubName  = teamName.split(' ').slice(-1)[0]; /* "Phillies" */
+  $('ctrlToggleValue').textContent = `${clubName} · ${season} · Games ${rs}–${re}`;
+}
+
 $('runBtn').addEventListener('click', update);
 
 $('resetBtn').addEventListener('click', async()=>{
