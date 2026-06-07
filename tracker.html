@@ -448,7 +448,7 @@ tr.cur-row td{background:rgba(26,255,107,.05)}
         <div class="result-card">
           <div class="tables-grid">
             <div>
-              <div class="tbl-title">Full-season comparison</div>
+              <div class="tbl-title" id="throughTableTitle">Through game — · all seasons</div>
               <table id="throughTable">
                 <thead><tr><th>Season</th><th>GP</th><th>Record</th><th>Win%</th><th>Δ</th><th>Final/proj.</th></tr></thead>
                 <tbody></tbody>
@@ -491,7 +491,7 @@ tr.cur-row td{background:rgba(26,255,107,.05)}
    SHEET_CSV_URL: publish your Google Sheet as CSV and paste the URL here.
    In Google Sheets: File → Share → Publish to web → CSV → Copy link
    ───────────────────────────────────────────────────── */
-const SHEET_CSV_URL = ''; /* ← paste your Google Sheet CSV URL here */
+const SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTXMt3G9Q0ZroM_P5jUaetEBCqag8q8KTzlNIzH7LM7euuEQWH7LHa-VFbzpIkTrB911K70L39v5Zd3/pub?output=csv';
 
 const API          = 'https://statsapi.mlb.com/api/v1';
 const SEASON_GAMES = 162;
@@ -931,20 +931,44 @@ function buildSeries(allData, year, rs, re){
    TABLES
 ═══════════════════════════════════════════════════════ */
 function renderThroughTable(allData, year){
-  /* Full-season comparison table */
-  const curRec = recordFromGames(allData.find(d=>d.year===year)?.games||[]);
+  const curGames = allData.find(d=>d.year===year)?.games||[];
+  const curGP    = curGames.length;                          /* games played so far */
+  const curAtGP  = recordFromGames(curGames);                /* current season full record */
+
+  /* Column header — update to reflect through-game context */
+  const tblTitle = document.getElementById('throughTableTitle');
+  if(tblTitle) tblTitle.textContent = `Through game ${curGP} — all seasons`;
+
   document.querySelector('#throughTable tbody').innerHTML = allData.map(d=>{
-    const r = recordFromGames(d.games);
-    const isCur = d.year===year;
-    const delta = r.w - curRec.w;
-    const dStr  = isCur ? '—' : (delta>0?`+${delta}`:`${delta}`);
-    const dCls  = delta>0?'pill-g':delta<0?'pill-r':'pill-n';
+    const isCur = d.year === year;
+
+    /* Slice every season to the same game count as current year */
+    const atGP    = d.games.slice(0, curGP);
+    const r       = recordFromGames(atGP);
+
+    /* Δ: prior season wins through game N vs current season wins through game N */
+    const delta   = isCur ? 0 : curAtGP.w - r.w;
+    const dStr    = isCur ? '—' : (delta>0?`+${delta}`:String(delta));
+    const dCls    = delta>0?'pill-g':delta<0?'pill-r':'pill-n';
+
+    /* Final/Proj column: full-season result for past years, projection for current */
     let fin;
-    if(isCur&&d.games.length<SEASON_GAMES){ const p=projectWins(r); fin=p!=null?`${p}*`:'—'; }
-    else fin = d.games.length>=SEASON_GAMES ? recordFromGames(d.games).w : r.w;
+    if(isCur){
+      const p = projectWins(curAtGP);
+      fin = p!=null ? `${p}*` : '—';
+    } else {
+      /* Past season: show actual final wins */
+      fin = d.games.length >= SEASON_GAMES
+        ? recordFromGames(d.games).w
+        : recordFromGames(d.games).w;   /* incomplete past season — show actual GP */
+    }
+
+    /* Show GP context in record column for prior seasons */
+    const gpLabel = isCur ? `${curGP}` : `${Math.min(curGP, d.games.length)}`;
+
     return `<tr class="${isCur?'cur-row':''}">
       <td><strong style="color:${isCur?'#1aff6b':'inherit'}">${d.year}${isCur?' ★':''}</strong></td>
-      <td>${d.games.length}</td>
+      <td>${gpLabel}</td>
       <td><span class="pill">${r.w}–${r.l}</span></td>
       <td>${fmtPct(winPct(r.w,r.l))}</td>
       <td>${isCur?'—':`<span class="pill ${dCls}">${dStr}</span>`}</td>
@@ -980,10 +1004,12 @@ function buildInsights({teamName, year, rs, re, curGames, allData, rangeGames}){
   const cRPct     = winPct(rangeRec.w, rangeRec.l);
   const prior     = allData.filter(d=>d.year!==year);
 
-  /* Full-season comparison */
+  /* Full-season comparison — all seasons sliced to current GP for fair YoY */
+  const curGP   = curGames.length;
   const tcomps = prior.map(d=>{
-    const r = recordFromGames(d.games);
-    return{year:d.year,w:r.w,g:r.g,delta:curRec.w-r.w};
+    const atGP = d.games.slice(0, curGP);
+    const r    = recordFromGames(atGP);
+    return{year:d.year, w:r.w, g:r.g, delta:curRec.w-r.w};
   }).filter(c=>c.g>0);
   const ahead  = tcomps.filter(c=>c.delta>0).map(c=>`${c.year} (+${c.delta})`);
   const behind = tcomps.filter(c=>c.delta<0).map(c=>`${c.year} (${c.delta})`);
