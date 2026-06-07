@@ -1,0 +1,638 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Admin — Track The Season</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet"/>
+<style>
+/* ═══════════════════════════════════════════════════
+   TRACK THE SEASON — admin.html
+   Key moments management → Google Sheets
+═══════════════════════════════════════════════════ */
+:root{
+  --ink:#0f1014;--ink2:#1a1d24;--ink3:#252830;
+  --chalk:#8a8a82;--rule:rgba(255,255,255,.07);--rule2:rgba(255,255,255,.04);
+  --signal:#1aff6b;--gain-bg:rgba(13,140,58,.13);--gain-text:#4ecb77;
+  --loss-bg:rgba(232,48,42,.13);--loss-text:#f47570;
+  --caution-bg:rgba(245,200,66,.13);--caution-text:#f9d96e;
+  --logo-bg:#ffffff;--logo-border:rgba(0,0,0,.10);--logo-shadow:0 2px 8px rgba(0,0,0,.18);
+  --r-sm:6px;--r-md:10px;--r-lg:14px;--r-pill:999px;
+  --mono:'IBM Plex Mono',monospace;--sans:'IBM Plex Sans',sans-serif;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--sans);background:var(--ink);color:#e8edf8;min-height:100vh}
+.wrap{max-width:900px;margin:0 auto;padding:0 16px 60px}
+
+/* ── NAV ──────────────────────────────── */
+.site-nav{padding:11px 0;border-bottom:1px solid var(--rule);background:rgba(15,16,20,.97)}
+.nav-inner{display:flex;align-items:center;gap:10px}
+.back-btn{display:flex;align-items:center;gap:6px;text-decoration:none;color:var(--chalk);font-family:var(--mono);font-size:12px;font-weight:600;padding:6px 11px;border-radius:var(--r-sm);border:1px solid var(--rule);background:var(--ink2);transition:color .13s,border-color .13s}
+.back-btn:hover{color:#e8edf8;border-color:rgba(255,255,255,.18)}
+.nav-wordmark{font-family:var(--mono);font-size:14px;font-weight:700;color:#e8edf8}
+.nav-wordmark .accent{color:var(--signal)}
+.admin-badge{margin-left:auto;padding:4px 10px;border-radius:var(--r-pill);background:var(--caution-bg);border:1px solid rgba(245,200,66,.2);font-family:var(--mono);font-size:10px;font-weight:700;color:var(--caution-text);letter-spacing:.06em}
+
+/* ── AUTH SCREEN ──────────────────────── */
+#authScreen{
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  min-height:70vh;gap:16px;
+}
+.auth-card{background:var(--ink2);border:1px solid var(--rule);border-radius:var(--r-lg);padding:32px 28px;width:100%;max-width:360px;text-align:center}
+.auth-title{font-family:var(--mono);font-size:18px;font-weight:700;margin-bottom:6px}
+.auth-sub{font-size:13px;color:var(--chalk);margin-bottom:20px;line-height:1.5}
+.auth-input{width:100%;background:var(--ink3);border:1px solid var(--rule);border-radius:var(--r-sm);color:#e8edf8;font-family:var(--mono);font-size:15px;padding:10px 13px;outline:none;text-align:center;letter-spacing:.12em;margin-bottom:12px;transition:border-color .13s}
+.auth-input:focus{border-color:var(--signal)}
+.auth-btn{width:100%;padding:11px;border-radius:var(--r-sm);border:none;background:var(--signal);color:var(--ink);font-family:var(--mono);font-size:14px;font-weight:700;cursor:pointer;transition:filter .13s}
+.auth-btn:hover{filter:brightness(1.08)}
+.auth-error{font-family:var(--mono);font-size:12px;color:var(--loss-text);margin-top:8px;display:none}
+
+/* ── ADMIN CONTENT ────────────────────── */
+#adminContent{display:none}
+.page-header{padding:28px 0 20px;border-bottom:1px solid var(--rule);margin-bottom:28px}
+.page-title{font-family:var(--mono);font-size:22px;font-weight:700;letter-spacing:-.02em;margin-bottom:6px}
+.page-title .accent{color:var(--signal)}
+.page-sub{font-size:13px;color:var(--chalk);line-height:1.5;max-width:560px}
+
+/* ── SHEET SETUP ──────────────────────── */
+.sheet-card{background:var(--ink2);border:1px solid var(--rule);border-radius:var(--r-lg);padding:20px;margin-bottom:24px}
+.sheet-card-title{font-family:var(--mono);font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--chalk);margin-bottom:14px}
+.sheet-url-row{display:flex;gap:8px;align-items:stretch}
+.sheet-url-input{flex:1;background:var(--ink3);border:1px solid var(--rule);border-radius:var(--r-sm);color:#e8edf8;font-family:var(--mono);font-size:12px;padding:9px 12px;outline:none;transition:border-color .13s}
+.sheet-url-input:focus{border-color:var(--signal)}
+.sheet-url-input::placeholder{color:rgba(255,255,255,.2)}
+.sheet-btn{padding:9px 16px;border-radius:var(--r-sm);border:1px solid var(--rule);background:var(--ink3);color:var(--chalk);font-family:var(--mono);font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap;transition:all .13s}
+.sheet-btn:hover{border-color:var(--signal);color:var(--signal)}
+.sheet-btn.primary{background:var(--signal);border-color:var(--signal);color:var(--ink)}
+.sheet-btn.primary:hover{filter:brightness(1.08)}
+.sheet-status{font-family:var(--mono);font-size:11px;margin-top:10px}
+.sheet-status.ok  {color:var(--gain-text)}
+.sheet-status.err {color:var(--loss-text)}
+.sheet-status.warn{color:var(--caution-text)}
+
+/* ── INSTRUCTIONS ─────────────────────── */
+.instructions{background:var(--ink2);border:1px solid var(--rule);border-radius:var(--r-lg);padding:20px;margin-bottom:24px}
+.instructions-title{font-family:var(--mono);font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--chalk);margin-bottom:14px}
+.step{display:flex;gap:12px;margin-bottom:12px;align-items:flex-start}
+.step:last-child{margin-bottom:0}
+.step-num{width:22px;height:22px;border-radius:50%;background:var(--signal);color:var(--ink);font-family:var(--mono);font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
+.step-body{font-size:13px;color:rgba(255,255,255,.7);line-height:1.55}
+.step-body strong{color:#e8edf8}
+.step-body a{color:var(--signal);text-decoration:none}
+.step-body a:hover{text-decoration:underline}
+.code-block{background:var(--ink3);border:1px solid var(--rule);border-radius:var(--r-sm);padding:10px 12px;font-family:var(--mono);font-size:11px;color:rgba(255,255,255,.6);margin-top:8px;overflow-x:auto;white-space:pre}
+.col-green{color:var(--gain-text)}
+.col-blue{color:#93c5fd}
+.col-dim{color:rgba(255,255,255,.3)}
+
+/* ── ADD MOMENT FORM ──────────────────── */
+.form-card{background:var(--ink2);border:1px solid var(--rule);border-radius:var(--r-lg);padding:20px;margin-bottom:24px}
+.form-card-title{font-family:var(--mono);font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--chalk);margin-bottom:18px}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:600px){.form-grid{grid-template-columns:1fr}}
+.form-field{display:flex;flex-direction:column;gap:5px}
+.form-field.full{grid-column:1/-1}
+.form-label{font-family:var(--mono);font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.28)}
+.form-input,.form-select,.form-textarea{background:var(--ink3);border:1px solid var(--rule);border-radius:var(--r-sm);color:#e8edf8;font-family:var(--mono);font-size:13px;padding:9px 11px;outline:none;transition:border-color .13s;-webkit-appearance:none;width:100%}
+.form-input:focus,.form-select:focus,.form-textarea:focus{border-color:var(--signal)}
+.form-select option{background:var(--ink2)}
+.form-textarea{font-family:var(--sans);font-size:13px;resize:vertical;min-height:72px;line-height:1.5}
+.form-helper{font-size:11px;color:rgba(255,255,255,.2);line-height:1.4}
+
+/* Team search */
+.team-select-wrap{position:relative}
+.team-logo-preview{
+  position:absolute;right:10px;top:50%;transform:translateY(-50%);
+  width:22px;height:22px;background:var(--logo-bg);border:1px solid var(--logo-border);
+  border-radius:4px;box-shadow:var(--logo-shadow);
+  display:none;align-items:center;justify-content:center;overflow:hidden;
+}
+.team-logo-preview img{width:16px;height:16px;object-fit:contain}
+.team-logo-preview.visible{display:flex}
+
+/* Game number lookup */
+.game-lookup{display:flex;gap:8px;align-items:center;margin-top:6px}
+.game-lookup-result{font-family:var(--mono);font-size:11px;color:var(--gain-text)}
+
+/* Icon picker */
+.icon-row{display:flex;gap:6px;flex-wrap:wrap;margin-top:2px}
+.icon-opt{
+  width:34px;height:34px;border-radius:var(--r-sm);
+  border:1px solid var(--rule);background:var(--ink3);
+  font-size:17px;cursor:pointer;display:flex;align-items:center;justify-content:center;
+  transition:all .13s;
+}
+.icon-opt:hover{border-color:rgba(255,255,255,.3)}
+.icon-opt.selected{border-color:var(--signal);background:rgba(26,255,107,.1)}
+
+/* Output row */
+.output-row{
+  background:var(--ink3);border:1px solid rgba(26,255,107,.2);
+  border-radius:var(--r-md);padding:14px;margin-top:16px;display:none;
+}
+.output-label{font-family:var(--mono);font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--signal);margin-bottom:8px}
+.output-text{font-family:var(--mono);font-size:12px;color:rgba(255,255,255,.7);line-height:1.7;word-break:break-all}
+.output-actions{display:flex;gap:8px;margin-top:12px}
+.copy-btn{display:inline-flex;align-items:center;gap:5px;font-family:var(--mono);font-size:11px;font-weight:600;padding:7px 13px;border-radius:var(--r-sm);cursor:pointer;transition:all .13s;border:1px solid var(--rule);background:transparent;color:var(--chalk)}
+.copy-btn:hover{border-color:var(--signal);color:var(--signal)}
+.open-sheet-btn{display:inline-flex;align-items:center;gap:5px;font-family:var(--mono);font-size:11px;font-weight:600;padding:7px 13px;border-radius:var(--r-sm);cursor:pointer;transition:filter .13s;background:var(--signal);border:none;color:var(--ink);text-decoration:none}
+.open-sheet-btn:hover{filter:brightness(1.08)}
+
+/* ── EXISTING MOMENTS ─────────────────── */
+.moments-card{background:var(--ink2);border:1px solid var(--rule);border-radius:var(--r-lg);padding:20px;margin-bottom:24px}
+.moments-card-title{font-family:var(--mono);font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--chalk);margin-bottom:14px;display:flex;align-items:center;gap:10px}
+.moments-count{font-family:var(--mono);font-size:11px;color:var(--chalk);background:var(--ink3);border-radius:var(--r-pill);padding:2px 9px}
+.moments-table-wrap{overflow-x:auto}
+.moments-table{width:100%;border-collapse:collapse}
+.moments-table th{text-align:left;padding:7px 10px;font-family:var(--mono);font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--chalk);background:var(--ink3);border-bottom:1px solid var(--rule)}
+.moments-table td{padding:9px 10px;font-family:var(--mono);font-size:12px;color:rgba(255,255,255,.7);border-bottom:1px solid var(--rule2);vertical-align:top}
+.moments-table tr:last-child td{border-bottom:none}
+.type-badge{display:inline-block;padding:2px 8px;border-radius:var(--r-pill);font-size:10px;font-weight:700}
+.type-coaching{background:rgba(167,139,250,.15);color:#a78bfa}
+.type-trade   {background:rgba(56,189,248,.15); color:#38bdf8}
+.type-injury  {background:rgba(251,146,60,.15); color:#fb923c}
+.type-callup  {background:var(--gain-bg);       color:var(--gain-text)}
+.type-milestone{background:rgba(244,114,182,.15);color:#f472b6}
+.type-other   {background:var(--caution-bg);    color:var(--caution-text)}
+.no-moments{font-size:13px;color:var(--chalk);text-align:center;padding:24px}
+
+/* Spinner */
+.spinner{width:18px;height:18px;border-radius:50%;border:2px solid var(--rule);border-top-color:var(--signal);animation:spin .7s linear infinite;display:inline-block}
+@keyframes spin{to{transform:rotate(360deg)}}
+</style>
+</head>
+<body>
+
+<!-- ── NAV ─────────────────────────────── -->
+<nav class="site-nav">
+  <div class="wrap nav-inner">
+    <a href="index.html" class="back-btn">← Site</a>
+    <div class="nav-wordmark">TRACK THE <span class="accent">SEASON</span></div>
+    <div class="admin-badge">ADMIN</div>
+  </div>
+</nav>
+
+<!-- ── AUTH SCREEN ──────────────────────── -->
+<div id="authScreen">
+  <div class="auth-card">
+    <div class="auth-title">Admin Access</div>
+    <p class="auth-sub">Enter the admin password to manage key moments.</p>
+    <input class="auth-input" id="pwInput" type="password" placeholder="••••••••" autocomplete="current-password"/>
+    <button class="auth-btn" id="pwBtn">Unlock</button>
+    <div class="auth-error" id="authError">Incorrect password. Try again.</div>
+  </div>
+</div>
+
+<!-- ── ADMIN CONTENT ────────────────────── -->
+<div id="adminContent">
+<div class="wrap">
+
+  <div class="page-header">
+    <div class="page-title">Key Moments <span class="accent">Admin</span></div>
+    <p class="page-sub">Add notable events — manager changes, trades, injuries, call-ups — that appear as tappable pins on team tracker pages. All data lives in your Google Sheet.</p>
+  </div>
+
+  <!-- ── Google Sheet setup ─────────────── -->
+  <div class="sheet-card">
+    <div class="sheet-card-title">Google Sheet connection</div>
+    <div class="sheet-url-row">
+      <input class="sheet-url-input" id="sheetUrlInput" type="url"
+        placeholder="Paste your Google Sheet CSV URL here…"/>
+      <button class="sheet-btn primary" id="loadSheetBtn">Load</button>
+      <a class="sheet-btn" id="openSheetLink" href="#" target="_blank" style="display:none">Open Sheet ↗</a>
+    </div>
+    <div class="sheet-status" id="sheetStatus"></div>
+  </div>
+
+  <!-- ── Setup instructions ─────────────── -->
+  <div class="instructions">
+    <div class="instructions-title">First-time setup — 3 steps</div>
+    <div class="step">
+      <div class="step-num">1</div>
+      <div class="step-body">
+        <strong>Create a Google Sheet.</strong> Make a new sheet at
+        <a href="https://sheets.google.com" target="_blank">sheets.google.com</a>
+        and set up row 1 as headers exactly like this:
+        <div class="code-block"><span class="col-green">team_id</span>  <span class="col-blue">team_name</span>  <span class="col-blue">date</span>  <span class="col-blue">type</span>  <span class="col-blue">icon</span>  <span class="col-blue">label</span>  <span class="col-blue">description</span>
+
+<span class="col-dim">Example row:</span>
+143  Philadelphia Phillies  2026-04-28  coaching  🎯  Mattingly takes over  Rob Thomson fired after 9–19 start. Don Mattingly named interim manager.</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">2</div>
+      <div class="step-body">
+        <strong>Publish to web as CSV.</strong> In Google Sheets:
+        File → Share → Publish to web → choose <strong>Sheet1</strong> → choose <strong>CSV</strong> → click Publish → copy the URL.
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">3</div>
+      <div class="step-body">
+        <strong>Paste the URL in two places.</strong>
+        Above in the "Sheet connection" box (to use this admin panel), and also into
+        <code style="font-family:var(--mono);font-size:11px">tracker.html</code> in the
+        <code style="font-family:var(--mono);font-size:11px">SHEET_CSV_URL</code> constant at the top of the script.
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">4</div>
+      <div class="step-body">
+        <strong>Use this admin page to generate rows.</strong> Fill in the form below → copy the generated row → paste it into your Google Sheet. The site updates within a few minutes.
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Add moment form ────────────────── -->
+  <div class="form-card">
+    <div class="form-card-title">Add a new moment</div>
+    <div class="form-grid">
+
+      <!-- Team -->
+      <div class="form-field">
+        <label class="form-label" for="fTeam">Team</label>
+        <div class="team-select-wrap">
+          <select class="form-select" id="fTeam" style="padding-right:40px">
+            <option value="">Select team…</option>
+          </select>
+          <div class="team-logo-preview" id="teamLogoPreview">
+            <img id="teamLogoImg" src="" alt=""/>
+          </div>
+        </div>
+      </div>
+
+      <!-- Date -->
+      <div class="form-field">
+        <label class="form-label" for="fDate">Date of moment</label>
+        <input class="form-input" id="fDate" type="date"/>
+        <div class="game-lookup">
+          <span class="game-lookup-result" id="gameNumResult"></span>
+        </div>
+      </div>
+
+      <!-- Type -->
+      <div class="form-field">
+        <label class="form-label">Type</label>
+        <select class="form-select" id="fType">
+          <option value="coaching">🎯 Coaching change</option>
+          <option value="trade">🔄 Trade / signing</option>
+          <option value="injury">🤕 Injury / IL</option>
+          <option value="callup">⬆️ Call-up</option>
+          <option value="milestone">🏆 Milestone</option>
+          <option value="other">📌 Other</option>
+        </select>
+      </div>
+
+      <!-- Icon picker -->
+      <div class="form-field">
+        <label class="form-label">Icon</label>
+        <div class="icon-row" id="iconRow">
+          <div class="icon-opt selected" data-icon="🎯">🎯</div>
+          <div class="icon-opt" data-icon="🔄">🔄</div>
+          <div class="icon-opt" data-icon="🤕">🤕</div>
+          <div class="icon-opt" data-icon="⬆️">⬆️</div>
+          <div class="icon-opt" data-icon="🏆">🏆</div>
+          <div class="icon-opt" data-icon="📌">📌</div>
+          <div class="icon-opt" data-icon="🔥">🔥</div>
+          <div class="icon-opt" data-icon="❄️">❄️</div>
+          <div class="icon-opt" data-icon="⚡">⚡</div>
+          <div class="icon-opt" data-icon="💊">💊</div>
+          <div class="icon-opt" data-icon="🚀">🚀</div>
+          <div class="icon-opt" data-icon="⚠️">⚠️</div>
+        </div>
+        <input class="form-input" id="fIcon" type="text" value="🎯"
+          placeholder="or type an emoji" style="margin-top:6px;max-width:80px"/>
+      </div>
+
+      <!-- Label -->
+      <div class="form-field">
+        <label class="form-label" for="fLabel">Short label <span style="color:rgba(255,255,255,.2);font-size:9px">(shows on button)</span></label>
+        <input class="form-input" id="fLabel" type="text" placeholder="e.g. Mattingly takes over" maxlength="30"/>
+        <span class="form-helper">Keep under 25 characters</span>
+      </div>
+
+      <!-- Description -->
+      <div class="form-field full">
+        <label class="form-label" for="fDesc">Description <span style="color:rgba(255,255,255,.2);font-size:9px">(shown in "Since" card)</span></label>
+        <textarea class="form-textarea" id="fDesc" placeholder="e.g. Rob Thomson fired after a 9–19 start. Don Mattingly named interim manager on April 28, 2026."></textarea>
+      </div>
+    </div>
+
+    <button class="sheet-btn primary" id="generateBtn" style="margin-top:16px;width:100%;padding:12px;font-size:14px">
+      Generate sheet row →
+    </button>
+
+    <!-- Output -->
+    <div class="output-row" id="outputRow">
+      <div class="output-label">Copy this row into your Google Sheet</div>
+      <div class="output-text" id="outputText"></div>
+      <div class="output-actions">
+        <button class="copy-btn" id="copyRowBtn">⧉ Copy row</button>
+        <a class="open-sheet-btn" id="openSheetBtn2" href="#" target="_blank">Open Google Sheet ↗</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Existing moments from sheet ────── -->
+  <div class="moments-card">
+    <div class="moments-card-title">
+      Existing moments
+      <span class="moments-count" id="momentsCount">—</span>
+      <div class="spinner" id="momentsSpinner" style="display:none"></div>
+      <button class="sheet-btn" id="refreshMomentsBtn" style="margin-left:auto;padding:4px 10px;font-size:11px">↺ Refresh</button>
+    </div>
+    <div class="moments-table-wrap">
+      <div id="momentsTableContainer">
+        <div class="no-moments">Load your Google Sheet above to see existing moments.</div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /wrap -->
+</div><!-- /adminContent -->
+
+<script>
+/* ═══════════════════════════════════════════════════════
+   TRACK THE SEASON — admin.html
+   Password: set ADMIN_PASSWORD below
+   Google Sheets: reads/generates rows for moments data
+═══════════════════════════════════════════════════════ */
+
+/* ── Configure password here ──────────────────────────
+   Change this to your own password before deploying.
+   For better security, consider environment variables
+   via Vercel serverless functions in a future version.
+───────────────────────────────────────────────────── */
+const ADMIN_PASSWORD = 'tracktheseason2026';
+
+const API = 'https://statsapi.mlb.com/api/v1';
+
+const $ = id => document.getElementById(id);
+
+/* ── Auth ──────────────────────────────────────────── */
+$('pwBtn').addEventListener('click', checkPassword);
+$('pwInput').addEventListener('keydown', e => { if(e.key==='Enter') checkPassword(); });
+
+function checkPassword(){
+  if($('pwInput').value === ADMIN_PASSWORD){
+    $('authScreen').style.display = 'none';
+    $('adminContent').style.display = 'block';
+    init();
+  } else {
+    $('authError').style.display = 'block';
+    $('pwInput').value = '';
+    $('pwInput').focus();
+  }
+}
+
+/* ── All 30 MLB teams ─────────────────────────────── */
+const ALL_TEAMS = [
+  {id:108,name:'Los Angeles Angels'},{id:109,name:'Arizona Diamondbacks'},
+  {id:110,name:'Baltimore Orioles'},{id:111,name:'Boston Red Sox'},
+  {id:112,name:'Chicago Cubs'},{id:113,name:'Cincinnati Reds'},
+  {id:114,name:'Cleveland Guardians'},{id:115,name:'Colorado Rockies'},
+  {id:116,name:'Detroit Tigers'},{id:117,name:'Houston Astros'},
+  {id:118,name:'Kansas City Royals'},{id:119,name:'Los Angeles Dodgers'},
+  {id:120,name:'Washington Nationals'},{id:121,name:'New York Mets'},
+  {id:133,name:'Oakland Athletics'},{id:134,name:'Pittsburgh Pirates'},
+  {id:135,name:'San Diego Padres'},{id:136,name:'Seattle Mariners'},
+  {id:137,name:'San Francisco Giants'},{id:138,name:'St. Louis Cardinals'},
+  {id:139,name:'Tampa Bay Rays'},{id:140,name:'Texas Rangers'},
+  {id:141,name:'Toronto Blue Jays'},{id:142,name:'Minnesota Twins'},
+  {id:143,name:'Philadelphia Phillies'},{id:144,name:'Atlanta Braves'},
+  {id:145,name:'Chicago White Sox'},{id:146,name:'Miami Marlins'},
+  {id:147,name:'New York Yankees'},{id:158,name:'Milwaukee Brewers'},
+];
+
+/* ── Sheet state ──────────────────────────────────── */
+let sheetCsvUrl  = localStorage.getItem('tts_sheet_url') || '';
+let loadedMoments= [];
+const schedCache = new Map();
+
+/* ── Init ──────────────────────────────────────────── */
+async function init(){
+  /* Populate team dropdown */
+  $('fTeam').innerHTML = '<option value="">Select team…</option>' +
+    ALL_TEAMS.sort((a,b)=>a.name.localeCompare(b.name))
+      .map(t=>`<option value="${t.id}">${t.name}</option>`).join('');
+
+  /* Restore saved sheet URL */
+  if(sheetCsvUrl){
+    $('sheetUrlInput').value = sheetCsvUrl;
+    await loadSheet(sheetCsvUrl);
+  }
+
+  /* Set today as default date */
+  $('fDate').value = new Date().toISOString().slice(0,10);
+}
+
+/* ── Google Sheet ─────────────────────────────────── */
+$('loadSheetBtn').addEventListener('click', async()=>{
+  const url = $('sheetUrlInput').value.trim();
+  if(!url){ setSheetStatus('Paste your CSV URL first.','warn'); return; }
+  await loadSheet(url);
+});
+
+$('refreshMomentsBtn').addEventListener('click', async()=>{
+  if(sheetCsvUrl) await loadSheet(sheetCsvUrl);
+  else setSheetStatus('No sheet URL saved.','warn');
+});
+
+async function loadSheet(url){
+  setSheetStatus('Loading…','');
+  $('momentsSpinner').style.display='inline-block';
+  try{
+    const r = await fetch(url);
+    if(!r.ok) throw new Error(`HTTP ${r.status}`);
+    const csv = await r.text();
+    loadedMoments = parseCSV(csv);
+    sheetCsvUrl = url;
+    localStorage.setItem('tts_sheet_url', url);
+
+    /* Update open-sheet link — extract sheet URL from CSV URL */
+    const sheetBase = url.split('/pub')[0];
+    [$('openSheetLink'),$('openSheetBtn2')].forEach(el=>{
+      el.href = sheetBase;
+      if(el.id==='openSheetLink') el.style.display='flex';
+    });
+
+    setSheetStatus(`✓ Loaded ${loadedMoments.length} moment${loadedMoments.length!==1?'s':''} from sheet.`, 'ok');
+    renderMomentsTable(loadedMoments);
+    $('momentsCount').textContent = loadedMoments.length;
+  }catch(e){
+    setSheetStatus(`Error loading sheet: ${e.message}. Make sure the sheet is published as CSV and the URL is correct.`, 'err');
+  }
+  $('momentsSpinner').style.display='none';
+}
+
+function setSheetStatus(msg, cls){
+  $('sheetStatus').textContent = msg;
+  $('sheetStatus').className   = `sheet-status ${cls}`;
+}
+
+/* ── CSV parser ──────────────────────────────────── */
+function parseCSVRow(line){
+  const result=[]; let cur='', inQ=false;
+  for(let i=0;i<line.length;i++){
+    if(line[i]==='"'){inQ=!inQ;}
+    else if(line[i]===','&&!inQ){result.push(cur);cur='';}
+    else cur+=line[i];
+  }
+  result.push(cur);
+  return result;
+}
+
+function parseCSV(csv){
+  const lines = csv.trim().split('\n');
+  if(lines.length<2) return [];
+  const headers = parseCSVRow(lines[0]).map(h=>h.trim().toLowerCase().replace(/\s+/g,'_'));
+  return lines.slice(1).map(line=>{
+    const vals = parseCSVRow(line);
+    const row  = {};
+    headers.forEach((h,j)=>row[h]=(vals[j]||'').trim());
+    return row;
+  }).filter(r=>r.team_id&&r.date);
+}
+
+/* ── Moments table ───────────────────────────────── */
+function renderMomentsTable(moments){
+  if(!moments.length){
+    $('momentsTableContainer').innerHTML='<div class="no-moments">No moments in sheet yet. Add one using the form above.</div>';
+    return;
+  }
+  const sorted=[...moments].sort((a,b)=>a.date.localeCompare(b.date));
+  $('momentsTableContainer').innerHTML=`
+    <table class="moments-table">
+      <thead><tr>
+        <th>Team</th><th>Date</th><th>Type</th><th>Label</th><th>Description</th>
+      </tr></thead>
+      <tbody>
+        ${sorted.map(m=>`
+          <tr>
+            <td>
+              <div style="display:flex;align-items:center;gap:7px">
+                <div style="width:22px;height:22px;background:#fff;border:1px solid rgba(0,0,0,.1);border-radius:4px;display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0">
+                  <img src="https://www.mlbstatic.com/team-logos/${m.team_id}.svg" width="16" height="16" style="object-fit:contain" onerror="this.style.display='none'"/>
+                </div>
+                ${m.team_name||'Team '+m.team_id}
+              </div>
+            </td>
+            <td>${m.date||'—'}</td>
+            <td><span class="type-badge type-${m.type||'other'}">${m.icon||'📌'} ${m.type||'other'}</span></td>
+            <td>${m.label||'—'}</td>
+            <td style="color:rgba(255,255,255,.45);font-size:11px;max-width:240px">${m.description||'—'}</td>
+          </tr>`).join('')}
+      </tbody>
+    </table>`;
+}
+
+/* ── Team logo preview on select ─────────────────── */
+$('fTeam').addEventListener('change', ()=>{
+  const id = $('fTeam').value;
+  if(id){
+    const img = $('teamLogoImg');
+    img.src = `https://www.mlbstatic.com/team-logos/${id}.svg`;
+    $('teamLogoPreview').classList.add('visible');
+    lookupGameNumber();
+  } else {
+    $('teamLogoPreview').classList.remove('visible');
+  }
+});
+
+/* ── Game number lookup from date ────────────────── */
+$('fDate').addEventListener('change', lookupGameNumber);
+
+async function lookupGameNumber(){
+  const teamId = $('fTeam').value;
+  const date   = $('fDate').value;
+  if(!teamId||!date){$('gameNumResult').textContent='';return;}
+  $('gameNumResult').textContent='Looking up…';
+  try{
+    const year  = date.slice(0,4);
+    const games = await loadSchedule(teamId, year);
+    /* Find the game on or before this date */
+    const g = [...games].reverse().find(g=>g.date<=date);
+    if(g) $('gameNumResult').textContent=`Game ${g.gameNo} of the season`;
+    else  $('gameNumResult').textContent=`No games found before this date`;
+  }catch(e){
+    $('gameNumResult').textContent='Could not look up';
+  }
+}
+
+async function loadSchedule(teamId, year){
+  const key=`${teamId}:${year}`;
+  if(schedCache.has(key)) return schedCache.get(key);
+  const data=await fetch(`${API}/schedule?sportId=1&teamId=${teamId}&season=${year}&gameTypes=R`).then(r=>r.json());
+  const games=[];
+  for(const d of data.dates||[])
+    for(const g of d.games||[]){
+      if(g.status?.abstractGameState!=='Final') continue;
+      const h=g.teams?.home,a=g.teams?.away;
+      if(h?.score==null||a?.score==null||h.score===a.score) continue;
+      const isHome=String(h.team.id)===String(teamId);
+      games.push({date:g.officialDate,gamePk:g.gamePk,win:isHome?h.score>a.score:a.score>h.score});
+    }
+  games.sort((a,b)=>a.date.localeCompare(b.date)||a.gamePk-b.gamePk);
+  games.forEach((g,i)=>{g.gameNo=i+1;});
+  schedCache.set(key,games);
+  return games;
+}
+
+/* ── Icon picker ─────────────────────────────────── */
+document.querySelectorAll('.icon-opt').forEach(opt=>{
+  opt.addEventListener('click',()=>{
+    document.querySelectorAll('.icon-opt').forEach(o=>o.classList.remove('selected'));
+    opt.classList.add('selected');
+    $('fIcon').value = opt.dataset.icon;
+  });
+});
+$('fIcon').addEventListener('input',()=>{
+  document.querySelectorAll('.icon-opt').forEach(o=>o.classList.remove('selected'));
+});
+
+/* ── Generate row ────────────────────────────────── */
+$('generateBtn').addEventListener('click', ()=>{
+  const teamId   = $('fTeam').value;
+  const teamName = $('fTeam').options[$('fTeam').selectedIndex]?.text||'';
+  const date     = $('fDate').value;
+  const type     = $('fType').value;
+  const icon     = $('fIcon').value.trim()||'📌';
+  const label    = $('fLabel').value.trim();
+  const desc     = $('fDesc').value.trim();
+
+  if(!teamId||!date||!label||!desc){
+    alert('Please fill in team, date, label, and description.');
+    return;
+  }
+
+  /* Generate TSV row (tab-separated, easier to paste into Sheets) */
+  const row = [teamId, teamName, date, type, icon, label, desc].join('\t');
+
+  $('outputText').textContent = row;
+  $('outputRow').style.display = 'block';
+  $('outputRow').scrollIntoView({behavior:'smooth',block:'nearest'});
+});
+
+/* ── Copy row ────────────────────────────────────── */
+$('copyRowBtn').addEventListener('click', async()=>{
+  const text = $('outputText').textContent;
+  try{
+    await navigator.clipboard.writeText(text);
+    $('copyRowBtn').textContent = '✓ Copied';
+    setTimeout(()=>$('copyRowBtn').textContent='⧉ Copy row', 2000);
+  }catch{
+    window.prompt('Copy this row:', text);
+  }
+});
+
+/* ── Sheet URL input ─────────────────────────────── */
+$('sheetUrlInput').addEventListener('keydown', e=>{
+  if(e.key==='Enter') $('loadSheetBtn').click();
+});
+
+/* Focus password on load */
+window.addEventListener('load', ()=>{ $('pwInput').focus(); });
+</script>
+</body>
+</html>

@@ -4,21 +4,21 @@
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 <title>Team Tracker — Track The Season</title>
-<meta name="description" content="Deep-dive MLB pace tracker. Compare records, game ranges, and historical seasons for any team."/>
+<meta name="description" content="Deep-dive MLB pace tracker. Date ranges, historical comparisons, and key moments for any team."/>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet"/>
 <style>
 /* ═══════════════════════════════════════════════════
-   TRACK THE SEASON — tracker.html
-   Style guide: IBM Plex Mono + Plex Sans
-   URL params: ?team=143&season=2026&through=71&rs=62&re=71&since=34
+   TRACK THE SEASON — tracker.html v3
+   Date-range controls · Google Sheets moments
+   URL: ?team=143&season=2026&from=2026-04-01&to=2026-06-07&since=2026-04-28
 ═══════════════════════════════════════════════════ */
 :root{
-  --paper:#f5f3ee;--ink:#0f1014;--ink2:#1a1d24;--ink3:#252830;
+  --ink:#0f1014;--ink2:#1a1d24;--ink3:#252830;
   --chalk:#8a8a82;--chalk2:#b4b2a9;
   --rule:rgba(255,255,255,.07);--rule2:rgba(255,255,255,.04);
   --signal:#1aff6b;--field:#0d8c3a;
-  --gain:#0d8c3a;--gain-bg:rgba(13,140,58,.13);--gain-text:#4ecb77;
+  --gain-bg:rgba(13,140,58,.13);--gain-text:#4ecb77;
   --loss:#e8302a;--loss-bg:rgba(232,48,42,.13);--loss-text:#f47570;
   --caution:#f5c842;--caution-bg:rgba(245,200,66,.13);--caution-text:#f9d96e;
   --logo-bg:#ffffff;--logo-border:rgba(0,0,0,.10);--logo-shadow:0 2px 8px rgba(0,0,0,.18);
@@ -33,7 +33,7 @@ body{
 }
 .wrap{max-width:1300px;margin:0 auto;padding:0 16px}
 
-/* ── NAV ───────────────────────────── */
+/* ── NAV ─────────────────────────────────── */
 .site-nav{
   padding:11px 0;border-bottom:1px solid var(--rule);
   position:sticky;top:0;z-index:100;
@@ -49,139 +49,78 @@ body{
 }
 .back-btn:hover{color:#e8edf8;border-color:rgba(255,255,255,.18)}
 .nav-logo{display:flex;align-items:center;gap:8px;text-decoration:none}
-.nav-monogram{
-  width:28px;height:28px;background:var(--signal);border-radius:var(--r-sm);
-  display:flex;align-items:center;justify-content:center;
-  font-family:var(--mono);font-size:10px;font-weight:700;color:var(--ink);flex-shrink:0;
-}
+.nav-monogram{width:28px;height:28px;background:var(--signal);border-radius:var(--r-sm);display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:10px;font-weight:700;color:var(--ink);flex-shrink:0}
 .nav-wordmark{font-family:var(--mono);font-size:14px;font-weight:700;color:#e8edf8}
 .nav-wordmark .accent{color:var(--signal)}
 .nav-team{display:none;align-items:center;gap:8px;margin-left:auto}
 .nav-team.visible{display:flex}
-.nav-team-logo{
-  width:26px;height:26px;background:var(--logo-bg);
-  border:1px solid var(--logo-border);border-radius:5px;
-  box-shadow:var(--logo-shadow);overflow:hidden;
-  display:flex;align-items:center;justify-content:center;
-}
+.nav-team-logo{width:26px;height:26px;background:var(--logo-bg);border:1px solid var(--logo-border);border-radius:5px;box-shadow:var(--logo-shadow);display:flex;align-items:center;justify-content:center;overflow:hidden}
 .nav-team-logo img{width:20px;height:20px;object-fit:contain}
 .nav-team-name{font-family:var(--mono);font-size:13px;font-weight:700;color:#e8edf8;display:none}
 @media(min-width:480px){.nav-team-name{display:block}}
 
-/* ── TEAM HERO ─────────────────────── */
+/* ── HERO ────────────────────────────────── */
 .team-hero{padding:22px 0 0;display:flex;align-items:flex-end;gap:16px;flex-wrap:wrap}
-.hero-logo-wrap{
-  width:68px;height:68px;flex-shrink:0;
-  background:var(--logo-bg);border:1px solid var(--logo-border);
-  border-radius:var(--r-lg);box-shadow:var(--logo-shadow);
-  display:flex;align-items:center;justify-content:center;overflow:hidden;
-}
+.hero-logo-wrap{width:68px;height:68px;flex-shrink:0;background:var(--logo-bg);border:1px solid var(--logo-border);border-radius:var(--r-lg);box-shadow:var(--logo-shadow);display:flex;align-items:center;justify-content:center;overflow:hidden}
 .hero-logo-wrap img{width:54px;height:54px;object-fit:contain}
 .hero-text{flex:1;min-width:0}
-.hero-eyebrow{
-  font-family:var(--mono);font-size:11px;font-weight:600;
-  letter-spacing:.1em;text-transform:uppercase;color:var(--chalk);margin-bottom:4px;
-}
-.hero-name{
-  font-family:var(--mono);font-size:clamp(24px,5vw,42px);
-  font-weight:700;letter-spacing:-.02em;line-height:.95;color:#e8edf8;
-}
+.hero-eyebrow{font-family:var(--mono);font-size:11px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--chalk);margin-bottom:4px}
+.hero-name{font-family:var(--mono);font-size:clamp(24px,5vw,42px);font-weight:700;letter-spacing:-.02em;line-height:.95;color:#e8edf8}
 .hero-record{font-family:var(--mono);font-size:clamp(13px,2vw,17px);font-weight:600;color:var(--chalk);margin-top:5px}
 .hero-record strong{color:#e8edf8}
-.hero-badge{
-  padding:5px 13px;border-radius:var(--r-pill);
-  font-family:var(--mono);font-size:12px;font-weight:600;
-  align-self:flex-start;margin-top:2px;
-}
-.badge-hot {background:var(--gain-bg);color:var(--gain-text);border:1px solid rgba(13,140,58,.2)}
+.hero-badge{padding:5px 13px;border-radius:var(--r-pill);font-family:var(--mono);font-size:12px;font-weight:600;align-self:flex-start;margin-top:2px}
+.badge-hot{background:var(--gain-bg);color:var(--gain-text);border:1px solid rgba(13,140,58,.2)}
 .badge-cold{background:var(--loss-bg);color:var(--loss-text);border:1px solid rgba(232,48,42,.2)}
-.badge-neu {background:var(--ink3);color:var(--chalk);border:1px solid var(--rule)}
+.badge-neu{background:var(--ink3);color:var(--chalk);border:1px solid var(--rule)}
 
-/* ── PAGE GRID ─────────────────────── */
-.page-grid{display:grid;grid-template-columns:296px 1fr;gap:14px;padding:16px 0 48px;align-items:start}
+/* ── PAGE GRID ───────────────────────────── */
+.page-grid{display:grid;grid-template-columns:300px 1fr;gap:14px;padding:16px 0 48px;align-items:start}
 @media(max-width:860px){.page-grid{grid-template-columns:1fr}.controls-col{position:static!important}}
-
-/* ── CONTROLS ──────────────────────── */
 .controls-col{position:sticky;top:56px}
+
+/* ── CONTROLS ────────────────────────────── */
 .ctrl-card{background:var(--ink2);border:1px solid var(--rule);border-radius:var(--r-lg);padding:16px;margin-bottom:12px}
 .ctrl-divider{height:1px;background:var(--rule);margin:14px 0}
-.ctrl-label{
-  display:block;font-family:var(--mono);font-size:10px;font-weight:700;
-  letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.28);margin-bottom:6px;
-}
+.ctrl-label{display:block;font-family:var(--mono);font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.28);margin-bottom:6px}
 .ctrl-helper{font-family:var(--sans);font-size:11px;color:rgba(255,255,255,.2);margin-top:4px;line-height:1.4}
-.ctrl-input{
-  width:100%;background:var(--ink3);border:1px solid var(--rule);
-  border-radius:var(--r-sm);color:#e8edf8;
-  font-family:var(--mono);font-size:13px;padding:8px 11px;
-  outline:none;transition:border-color .13s;-webkit-appearance:none;
-}
+.ctrl-input{width:100%;background:var(--ink3);border:1px solid var(--rule);border-radius:var(--r-sm);color:#e8edf8;font-family:var(--mono);font-size:13px;padding:8px 11px;outline:none;transition:border-color .13s;-webkit-appearance:none}
 .ctrl-input:focus{border-color:var(--signal)}
 .ctrl-input option{background:var(--ink2)}
-.ctrl-sub-label{
-  font-family:var(--mono);font-size:10px;font-weight:600;letter-spacing:.06em;
-  text-transform:uppercase;color:rgba(255,255,255,.2);display:block;margin-bottom:4px;
-}
-.input-row{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.checks{display:grid;grid-template-columns:1fr 1fr;gap:5px}
-.check-item{
-  display:flex;align-items:center;gap:7px;
-  background:var(--ink3);border:1px solid var(--rule);
-  border-radius:var(--r-sm);padding:8px 9px;cursor:pointer;
-  font-family:var(--mono);font-size:12px;color:rgba(255,255,255,.6);
-  transition:border-color .13s,background .13s;
-}
-.check-item:has(input:checked){border-color:var(--signal);background:rgba(26,255,107,.08);color:#e8edf8}
-.check-item input{width:13px;height:13px;accent-color:var(--signal);cursor:pointer;flex-shrink:0}
+
+/* Date inputs */
+.date-row{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.ctrl-sub-label{font-family:var(--mono);font-size:10px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:rgba(255,255,255,.2);display:block;margin-bottom:4px}
+input[type="date"].ctrl-input{color-scheme:dark;cursor:pointer}
+input[type="date"].ctrl-input::-webkit-calendar-picker-indicator{filter:invert(.4);cursor:pointer}
+
+/* Preset chips */
 .preset-row{display:flex;flex-wrap:wrap;gap:5px;margin-top:8px}
-.preset-btn{
-  font-family:var(--mono);font-size:11px;font-weight:600;
-  padding:5px 11px;border-radius:var(--r-pill);
-  border:1px solid var(--rule);background:var(--ink3);
-  color:rgba(255,255,255,.4);cursor:pointer;transition:all .13s;letter-spacing:.02em;
-}
+.preset-btn{font-family:var(--mono);font-size:11px;font-weight:600;padding:5px 11px;border-radius:var(--r-pill);border:1px solid var(--rule);background:var(--ink3);color:rgba(255,255,255,.4);cursor:pointer;transition:all .13s;letter-spacing:.02em}
 .preset-btn:hover{border-color:var(--signal);color:var(--signal);background:rgba(26,255,107,.07)}
 .preset-btn.active{background:var(--signal);border-color:var(--signal);color:var(--ink);font-weight:700}
-.run-btn{
-  width:100%;padding:12px;border-radius:var(--r-sm);border:none;
-  background:var(--signal);color:var(--ink);
-  font-family:var(--mono);font-size:14px;font-weight:700;letter-spacing:.02em;
-  cursor:pointer;margin-top:16px;transition:filter .13s;
-}
+
+/* Season checkboxes */
+.checks{display:grid;grid-template-columns:1fr 1fr;gap:5px}
+.check-item{display:flex;align-items:center;gap:7px;background:var(--ink3);border:1px solid var(--rule);border-radius:var(--r-sm);padding:8px 9px;cursor:pointer;font-family:var(--mono);font-size:12px;color:rgba(255,255,255,.6);transition:border-color .13s,background .13s}
+.check-item:has(input:checked){border-color:var(--signal);background:rgba(26,255,107,.08);color:#e8edf8}
+.check-item input{width:13px;height:13px;accent-color:var(--signal);cursor:pointer;flex-shrink:0}
+
+.run-btn{width:100%;padding:12px;border-radius:var(--r-sm);border:none;background:var(--signal);color:var(--ink);font-family:var(--mono);font-size:14px;font-weight:700;letter-spacing:.02em;cursor:pointer;margin-top:16px;transition:filter .13s}
 .run-btn:hover{filter:brightness(1.08)}
 .run-btn:active{filter:brightness(.93)}
-.reset-btn{
-  width:100%;padding:8px;border-radius:var(--r-sm);
-  border:1px solid var(--rule);background:transparent;
-  color:var(--chalk);font-family:var(--mono);font-size:12px;
-  cursor:pointer;margin-top:8px;transition:all .13s;
-}
+.reset-btn{width:100%;padding:8px;border-radius:var(--r-sm);border:1px solid var(--rule);background:transparent;color:var(--chalk);font-family:var(--mono);font-size:12px;cursor:pointer;margin-top:8px;transition:all .13s}
 .reset-btn:hover{border-color:rgba(255,255,255,.25);color:#e8edf8}
 
-/* ── RESULTS ───────────────────────── */
+/* ── RESULTS ─────────────────────────────── */
 .results-col{min-width:0}
-.result-card{
-  background:var(--ink2);border:1px solid var(--rule);
-  border-radius:var(--r-lg);overflow:hidden;margin-bottom:12px;
-}
+.result-card{background:var(--ink2);border:1px solid var(--rule);border-radius:var(--r-lg);overflow:hidden;margin-bottom:12px}
 .hidden{display:none!important}
-.status-msg{
-  padding:28px 18px;display:flex;align-items:center;gap:12px;
-  font-family:var(--mono);font-size:13px;color:var(--chalk);
-}
-.spinner{
-  width:24px;height:24px;flex-shrink:0;border-radius:50%;
-  border:2px solid var(--rule);border-top-color:var(--signal);
-  animation:spin .7s linear infinite;
-}
+.status-msg{padding:28px 18px;display:flex;align-items:center;gap:12px;font-family:var(--mono);font-size:13px;color:var(--chalk)}
+.spinner{width:24px;height:24px;flex-shrink:0;border-radius:50%;border:2px solid var(--rule);border-top-color:var(--signal);animation:spin .7s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
-.error-box{
-  margin:14px;padding:13px;border-radius:var(--r-md);
-  background:var(--loss-bg);border:1px solid rgba(232,48,42,.3);
-  color:#ffccc7;font-family:var(--sans);font-size:13px;line-height:1.6;
-}
+.error-box{margin:14px;padding:13px;border-radius:var(--r-md);background:var(--loss-bg);border:1px solid rgba(232,48,42,.3);color:#ffccc7;font-family:var(--sans);font-size:13px;line-height:1.6}
 
-/* ── METRICS STRIP ─────────────────── */
+/* ── METRICS ─────────────────────────────── */
 .metrics{display:grid;grid-template-columns:repeat(4,1fr)}
 @media(max-width:560px){
   .metrics{grid-template-columns:1fr 1fr}
@@ -191,105 +130,51 @@ body{
 .metric-cell{padding:15px 13px;border-right:1px solid var(--rule);border-bottom:1px solid var(--rule)}
 .metric-cell:last-child{border-right:none}
 .metric-cell:nth-child(n+5){border-bottom:none}
-.m-label{
-  font-family:var(--mono);font-size:9px;font-weight:700;
-  letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.28);margin-bottom:5px;
-}
-.m-val{
-  font-family:var(--mono);font-size:clamp(18px,2.5vw,26px);
-  font-weight:700;letter-spacing:-.02em;line-height:1;color:#e8edf8;
-}
+.m-label{font-family:var(--mono);font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.28);margin-bottom:5px}
+.m-val{font-family:var(--mono);font-size:clamp(18px,2.5vw,26px);font-weight:700;letter-spacing:-.02em;line-height:1;color:#e8edf8}
 .m-val.green{color:var(--signal)}
 .m-sub{font-family:var(--mono);font-size:10px;color:rgba(255,255,255,.28);margin-top:4px}
 
-/* ── NOTABLE MOMENTS STRIP ────────── */
-.moments-strip{
-  padding:12px 14px;
-  border-bottom:1px solid var(--rule);
-  display:flex;align-items:center;gap:8px;flex-wrap:wrap;
-}
-.moments-label{
-  font-family:var(--mono);font-size:10px;font-weight:700;
-  letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.25);
-  flex-shrink:0;
-}
-.moment-btn{
-  display:inline-flex;align-items:center;gap:6px;
-  font-family:var(--mono);font-size:11px;font-weight:600;
-  padding:5px 11px;border-radius:var(--r-pill);
-  border:1px solid var(--rule);background:var(--ink3);
-  color:rgba(255,255,255,.5);cursor:pointer;transition:all .15s;
-  white-space:nowrap;
-}
+/* ── KEY MOMENTS STRIP ───────────────────── */
+.moments-strip{padding:12px 14px;border-bottom:1px solid var(--rule);display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.moments-label{font-family:var(--mono);font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.25);flex-shrink:0}
+.moment-btn{display:inline-flex;align-items:center;gap:6px;font-family:var(--mono);font-size:11px;font-weight:600;padding:5px 11px;border-radius:var(--r-pill);border:1px solid var(--rule);background:var(--ink3);color:rgba(255,255,255,.5);cursor:pointer;transition:all .15s;white-space:nowrap}
 .moment-btn:hover{border-color:rgba(255,255,255,.3);color:#e8edf8}
 .moment-btn.active{color:var(--ink);font-weight:700}
-/* Per-type colors */
-.moment-btn.type-coaching.active {background:#a78bfa;border-color:#a78bfa}
-.moment-btn.type-coaching       {border-color:rgba(167,139,250,.3);color:rgba(167,139,250,.8)}
-.moment-btn.type-coaching:hover {border-color:#a78bfa;color:#a78bfa}
-.moment-btn.type-trade.active   {background:#38bdf8;border-color:#38bdf8}
-.moment-btn.type-trade          {border-color:rgba(56,189,248,.3);color:rgba(56,189,248,.8)}
-.moment-btn.type-trade:hover    {border-color:#38bdf8;color:#38bdf8}
-.moment-btn.type-injury.active  {background:#fb923c;border-color:#fb923c}
-.moment-btn.type-injury         {border-color:rgba(251,146,60,.3);color:rgba(251,146,60,.8)}
-.moment-btn.type-injury:hover   {border-color:#fb923c;color:#fb923c}
-.moment-btn.type-callup.active  {background:var(--signal);border-color:var(--signal)}
-.moment-btn.type-callup         {border-color:rgba(26,255,107,.3);color:rgba(26,255,107,.7)}
-.moment-btn.type-callup:hover   {border-color:var(--signal);color:var(--signal)}
-.moment-btn.type-streak.active  {background:var(--caution);border-color:var(--caution)}
-.moment-btn.type-streak         {border-color:rgba(245,200,66,.3);color:rgba(245,200,66,.7)}
-.moment-btn.type-streak:hover   {border-color:var(--caution);color:var(--caution)}
+.moment-btn.type-coaching.active{background:#a78bfa;border-color:#a78bfa}
+.moment-btn.type-coaching{border-color:rgba(167,139,250,.3);color:rgba(167,139,250,.8)}
+.moment-btn.type-coaching:hover{border-color:#a78bfa;color:#a78bfa}
+.moment-btn.type-trade.active{background:#38bdf8;border-color:#38bdf8}
+.moment-btn.type-trade{border-color:rgba(56,189,248,.3);color:rgba(56,189,248,.8)}
+.moment-btn.type-trade:hover{border-color:#38bdf8;color:#38bdf8}
+.moment-btn.type-injury.active{background:#fb923c;border-color:#fb923c}
+.moment-btn.type-injury{border-color:rgba(251,146,60,.3);color:rgba(251,146,60,.8)}
+.moment-btn.type-injury:hover{border-color:#fb923c;color:#fb923c}
+.moment-btn.type-callup.active{background:var(--signal);border-color:var(--signal)}
+.moment-btn.type-callup{border-color:rgba(26,255,107,.3);color:rgba(26,255,107,.7)}
+.moment-btn.type-callup:hover{border-color:var(--signal);color:var(--signal)}
 .moment-btn.type-milestone.active{background:#f472b6;border-color:#f472b6}
-.moment-btn.type-milestone      {border-color:rgba(244,114,182,.3);color:rgba(244,114,182,.7)}
+.moment-btn.type-milestone{border-color:rgba(244,114,182,.3);color:rgba(244,114,182,.7)}
 .moment-btn.type-milestone:hover{border-color:#f472b6;color:#f472b6}
+.moment-btn.type-other.active{background:var(--caution);border-color:var(--caution)}
+.moment-btn.type-other{border-color:rgba(245,200,66,.3);color:rgba(245,200,66,.7)}
+.moment-btn.type-other:hover{border-color:var(--caution);color:var(--caution)}
 .moment-icon{font-size:13px;line-height:1}
-.moment-game{font-size:9px;opacity:.6}
+.moment-game-label{font-size:9px;opacity:.55}
 
-/* ── SINCE CALLOUT CARD ──────────── */
-.since-card{
-  margin:12px 14px;
-  background:var(--ink3);
-  border-radius:var(--r-md);
-  border:1px solid var(--rule);
-  overflow:hidden;
-  animation:fadeUp .2s ease both;
-}
+/* ── SINCE CALLOUT ───────────────────────── */
+.since-card{margin:12px 14px;background:var(--ink3);border-radius:var(--r-md);border:1px solid var(--rule);overflow:hidden;animation:fadeUp .2s ease both}
 @keyframes fadeUp{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
-.since-card-header{
-  padding:12px 14px 10px;
-  border-bottom:1px solid var(--rule2);
-  display:flex;align-items:flex-start;gap:10px;justify-content:space-between;
-}
-.since-card-label{
-  font-family:var(--mono);font-size:9px;font-weight:700;
-  letter-spacing:.12em;text-transform:uppercase;
-  color:rgba(255,255,255,.28);margin-bottom:4px;
-}
-.since-card-title{
-  font-family:var(--mono);font-size:15px;font-weight:700;
-  color:#e8edf8;line-height:1.2;
-}
-.since-card-close{
-  background:none;border:none;color:rgba(255,255,255,.25);
-  font-size:18px;cursor:pointer;padding:0 2px;line-height:1;
-  transition:color .13s;flex-shrink:0;
-}
-.since-card-close:hover{color:#e8edf8}
-.since-stats{
-  display:grid;grid-template-columns:repeat(3,1fr);
-  border-bottom:1px solid var(--rule2);
-}
+.since-header{padding:12px 14px 10px;border-bottom:1px solid var(--rule2);display:flex;align-items:flex-start;gap:10px;justify-content:space-between}
+.since-label{font-family:var(--mono);font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.28);margin-bottom:4px}
+.since-title{font-family:var(--mono);font-size:15px;font-weight:700;color:#e8edf8;line-height:1.2}
+.since-close{background:none;border:none;color:rgba(255,255,255,.25);font-size:18px;cursor:pointer;padding:0 2px;line-height:1;transition:color .13s;flex-shrink:0}
+.since-close:hover{color:#e8edf8}
+.since-stats{display:grid;grid-template-columns:repeat(3,1fr);border-bottom:1px solid var(--rule2)}
 .since-stat{padding:12px 14px;border-right:1px solid var(--rule2)}
 .since-stat:last-child{border-right:none}
-.since-stat-label{
-  font-family:var(--mono);font-size:9px;font-weight:700;
-  letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.28);
-  margin-bottom:5px;
-}
-.since-stat-val{
-  font-family:var(--mono);font-size:22px;font-weight:700;
-  letter-spacing:-.02em;color:var(--signal);line-height:1;
-}
+.since-stat-label{font-family:var(--mono);font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.28);margin-bottom:5px}
+.since-stat-val{font-family:var(--mono);font-size:22px;font-weight:700;letter-spacing:-.02em;color:var(--signal);line-height:1}
 .since-stat-val.neutral{color:#e8edf8}
 .since-stat-sub{font-family:var(--mono);font-size:10px;color:rgba(255,255,255,.28);margin-top:3px}
 .since-body{padding:12px 14px}
@@ -297,44 +182,27 @@ body{
 .since-text strong{color:#e8edf8;font-weight:600}
 .since-text .hi{color:var(--signal);font-weight:600}
 .since-share{display:flex;gap:7px;margin-top:10px;flex-wrap:wrap}
-.since-share-btn{
-  display:inline-flex;align-items:center;gap:5px;
-  font-family:var(--mono);font-size:11px;font-weight:600;
-  padding:6px 12px;border-radius:var(--r-sm);cursor:pointer;
-  transition:all .13s;letter-spacing:.02em;
-}
+.since-share-btn{display:inline-flex;align-items:center;gap:5px;font-family:var(--mono);font-size:11px;font-weight:600;padding:6px 12px;border-radius:var(--r-sm);cursor:pointer;transition:all .13s;letter-spacing:.02em}
 .since-share-btn-x{background:var(--ink);color:#e8edf8;border:1px solid rgba(255,255,255,.18)}
 .since-share-btn-x:hover{border-color:rgba(255,255,255,.35)}
 .since-share-btn-copy{background:transparent;color:var(--chalk);border:1px solid var(--rule)}
 .since-share-btn-copy:hover{border-color:var(--signal);color:var(--signal)}
+.moments-loading{font-family:var(--mono);font-size:11px;color:var(--chalk);padding:8px 14px}
 
-/* ── INSIGHTS ──────────────────────── */
+/* ── INSIGHTS ────────────────────────────── */
 .insights-wrap{padding:14px 14px 0}
 .insights-header{display:flex;align-items:center;gap:8px;margin-bottom:12px}
 .insights-title{font-family:var(--mono);font-size:16px;font-weight:700;letter-spacing:.01em;color:#e8edf8}
-.momentum-badge{
-  margin-left:auto;padding:4px 12px;border-radius:var(--r-pill);
-  font-family:var(--mono);font-size:11px;font-weight:700;
-}
+.momentum-badge{margin-left:auto;padding:4px 12px;border-radius:var(--r-pill);font-family:var(--mono);font-size:11px;font-weight:700}
 .badge-good{background:var(--gain-bg);color:var(--gain-text)}
-.badge-bad {background:var(--loss-bg);color:var(--loss-text)}
+.badge-bad{background:var(--loss-bg);color:var(--loss-text)}
 .badge-warn{background:var(--caution-bg);color:var(--caution-text)}
-.pace-story-card{
-  background:var(--ink3);border:1px solid rgba(26,255,107,.15);
-  border-radius:var(--r-md);padding:14px;margin-bottom:10px;
-}
-.pace-story-title{
-  font-family:var(--mono);font-size:9px;font-weight:700;
-  letter-spacing:.12em;text-transform:uppercase;color:var(--signal);margin-bottom:8px;
-}
+.pace-story-card{background:var(--ink3);border:1px solid rgba(26,255,107,.15);border-radius:var(--r-md);padding:14px;margin-bottom:10px}
+.pace-story-title{font-family:var(--mono);font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--signal);margin-bottom:8px}
 .pace-story-text{font-family:var(--sans);font-size:14px;line-height:1.6;color:#e8edf8}
 .pace-story-text strong{color:var(--signal);font-weight:600}
 .insight-share{display:flex;gap:7px;margin-top:12px;flex-wrap:wrap}
-.share-btn{
-  display:inline-flex;align-items:center;gap:5px;
-  font-family:var(--mono);font-size:11px;font-weight:600;
-  padding:6px 12px;border-radius:var(--r-sm);cursor:pointer;transition:all .13s;letter-spacing:.02em;
-}
+.share-btn{display:inline-flex;align-items:center;gap:5px;font-family:var(--mono);font-size:11px;font-weight:600;padding:6px 12px;border-radius:var(--r-sm);cursor:pointer;transition:all .13s;letter-spacing:.02em}
 .share-btn-x{background:var(--ink);color:#e8edf8;border:1px solid rgba(255,255,255,.18)}
 .share-btn-x:hover{border-color:rgba(255,255,255,.35)}
 .share-btn-copy{background:transparent;color:var(--chalk);border:1px solid var(--rule)}
@@ -342,46 +210,31 @@ body{
 .insights-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding-bottom:14px}
 @media(max-width:500px){.insights-grid{grid-template-columns:1fr}}
 .insight-card{background:var(--ink3);border:1px solid var(--rule);border-radius:var(--r-md);padding:12px}
-.insight-card-title{
-  font-family:var(--mono);font-size:9px;font-weight:700;
-  letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.28);margin-bottom:6px;
-}
+.insight-card-title{font-family:var(--mono);font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.28);margin-bottom:6px}
 .insight-card-body{font-family:var(--sans);font-size:13px;line-height:1.55;color:rgba(255,255,255,.78)}
 .insight-card-body strong{color:var(--signal);font-weight:600}
 .insight-caution{border-color:rgba(245,200,66,.18);background:rgba(245,200,66,.05)}
 .insight-caution .insight-card-body{color:var(--caution-text)}
 .insight-caution .insight-card-title{color:rgba(245,200,66,.4)}
 
-/* ── CHART ─────────────────────────── */
+/* ── CHART ───────────────────────────────── */
 .chart-wrap{padding:14px 14px 6px}
 .chart-top{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:10px}
 .chart-title{font-family:var(--mono);font-size:15px;font-weight:700;letter-spacing:.01em;color:#e8edf8}
 .toggle-group{display:flex;gap:2px;background:var(--ink3);border-radius:var(--r-sm);padding:3px}
-.toggle-btn{
-  background:none;border:none;border-radius:6px;color:var(--chalk);
-  font-family:var(--mono);font-size:11px;font-weight:600;
-  padding:5px 10px;cursor:pointer;transition:background .12s,color .12s;white-space:nowrap;
-}
+.toggle-btn{background:none;border:none;border-radius:6px;color:var(--chalk);font-family:var(--mono);font-size:11px;font-weight:600;padding:5px 10px;cursor:pointer;transition:background .12s,color .12s;white-space:nowrap}
 .toggle-btn.active{background:var(--signal);color:var(--ink);font-weight:700}
 .legend{display:flex;gap:10px;flex-wrap:wrap;font-family:var(--mono);font-size:11px;color:var(--chalk);margin-bottom:8px}
 .legend-dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:4px}
 svg.main-chart{width:100%;height:360px;display:block;overflow:visible}
 @media(max-width:560px){svg.main-chart{height:240px}}
 
-/* ── TABLES ────────────────────────── */
+/* ── TABLES ──────────────────────────────── */
 .tables-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:12px 14px 14px}
 @media(max-width:600px){.tables-grid{grid-template-columns:1fr}}
-.tbl-title{
-  font-family:var(--mono);font-size:11px;font-weight:700;
-  letter-spacing:.08em;text-transform:uppercase;color:rgba(255,255,255,.28);margin-bottom:7px;
-}
+.tbl-title{font-family:var(--mono);font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:rgba(255,255,255,.28);margin-bottom:7px}
 table{width:100%;border-collapse:collapse;background:var(--ink3);border:1px solid var(--rule);border-radius:var(--r-md);overflow:hidden}
-th{
-  text-align:left;padding:7px 10px;
-  font-family:var(--mono);font-size:9px;font-weight:700;
-  text-transform:uppercase;letter-spacing:.08em;color:var(--chalk);
-  background:var(--ink2);border-bottom:1px solid var(--rule);
-}
+th{text-align:left;padding:7px 10px;font-family:var(--mono);font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--chalk);background:var(--ink2);border-bottom:1px solid var(--rule)}
 td{padding:8px 10px;font-family:var(--mono);font-size:12px;color:rgba(255,255,255,.7);border-bottom:1px solid var(--rule2)}
 tr:last-child td{border-bottom:none}
 tr.cur-row td{background:rgba(26,255,107,.05)}
@@ -390,20 +243,13 @@ tr.cur-row td{background:rgba(26,255,107,.05)}
 .pill-r{background:var(--loss-bg);color:var(--loss-text)}
 .pill-n{background:var(--ink3);color:var(--chalk)}
 
-/* ── SOURCE NOTE ───────────────────── */
-.source-note{
-  margin:0 14px 14px;padding:11px 13px;
-  border-radius:var(--r-sm);background:var(--ink3);border:1px solid var(--rule2);
-  font-family:var(--sans);font-size:11px;color:rgba(255,255,255,.2);line-height:1.65;
-}
+/* ── SOURCE ──────────────────────────────── */
+.source-note{margin:0 14px 14px;padding:11px 13px;border-radius:var(--r-sm);background:var(--ink3);border:1px solid var(--rule2);font-family:var(--sans);font-size:11px;color:rgba(255,255,255,.2);line-height:1.65}
 .source-note strong{color:rgba(255,255,255,.3);font-weight:500}
 .source-note code{font-family:var(--mono);font-size:10px;color:rgba(26,255,107,.4)}
 
-/* ── FOOTER ────────────────────────── */
-.site-footer{
-  border-top:1px solid var(--rule);padding:16px 0 32px;
-  display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;
-}
+/* ── FOOTER ──────────────────────────────── */
+.site-footer{border-top:1px solid var(--rule);padding:16px 0 32px;display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between}
 .footer-logo{font-family:var(--mono);font-weight:700;font-size:13px;color:var(--chalk);text-decoration:none}
 .footer-logo .accent{color:var(--signal)}
 .footer-note{font-family:var(--sans);font-size:11px;color:rgba(255,255,255,.18);line-height:1.6;width:100%}
@@ -411,7 +257,6 @@ tr.cur-row td{background:rgba(26,255,107,.05)}
 </head>
 <body>
 
-<!-- ══ NAV ══════════════════════════════ -->
 <nav class="site-nav">
   <div class="wrap nav-inner">
     <a href="index.html" class="back-btn">← All Teams</a>
@@ -420,20 +265,16 @@ tr.cur-row td{background:rgba(26,255,107,.05)}
       <div class="nav-wordmark">TRACK THE <span class="accent">SEASON</span></div>
     </a>
     <div class="nav-team" id="navTeamWrap">
-      <div class="nav-team-logo">
-        <img id="navTeamLogo" src="" alt="" onerror="this.style.display='none'"/>
-      </div>
+      <div class="nav-team-logo"><img id="navTeamLogo" src="" alt="" onerror="this.style.display='none'"/></div>
       <span id="navTeamName" class="nav-team-name"></span>
     </div>
   </div>
 </nav>
 
 <div class="wrap">
-  <!-- ══ HERO ════════════════════════════ -->
   <div class="team-hero" id="teamHero" style="display:none">
     <div class="hero-logo-wrap">
-      <img id="heroLogo" src="" alt=""
-        onerror="this.style.display='none';document.getElementById('heroFallback').style.display='block'"/>
+      <img id="heroLogo" src="" alt="" onerror="this.style.display='none';document.getElementById('heroFallback').style.display='block'"/>
       <span id="heroFallback" style="display:none;font-size:34px">⚾</span>
     </div>
     <div class="hero-text">
@@ -444,10 +285,8 @@ tr.cur-row td{background:rgba(26,255,107,.05)}
     <span id="heroBadge" class="hero-badge badge-neu"></span>
   </div>
 
-  <!-- ══ PAGE GRID ═══════════════════════ -->
   <div class="page-grid">
-
-    <!-- ── Controls ──────────────── -->
+    <!-- ── Controls ──────────────────────── -->
     <aside class="controls-col">
       <div class="ctrl-card">
         <div style="margin-bottom:13px">
@@ -455,7 +294,7 @@ tr.cur-row td{background:rgba(26,255,107,.05)}
           <select id="teamSelect" class="ctrl-input"></select>
         </div>
         <div>
-          <label class="ctrl-label" for="currentSeasonSelect">Current season</label>
+          <label class="ctrl-label" for="currentSeasonSelect">Season</label>
           <select id="currentSeasonSelect" class="ctrl-input"></select>
         </div>
         <div class="ctrl-divider"></div>
@@ -464,41 +303,40 @@ tr.cur-row td{background:rgba(26,255,107,.05)}
           <div id="seasonChecks" class="checks"></div>
         </div>
         <div class="ctrl-divider"></div>
-        <div style="margin-bottom:13px">
-          <label class="ctrl-label" for="throughInput">Through game #</label>
-          <input id="throughInput" type="number" min="1" max="162" class="ctrl-input"/>
-          <p class="ctrl-helper">Defaults to completed games played.</p>
-        </div>
+
+        <!-- Date range — replaces through-game -->
         <div>
-          <div class="ctrl-label">Game range</div>
-          <div class="input-row">
+          <div class="ctrl-label">Date range</div>
+          <div class="date-row">
             <div>
-              <span class="ctrl-sub-label">From game</span>
-              <input id="rangeStartInput" type="number" min="1" max="162" class="ctrl-input"/>
+              <span class="ctrl-sub-label">From</span>
+              <input id="dateFrom" type="date" class="ctrl-input"/>
             </div>
             <div>
-              <span class="ctrl-sub-label">To game</span>
-              <input id="rangeEndInput" type="number" min="1" max="162" class="ctrl-input"/>
+              <span class="ctrl-sub-label">To</span>
+              <input id="dateTo" type="date" class="ctrl-input"/>
             </div>
           </div>
-          <p class="ctrl-helper">Last 10 selected by default.</p>
+          <p class="ctrl-helper">Select any date range to analyze that stretch.</p>
           <div class="preset-row" id="presetRow">
             <button class="preset-btn" data-preset="last10">Last 10</button>
             <button class="preset-btn" data-preset="last20">Last 20</button>
-            <button class="preset-btn" data-preset="g127">G 1–27</button>
-            <button class="preset-btn" data-preset="g2863">G 28–63</button>
-            <button class="preset-btn" data-preset="first">1st half</button>
-            <button class="preset-btn" data-preset="second">2nd half</button>
+            <button class="preset-btn" data-preset="thismonth">This month</button>
+            <button class="preset-btn" data-preset="first27">G 1–27</button>
+            <button class="preset-btn" data-preset="first63">G 28–63</button>
+            <button class="preset-btn" data-preset="firsthalf">1st half</button>
+            <button class="preset-btn" data-preset="secondhalf">2nd half</button>
+            <button class="preset-btn" data-preset="fullseason">Full season</button>
           </div>
         </div>
+
         <button class="run-btn" id="runBtn">Update Tracker</button>
-        <button class="reset-btn" id="resetBtn">↺ Reset to current</button>
+        <button class="reset-btn" id="resetBtn">↺ Reset to last 10</button>
       </div>
     </aside>
 
-    <!-- ── Results ───────────────── -->
+    <!-- ── Results ───────────────────────── -->
     <div class="results-col">
-
       <div class="result-card" id="statusCard">
         <div class="status-msg" id="statusMsg">
           <div class="spinner"></div>
@@ -518,12 +356,12 @@ tr.cur-row td{background:rgba(26,255,107,.05)}
               <div id="mSeason" class="m-sub">—</div>
             </div>
             <div class="metric-cell">
-              <div class="m-label" id="mThroughLabel">Through game —</div>
-              <div id="mThrough" class="m-val">—</div>
-              <div id="mThroughPct" class="m-sub">—</div>
+              <div class="m-label" id="mFullLabel">Full season</div>
+              <div id="mFull" class="m-val">—</div>
+              <div id="mFullSub" class="m-sub">—</div>
             </div>
             <div class="metric-cell">
-              <div class="m-label" id="mRangeLabel">Range —</div>
+              <div class="m-label" id="mRangeLabel">Selected range</div>
               <div id="mRange" class="m-val green">—</div>
               <div id="mRangePct" class="m-sub">—</div>
             </div>
@@ -534,20 +372,21 @@ tr.cur-row td{background:rgba(26,255,107,.05)}
             </div>
           </div>
 
-          <!-- Notable moments strip — sits inside the metrics card, below the numbers -->
+          <!-- Key moments strip -->
           <div class="moments-strip hidden" id="momentsStrip">
             <span class="moments-label">Key moments</span>
-            <div id="momentBtns"></div>
+            <span class="moments-loading hidden" id="momentsLoading">Loading…</span>
+            <div id="momentBtns" style="display:flex;flex-wrap:wrap;gap:6px"></div>
           </div>
 
-          <!-- Since callout card — hidden until a moment is tapped -->
+          <!-- Since callout card -->
           <div class="since-card hidden" id="sinceCard">
-            <div class="since-card-header">
+            <div class="since-header">
               <div>
-                <div class="since-card-label">Since this moment</div>
-                <div class="since-card-title" id="sinceTitle">—</div>
+                <div class="since-label">Since this moment</div>
+                <div class="since-title" id="sinceTitle">—</div>
               </div>
-              <button class="since-card-close" id="sinceClose" aria-label="Dismiss">×</button>
+              <button class="since-close" id="sinceClose">×</button>
             </div>
             <div class="since-stats">
               <div class="since-stat">
@@ -580,7 +419,7 @@ tr.cur-row td{background:rgba(26,255,107,.05)}
               <div class="insights-title">⚡ Insights</div>
               <span id="momentumBadge" class="momentum-badge badge-warn"></span>
             </div>
-            <div class="pace-story-card" id="paceStoryCard">
+            <div class="pace-story-card">
               <div class="pace-story-title">Today's pace story</div>
               <div class="pace-story-text" id="paceStoryText">—</div>
             </div>
@@ -609,14 +448,14 @@ tr.cur-row td{background:rgba(26,255,107,.05)}
         <div class="result-card">
           <div class="tables-grid">
             <div>
-              <div class="tbl-title">Through-game comparison</div>
+              <div class="tbl-title">Full-season comparison</div>
               <table id="throughTable">
                 <thead><tr><th>Season</th><th>GP</th><th>Record</th><th>Win%</th><th>Δ</th><th>Final/proj.</th></tr></thead>
                 <tbody></tbody>
               </table>
             </div>
             <div>
-              <div class="tbl-title">Game range comparison</div>
+              <div class="tbl-title">Date range comparison</div>
               <table id="rangeTable">
                 <thead><tr><th>Season</th><th>Range</th><th>Record</th><th>Win%</th><th>Pace</th></tr></thead>
                 <tbody></tbody>
@@ -626,13 +465,12 @@ tr.cur-row td{background:rgba(26,255,107,.05)}
         </div>
 
         <div class="source-note">
-          <strong>Data:</strong> MLB Stats API schedule endpoint —
+          <strong>Data:</strong> MLB Stats API —
           <code>statsapi.mlb.com/api/v1/schedule?sportId=1&amp;teamId={id}&amp;season={year}&amp;gameTypes=R</code><br>
-          Final regular-season games only. Live, postponed, suspended, or non-final games excluded until final.
-          Doubleheaders count as separate games. Not affiliated with or endorsed by MLB or its clubs.
+          Final regular-season games only. Live, postponed, and suspended games excluded until final.
+          Key moments from TrackTheSeason editorial data. Not affiliated with or endorsed by MLB or its clubs.
         </div>
-
-      </div><!-- /resultsWrap -->
+      </div>
     </div>
   </div>
 
@@ -644,161 +482,266 @@ tr.cur-row td{background:rgba(26,255,107,.05)}
 
 <script>
 /* ═══════════════════════════════════════════════════════
-   TRACK THE SEASON — tracker.html
-   Notable moments: tappable pins → "Since [moment]" callout
-   URL: ?team=143&season=2026&through=71&rs=62&re=71&since=34
+   TRACK THE SEASON — tracker.html v3
+   Date-range controls (no through-game)
+   Key moments fetched from Google Sheets
+   URL: ?team=143&season=2026&from=2026-04-01&to=2026-06-07&since=2026-04-28
 ═══════════════════════════════════════════════════════ */
 
-/* ── Constants ─────────────────────────────────────── */
+/* ── Configuration ─────────────────────────────────────
+   SHEET_CSV_URL: publish your Google Sheet as CSV and paste the URL here.
+   In Google Sheets: File → Share → Publish to web → CSV → Copy link
+   ───────────────────────────────────────────────────── */
+const SHEET_CSV_URL = ''; /* ← paste your Google Sheet CSV URL here */
+
 const API          = 'https://statsapi.mlb.com/api/v1';
 const SEASON_GAMES = 162;
 const SEASON_COLORS= ['#1aff6b','#4a9eff','#f5c842','#f47570','#c792ea','#5dd8d8','#ffa657','#b8e986'];
 const DEFAULT_TEAM = 143;
+const CURRENT_YEAR = new Date().getFullYear();
+
+const $ = id => document.getElementById(id);
+const el= (t,a={})=>{const e=document.createElementNS('http://www.w3.org/2000/svg',t);for(const[k,v]of Object.entries(a))e.setAttribute(k,v);return e};
+
+/* ── State ──────────────────────────────────────────── */
+const schedCache = new Map();
+let chartMode    = 'cumulative';
+let lastSeries   = [], lastRangeGames = [];
+let activePreset = 'last10';
+let activeSinceDate = null;   /* ISO date string of active moment */
+let currentGames    = [];
+let currentTeamId   = null;
+let currentTeamName = '';
+let allMoments      = [];     /* loaded from Google Sheets */
 
 /* ═══════════════════════════════════════════════════════
-   NOTABLE MOMENTS DATA
-   Add, edit, or remove entries here to update any team.
-   game: the game NUMBER (sequential, 1-based) after which
-         this moment took effect.
-   type: coaching | trade | injury | callup | streak | milestone
-   icon: emoji shown on the button
-   label: short button text (keep under ~20 chars)
-   text: longer description used in the "Since" callout card
+   URL PARAMETERS
+   ?team=143&season=2026&from=2026-04-01&to=2026-06-07&since=2026-04-28
 ═══════════════════════════════════════════════════════ */
-const NOTABLE_MOMENTS = {
-  /* ── 2026 ─────────────────────────────────────── */
-  143: [ /* Philadelphia Phillies */
-    { game:12,  year:2026, type:'injury',    icon:'🤕', label:'Wheeler IL',       text:'Ace Zack Wheeler placed on the 15-day IL with forearm inflammation.' },
-    { game:34,  year:2026, type:'coaching',  icon:'🎯', label:'Manager change',   text:'Rob Thomson replaced as manager mid-season. Bench coach stepped in on an interim basis.' },
-    { game:52,  year:2026, type:'trade',     icon:'🔄', label:'Bullpen add',      text:'Team acquired All-Star closer at the trade deadline, bolstering a shaky late-game situation.' },
-    { game:23,  year:2026, type:'callup',    icon:'⬆️', label:'Mayer called up',  text:'Top prospect Mayer called up from Triple-A, immediately inserted into the starting lineup.' },
-  ],
-  147: [ /* New York Yankees */
-    { game:8,   year:2026, type:'injury',    icon:'🤕', label:'Judge IL',         text:'Aaron Judge placed on IL with a knee contusion after an outfield collision.' },
-    { game:29,  year:2026, type:'trade',     icon:'🔄', label:'Rotation add',     text:'Yankees acquire veteran starter at the deadline to shore up a struggling rotation.' },
-    { game:41,  year:2026, type:'milestone', icon:'🏆', label:'Cole 200 Ks',      text:'Gerrit Cole reaches 200 career postseason strikeouts, a franchise record.' },
-  ],
-  119: [ /* Los Angeles Dodgers */
-    { game:5,   year:2026, type:'injury',    icon:'🤕', label:'Ohtani IL',        text:'Shohei Ohtani placed on IL with oblique tightness, expected to miss 3–4 weeks.' },
-    { game:44,  year:2026, type:'callup',    icon:'⬆️', label:'Miller up',        text:'Top pitching prospect Dylan Miller called up after dominant Triple-A stint.' },
-  ],
-  111: [ /* Boston Red Sox */
-    { game:17,  year:2026, type:'coaching',  icon:'🎯', label:'Pitching coach out', text:'Pitching coach replaced after rotation ERA climbed above 5.80 through first month.' },
-    { game:38,  year:2026, type:'trade',     icon:'🔄', label:'Ace acquired',     text:'Boston trades prospects for frontline starter to stabilize the rotation.' },
-  ],
-  /* ── Add more teams and seasons below ───────────── */
-};
-
-/* Auto-detected moment types (from game data — no manual entry needed) */
-const AUTO_MOMENT_TYPES = {
-  streak_win:  { type:'streak',    icon:'🔥', label:'Win streak start' },
-  streak_loss: { type:'streak',    icon:'📉', label:'Loss streak start' },
-  crossedUp:   { type:'milestone', icon:'✅', label:'Crossed .500'      },
-  crossedDown: { type:'milestone', icon:'⚠️', label:'Fell below .500'  },
-  bestStretch: { type:'streak',    icon:'⚡', label:'Best 10-game run'  },
-};
-
-/* ── DOM helpers ──────────────────────────────────── */
-const $  = id => document.getElementById(id);
-const el = (t,a={})=>{const e=document.createElementNS('http://www.w3.org/2000/svg',t);for(const[k,v]of Object.entries(a))e.setAttribute(k,v);return e;};
-
-/* ── State ────────────────────────────────────────── */
-const schedCache  = new Map();
-let chartMode     = 'cumulative';
-let lastSeries    = [], lastRS = 1, lastRE = 10;
-let activePreset  = 'last10';
-let userChangedInputs = false;
-let activeSinceGame   = null;   /* currently selected moment's game number */
-let currentTeamId     = null;   /* track loaded team for moment resolution */
-let currentGames      = [];     /* current season game log */
-let currentTeamName   = '';
-
-/* ══════════════════════════════════════════════════════
-   URL PARAMETER HANDLING
-   Supports: ?team=143&season=2026&through=71&rs=62&re=71&since=34
-══════════════════════════════════════════════════════ */
 function getUrlParams(){
-  const p=new URLSearchParams(window.location.search);
-  const lr=p.get('range');
-  let rs=null,re=null;
-  if(lr){const pts=lr.split('-');if(pts.length===2){rs=parseInt(pts[0]);re=parseInt(pts[1]);}}
+  const p = new URLSearchParams(window.location.search);
   return{
-    team:   p.get('team')   ?Number(p.get('team'))   :null,
-    season: p.get('season') ?Number(p.get('season')) :null,
-    through:p.get('through')?Number(p.get('through')):null,
-    rs:     p.get('rs')     ?Number(p.get('rs'))     :rs,
-    re:     p.get('re')     ?Number(p.get('re'))     :re,
-    since:  p.get('since')  ?Number(p.get('since'))  :null,
+    team:   p.get('team')   ? Number(p.get('team'))   : null,
+    season: p.get('season') ? Number(p.get('season')) : null,
+    from:   p.get('from')   || null,
+    to:     p.get('to')     || null,
+    since:  p.get('since')  || null,
   };
 }
 
-function setUrlParams(teamId,season,through,rs,re,since){
-  const url=new URL(window.location.href);
-  url.searchParams.set('team',teamId);
-  url.searchParams.set('season',season);
-  url.searchParams.set('through',through);
-  url.searchParams.set('rs',rs);
-  url.searchParams.set('re',re);
-  if(since) url.searchParams.set('since',since);
-  else url.searchParams.delete('since');
-  url.searchParams.delete('range');
-  window.history.replaceState({},'',url);
+function setUrlParams(teamId, season, from, to, since){
+  const url = new URL(window.location.href);
+  url.searchParams.set('team',   teamId);
+  url.searchParams.set('season', season);
+  if(from) url.searchParams.set('from', from); else url.searchParams.delete('from');
+  if(to)   url.searchParams.set('to',   to);   else url.searchParams.delete('to');
+  if(since)url.searchParams.set('since',since); else url.searchParams.delete('since');
+  window.history.replaceState({}, '', url);
 }
 
-/* ══════════════════════════════════════════════════════
+/* ═══════════════════════════════════════════════════════
+   DATE ↔ GAME NUMBER UTILITIES
+═══════════════════════════════════════════════════════ */
+
+/* Convert a game's date string to a comparable value */
+const dateStr = iso => iso ? iso.slice(0,10) : '';
+
+/* Get all games within a date range [fromISO, toISO] inclusive */
+function gamesInDateRange(games, fromISO, toISO){
+  const f = fromISO ? dateStr(fromISO) : '0000-00-00';
+  const t = toISO   ? dateStr(toISO)   : '9999-12-31';
+  return games.filter(g => g.date >= f && g.date <= t);
+}
+
+/* Get the latest game date in a team's schedule */
+function latestGameDate(games){
+  if(!games.length) return null;
+  return games[games.length-1].date;
+}
+
+/* Season start/end approximate dates */
+function seasonStartDate(year){ return `${year}-03-20`; }
+function seasonEndDate(year)  { return `${year}-11-01`; }
+function allstarDate(year)    { return `${year}-07-14`; } /* approx mid-July */
+
+/* Today's date as ISO string */
+function todayISO(){ return new Date().toISOString().slice(0,10); }
+
+/* N days ago */
+function daysAgoISO(n){
+  const d = new Date();
+  d.setDate(d.getDate()-n);
+  return d.toISOString().slice(0,10);
+}
+
+/* ═══════════════════════════════════════════════════════
+   PRESET RANGES — date-based
+═══════════════════════════════════════════════════════ */
+function computePresetDates(preset, games, season){
+  const latest = latestGameDate(games) || todayISO();
+  const year   = season || CURRENT_YEAR;
+
+  /* For past seasons use actual game dates */
+  const firstGame = games.length ? games[0].date : seasonStartDate(year);
+  const lastGame  = games.length ? games[games.length-1].date : latest;
+
+  /* Game-number based: find the date of game N */
+  const gameNDate = n => games[Math.min(n,games.length)-1]?.date || lastGame;
+
+  switch(preset){
+    case 'last10':
+      return{ from: gamesInDateRange(games,null,latest).slice(-10)[0]?.date || firstGame, to: latest };
+    case 'last20':
+      return{ from: gamesInDateRange(games,null,latest).slice(-20)[0]?.date || firstGame, to: latest };
+    case 'thismonth':{
+      const now = new Date();
+      const monthStart = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-01`;
+      return{ from: monthStart, to: latest };
+    }
+    case 'first27':
+      return{ from: firstGame, to: gameNDate(27) };
+    case 'first63':
+      return{ from: gameNDate(28), to: gameNDate(63) };
+    case 'firsthalf':
+      return{ from: firstGame, to: gameNDate(81) };
+    case 'secondhalf':
+      return{ from: gameNDate(82), to: lastGame };
+    case 'fullseason':
+      return{ from: firstGame, to: lastGame };
+    default:
+      return{ from: firstGame, to: latest };
+  }
+}
+
+/* Detect which preset matches current date range */
+function detectPreset(from, to, games, season){
+  for(const key of ['last10','last20','thismonth','first27','first63','firsthalf','secondhalf','fullseason']){
+    const p = computePresetDates(key, games, season);
+    if(p.from === from && p.to === to) return key;
+  }
+  return null;
+}
+
+function setActivePreset(key){
+  activePreset = key;
+  document.querySelectorAll('.preset-btn').forEach(b=>b.classList.toggle('active', b.dataset.preset===key));
+}
+function clearActivePreset(){
+  activePreset = null;
+  document.querySelectorAll('.preset-btn').forEach(b=>b.classList.remove('active'));
+}
+
+/* ═══════════════════════════════════════════════════════
    DATA FETCHING
-══════════════════════════════════════════════════════ */
+═══════════════════════════════════════════════════════ */
 async function fetchJSON(url){
-  const r=await fetch(url);
-  if(!r.ok) throw new Error(`MLB API error ${r.status}`);
+  const r = await fetch(url);
+  if(!r.ok) throw new Error(`API error ${r.status}`);
   return r.json();
 }
 
 async function loadTeams(){
-  const d=await fetchJSON(`${API}/teams?sportId=1&activeStatus=Y`);
+  const d = await fetchJSON(`${API}/teams?sportId=1&activeStatus=Y`);
   return d.teams.filter(t=>t.sport?.id===1).sort((a,b)=>a.name.localeCompare(b.name));
 }
 
-async function loadSchedule(teamId,year){
-  const key=`${teamId}:${year}`;
+async function loadSchedule(teamId, year){
+  const key = `${teamId}:${year}`;
   if(schedCache.has(key)) return schedCache.get(key);
-  const data=await fetchJSON(`${API}/schedule?sportId=1&teamId=${teamId}&season=${year}&gameTypes=R`);
-  const games=[];
-  for(const d of data.dates||[]){
+  const data = await fetchJSON(`${API}/schedule?sportId=1&teamId=${teamId}&season=${year}&gameTypes=R`);
+  const games = [];
+  for(const d of data.dates||[])
     for(const g of d.games||[]){
-      if(g.status?.abstractGameState!=='Final') continue;
-      const h=g.teams?.home,a=g.teams?.away;
+      if(g.status?.abstractGameState !== 'Final') continue;
+      const h=g.teams?.home, a=g.teams?.away;
       if(h?.score==null||a?.score==null||h.score===a.score) continue;
-      const isHome=String(h.team.id)===String(teamId);
-      games.push({date:g.officialDate,gamePk:g.gamePk,win:isHome?h.score>a.score:a.score>h.score,
-        opponent:isHome?a.team.name:h.team.name});
+      const isHome = String(h.team.id)===String(teamId);
+      games.push({ date:g.officialDate, gamePk:g.gamePk,
+        win: isHome ? h.score>a.score : a.score>h.score });
     }
-  }
   games.sort((a,b)=>a.date.localeCompare(b.date)||a.gamePk-b.gamePk);
-  let cw=0,cl=0;
-  games.forEach((g,i)=>{if(g.win)cw++;else cl++;g.gameNo=i+1;g.cumWins=cw;g.cumLosses=cl;});
-  schedCache.set(key,games);
+  let cw=0, cl=0;
+  games.forEach((g,i)=>{ if(g.win)cw++;else cl++; g.gameNo=i+1; g.cumWins=cw; g.cumLosses=cl; });
+  schedCache.set(key, games);
   return games;
 }
 
-/* ══════════════════════════════════════════════════════
-   CALCULATIONS
-══════════════════════════════════════════════════════ */
-const winPct=(w,l)=>(w+l)?w/(w+l):0;
-const fmtPct=p=>p.toFixed(3).replace(/^0/,'');
-const clamp=(v,mn,mx)=>Math.max(mn,Math.min(mx,Number(v)||mn));
-const curYear=()=>new Date().getFullYear();
-
-function recordThrough(games,n){
-  const s=games.slice(0,Math.min(n,games.length));
-  const w=s.filter(g=>g.win).length;
-  return{w,l:s.length-w,g:s.length};
+/* ═══════════════════════════════════════════════════════
+   GOOGLE SHEETS MOMENTS
+   Sheet columns (row 1 = headers):
+   team_id | team_name | date | type | icon | label | description
+   Published as CSV: File → Share → Publish to web → CSV
+═══════════════════════════════════════════════════════ */
+async function loadMomentsFromSheet(){
+  if(!SHEET_CSV_URL){
+    console.info('TrackTheSeason: No Google Sheet URL configured. Add SHEET_CSV_URL to enable key moments.');
+    return [];
+  }
+  try{
+    const r = await fetch(SHEET_CSV_URL);
+    const csv = await r.text();
+    return parseCSVMoments(csv);
+  }catch(e){
+    console.warn('TrackTheSeason: Could not load moments sheet:', e.message);
+    return [];
+  }
 }
 
-function recordInRange(games,start,end){
-  const s=games.filter(g=>g.gameNo>=start&&g.gameNo<=end);
-  const w=s.filter(g=>g.win).length;
-  return{w,l:s.length-w,g:s.length};
+/* Simple CSV parser — handles quoted fields */
+function parseCSVMoments(csv){
+  const lines = csv.trim().split('\n');
+  if(lines.length < 2) return [];
+  const headers = parseCSVRow(lines[0]).map(h=>h.trim().toLowerCase().replace(/\s+/g,'_'));
+  const moments = [];
+  for(let i=1;i<lines.length;i++){
+    const vals = parseCSVRow(lines[i]);
+    const row = {};
+    headers.forEach((h,j)=>row[h]=(vals[j]||'').trim());
+    if(!row.team_id || !row.date) continue;
+    moments.push({
+      teamId:   Number(row.team_id),
+      teamName: row.team_name || '',
+      date:     row.date.slice(0,10),  /* ISO YYYY-MM-DD */
+      type:     (row.type||'other').toLowerCase(),
+      icon:     row.icon || '📌',
+      label:    row.label || 'Notable moment',
+      text:     row.description || '',
+    });
+  }
+  return moments;
+}
+
+function parseCSVRow(line){
+  const result=[]; let cur='', inQ=false;
+  for(let i=0;i<line.length;i++){
+    if(line[i]==='"'){ inQ=!inQ; }
+    else if(line[i]===','&&!inQ){ result.push(cur); cur=''; }
+    else cur+=line[i];
+  }
+  result.push(cur);
+  return result;
+}
+
+/* Get moments for a specific team and season (date range) */
+function getMomentsForTeamSeason(teamId, season, games){
+  const start = games.length ? games[0].date : `${season}-01-01`;
+  const end   = games.length ? games[games.length-1].date : `${season}-12-31`;
+  return allMoments
+    .filter(m => m.teamId === teamId && m.date >= start && m.date <= end)
+    .sort((a,b) => a.date.localeCompare(b.date));
+}
+
+/* ═══════════════════════════════════════════════════════
+   CALCULATIONS
+═══════════════════════════════════════════════════════ */
+const winPct = (w,l) => (w+l) ? w/(w+l) : 0;
+const fmtPct = p => p.toFixed(3).replace(/^0/,'');
+const clamp  = (v,mn,mx) => Math.max(mn, Math.min(mx, Number(v)||mn));
+const curYear= () => new Date().getFullYear();
+
+function recordFromGames(games){
+  const w = games.filter(g=>g.win).length;
+  return { w, l: games.length-w, g: games.length };
 }
 
 function projectWins(rec){
@@ -806,355 +749,197 @@ function projectWins(rec){
   return Math.round((rec.w/rec.g)*SEASON_GAMES);
 }
 
-function curveSimilarity(a,b,n){
-  const lim=Math.min(n,a.length,b.length);
+function curveSimilarity(a, b, upToDate){
+  /* Compare cumulative wins at common game counts up to upToDate */
+  const aSlice = a.filter(g=>g.date<=upToDate);
+  const bSlice = b.filter(g=>g.date<=upToDate);
+  const lim = Math.min(aSlice.length, bSlice.length);
   if(!lim) return Infinity;
   let d=0;
-  for(let i=1;i<=lim;i++) d+=Math.abs((a[i-1]?.cumWins||0)-(b[i-1]?.cumWins||0));
+  for(let i=0;i<lim;i++) d+=Math.abs(aSlice[i].cumWins - bSlice[i].cumWins);
   return d/lim;
 }
 
-/* ── Preset logic ──────────────────────────────────── */
-function presetRanges(throughGame,completedGP){
-  return{
-    last10:{rs:Math.max(1,throughGame-9),  re:throughGame},
-    last20:{rs:Math.max(1,throughGame-19), re:throughGame},
-    g127:  {rs:1,  re:27},
-    g2863: {rs:28, re:63},
-    first: {rs:1,  re:81},
-    second:{rs:82, re:Math.min(SEASON_GAMES,Math.max(82,completedGP))},
-  };
-}
-
-function detectPreset(rs,re,throughGame,completedGP){
-  const p=presetRanges(throughGame,completedGP);
-  for(const[key,{rs:pr,re:pe}] of Object.entries(p)){
-    if(rs===pr&&re===pe) return key;
-  }
-  return null;
-}
-
-function computeDefaults(completedGP,urlParams){
-  const through=urlParams.through??completedGP;
-  const rs=urlParams.rs??Math.max(1,completedGP-9);
-  const re=urlParams.re??completedGP;
-  return{through:clamp(through,1,Math.max(1,completedGP)),rs:clamp(rs,1,162),re:clamp(re,1,162)};
-}
-
-/* ── Momentum ──────────────────────────────────────── */
-function getMomentum(tPct,rPct,rangeSize){
-  const d=rPct-tPct,large=rangeSize>=25;
+/* ═══════════════════════════════════════════════════════
+   MOMENTUM
+═══════════════════════════════════════════════════════ */
+function getMomentum(games, rangeGames){
+  /* Range win% vs full season win% */
+  if(games.length < 10) return { label:'➡️ Stable', cls:'badge-warn', chipCls:'badge-neu' };
+  const fullRec  = recordFromGames(games);
+  const rangeRec = recordFromGames(rangeGames.length ? rangeGames : games.slice(-20));
+  const fPct = winPct(fullRec.w, fullRec.l);
+  const rPct = winPct(rangeRec.w, rangeRec.l);
+  const d = rPct - fPct;
   if(rPct>=.650) return{label:'🔥 Elite pace',    cls:'badge-good',chipCls:'badge-hot'};
   if(rPct>=.600&&d>=.05) return{label:'📈 Heating up',   cls:'badge-good',chipCls:'badge-hot'};
   if(rPct>=.575) return{label:'✅ Strong stretch',cls:'badge-good',chipCls:'badge-hot'};
   if(rPct<=.350) return{label:'❄️ Struggling',    cls:'badge-bad', chipCls:'badge-cold'};
   if(rPct<=.420&&d<=-.05) return{label:'📉 Cooling off', cls:'badge-bad', chipCls:'badge-cold'};
-  if(d>=.06&&large) return{label:'⬆️ Recovering',  cls:'badge-good',chipCls:'badge-hot'};
+  if(d>=.06&&rangeGames.length>=25) return{label:'⬆️ Recovering', cls:'badge-good',chipCls:'badge-hot'};
   if(Math.abs(d)<=.025) return{label:'➡️ Stable',    cls:'badge-warn',chipCls:'badge-neu'};
   if(d>.025) return{label:'⬆️ Trending up',  cls:'badge-good',chipCls:'badge-hot'};
   return{label:'⬇️ Trending down',cls:'badge-bad',chipCls:'badge-cold'};
 }
 
-/* ══════════════════════════════════════════════════════
-   NOTABLE MOMENTS — AUTO-DETECTION
-   Finds streaks, .500 crossings, best stretch from game log.
-   Merged with manual NOTABLE_MOMENTS for the team/year.
-══════════════════════════════════════════════════════ */
-function detectAutoMoments(games){
-  const moments=[];
-  if(games.length<5) return moments;
+/* ═══════════════════════════════════════════════════════
+   SINCE CALLOUT
+═══════════════════════════════════════════════════════ */
+function renderSinceCard(moment, games, teamName, teamId, season){
+  activeSinceDate = moment.date;
 
-  /* Find longest win streak and where it started */
-  let bestWinStreak=0,bestWinStart=0,curWin=0,curWinStart=0;
-  let bestLossStreak=0,bestLossStart=0,curLoss=0,curLossStart=0;
-  games.forEach((g,i)=>{
-    if(g.win){
-      curLoss=0;
-      if(curWin===0) curWinStart=g.gameNo;
-      curWin++;
-      if(curWin>bestWinStreak){bestWinStreak=curWin;bestWinStart=curWinStart;}
-    } else {
-      curWin=0;
-      if(curLoss===0) curLossStart=g.gameNo;
-      curLoss++;
-      if(curLoss>bestLossStreak){bestLossStreak=curLoss;bestLossStart=curLossStart;}
-    }
-  });
-  if(bestWinStreak>=5){
-    moments.push({
-      game:bestWinStart, type:'streak', icon:'🔥',
-      label:`${bestWinStreak}-game win streak`,
-      text:`Started a ${bestWinStreak}-game win streak — the longest of the season.`,
-      auto:true,
-    });
-  }
-  if(bestLossStreak>=5){
-    moments.push({
-      game:bestLossStart, type:'streak', icon:'📉',
-      label:`${bestLossStreak}-game skid`,
-      text:`Began a ${bestLossStreak}-game losing streak — the longest of the season.`,
-      auto:true,
-    });
-  }
+  /* Games strictly after the moment date */
+  const sinceGames = games.filter(g => g.date > moment.date);
+  const rec = recordFromGames(sinceGames);
+  const pct = winPct(rec.w, rec.l);
+  const proj= projectWins(rec);
 
-  /* First time team crossed .500 (going up or going down) */
-  let wasAbove=null;
-  for(const g of games){
-    const pct=winPct(g.cumWins,g.cumLosses);
-    const above=pct>0.500;
-    if(wasAbove===false&&above&&g.gameNo>5){
-      moments.push({
-        game:g.gameNo, type:'milestone', icon:'✅',
-        label:'Crossed above .500',
-        text:`Team climbed above .500 for the first time this season at game ${g.gameNo}.`,
-        auto:true,
-      });
-      break;
-    }
-    if(wasAbove===true&&!above&&g.gameNo>5){
-      moments.push({
-        game:g.gameNo, type:'milestone', icon:'⚠️',
-        label:'Fell below .500',
-        text:`Team dropped below .500 for the first time this season at game ${g.gameNo}.`,
-        auto:true,
-      });
-      break;
-    }
-    if(wasAbove===null) wasAbove=above;
-    else wasAbove=above;
-  }
+  const fullRec = recordFromGames(games);
+  const fPct    = winPct(fullRec.w, fullRec.l);
+  const diff    = pct - fPct;
+  const pctLabel= diff> .05 ? 'significantly better than'
+                : diff<-.05 ? 'below'
+                : 'roughly in line with';
 
-  /* Best rolling 10-game stretch */
-  let bestPct=0,bestStart=0;
-  for(let i=0;i<=games.length-10;i++){
-    const slice=games.slice(i,i+10);
-    const w=slice.filter(g=>g.win).length;
-    const p=w/10;
-    if(p>bestPct){bestPct=p;bestStart=games[i].gameNo;}
-  }
-  if(bestPct>=0.700&&bestStart>0){
-    moments.push({
-      game:bestStart, type:'streak', icon:'⚡',
-      label:`Best 10-game run (${Math.round(bestPct*10)}–${10-Math.round(bestPct*10)})`,
-      text:`Best 10-game stretch of the season started here — ${Math.round(bestPct*10)}–${10-Math.round(bestPct*10)} (.${Math.round(bestPct*1000)}).`,
-      auto:true,
-    });
-  }
-
-  return moments;
-}
-
-/* Merge manual + auto moments for a team/year, sorted by game number */
-function getMomentsForTeam(teamId, year, games){
-  const manual=(NOTABLE_MOMENTS[teamId]||[]).filter(m=>m.year===year);
-  const auto=detectAutoMoments(games);
-  /* Deduplicate: skip auto moments that are within 3 games of a manual one */
-  const filtered=auto.filter(a=>!manual.some(m=>Math.abs(m.game-a.game)<=3));
-  return [...manual,...filtered].sort((a,b)=>a.game-b.game);
-}
-
-/* ══════════════════════════════════════════════════════
-   SINCE CALLOUT RENDERING
-   Called when user taps a moment button.
-══════════════════════════════════════════════════════ */
-function renderSinceCard(moment, games, teamName, teamId, year){
-  activeSinceGame=moment.game;
-
-  /* Record from moment.game+1 onwards (the moment itself is the trigger, not the first game) */
-  const sinceGames=games.filter(g=>g.gameNo>moment.game);
-  const w=sinceGames.filter(g=>g.win).length;
-  const l=sinceGames.length-w;
-  const g=sinceGames.length;
-  const pct=winPct(w,l);
-  const proj=projectWins({w,l,g});
-
-  /* Context: compare this pace to full-season pace */
-  const fullRec=recordThrough(games,games.length);
-  const fullPct=winPct(fullRec.w,fullRec.l);
-  const pctDiff=pct-fullPct;
-  const pctLabel=pctDiff>0.05?'significantly better than':pctDiff<-0.05?'below':'roughly in line with';
-
-  /* Build plain-English narrative */
-  let narrative=`Since <strong>${moment.label}</strong> (after game ${moment.game}), `;
-  if(g===0){
-    narrative+=`no games have been completed yet.`;
+  let narrative = `Since <strong>${moment.label}</strong> (${moment.date}), `;
+  if(!rec.g){
+    narrative += `no games have been completed yet.`;
   } else {
-    narrative+=`the ${teamName} are <span class="hi">${w}–${l}</span> in ${g} games `;
-    narrative+=`(${fmtPct(pct)} win%). `;
-    if(proj!==null){
-      narrative+=`At this pace they project to <strong>${proj} wins</strong>. `;
-    }
-    narrative+=`That's ${pctLabel} their full-season pace.`;
+    narrative += `the ${teamName} are <span class="hi">${rec.w}–${rec.l}</span> in ${rec.g} games `;
+    narrative += `(${fmtPct(pct)} win%). `;
+    if(proj) narrative += `At this pace they project to <strong>${proj} wins</strong>. `;
+    narrative += `That's ${pctLabel} their full-season pace.`;
   }
 
-  /* Populate card */
-  $('sinceTitle').textContent=`${moment.icon} ${moment.label}`;
-  $('sinceRecord').textContent=g>0?`${w}–${l}`:'—';
-  $('sinceGames').textContent=g>0?`${g} games since game ${moment.game}`:'No games yet';
-  $('sinceWinPct').textContent=g>0?fmtPct(pct):'—';
-  $('sincePaceSub').textContent=g>0?`${pctDiff>=0?'+':''}${(pctDiff*1000).toFixed(0)} pts vs season`:'';
-  $('sinceProj').textContent=proj!=null?`${proj}W`:'—';
-  $('sinceText').innerHTML=narrative;
+  $('sinceTitle').textContent   = `${moment.icon} ${moment.label}`;
+  $('sinceRecord').textContent  = rec.g ? `${rec.w}–${rec.l}` : '—';
+  $('sinceGames').textContent   = rec.g ? `${rec.g} games since ${moment.date}` : 'No games yet';
+  $('sinceWinPct').textContent  = rec.g ? fmtPct(pct) : '—';
+  $('sincePaceSub').textContent = rec.g ? `${diff>=0?'+':''}${(diff*1000).toFixed(0)} pts vs season` : '';
+  $('sinceProj').textContent    = proj  ? `${proj}W` : '—';
+  $('sinceText').innerHTML      = narrative;
 
-  /* Share text for this "since" view */
-  const sinceUrl=`https://tracktheseason.com/tracker.html?team=${teamId}&season=${year}&since=${moment.game}`;
-  const sinceShareText=g>0
-    ? `${teamName} since ${moment.label}:\n${w}–${l} in ${g} games (${fmtPct(pct)}).\nPace: ${proj??'—'} wins.\n${sinceUrl}`
-    : `${teamName} — ${moment.label} (game ${moment.game})\n${sinceUrl}`;
+  const sinceUrl = `https://tracktheseason.com/tracker.html?team=${teamId}&season=${season}&since=${moment.date}`;
+  const txt = rec.g
+    ? `${teamName} since ${moment.label}:\n${rec.w}–${rec.l} in ${rec.g} games (${fmtPct(pct)}).\nPace: ${proj??'—'} wins.\n\n${sinceUrl}\n\nvia @TrackTheSeason #TrackTheSeason`
+    : `${teamName} — ${moment.label} (${moment.date})\n${sinceUrl}`;
 
-  $('sinceShare').innerHTML=`
+  $('sinceShare').innerHTML = `
     <a class="since-share-btn since-share-btn-x"
-       href="https://x.com/intent/tweet?text=${encodeURIComponent(sinceShareText)}"
+       href="https://x.com/intent/tweet?text=${encodeURIComponent(txt)}"
        target="_blank" rel="noopener">𝕏 Post to X</a>
     <button class="since-share-btn since-share-btn-copy" id="sinceCopyBtn">⧉ Copy</button>`;
-  $('sinceCopyBtn').onclick=async()=>{
-    const ok=await copyToClipboard(sinceShareText);
-    $('sinceCopyBtn').textContent=ok?'✓ Copied':'Copy';
+  $('sinceCopyBtn').onclick = async() => {
+    const ok = await copyToClipboard(txt);
+    $('sinceCopyBtn').textContent = ok ? '✓ Copied' : 'Copy';
   };
 
-  /* Show card */
   $('sinceCard').classList.remove('hidden');
-
-  /* Highlight the active moment button */
   document.querySelectorAll('.moment-btn').forEach(b=>{
-    b.classList.toggle('active',Number(b.dataset.game)===moment.game);
+    b.classList.toggle('active', b.dataset.date === moment.date);
   });
 
-  /* Update URL with since param */
-  const through=clamp($('throughInput').value,1,162);
-  const rs=clamp($('rangeStartInput').value,1,162);
-  const re=clamp($('rangeEndInput').value,1,162);
-  setUrlParams($('teamSelect').value,year,through,Math.min(rs,re),Math.max(rs,re),moment.game);
+  setUrlParams($('teamSelect').value, season, $('dateFrom').value, $('dateTo').value, moment.date);
 }
 
-function dismissSinceCard(){
-  activeSinceGame=null;
+function dismissSince(){
+  activeSinceDate = null;
   $('sinceCard').classList.add('hidden');
   document.querySelectorAll('.moment-btn').forEach(b=>b.classList.remove('active'));
-  /* Remove since param from URL */
-  const url=new URL(window.location.href);
+  const url = new URL(window.location.href);
   url.searchParams.delete('since');
-  window.history.replaceState({},'',url);
+  window.history.replaceState({}, '', url);
 }
 
-/* ══════════════════════════════════════════════════════
-   MOMENTS STRIP RENDERING
-   Builds the row of tappable moment buttons.
-══════════════════════════════════════════════════════ */
-function renderMomentsStrip(moments, games, teamName, teamId, year){
-  const strip=$('momentsStrip');
-  const btnsEl=$('momentBtns');
+/* ═══════════════════════════════════════════════════════
+   MOMENTS STRIP
+═══════════════════════════════════════════════════════ */
+function renderMomentsStrip(moments, games, teamName, teamId, season){
+  const strip  = $('momentsStrip');
+  const btnsEl = $('momentBtns');
+  const played = moments.filter(m => m.date <= (latestGameDate(games)||todayISO()));
+  if(!played.length){ strip.classList.add('hidden'); return; }
 
-  if(!moments.length){
-    strip.classList.add('hidden');
-    return;
-  }
-
-  /* Only show moments that have already passed (game has been played) */
-  const playedMoments=moments.filter(m=>m.game<=games.length);
-  if(!playedMoments.length){
-    strip.classList.add('hidden');
-    return;
-  }
-
-  btnsEl.innerHTML='';
-  btnsEl.style.cssText='display:flex;flex-wrap:wrap;gap:6px';
-
-  playedMoments.forEach(m=>{
-    const btn=document.createElement('button');
-    btn.className=`moment-btn type-${m.type}`;
-    btn.dataset.game=m.game;
-    btn.innerHTML=`<span class="moment-icon">${m.icon}</span>${m.label}<span class="moment-game">G${m.game}</span>`;
-    btn.title=m.text;
-    btn.addEventListener('click',()=>{
-      if(activeSinceGame===m.game){
-        dismissSinceCard();
-      } else {
-        renderSinceCard(m,games,teamName,teamId,year);
-      }
+  btnsEl.innerHTML = '';
+  played.forEach(m => {
+    const btn = document.createElement('button');
+    btn.className = `moment-btn type-${m.type}`;
+    btn.dataset.date = m.date;
+    btn.innerHTML = `<span class="moment-icon">${m.icon}</span>${m.label}<span class="moment-game-label">${m.date.slice(5)}</span>`;
+    btn.title = m.text;
+    btn.addEventListener('click', () => {
+      activeSinceDate === m.date ? dismissSince() : renderSinceCard(m, games, teamName, teamId, season);
     });
     btnsEl.appendChild(btn);
   });
 
   strip.classList.remove('hidden');
 
-  /* If URL had a since param, auto-open that moment */
-  const urlParams=getUrlParams();
+  /* Auto-open if since param in URL */
+  const urlParams = getUrlParams();
   if(urlParams.since){
-    const m=playedMoments.find(m=>m.game===urlParams.since);
-    if(m) renderSinceCard(m,games,teamName,teamId,year);
+    const m = played.find(m => m.date === urlParams.since);
+    if(m) renderSinceCard(m, games, teamName, teamId, season);
   }
 }
 
-/* ══════════════════════════════════════════════════════
-   CHART RENDERING
-   Draws moment pins as vertical markers on the chart.
-══════════════════════════════════════════════════════ */
-function drawChart(series,rs,re,mode,moments=[]){
-  lastSeries=series; lastRS=rs; lastRE=re;
-  const svg=$('mainChart'); svg.innerHTML='';
-  const W=1000,H=360,p={l:48,r:28,t:28,b:38};
-  svg.setAttribute('viewBox',`0 0 ${W} ${H}`);
-  const xMax=162,yMax=mode==='pct'?1:108;
-  const sx=x=>p.l+(x/xMax)*(W-p.l-p.r);
-  const sy=y=>H-p.b-(y/yMax)*(H-p.t-p.b);
+/* ═══════════════════════════════════════════════════════
+   CHART
+═══════════════════════════════════════════════════════ */
+function drawChart(series, fromDate, toDate, mode, moments=[]){
+  lastSeries = series;
+  const svg = $('mainChart'); svg.innerHTML = '';
+  const W=1000, H=360, p={l:48,r:28,t:28,b:38};
+  svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
+  const xMax = SEASON_GAMES, yMax = mode==='pct' ? 1 : 108;
+  const sx = x => p.l + (x/xMax)*(W-p.l-p.r);
+  const sy = y => H-p.b - (y/yMax)*(H-p.t-p.b);
 
-  /* Range shading */
-  svg.appendChild(el('rect',{x:sx(rs-1),y:p.t,width:sx(re)-sx(rs-1),height:H-p.t-p.b,fill:'rgba(26,255,107,.06)'}));
-  [rs-1,re].forEach(xv=>svg.appendChild(el('line',{x1:sx(xv),x2:sx(xv),y1:p.t,y2:H-p.b,stroke:'rgba(26,255,107,.30)','stroke-width':1.5,'stroke-dasharray':'5 4'})));
-  const rlb=el('text',{x:sx((rs+re)/2),y:p.t-10,fill:'rgba(26,255,107,.55)','font-size':10,'text-anchor':'middle','font-family':'IBM Plex Mono,monospace','font-weight':'700'});
-  rlb.textContent=`G${rs}–${re}`; svg.appendChild(rlb);
+  /* Find game numbers for fromDate/toDate on the current-season games */
+  const curSeries = series.find(s=>s.current);
+  const fromGame  = curSeries?.games.find(g=>g.date>=fromDate)?.gameNo || 1;
+  const toGame    = [...(curSeries?.games||[])].reverse().find(g=>g.date<=toDate)?.gameNo || SEASON_GAMES;
+
+  /* Range shade */
+  svg.appendChild(el('rect',{x:sx(fromGame-1),y:p.t,width:sx(toGame)-sx(fromGame-1),height:H-p.t-p.b,fill:'rgba(26,255,107,.06)'}));
+  [fromGame-1,toGame].forEach(xv=>svg.appendChild(el('line',{x1:sx(xv),x2:sx(xv),y1:p.t,y2:H-p.b,stroke:'rgba(26,255,107,.30)','stroke-width':1.5,'stroke-dasharray':'5 4'})));
+  const rlb=el('text',{x:sx((fromGame+toGame)/2),y:p.t-9,fill:'rgba(26,255,107,.55)','font-size':10,'text-anchor':'middle','font-family':'IBM Plex Mono,monospace','font-weight':'700'});
+  rlb.textContent=`${fromDate.slice(5)} – ${toDate.slice(5)}`; svg.appendChild(rlb);
 
   /* Y grid */
-  const yTicks=mode==='pct'?[0,.2,.4,.5,.6,.8,1]:[0,20,40,60,80,100];
+  const yTicks = mode==='pct' ? [0,.2,.4,.5,.6,.8,1] : [0,20,40,60,80,100];
   for(const y of yTicks){
     svg.appendChild(el('line',{x1:p.l,x2:W-p.r,y1:sy(y),y2:sy(y),stroke:y===(mode==='pct'?.5:81)?'rgba(255,255,255,.12)':'rgba(255,255,255,.05)'}));
     const t=el('text',{x:p.l-5,y:sy(y)+4,fill:'#8a8a82','font-size':10,'text-anchor':'end','font-family':'IBM Plex Mono,monospace'});
     t.textContent=mode==='pct'?fmtPct(y):y; svg.appendChild(t);
   }
-  /* X axis */
   svg.appendChild(el('line',{x1:p.l,x2:W-p.r,y1:H-p.b,y2:H-p.b,stroke:'rgba(255,255,255,.08)'}));
   [27,54,81,108,135,162].forEach(x=>{
     const t=el('text',{x:sx(x),y:H-p.b+14,fill:'#8a8a82','font-size':10,'text-anchor':'middle','font-family':'IBM Plex Mono,monospace'});
     t.textContent=x; svg.appendChild(t);
   });
 
-  /* Notable moment pins — drawn before series lines so lines appear on top */
-  const typeColors={
-    coaching:'#a78bfa',trade:'#38bdf8',injury:'#fb923c',
-    callup:'#1aff6b',streak:'#f5c842',milestone:'#f472b6',
-  };
+  /* Moment pins */
+  const typeColors={coaching:'#a78bfa',trade:'#38bdf8',injury:'#fb923c',callup:'#1aff6b',milestone:'#f472b6',other:'#f5c842'};
   for(const m of moments){
-    if(m.game>currentGames.length) continue;
-    const x=sx(m.game);
-    const col=typeColors[m.type]||'#8a8a82';
-    const isActive=activeSinceGame===m.game;
-    /* Vertical dashed line */
-    svg.appendChild(el('line',{
-      x1:x,x2:x,y1:p.t,y2:H-p.b,
-      stroke:col,'stroke-width':isActive?2:1,
-      'stroke-dasharray':'4 3',
-      opacity:isActive?'0.9':'0.45',
-    }));
-    /* Pin circle at top */
+    const g = curSeries?.games.find(g=>g.date>=m.date);
+    if(!g) continue;
+    const x = sx(g.gameNo), col = typeColors[m.type]||'#8a8a82';
+    const isActive = activeSinceDate===m.date;
+    svg.appendChild(el('line',{x1:x,x2:x,y1:p.t,y2:H-p.b,stroke:col,'stroke-width':isActive?2:1,'stroke-dasharray':'4 3',opacity:isActive?'0.9':'0.45'}));
     const circ=el('circle',{cx:x,cy:p.t,r:isActive?6:4,fill:col,opacity:isActive?'1':'0.7'});
     svg.appendChild(circ);
-    /* Icon label */
-    const lbl=el('text',{
-      x:x,y:p.t-8,fill:col,'font-size':11,
-      'text-anchor':'middle','font-family':'IBM Plex Mono,monospace',
-      'font-weight':'700',opacity:isActive?'1':'0.7',
-    });
+    const lbl=el('text',{x:x,y:p.t-8,fill:col,'font-size':11,'text-anchor':'middle','font-family':'IBM Plex Mono,monospace','font-weight':'700',opacity:isActive?'1':'0.7'});
     lbl.textContent=m.icon; svg.appendChild(lbl);
   }
 
   /* Series lines */
   for(const s of series){
     if(!s.points.length) continue;
-    const yKey=mode==='range'?'rw':mode==='pct'?'pct':'wins';
-    let pts=mode==='range'?s.points.filter(pt=>pt.game>=rs&&pt.game<=re):s.points;
+    const yKey = mode==='range'?'rw':mode==='pct'?'pct':'wins';
+    let pts = mode==='range' ? s.points.filter(pt=>pt.game>=fromGame&&pt.game<=toGame) : s.points;
     if(!pts.length) continue;
-    const d=pts.map((pt,i)=>`${i?'L':'M'}${sx(pt.game).toFixed(1)},${sy(pt[yKey]??0).toFixed(1)}`).join(' ');
+    const d = pts.map((pt,i)=>`${i?'L':'M'}${sx(pt.game).toFixed(1)},${sy(pt[yKey]??0).toFixed(1)}`).join(' ');
     const path=el('path',{d,fill:'none',stroke:s.color,'stroke-width':s.current?3:1.8,'stroke-linecap':'round','stroke-linejoin':'round'});
     if(s.projected) path.setAttribute('stroke-dasharray','7 5');
     svg.appendChild(path);
@@ -1164,203 +949,196 @@ function drawChart(series,rs,re,mode,moments=[]){
       lbl.textContent=s.label; svg.appendChild(lbl);
     }
   }
-
-  /* "Since" shading — shade region after the active moment */
-  if(activeSinceGame){
-    const sx2=sx(activeSinceGame);
-    const endX=sx(Math.min(currentGames.length,SEASON_GAMES));
-    if(endX>sx2){
-      const shade=el('rect',{
-        x:sx2,y:p.t,width:endX-sx2,height:H-p.t-p.b,
-        fill:'rgba(255,255,255,.03)',
-      });
-      svg.insertBefore(shade,svg.firstChild); /* behind everything */
-    }
-  }
 }
 
-function buildSeries(allData,year,rs,re){
+function buildSeries(allData, year, fromDate, toDate){
   return allData.map((d,i)=>{
-    const color=SEASON_COLORS[i%SEASON_COLORS.length],isCur=d.year===year;
+    const color = SEASON_COLORS[i % SEASON_COLORS.length];
+    const isCur = d.year === year;
     const pts=[]; let rw=0;
     d.games.forEach(g=>{
-      if(g.gameNo>=rs&&g.gameNo<=re) rw+=g.win?1:0;
-      pts.push({game:g.gameNo,wins:g.cumWins,pct:winPct(g.cumWins,g.cumLosses),rw:g.gameNo>=rs?rw:null});
+      if(g.date>=fromDate&&g.date<=toDate) rw+=g.win?1:0;
+      pts.push({game:g.gameNo,wins:g.cumWins,pct:winPct(g.cumWins,g.cumLosses),rw:g.date>=fromDate?rw:null});
     });
     if(isCur&&d.games.length>0&&d.games.length<SEASON_GAMES){
       const lg=d.games[d.games.length-1];
-      const pj=projectWins(recordThrough(d.games,d.games.length));
+      const pj=projectWins(recordFromGames(d.games));
       pts.push({game:SEASON_GAMES,wins:pj,pct:winPct(lg.cumWins,lg.cumLosses),rw});
-      return{label:`${d.year}*`,color,points:pts,current:true,projected:true};
+      return{label:`${d.year}*`,color,points:pts,current:true,projected:true,games:d.games};
     }
-    return{label:String(d.year),color,points:pts,current:isCur,projected:false};
+    return{label:String(d.year),color,points:pts,current:isCur,projected:false,games:d.games};
   });
 }
 
-/* ══════════════════════════════════════════════════════
-   INSIGHTS
-══════════════════════════════════════════════════════ */
-function buildInsights({teamName,year,through,rs,re,curData,allData}){
-  const cg=curData.games;
-  const cThru=recordThrough(cg,through);
-  const cRange=recordInRange(cg,rs,re);
-  const cTPct=winPct(cThru.w,cThru.l);
-  const cRPct=winPct(cRange.w,cRange.l);
-  const prior=allData.filter(d=>d.year!==year);
-  const tcomps=prior.map(d=>{const r=recordThrough(d.games,through);return{year:d.year,w:r.w,g:r.g,delta:cThru.w-r.w};}).filter(c=>c.g>0);
-  const ahead=tcomps.filter(c=>c.delta>0).map(c=>`${c.year} (+${c.delta})`);
-  const behind=tcomps.filter(c=>c.delta<0).map(c=>`${c.year} (${c.delta})`);
-  const tied=tcomps.filter(c=>c.delta===0).map(c=>`${c.year}`);
-  let throughText=`Through ${cThru.g} games, the ${year} team is <strong>${cThru.w}–${cThru.l}</strong>.`;
-  if(ahead.length) throughText+=` Ahead of: ${ahead.join(', ')}.`;
-  if(behind.length) throughText+=` Behind: ${behind.join(', ')}.`;
-  if(tied.length) throughText+=` Even with: ${tied.join(', ')}.`;
-  if(!prior.length) throughText+=' Select comparison seasons to compare.';
-  const rcomps=prior.map(d=>{const r=recordInRange(d.games,rs,re);return{year:d.year,w:r.w,l:r.l,g:r.g,pct:winPct(r.w,r.l)};}).filter(c=>c.g>0);
-  const rankPos=rcomps.filter(c=>c.pct>cRPct).length+1;
-  const rankTot=rcomps.length+1;
-  let rangeText=`G${rs}–${re}: ${year} went <strong>${cRange.w}–${cRange.l}</strong> (${fmtPct(cRPct)}).`;
-  if(rankTot>1) rangeText+=` <strong>#${rankPos} of ${rankTot}</strong> seasons in this range.`;
-  const bestR=[...rcomps].sort((a,b)=>b.pct-a.pct)[0];
-  if(bestR) rangeText+=` Best prior: ${bestR.year} (${bestR.w}–${bestR.l}).`;
-  if(cRange.g===0) rangeText=`No completed games in range G${rs}–${re} yet.`;
-  let compText='Select comparison seasons to compare.';
-  if(tcomps.length){
-    const avg=tcomps.reduce((s,c)=>s+c.w,0)/tcomps.length;
-    const vsAvg=cThru.w-avg;
-    const best=tcomps.reduce((b,c)=>c.w>b.w?c:b);
-    compText=`vs. avg of selected seasons: <strong>${vsAvg>=0?'+':''}${vsAvg.toFixed(1)}W</strong> through game ${through}. Best comp: <strong>${best.year}</strong> (${best.w}W).`;
-  }
-  let closestText='Select more seasons to find a closest comp.';
-  if(prior.length){
-    const sims=prior.map(d=>({year:d.year,sim:curveSimilarity(cg,d.games,through)})).filter(s=>isFinite(s.sim)).sort((a,b)=>a.sim-b.sim);
-    if(sims.length){const b=sims[0];const br=recordThrough(allData.find(d=>d.year===b.year).games,through);closestText=`Most similar through game ${through}: <strong>${b.year}</strong> (${br.w}–${br.l}). Avg divergence: ${b.sim.toFixed(1)} W/game.`;}
-  }
-  const curSeasRec=recordThrough(cg,cg.length);
-  const seasProj=projectWins(curSeasRec);
-  const rangeProj=projectWins(cRange);
-  let projText=seasProj!=null?`Full-season pace: <strong>${seasProj} wins</strong>.`:'';
-  if(rangeProj!=null) projText+=` At G${rs}–${re} pace: <strong>${rangeProj} wins</strong>.`;
-  if(!projText) projText='Insufficient games to project.';
-  projText+=` <em style="color:var(--chalk);font-size:12px">Pace-based calculation, not a predictive model.</em>`;
-  const l10g=cg.slice(-10),l10w=l10g.filter(g=>g.win).length;
-  const l10str=cg.length>=10?`${l10w}–${l10g.length-l10w}`:'—';
-  let story=`Through ${cThru.g} games, the ${year} ${teamName} are <strong>${cThru.w}–${cThru.l}</strong>`;
-  if(tcomps.length){const r=tcomps[0];story+=r.delta>0?`, ${r.delta} win${r.delta!==1?'s':''} ahead of ${r.year}`:r.delta<0?`, ${Math.abs(r.delta)} win${Math.abs(r.delta)!==1?'s':''} behind ${r.year}`:`, matching ${r.year} pace`;}
-  story+=cRange.g>0?`. Their last-${re-rs+1}-game record is <strong>${cRange.w}–${cRange.l}</strong>.`+( seasProj!=null?` Current pace: <strong>${seasProj} wins</strong>.`:'.'):'.'
-  return{throughText,rangeText,compText,closestText,projText,story,l10str,seasProj,curSeasRec};
-}
-
-/* ══════════════════════════════════════════════════════
-   SHARE HELPERS
-══════════════════════════════════════════════════════ */
-async function copyToClipboard(text){
-  try{await navigator.clipboard.writeText(text);return true;}
-  catch{window.prompt('Copy this:',text);return false;}
-}
-function buildShareText(teamName,w,l,gp,proj,l10str,url){
-  return `${teamName} Pace Check:\n${w}–${l} through ${gp} games.\nProjected finish: ${proj??'—'} wins.\nLast 10: ${l10str}.\nTrack the season: ${url}`;
-}
-function xShareUrl(text){return 'https://x.com/intent/tweet?text='+encodeURIComponent(text);}
-
-/* ══════════════════════════════════════════════════════
-   TABLE RENDERING
-══════════════════════════════════════════════════════ */
-function renderThroughTable(allData,year,through){
-  const curRec=recordThrough(allData.find(d=>d.year===year)?.games||[],through);
-  document.querySelector('#throughTable tbody').innerHTML=allData.map(d=>{
-    const r=recordThrough(d.games,through),isCur=d.year===year;
-    const delta=r.w-curRec.w;
-    const dStr=isCur?'—':(delta>0?`+${delta}`:`${delta}`);
-    const dCls=delta>0?'pill-g':delta<0?'pill-r':'pill-n';
+/* ═══════════════════════════════════════════════════════
+   TABLES
+═══════════════════════════════════════════════════════ */
+function renderThroughTable(allData, year){
+  /* Full-season comparison table */
+  const curRec = recordFromGames(allData.find(d=>d.year===year)?.games||[]);
+  document.querySelector('#throughTable tbody').innerHTML = allData.map(d=>{
+    const r = recordFromGames(d.games);
+    const isCur = d.year===year;
+    const delta = r.w - curRec.w;
+    const dStr  = isCur ? '—' : (delta>0?`+${delta}`:`${delta}`);
+    const dCls  = delta>0?'pill-g':delta<0?'pill-r':'pill-n';
     let fin;
-    if(isCur&&d.games.length<SEASON_GAMES){const p=projectWins(recordThrough(d.games,d.games.length));fin=p!=null?`${p}*`:'—';}
-    else fin=d.games.length>=SEASON_GAMES?recordThrough(d.games,SEASON_GAMES).w:recordThrough(d.games,d.games.length).w;
-    return`<tr class="${isCur?'cur-row':''}">
+    if(isCur&&d.games.length<SEASON_GAMES){ const p=projectWins(r); fin=p!=null?`${p}*`:'—'; }
+    else fin = d.games.length>=SEASON_GAMES ? recordFromGames(d.games).w : r.w;
+    return `<tr class="${isCur?'cur-row':''}">
       <td><strong style="color:${isCur?'#1aff6b':'inherit'}">${d.year}${isCur?' ★':''}</strong></td>
-      <td>${r.g}</td><td><span class="pill">${r.w}–${r.l}</span></td>
+      <td>${d.games.length}</td>
+      <td><span class="pill">${r.w}–${r.l}</span></td>
       <td>${fmtPct(winPct(r.w,r.l))}</td>
       <td>${isCur?'—':`<span class="pill ${dCls}">${dStr}</span>`}</td>
       <td>${fin}</td></tr>`;
   }).join('');
 }
 
-function renderRangeTable(allData,year,rs,re){
-  document.querySelector('#rangeTable tbody').innerHTML=allData.map(d=>{
-    const r=recordInRange(d.games,rs,re),isCur=d.year===year;
-    const pct=winPct(r.w,r.l),pace=r.g?Math.round((r.w/r.g)*SEASON_GAMES):0;
-    const cls=pct>=.580?'pill-g':pct<=.420?'pill-r':'';
-    return`<tr class="${isCur?'cur-row':''}">
+function renderRangeTable(allData, year, fromDate, toDate){
+  document.querySelector('#rangeTable tbody').innerHTML = allData.map(d=>{
+    const rangeGames = gamesInDateRange(d.games, fromDate, toDate);
+    const r   = recordFromGames(rangeGames);
+    const isCur = d.year===year;
+    const pct = winPct(r.w,r.l);
+    const pace= r.g ? Math.round((r.w/r.g)*SEASON_GAMES) : 0;
+    const cls = pct>=.580?'pill-g':pct<=.420?'pill-r':'';
+    /* Show date range label using actual game dates for this season */
+    const rangeLabel = rangeGames.length
+      ? `${rangeGames[0].date.slice(5)}–${rangeGames[rangeGames.length-1].date.slice(5)}`
+      : `${fromDate.slice(5)}–${toDate.slice(5)}`;
+    return `<tr class="${isCur?'cur-row':''}">
       <td><strong style="color:${isCur?'#1aff6b':'inherit'}">${d.year}${isCur?' ★':''}</strong></td>
-      <td>${rs}–${re}</td>
+      <td style="font-size:10px">${rangeLabel}</td>
       <td><span class="pill ${cls}">${r.w}–${r.l}</span></td>
       <td>${fmtPct(pct)}</td>
       <td>${r.g?pace:'—'}</td></tr>`;
   }).join('');
 }
 
-/* ══════════════════════════════════════════════════════
-   RENDER INSIGHTS
-══════════════════════════════════════════════════════ */
+/* ═══════════════════════════════════════════════════════
+   INSIGHTS
+═══════════════════════════════════════════════════════ */
+function buildInsights({teamName, year, fromDate, toDate, curGames, allData, rangeGames}){
+  const curRec    = recordFromGames(curGames);
+  const rangeRec  = recordFromGames(rangeGames);
+  const cTPct     = winPct(curRec.w, curRec.l);
+  const cRPct     = winPct(rangeRec.w, rangeRec.l);
+  const prior     = allData.filter(d=>d.year!==year);
+
+  /* Full-season comparison */
+  const tcomps = prior.map(d=>{
+    const r = recordFromGames(d.games);
+    return{year:d.year,w:r.w,g:r.g,delta:curRec.w-r.w};
+  }).filter(c=>c.g>0);
+  const ahead  = tcomps.filter(c=>c.delta>0).map(c=>`${c.year} (+${c.delta})`);
+  const behind = tcomps.filter(c=>c.delta<0).map(c=>`${c.year} (${c.delta})`);
+  let throughText = `Through ${curRec.g} games this season, the ${year} team is <strong>${curRec.w}–${curRec.l}</strong>.`;
+  if(ahead.length)  throughText+=` Ahead of: ${ahead.join(', ')}.`;
+  if(behind.length) throughText+=` Behind: ${behind.join(', ')}.`;
+  if(!prior.length) throughText+=' Select comparison seasons.';
+
+  /* Range comparison */
+  const rcomps = prior.map(d=>{
+    const rg = gamesInDateRange(d.games, fromDate, toDate);
+    const r  = recordFromGames(rg);
+    return{year:d.year,w:r.w,l:r.l,g:r.g,pct:winPct(r.w,r.l)};
+  }).filter(c=>c.g>0);
+  const rankPos = rcomps.filter(c=>c.pct>cRPct).length+1;
+  const rankTot = rcomps.length+1;
+  let rangeText = `${fromDate.slice(5)} – ${toDate.slice(5)}: ${year} went <strong>${rangeRec.w}–${rangeRec.l}</strong> (${fmtPct(cRPct)}).`;
+  if(rankTot>1) rangeText+=` <strong>#${rankPos} of ${rankTot}</strong> seasons in this range.`;
+  if(!rangeRec.g) rangeText=`No completed games in this date range yet.`;
+
+  /* vs avg/best */
+  let compText='Select comparison seasons to compare.';
+  if(tcomps.length){
+    const avg = tcomps.reduce((s,c)=>s+c.w,0)/tcomps.length;
+    const vsAvg = curRec.w-avg;
+    const best  = tcomps.reduce((b,c)=>c.w>b.w?c:b);
+    compText=`vs. avg of selected seasons: <strong>${vsAvg>=0?'+':''}${vsAvg.toFixed(1)}W</strong>. Best comp: <strong>${best.year}</strong> (${best.w}W).`;
+  }
+
+  /* Closest comp */
+  let closestText='Select more seasons to find a closest comp.';
+  if(prior.length){
+    const sims=prior.map(d=>({year:d.year,sim:curveSimilarity(curGames,d.games,toDate)}))
+      .filter(s=>isFinite(s.sim)).sort((a,b)=>a.sim-b.sim);
+    if(sims.length){
+      const b=sims[0];
+      const br=recordFromGames(allData.find(d=>d.year===b.year)?.games||[]);
+      closestText=`Most similar season: <strong>${b.year}</strong> (${br.w}–${br.l}). Avg divergence: ${b.sim.toFixed(1)} W/game.`;
+    }
+  }
+
+  /* Projection */
+  const seasProj  = projectWins(curRec);
+  const rangeProj = projectWins(rangeRec);
+  let projText = seasProj!=null ? `Full-season pace: <strong>${seasProj} wins</strong>.` : '';
+  if(rangeProj!=null) projText+=` Date range pace: <strong>${rangeProj} wins</strong>.`;
+  if(!projText) projText='Insufficient games to project.';
+  projText+=` <em style="color:var(--chalk);font-size:12px">Pace-based — not a predictive model.</em>`;
+
+  /* Pace story */
+  let story=`Through ${curRec.g} games, the ${year} ${teamName} are <strong>${curRec.w}–${curRec.l}</strong>`;
+  if(tcomps.length){const r=tcomps[0];story+=r.delta>0?`, ${r.delta}W ahead of ${r.year}`:r.delta<0?`, ${Math.abs(r.delta)}W behind ${r.year}`:', matching last year\'s pace';}
+  story+=rangeRec.g>0?`. In the selected range: <strong>${rangeRec.w}–${rangeRec.l}</strong>.`+( seasProj?` Pace: <strong>${seasProj} wins</strong>.</strong>`:'.'):'.';
+
+  /* Last 10 */
+  const l10 = curGames.slice(-10);
+  const l10w = l10.filter(g=>g.win).length;
+  const l10str = curGames.length>=10 ? `${l10w}–${l10.length-l10w}` : '—';
+
+  return{throughText,rangeText,compText,closestText,projText,story,l10str,seasProj,curRec};
+}
+
 function renderInsights(params){
-  const{throughText,rangeText,compText,closestText,projText,story,l10str,seasProj,curSeasRec}=buildInsights(params);
-  const{year,through,rs,re,curData,teamName}=params;
-  const cg=curData.games;
-  const cThru=recordThrough(cg,through);
-  const cRange=recordInRange(cg,rs,re);
-  const momentum=getMomentum(winPct(cThru.w,cThru.l),winPct(cRange.w,cRange.l),re-rs+1);
-  $('momentumBadge').textContent=momentum.label;
-  $('momentumBadge').className=`momentum-badge ${momentum.cls}`;
-  $('heroBadge').textContent=momentum.label;
-  $('heroBadge').className=`hero-badge ${momentum.chipCls}`;
-  $('paceStoryText').innerHTML=story;
-  const gp=cg.length;
-  const urlStr=`https://tracktheseason.com/tracker.html?team=${$('teamSelect').value}&season=${year}&through=${through}&rs=${rs}&re=${re}`;
-  const shareText=buildShareText(teamName,curSeasRec.w,curSeasRec.l,gp,seasProj,l10str,urlStr);
+  const ins = buildInsights(params);
+  const{year,fromDate,toDate,curGames,rangeGames} = params;
+  const curRec  = recordFromGames(curGames);
+  const momentum= getMomentum(curGames, rangeGames);
+
+  $('momentumBadge').textContent = momentum.label;
+  $('momentumBadge').className   = `momentum-badge ${momentum.cls}`;
+  $('heroBadge').textContent     = momentum.label;
+  $('heroBadge').className       = `hero-badge ${momentum.chipCls}`;
+  $('paceStoryText').innerHTML   = ins.story;
+
+  const urlStr=`https://tracktheseason.com/tracker.html?team=${$('teamSelect').value}&season=${year}&from=${fromDate}&to=${toDate}`;
+  const shareText=`${params.teamName} Pace Check:\n${curRec.w}–${curRec.l} through ${curRec.g} games.\nPace: ${ins.seasProj??'—'} wins.\nLast 10: ${ins.l10str}.\n\n${urlStr}\n\nvia @TrackTheSeason #TrackTheSeason`;
   $('insightShare').innerHTML=`
-    <a class="share-btn share-btn-x" href="${xShareUrl(shareText)}" target="_blank" rel="noopener">𝕏 Post to X</a>
+    <a class="share-btn share-btn-x" href="https://x.com/intent/tweet?text=${encodeURIComponent(shareText)}" target="_blank" rel="noopener">𝕏 Post to X</a>
     <button class="share-btn share-btn-copy" id="copyLinkBtn">⧉ Copy link</button>
     <button class="share-btn share-btn-copy" id="copyInsightBtn">✦ Copy insight</button>`;
-  $('copyLinkBtn').onclick=async()=>{const ok=await copyToClipboard(urlStr);$('copyLinkBtn').textContent=ok?'✓ Copied':'Link';};
+  $('copyLinkBtn').onclick =async()=>{const ok=await copyToClipboard(urlStr);$('copyLinkBtn').textContent=ok?'✓ Copied':'Link';};
   $('copyInsightBtn').onclick=async()=>{const ok=await copyToClipboard(shareText);$('copyInsightBtn').textContent=ok?'✓ Copied':'Text';};
+
   $('insightsGrid').innerHTML=[
-    {title:`Through game ${through}`,    text:throughText},
-    {title:`Range G${rs}–${re}`,         text:rangeText},
-    {title:'vs. selected seasons',       text:compText},
-    {title:'Closest historical comp',    text:closestText},
-    {title:'Current pace projection',    text:projText},
-    {title:'⚠️ Range pace ≠ full season',text:`A ${re-rs+1}-game range reflects recent form, not guaranteed pace. Pace projections are calculations — not predictive models.`,caution:true},
+    {title:'Full season so far',  text:ins.throughText},
+    {title:`Range ${fromDate.slice(5)}–${toDate.slice(5)}`, text:ins.rangeText},
+    {title:'vs. selected seasons',text:ins.compText},
+    {title:'Closest historical comp',text:ins.closestText},
+    {title:'Current pace projection',text:ins.projText},
+    {title:'⚠️ Range pace ≠ full season',
+     text:`A date range reflects recent form, not guaranteed pace. Projections are pace calculations — not predictive models.`,
+     caution:true},
   ].map(c=>`<div class="insight-card${c.caution?' insight-caution':''}">
     <div class="insight-card-title">${c.title}</div>
     <div class="insight-card-body">${c.text}</div>
   </div>`).join('');
 }
 
-/* ══════════════════════════════════════════════════════
-   PRESET MANAGEMENT
-══════════════════════════════════════════════════════ */
-function setActivePreset(key){
-  activePreset=key;
-  document.querySelectorAll('.preset-btn').forEach(b=>b.classList.toggle('active',b.dataset.preset===key));
-}
-function clearActivePreset(){
-  activePreset=null;
-  document.querySelectorAll('.preset-btn').forEach(b=>b.classList.remove('active'));
-}
-function applyPreset(key){
-  const through=clamp($('throughInput').value,1,162);
-  const ranges=presetRanges(through,through);
-  const r=ranges[key];
-  if(!r) return;
-  $('rangeStartInput').value=r.rs;
-  $('rangeEndInput').value=r.re;
-  setActivePreset(key);
-  userChangedInputs=false;
+/* ═══════════════════════════════════════════════════════
+   SHARE
+═══════════════════════════════════════════════════════ */
+async function copyToClipboard(text){
+  try{await navigator.clipboard.writeText(text);return true;}
+  catch{window.prompt('Copy this:',text);return false;}
 }
 
-/* ══════════════════════════════════════════════════════
+/* ═══════════════════════════════════════════════════════
    MAIN UPDATE
-══════════════════════════════════════════════════════ */
+═══════════════════════════════════════════════════════ */
 async function update(){
   try{
     $('statusCard').style.display='';
@@ -1368,152 +1146,156 @@ async function update(){
     $('errorBox').classList.add('hidden');
     $('statusMsg').style.display='flex';
 
-    const teamId  =$('teamSelect').value;
-    const teamName=$('teamSelect').options[$('teamSelect').selectedIndex]?.text||'—';
-    const year    =Number($('currentSeasonSelect').value);
-    const years   =[...$('seasonChecks').querySelectorAll('input:checked')]
-                    .map(e=>Number(e.value)).sort((a,b)=>b-a);
+    const teamId   = $('teamSelect').value;
+    const teamName = $('teamSelect').options[$('teamSelect').selectedIndex]?.text||'—';
+    const year     = Number($('currentSeasonSelect').value);
+    const years    = [...$('seasonChecks').querySelectorAll('input:checked')]
+                       .map(e=>Number(e.value)).sort((a,b)=>b-a);
     if(!years.length) throw new Error('Select at least one comparison season.');
 
-    $('statusText').textContent=`Loading ${teamName} ${year}…`;
+    const fromDate = $('dateFrom').value;
+    const toDate   = $('dateTo').value;
+    if(!fromDate||!toDate) throw new Error('Select a date range.');
 
-    const allData=await Promise.all(years.map(async y=>{
+    $('statusText').textContent = `Loading ${teamName} ${year}…`;
+
+    const allData = await Promise.all(years.map(async y=>{
       $('statusText').textContent=`Loading ${y} schedule…`;
-      return{year:y,games:await loadSchedule(teamId,y)};
+      return{year:y, games: await loadSchedule(teamId,y)};
     }));
 
-    const curData=allData.find(d=>d.year===year);
-    if(!curData) throw new Error(`No ${year} data found.`);
+    const curData = allData.find(d=>d.year===year);
+    if(!curData) throw new Error(`No ${year} data.`);
+    const curGames   = curData.games;
+    const rangeGames = gamesInDateRange(curGames, fromDate, toDate);
+    const curRec     = recordFromGames(curGames);
+    const rangeRec   = recordFromGames(rangeGames);
+    const proj       = projectWins(curRec);
 
-    const through=clamp($('throughInput').value,1,162);
-    const rs=clamp($('rangeStartInput').value,1,162);
-    const re=clamp($('rangeEndInput').value,1,162);
-    const rangeStart=Math.min(rs,re),rangeEnd=Math.max(rs,re);
+    /* Store for chart re-draw */
+    currentTeamId   = Number(teamId);
+    currentGames    = curGames;
+    currentTeamName = teamName;
 
-    const cg=curData.games;
-    const cThru=recordThrough(cg,through);
-    const cRange=recordInRange(cg,rangeStart,rangeEnd);
-    const curSeason=recordThrough(cg,cg.length);
-    const proj=projectWins(curSeason);
-
-    /* Store for moment rendering */
-    currentTeamId=Number(teamId);
-    currentGames=cg;
-    currentTeamName=teamName;
-
-    /* URL update */
-    setUrlParams(teamId,year,through,rangeStart,rangeEnd,activeSinceGame);
+    setUrlParams(teamId, year, fromDate, toDate, activeSinceDate);
 
     /* Hero */
     const logoUrl=`https://www.mlbstatic.com/team-logos/${teamId}.svg`;
-    $('heroLogo').src=logoUrl; $('heroLogo').alt=teamName+' logo';
-    $('heroLogo').style.display='block'; $('heroFallback').style.display='none';
+    $('heroLogo').src=logoUrl; $('heroLogo').style.display='block'; $('heroFallback').style.display='none';
     $('heroEyebrow').textContent=`MLB · ${year} season`;
     $('heroName').textContent=teamName;
-    $('heroRecord').innerHTML=`<strong>${curSeason.w}–${curSeason.l}</strong> · ${cg.length} GP · Pace proj. ${proj??'—'}W`;
+    $('heroRecord').innerHTML=`<strong>${curRec.w}–${curRec.l}</strong> · ${curGames.length} GP · Pace proj. ${proj??'—'}W`;
     $('teamHero').style.display='flex';
-
-    /* Nav */
     $('navTeamLogo').src=logoUrl; $('navTeamLogo').style.display='block';
     $('navTeamName').textContent=teamName;
     $('navTeamWrap').classList.add('visible');
     document.title=`${teamName} — Track The Season`;
 
     /* Metrics */
-    $('mTeam').textContent   =teamName;
-    $('mSeason').textContent =`${year} regular season`;
-    $('mThroughLabel').textContent=`Through game ${through}`;
-    $('mThrough').textContent=`${cThru.w}–${cThru.l}`;
-    $('mThroughPct').textContent=`${fmtPct(winPct(cThru.w,cThru.l))} · ${cThru.g} GP`;
-    $('mRangeLabel').textContent=`Range G${rangeStart}–${rangeEnd}`;
-    $('mRange').textContent  =cRange.g>0?`${cRange.w}–${cRange.l}`:'—';
-    $('mRangePct').textContent=cRange.g>0?`${fmtPct(winPct(cRange.w,cRange.l))} · ${cRange.g} games`:'No games in range';
-    $('mProjection').textContent=proj!=null?`${proj} W`:'—';
-    $('mPace').textContent   =`${curSeason.w}–${curSeason.l} · ${cg.length} GP`;
+    $('mTeam').textContent  = teamName;
+    $('mSeason').textContent= `${year} regular season`;
+    $('mFullLabel').textContent = `Full season`;
+    $('mFull').textContent  = curRec.g>0 ? `${curRec.w}–${curRec.l}` : '—';
+    $('mFullSub').textContent   = curRec.g>0 ? `${fmtPct(winPct(curRec.w,curRec.l))} · ${curRec.g} GP` : '—';
+    $('mRangeLabel').textContent= `${fromDate.slice(5)} – ${toDate.slice(5)}`;
+    $('mRange').textContent = rangeRec.g>0 ? `${rangeRec.w}–${rangeRec.l}` : '—';
+    $('mRangePct').textContent  = rangeRec.g>0 ? `${fmtPct(winPct(rangeRec.w,rangeRec.l))} · ${rangeRec.g} games` : 'No games in range';
+    $('mProjection').textContent= proj!=null ? `${proj} W` : '—';
+    $('mPace').textContent      = `${curRec.w}–${curRec.l} · ${curGames.length} GP`;
 
-    /* Notable moments */
-    const moments=getMomentsForTeam(Number(teamId),year,cg);
-    renderMomentsStrip(moments,cg,teamName,Number(teamId),year);
-    /* Reset since card if team changed */
-    if(activeSinceGame&&!moments.find(m=>m.game===activeSinceGame)){
-      dismissSinceCard();
-    }
+    /* Moments from Google Sheets */
+    const moments = getMomentsForTeamSeason(Number(teamId), year, curGames);
+    renderMomentsStrip(moments, curGames, teamName, Number(teamId), year);
+    if(activeSinceDate && !moments.find(m=>m.date===activeSinceDate)) dismissSince();
 
-    /* Chart — pass moments for pin rendering */
-    const sorted=[...allData].sort((a,b)=>a.year===year?-1:b.year===year?1:b.year-a.year);
-    const series=buildSeries(sorted,year,rangeStart,rangeEnd);
-    drawChart(series,rangeStart,rangeEnd,chartMode,moments.filter(m=>m.game<=cg.length));
-    const titles={cumulative:'Cumulative wins by game',range:`Wins inside G${rangeStart}–${rangeEnd}`,pct:'Win % by game'};
-    $('chartTitle').textContent=titles[chartMode];
-    $('chartLegend').innerHTML=series.map(s=>`<span><span class="legend-dot" style="background:${s.color}"></span>${s.label}${s.projected?' (proj.)':''}</span>`).join('');
+    /* Chart */
+    const sorted = [...allData].sort((a,b)=>a.year===year?-1:b.year===year?1:b.year-a.year);
+    const series = buildSeries(sorted, year, fromDate, toDate);
+    drawChart(series, fromDate, toDate, chartMode, moments);
+    $('chartTitle').textContent = chartMode==='cumulative'?'Cumulative wins by game':chartMode==='range'?`Wins in selected range`:'Win % by game';
+    $('chartLegend').innerHTML  = series.map(s=>`<span><span class="legend-dot" style="background:${s.color}"></span>${s.label}${s.projected?' (proj.)':''}</span>`).join('');
 
-    /* Tables */
-    renderThroughTable(allData,year,through);
-    renderRangeTable(allData,year,rangeStart,rangeEnd);
-
-    /* Insights */
-    renderInsights({teamName,year,through,rs:rangeStart,re:rangeEnd,curData,allData});
+    renderThroughTable(allData, year);
+    renderRangeTable(allData, year, fromDate, toDate);
+    renderInsights({teamName, year, fromDate, toDate, curGames, allData, rangeGames});
 
     /* Preset detection */
-    const matched=detectPreset(rangeStart,rangeEnd,through,cg.length);
-    if(matched) setActivePreset(matched);
+    const matched = detectPreset(fromDate, toDate, curGames, year);
+    if(matched) setActivePreset(matched); else clearActivePreset();
 
     $('statusCard').style.display='none';
     $('resultsWrap').classList.remove('hidden');
 
   }catch(err){
     $('statusMsg').style.display='none';
-    $('errorBox').textContent=`Error: ${err.message}. If running locally, serve via a local server or deploy to Vercel/Netlify.`;
+    $('errorBox').textContent=`Error: ${err.message}`;
     $('errorBox').classList.remove('hidden');
   }
 }
 
-/* ══════════════════════════════════════════════════════
+/* ═══════════════════════════════════════════════════════
    INIT
-══════════════════════════════════════════════════════ */
+═══════════════════════════════════════════════════════ */
 function populateSeasons(){
   const y=curYear();
-  $('currentSeasonSelect').innerHTML=Array.from({length:9},(_,i)=>y-i).map(yr=>`<option value="${yr}">${yr}</option>`).join('');
+  $('currentSeasonSelect').innerHTML=Array.from({length:9},(_,i)=>y-i)
+    .map(yr=>`<option value="${yr}">${yr}</option>`).join('');
   $('currentSeasonSelect').value=y;
   renderSeasonChecks();
 }
+
 function renderSeasonChecks(){
   const y=Number($('currentSeasonSelect').value);
   $('seasonChecks').innerHTML=Array.from({length:7},(_,i)=>y-i).map(yr=>`
     <label class="check-item"><input type="checkbox" value="${yr}" ${yr>=y-4?'checked':''}/>${yr}</label>`).join('');
 }
 
+/* Apply a preset to the date inputs */
+function applyPreset(key, games, season){
+  const p = computePresetDates(key, games, season);
+  $('dateFrom').value = p.from;
+  $('dateTo').value   = p.to;
+  setActivePreset(key);
+}
+
 async function init(){
   try{
-    const urlParams=getUrlParams();
-    const teams=await loadTeams();
-    $('teamSelect').innerHTML=teams.map(t=>`<option value="${t.id}">${t.name}</option>`).join('');
+    /* Load moments from Google Sheets first (non-blocking) */
+    loadMomentsFromSheet().then(m=>{ allMoments=m; });
+
+    const urlParams = getUrlParams();
+    const teams     = await loadTeams();
+    $('teamSelect').innerHTML = teams.map(t=>`<option value="${t.id}">${t.name}</option>`).join('');
+
     if(urlParams.team&&teams.find(t=>t.id===urlParams.team)){
       $('teamSelect').value=urlParams.team;
     } else {
       const def=teams.find(t=>t.id===DEFAULT_TEAM)||teams[0];
       if(def) $('teamSelect').value=def.id;
     }
+
     populateSeasons();
     if(urlParams.season){
       const yr=String(urlParams.season);
       if([...$('currentSeasonSelect').options].some(o=>o.value===yr)){
-        $('currentSeasonSelect').value=yr;renderSeasonChecks();
+        $('currentSeasonSelect').value=yr; renderSeasonChecks();
       }
     }
-    const teamId=$('teamSelect').value;
-    const year=Number($('currentSeasonSelect').value);
-    const cg=await loadSchedule(teamId,year);
-    const completedGP=cg.length;
-    const defaults=computeDefaults(completedGP,urlParams);
-    $('throughInput').value=defaults.through;
-    $('rangeStartInput').value=defaults.rs;
-    $('rangeEndInput').value=defaults.re;
-    const matched=detectPreset(defaults.rs,defaults.re,defaults.through,completedGP);
-    if(matched) setActivePreset(matched);
-    else if(!urlParams.rs&&!urlParams.re) setActivePreset('last10');
-    /* Restore since from URL */
-    if(urlParams.since) activeSinceGame=urlParams.since;
+
+    /* Load current season to calculate default dates */
+    const teamId = $('teamSelect').value;
+    const season = Number($('currentSeasonSelect').value);
+    const cg     = await loadSchedule(teamId, season);
+
+    if(urlParams.from && urlParams.to){
+      $('dateFrom').value = urlParams.from;
+      $('dateTo').value   = urlParams.to;
+      if(urlParams.since) activeSinceDate = urlParams.since;
+    } else {
+      /* Default: last 10 games */
+      applyPreset('last10', cg, season);
+    }
+
     await update();
   }catch(err){
     $('statusMsg').style.display='none';
@@ -1522,67 +1304,66 @@ async function init(){
   }
 }
 
-/* ══════════════════════════════════════════════════════
+/* ═══════════════════════════════════════════════════════
    EVENT LISTENERS
-══════════════════════════════════════════════════════ */
-$('runBtn').addEventListener('click',update);
+═══════════════════════════════════════════════════════ */
+$('runBtn').addEventListener('click', update);
 
-$('resetBtn').addEventListener('click',async()=>{
-  userChangedInputs=false;
-  dismissSinceCard();
-  const cg=await loadSchedule($('teamSelect').value,Number($('currentSeasonSelect').value));
-  const gp=cg.length;
-  $('throughInput').value=gp;
-  $('rangeStartInput').value=Math.max(1,gp-9);
-  $('rangeEndInput').value=gp;
-  setActivePreset('last10');
+$('resetBtn').addEventListener('click', async()=>{
+  const cg = await loadSchedule($('teamSelect').value, Number($('currentSeasonSelect').value));
+  applyPreset('last10', cg, Number($('currentSeasonSelect').value));
+  dismissSince();
   update();
 });
 
-$('sinceClose').addEventListener('click',()=>{
-  dismissSinceCard();
-  /* Redraw chart without since shading */
+$('sinceClose').addEventListener('click', ()=>{
+  dismissSince();
   if(lastSeries.length){
-    const moments=getMomentsForTeam(currentTeamId,Number($('currentSeasonSelect').value),currentGames);
-    drawChart(lastSeries,lastRS,lastRE,chartMode,moments.filter(m=>m.game<=currentGames.length));
+    const season   = Number($('currentSeasonSelect').value);
+    const moments  = getMomentsForTeamSeason(currentTeamId, season, currentGames);
+    drawChart(lastSeries, $('dateFrom').value, $('dateTo').value, chartMode, moments);
   }
 });
 
-$('currentSeasonSelect').addEventListener('change',renderSeasonChecks);
+$('currentSeasonSelect').addEventListener('change', renderSeasonChecks);
 
-$('teamSelect').addEventListener('change',()=>{
-  dismissSinceCard();
+$('teamSelect').addEventListener('change', ()=>{
+  dismissSince();
   const url=new URL(window.location.href);
   url.searchParams.set('team',$('teamSelect').value);
-  window.history.replaceState({},'',url);
+  window.history.replaceState({},'',$url);
 });
 
+/* Date input manual change clears preset */
+[$('dateFrom'),$('dateTo')].forEach(inp=>{
+  inp.addEventListener('change',()=>{
+    const matched=detectPreset($('dateFrom').value,$('dateTo').value,currentGames,Number($('currentSeasonSelect').value));
+    if(matched) setActivePreset(matched); else clearActivePreset();
+  });
+});
+
+/* Preset buttons */
+document.querySelectorAll('.preset-btn').forEach(btn=>{
+  btn.addEventListener('click', async()=>{
+    const cg = currentGames.length
+      ? currentGames
+      : await loadSchedule($('teamSelect').value, Number($('currentSeasonSelect').value));
+    applyPreset(btn.dataset.preset, cg, Number($('currentSeasonSelect').value));
+  });
+});
+
+/* Chart toggle */
 document.querySelectorAll('.toggle-btn').forEach(btn=>{
   btn.addEventListener('click',()=>{
     document.querySelectorAll('.toggle-btn').forEach(b=>b.classList.remove('active'));
     btn.classList.add('active');
-    chartMode=btn.dataset.mode;
-    const titles={cumulative:'Cumulative wins by game',range:`Wins inside G${lastRS}–${lastRE}`,pct:'Win % by game'};
-    $('chartTitle').textContent=titles[chartMode];
+    chartMode = btn.dataset.mode;
     if(lastSeries.length){
-      const moments=getMomentsForTeam(currentTeamId,Number($('currentSeasonSelect').value),currentGames);
-      drawChart(lastSeries,lastRS,lastRE,chartMode,moments.filter(m=>m.game<=currentGames.length));
+      const season  = Number($('currentSeasonSelect').value);
+      const moments = getMomentsForTeamSeason(currentTeamId, season, currentGames);
+      drawChart(lastSeries, $('dateFrom').value, $('dateTo').value, chartMode, moments);
+      $('chartTitle').textContent = chartMode==='cumulative'?'Cumulative wins by game':chartMode==='range'?'Wins in selected range':'Win % by game';
     }
-  });
-});
-
-document.querySelectorAll('.preset-btn').forEach(btn=>{
-  btn.addEventListener('click',()=>applyPreset(btn.dataset.preset));
-});
-
-[$('rangeStartInput'),$('rangeEndInput'),$('throughInput')].forEach(inp=>{
-  inp.addEventListener('input',()=>{
-    userChangedInputs=true;
-    const through=clamp($('throughInput').value,1,162);
-    const rs=clamp($('rangeStartInput').value,1,162);
-    const re=clamp($('rangeEndInput').value,1,162);
-    const matched=detectPreset(Math.min(rs,re),Math.max(rs,re),through,through);
-    if(matched) setActivePreset(matched); else clearActivePreset();
   });
 });
 
