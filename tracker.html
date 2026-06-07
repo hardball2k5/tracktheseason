@@ -892,10 +892,10 @@ function drawChart(series, rs, re, mode, moments=[]){
     t.textContent=x; svg.appendChild(t);
   });
 
-  /* Moment pins */
+  /* Moment pins — find game number from date using currentGames */
   const typeColors={coaching:'#a78bfa',trade:'#38bdf8',injury:'#fb923c',callup:'#1aff6b',milestone:'#f472b6',other:'#f5c842'};
   for(const m of moments){
-    const g = curSeries?.games.find(g=>g.date>=m.date);
+    const g = currentGames.find(g=>g.date>=m.date);
     if(!g) continue;
     const x = sx(g.gameNo), col = typeColors[m.type]||'#8a8a82';
     const isActive = activeSinceDate===m.date;
@@ -910,7 +910,7 @@ function drawChart(series, rs, re, mode, moments=[]){
   for(const s of series){
     if(!s.points.length) continue;
     const yKey = mode==='range'?'rw':mode==='pct'?'pct':'wins';
-    let pts = mode==='range' ? s.points.filter(pt=>pt.game>=fromGame&&pt.game<=toGame) : s.points;
+    let pts = mode==='range' ? s.points.filter(pt=>pt.game>=rs&&pt.game<=re) : s.points;
     if(!pts.length) continue;
     const d = pts.map((pt,i)=>`${i?'L':'M'}${sx(pt.game).toFixed(1)},${sy(pt[yKey]??0).toFixed(1)}`).join(' ');
     const path=el('path',{d,fill:'none',stroke:s.color,'stroke-width':s.current?3:1.8,'stroke-linecap':'round','stroke-linejoin':'round'});
