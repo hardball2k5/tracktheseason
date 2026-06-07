@@ -1475,10 +1475,20 @@ function openModal(team,curGames,prevGames){
     </table>
     <div class="modal-share">
       <a class="share-btn share-btn-x" href="${xShareUrl(shareText)}" target="_blank" rel="noopener">𝕏 Post to X</a>
-      <button class="share-btn share-btn-copy" onclick="copyToClipboard('${fullUrl.replace(/'/g,"\\'")}').then(ok=>this.textContent=ok?'✓ Copied':'Link')">⧉ Copy link</button>
-      <button class="share-btn share-btn-copy" onclick="copyToClipboard(${JSON.stringify(shareText)}).then(ok=>this.textContent=ok?'✓ Copied':'Text')">✦ Copy insight</button>
+      <button class="share-btn share-btn-copy" id="modalCopyLink">⧉ Copy link</button>
+      <button class="share-btn share-btn-copy" id="modalCopyInsight">✦ Copy insight</button>
     </div>
     <a class="modal-cta" href="${url}">Full tracker → ${team.clubName||team.name} ↗</a>`;
+
+  /* Wire copy buttons after innerHTML is set — avoids inline onclick quote escaping issues */
+  document.getElementById('modalCopyLink').addEventListener('click', async function(){
+    const ok = await copyToClipboard(fullUrl);
+    this.textContent = ok ? '✓ Copied' : 'Link';
+  });
+  document.getElementById('modalCopyInsight').addEventListener('click', async function(){
+    const ok = await copyToClipboard(shareText);
+    this.textContent = ok ? '✓ Copied' : 'Text';
+  });
 
   document.getElementById('modalOverlay').classList.add('open');
   document.body.style.overflow='hidden';
