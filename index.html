@@ -678,6 +678,30 @@ body{
 /* ── MORE STORIES header ─────────────── */
 #moreStoriesSection{padding-top:10px}
 
+/* ── SHARE SYSTEM ────────────────────── */
+.share-btn-primary{background:var(--signal);color:var(--ink);border:none;font-weight:700}
+.share-btn-primary:hover{filter:brightness(1.08)}
+.share-menu-backdrop{position:fixed;inset:0;z-index:299}
+.share-menu{
+  position:fixed;z-index:300;
+  background:var(--ink2);border:1px solid rgba(255,255,255,.18);
+  border-radius:var(--r-lg);padding:6px;min-width:200px;
+  box-shadow:0 16px 48px rgba(0,0,0,.6),0 4px 16px rgba(0,0,0,.4);
+  animation:menuPop .16s cubic-bezier(.22,1,.36,1) both;
+}
+@keyframes menuPop{from{opacity:0;transform:scale(.94) translateY(4px)}to{opacity:1;transform:scale(1) translateY(0)}}
+.share-menu-title{font-family:var(--mono);font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.25);padding:6px 10px 8px;border-bottom:1px solid var(--rule);margin-bottom:4px}
+.share-menu-item{display:flex;align-items:center;gap:10px;width:100%;padding:9px 10px;border-radius:var(--r-sm);border:none;background:transparent;color:rgba(255,255,255,.8);font-family:var(--mono);font-size:12px;font-weight:600;cursor:pointer;text-decoration:none;transition:background .12s,color .12s;white-space:nowrap}
+.share-menu-item:hover{background:var(--ink3);color:#e8edf8}
+.share-menu-item-icon{width:26px;height:26px;border-radius:var(--r-xs);display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0}
+.share-menu-item-icon.x-icon  {background:#000;color:#fff}
+.share-menu-item-icon.fb-icon {background:#1877f2;color:#fff}
+.share-menu-item-icon.rd-icon {background:#ff4500;color:#fff}
+.share-menu-item-icon.th-icon {background:#000;color:#fff}
+.share-menu-item-icon.bs-icon {background:#0085ff;color:#fff}
+.share-menu-item-icon.cp-icon {background:var(--ink3);color:var(--chalk)}
+.share-menu-divider{height:1px;background:var(--rule);margin:4px 0}
+
 /* ── FOOTER ──────────────────────────── */
 .site-footer{
   border-top:1px solid var(--rule);padding:18px 0 32px;
@@ -1043,13 +1067,101 @@ async function copyToClipboard(text){
   catch{window.prompt('Copy this:',text);return false;}
 }
 
-/* Brand-forward share text with @TrackTheSeason */
-function buildShareText(teamName,w,l,gp,proj,l10Rec,teamId){
-  const clubSlug=teamName.split(' ').pop().toLowerCase();
-  const url=`https://tracktheseason.com/${trackerUrl(teamId,gp)}`;
-  return `${teamName} pace check:\n${w}–${l} through ${gp} games.\nPace: ${proj??'—'} wins.\nLast 10: ${l10Rec.w}–${l10Rec.l}.\n\n${url}\n\nvia @TrackTheSeason #TrackTheSeason #${teamName.split(' ').map(w=>w[0].toUpperCase()+w.slice(1)).join('')}`;
+/* Dynamic share text per spec */
+function buildDynamicShareText(teamName, w, l, gp, delta, compareYear){
+  const paceDesc = delta > 0 ? `${delta} win${delta!==1?'s':''} ahead of their ${compareYear} pace`
+                 : delta < 0 ? `${Math.abs(delta)} win${Math.abs(delta)!==1?'s':''} behind their ${compareYear} pace`
+                 : `even with their ${compareYear} pace`;
+  const slug = teamName.replace(/\s+/g,'');
+  return `The ${teamName} are ${w}-${l} through ${gp} games, ${paceDesc}. Track every MLB team's season at TrackTheSeason.\n\n#TrackTheSeason #${slug} #MLB`;
 }
 
+/* Copy URL with 2s timed feedback */
+async function copyLinkWithFeedback(btn, url){
+  const original = btn.textContent;
+  const ok = await copyToClipboard(url);
+  btn.textContent = ok ? '✓ Copied!' : 'Copy failed';
+  setTimeout(()=>{ btn.textContent = original; }, 2000);
+}
+
+/* Platform share URLs */
+function platformShareUrl(platform, text, url){
+  const t=encodeURIComponent(text), u=encodeURIComponent(url);
+  switch(platform){
+    case 'x':        return `https://x.com/intent/tweet?text=${t}`;
+    case 'facebook': return `https://www.facebook.com/sharer/sharer.php?u=${u}`;
+    case 'reddit':   return `https://www.reddit.com/submit?url=${u}&title=${t}`;
+    case 'threads':  return `https://www.threads.net/intent/post?text=${t}`;
+    case 'bluesky':  return `https://bsky.app/intent/compose?text=${t}`;
+  }
+}
+
+function hideShareMenu(){
+  document.getElementById('shareMenuBackdrop')?.remove();
+  document.getElementById('shareMenuPopup')?.remove();
+}
+
+function showShareMenu(triggerBtn, shareText, shareUrl){
+  hideShareMenu();
+  const bd=document.createElement('div');
+  bd.id='shareMenuBackdrop'; bd.className='share-menu-backdrop';
+  bd.addEventListener('click',hideShareMenu);
+  document.body.appendChild(bd);
+
+  const menu=document.createElement('div');
+  menu.id='shareMenuPopup'; menu.className='share-menu';
+  menu.innerHTML=`
+    <div class="share-menu-title">Share via</div>
+    <button class="share-menu-item" id="smCopyLink">
+      <span class="share-menu-item-icon cp-icon">⧉</span>Copy link
+    </button>
+    <div class="share-menu-divider"></div>
+    <a class="share-menu-item" href="${platformShareUrl('x',shareText,shareUrl)}" target="_blank" rel="noopener">
+      <span class="share-menu-item-icon x-icon">𝕏</span>X (Twitter)
+    </a>
+    <a class="share-menu-item" href="${platformShareUrl('threads',shareText,shareUrl)}" target="_blank" rel="noopener">
+      <span class="share-menu-item-icon th-icon">@</span>Threads
+    </a>
+    <a class="share-menu-item" href="${platformShareUrl('bluesky',shareText,shareUrl)}" target="_blank" rel="noopener">
+      <span class="share-menu-item-icon bs-icon">🦋</span>Bluesky
+    </a>
+    <a class="share-menu-item" href="${platformShareUrl('facebook',shareText,shareUrl)}" target="_blank" rel="noopener">
+      <span class="share-menu-item-icon fb-icon">f</span>Facebook
+    </a>
+    <a class="share-menu-item" href="${platformShareUrl('reddit',shareText,shareUrl)}" target="_blank" rel="noopener">
+      <span class="share-menu-item-icon rd-icon">↑</span>Reddit
+    </a>`;
+  document.body.appendChild(menu);
+
+  menu.querySelector('#smCopyLink').addEventListener('click',async()=>{
+    const ok=await copyToClipboard(shareUrl);
+    const btn=menu.querySelector('#smCopyLink');
+    btn.querySelector('.share-menu-item-icon').textContent=ok?'✓':'⧉';
+    btn.childNodes[1].textContent=ok?'Copied!':'Copy link';
+    if(ok) setTimeout(hideShareMenu,800);
+  });
+
+  /* Position near trigger */
+  const rect=triggerBtn.getBoundingClientRect();
+  const menuH=280;
+  const top=(rect.top+window.scrollY-menuH-8>0)
+    ?rect.top+window.scrollY-menuH-8
+    :rect.bottom+window.scrollY+8;
+  const left=Math.min(Math.max(8,rect.left+window.scrollX-8),window.innerWidth-216);
+  menu.style.top=`${top}px`; menu.style.left=`${left}px`;
+  menu.querySelectorAll('a').forEach(a=>a.addEventListener('click',()=>setTimeout(hideShareMenu,300)));
+}
+
+async function doShare(triggerBtn, shareText, shareUrl, shareTitle='Track The Season'){
+  if(navigator.share){
+    try{ await navigator.share({title:shareTitle,text:shareText,url:shareUrl}); }
+    catch(e){ if(e.name!=='AbortError') console.warn('Share failed:',e.message); }
+  } else {
+    showShareMenu(triggerBtn,shareText,shareUrl);
+  }
+}
+
+/* Legacy — kept for any remaining internal references */
 function xShareUrl(text){
   return 'https://x.com/intent/tweet?text='+encodeURIComponent(text);
 }
@@ -1118,10 +1230,12 @@ function buildStories(allData){
     heroStat=`${hlast.cumWins}–${hlast.cumLosses} · ${hproj?hproj+'W pace':''}`;
   }
 
-  /* Share text */
-  const shareText=`${heroEyebrow}\n\n${hname}: ${hlast.cumWins}–${hlast.cumLosses} through ${hgp} games.${hproj?' '+hproj+'-win pace.':''}\n\nHow is your team tracking?\ntracktheseason.com\n\nvia @TrackTheSeason #TrackTheSeason #MLB`;
-  const xUrl='https://x.com/intent/tweet?text='+encodeURIComponent(shareText);
-  const logoUrl=`https://www.mlbstatic.com/team-logos/${hero.team.team.id}.svg`;
+  /* Share for hero — computed from hero data */
+  const heroShareText = buildDynamicShareText(
+    hname, hlast.cumWins, hlast.cumLosses, hgp,
+    hero.delta ?? 0, COMPARE_YEAR
+  );
+  const heroPageUrl = `https://tracktheseason.com/${hurl}`;
 
   document.getElementById('todaysStoryHero').innerHTML=`
     <div class="tsh-inner">
@@ -1138,9 +1252,13 @@ function buildStories(allData){
       </div>
       <div class="tsh-actions">
         <a class="tsh-cta" href="${hurl}">Track the ${hname} →</a>
-        <a class="tsh-share" href="${xUrl}" target="_blank" rel="noopener">𝕏 Share</a>
+        <button class="tsh-share" id="heroShareBtn">⬆ Share</button>
       </div>
     </div>`;
+
+  document.getElementById('heroShareBtn').addEventListener('click', function(){
+    doShare(this, heroShareText, heroPageUrl, `${hname} — Track The Season`);
+  });
   document.getElementById('todaysStorySection').style.display='block';
 
   /* 4 supporting story cards */
@@ -1446,8 +1564,12 @@ function openModal(team,curGames,prevGames){
     </tr>`;
   }).join('');
 
-  const shareText=buildShareText(team.name,w,l,gp,proj,l10,team.id);
-  const fullUrl='https://tracktheseason.com/'+url;
+  /* Build delta for dynamic share text */
+  const prevAtGP   = prevGames.slice(0, gp);
+  const prevWinsAtGP = prevAtGP.filter(g=>g.win).length;
+  const delta      = gp > 0 && prevGames.length >= gp ? w - prevWinsAtGP : 0;
+  const dynShareTxt= buildDynamicShareText(team.name, w, l, gp, delta, COMPARE_YEAR);
+  const fullUrl    = 'https://tracktheseason.com/'+url;
 
   document.getElementById('modalBody').innerHTML=`
     <div class="modal-stats">
@@ -1474,20 +1596,16 @@ function openModal(team,curGames,prevGames){
       <tbody>${cRows}</tbody>
     </table>
     <div class="modal-share">
-      <a class="share-btn share-btn-x" href="${xShareUrl(shareText)}" target="_blank" rel="noopener">𝕏 Post to X</a>
-      <button class="share-btn share-btn-copy" id="modalCopyLink">⧉ Copy link</button>
-      <button class="share-btn share-btn-copy" id="modalCopyInsight">✦ Copy insight</button>
+      <button class="share-btn share-btn-primary" id="modalShareBtn">⬆ Share</button>
+      <button class="share-btn share-btn-copy"    id="modalCopyLink">⧉ Copy link</button>
     </div>
     <a class="modal-cta" href="${url}">Full tracker → ${team.clubName||team.name} ↗</a>`;
 
-  /* Wire copy buttons after innerHTML is set — avoids inline onclick quote escaping issues */
-  document.getElementById('modalCopyLink').addEventListener('click', async function(){
-    const ok = await copyToClipboard(fullUrl);
-    this.textContent = ok ? '✓ Copied' : 'Link';
+  document.getElementById('modalShareBtn').addEventListener('click', function(){
+    doShare(this, dynShareTxt, fullUrl, `${team.name} — Track The Season`);
   });
-  document.getElementById('modalCopyInsight').addEventListener('click', async function(){
-    const ok = await copyToClipboard(shareText);
-    this.textContent = ok ? '✓ Copied' : 'Text';
+  document.getElementById('modalCopyLink').addEventListener('click', function(){
+    copyLinkWithFeedback(this, fullUrl);
   });
 
   document.getElementById('modalOverlay').classList.add('open');

@@ -183,11 +183,72 @@ input[type="number"].ctrl-input::-webkit-inner-spin-button{-webkit-appearance:no
 .since-text strong{color:#e8edf8;font-weight:600}
 .since-text .hi{color:var(--signal);font-weight:600}
 .since-share{display:flex;gap:7px;margin-top:10px;flex-wrap:wrap}
-.since-share-btn{display:inline-flex;align-items:center;gap:5px;font-family:var(--mono);font-size:11px;font-weight:600;padding:6px 12px;border-radius:var(--r-sm);cursor:pointer;transition:all .13s;letter-spacing:.02em}
-.since-share-btn-x{background:var(--ink);color:#e8edf8;border:1px solid rgba(255,255,255,.18)}
-.since-share-btn-x:hover{border-color:rgba(255,255,255,.35)}
-.since-share-btn-copy{background:transparent;color:var(--chalk);border:1px solid var(--rule)}
-.since-share-btn-copy:hover{border-color:var(--signal);color:var(--signal)}
+/* ── SHARE SYSTEM ────────────────────────────────── */
+/* Primary share button */
+.share-btn-primary{
+  background:var(--signal);color:var(--ink);border:none;
+  font-weight:700;
+}
+.share-btn-primary:hover{filter:brightness(1.08)}
+
+/* Floating share menu */
+.share-menu-backdrop{
+  position:fixed;inset:0;z-index:299;
+}
+.share-menu{
+  position:fixed;z-index:300;
+  background:var(--ink2);border:1px solid rgba(255,255,255,.18);
+  border-radius:var(--r-lg);
+  padding:6px;
+  min-width:200px;
+  box-shadow:0 16px 48px rgba(0,0,0,.6),0 4px 16px rgba(0,0,0,.4);
+  animation:menuPop .16s cubic-bezier(.22,1,.36,1) both;
+}
+@keyframes menuPop{
+  from{opacity:0;transform:scale(.94) translateY(4px)}
+  to  {opacity:1;transform:scale(1)   translateY(0)}
+}
+.share-menu-title{
+  font-family:var(--mono);font-size:9px;font-weight:700;
+  letter-spacing:.12em;text-transform:uppercase;
+  color:rgba(255,255,255,.25);
+  padding:6px 10px 8px;
+  border-bottom:1px solid var(--rule);
+  margin-bottom:4px;
+}
+.share-menu-item{
+  display:flex;align-items:center;gap:10px;width:100%;
+  padding:9px 10px;border-radius:var(--r-sm);border:none;
+  background:transparent;color:rgba(255,255,255,.8);
+  font-family:var(--mono);font-size:12px;font-weight:600;
+  cursor:pointer;text-decoration:none;transition:background .12s,color .12s;
+  white-space:nowrap;
+}
+.share-menu-item:hover{background:var(--ink3);color:#e8edf8}
+.share-menu-item-icon{
+  width:26px;height:26px;border-radius:var(--r-xs);
+  display:flex;align-items:center;justify-content:center;
+  font-size:13px;flex-shrink:0;
+}
+.share-menu-item-icon.x-icon  {background:#000;color:#fff}
+.share-menu-item-icon.fb-icon {background:#1877f2;color:#fff}
+.share-menu-item-icon.rd-icon {background:#ff4500;color:#fff}
+.share-menu-item-icon.th-icon {background:#000;color:#fff}
+.share-menu-item-icon.bs-icon {background:#0085ff;color:#fff}
+.share-menu-item-icon.cp-icon {background:var(--ink3);color:var(--chalk)}
+.share-menu-divider{height:1px;background:var(--rule);margin:4px 0}
+
+/* since-share and insight-share use same base .share-btn */
+.since-share-btn{
+  display:inline-flex;align-items:center;gap:5px;
+  font-family:var(--mono);font-size:11px;font-weight:600;
+  padding:6px 12px;border-radius:var(--r-sm);cursor:pointer;
+  transition:all .13s;letter-spacing:.02em;
+}
+.since-share-btn.share-btn-primary{background:var(--signal);color:var(--ink);border:none;font-weight:700}
+.since-share-btn.share-btn-primary:hover{filter:brightness(1.08)}
+.since-share-btn.share-btn-copy-ui{background:transparent;color:var(--chalk);border:1px solid var(--rule)}
+.since-share-btn.share-btn-copy-ui:hover{border-color:var(--signal);color:var(--signal)}
 .moments-loading{font-family:var(--mono);font-size:11px;color:var(--chalk);padding:8px 14px}
 
 /* ── INSIGHTS ────────────────────────────── */
@@ -800,14 +861,18 @@ function renderSinceCard(moment, games, teamName, teamId, season){
     : `${teamName} — ${moment.label} (${moment.date})\n${sinceUrl}`;
 
   $('sinceShare').innerHTML = `
-    <a class="since-share-btn since-share-btn-x"
-       href="https://x.com/intent/tweet?text=${encodeURIComponent(txt)}"
-       target="_blank" rel="noopener">𝕏 Post to X</a>
-    <button class="since-share-btn since-share-btn-copy" id="sinceCopyBtn">⧉ Copy</button>`;
-  $('sinceCopyBtn').onclick = async() => {
-    const ok = await copyToClipboard(txt);
-    $('sinceCopyBtn').textContent = ok ? '✓ Copied' : 'Copy';
-  };
+    <button class="since-share-btn share-btn-primary" id="sinceShareBtn">⬆ Share</button>
+    <button class="since-share-btn share-btn-copy-ui" id="sinceCopyBtn">⧉ Copy link</button>`;
+
+  /* Wire: Share button */
+  $('sinceShareBtn').addEventListener('click', function(){
+    doShare(this, txt, sinceUrl,
+      `${teamName} since ${moment.label} — Track The Season`);
+  });
+  /* Wire: Copy link with 2s feedback */
+  $('sinceCopyBtn').addEventListener('click', function(){
+    copyLinkWithFeedback(this, sinceUrl);
+  });
 
   $('sinceCard').classList.remove('hidden');
   document.querySelectorAll('.moment-btn').forEach(b=>{
@@ -1102,14 +1167,25 @@ function renderInsights(params){
   $('heroBadge').className       = `hero-badge ${momentum.chipCls}`;
   $('paceStoryText').innerHTML   = ins.story;
 
-  const urlStr=`https://tracktheseason.com/tracker.html?team=${$('teamSelect').value}&season=${year}&rs=${rs}&re=${re}`;
-  const shareText=`${params.teamName} Pace Check:\n${curRec.w}–${curRec.l} through ${curRec.g} games.\nPace: ${ins.seasProj??'—'} wins.\nLast 10: ${ins.l10str}.\n\n${urlStr}\n\nvia @TrackTheSeason #TrackTheSeason`;
+  const urlStr = `https://tracktheseason.com/tracker.html?team=${$('teamSelect').value}&season=${year}&rs=${rs}&re=${re}`;
+
+  /* Build dynamic share text per spec */
+  const allData  = params.allData;
+  const prior    = allData.filter(d=>d.year!==year);
+  const delta    = prior.length ? curRec.w - (prior[0].games.slice(0,curRec.g).filter(g=>g.win).length) : 0;
+  const cmpYear  = prior.length ? prior[0].year : year-1;
+  const dynShare = buildDynamicShareText(params.teamName, curRec.w, curRec.l, curRec.g, delta, cmpYear);
+
   $('insightShare').innerHTML=`
-    <a class="share-btn share-btn-x" href="https://x.com/intent/tweet?text=${encodeURIComponent(shareText)}" target="_blank" rel="noopener">𝕏 Post to X</a>
-    <button class="share-btn share-btn-copy" id="copyLinkBtn">⧉ Copy link</button>
-    <button class="share-btn share-btn-copy" id="copyInsightBtn">✦ Copy insight</button>`;
-  $('copyLinkBtn').onclick =async()=>{const ok=await copyToClipboard(urlStr);$('copyLinkBtn').textContent=ok?'✓ Copied':'Link';};
-  $('copyInsightBtn').onclick=async()=>{const ok=await copyToClipboard(shareText);$('copyInsightBtn').textContent=ok?'✓ Copied':'Text';};
+    <button class="share-btn share-btn-primary" id="insightShareBtn">⬆ Share</button>
+    <button class="share-btn share-btn-copy"    id="copyLinkBtn">⧉ Copy link</button>`;
+
+  $('insightShareBtn').addEventListener('click', function(){
+    doShare(this, dynShare, urlStr, `${params.teamName} — Track The Season`);
+  });
+  $('copyLinkBtn').addEventListener('click', function(){
+    copyLinkWithFeedback(this, urlStr);
+  });
 
   $('insightsGrid').innerHTML=[
     {title:'Full season so far',  text:ins.throughText},
@@ -1127,11 +1203,129 @@ function renderInsights(params){
 }
 
 /* ═══════════════════════════════════════════════════════
-   SHARE
+   SHARE SYSTEM
+   doShare() → native Web Share API → fallback menu
+   Platforms: X · Facebook · Reddit · Threads · Bluesky
 ═══════════════════════════════════════════════════════ */
+
 async function copyToClipboard(text){
   try{await navigator.clipboard.writeText(text);return true;}
   catch{window.prompt('Copy this:',text);return false;}
+}
+
+/* Build dynamic share text per spec */
+function buildDynamicShareText(teamName, w, l, gp, delta, compareYear){
+  const paceDesc = delta > 0 ? `${delta} win${delta!==1?'s':''} ahead of their ${compareYear} pace`
+                 : delta < 0 ? `${Math.abs(delta)} win${Math.abs(delta)!==1?'s':''} behind their ${compareYear} pace`
+                 : `even with their ${compareYear} pace`;
+  const slug = teamName.replace(/\s+/g,'');
+  return `The ${teamName} are ${w}-${l} through ${gp} games, ${paceDesc}. Track every MLB team's season at TrackTheSeason.\n\n#TrackTheSeason #${slug} #MLB`;
+}
+
+/* Copy URL with timed feedback */
+async function copyLinkWithFeedback(btn, url){
+  const original = btn.textContent;
+  const ok = await copyToClipboard(url);
+  btn.textContent = ok ? '✓ Copied!' : 'Copy failed';
+  setTimeout(()=>{ btn.textContent = original; }, 2000);
+}
+
+/* Platform share URLs */
+function platformShareUrl(platform, text, url){
+  const t = encodeURIComponent(text), u = encodeURIComponent(url);
+  switch(platform){
+    case 'x':        return `https://x.com/intent/tweet?text=${t}`;
+    case 'facebook': return `https://www.facebook.com/sharer/sharer.php?u=${u}`;
+    case 'reddit':   return `https://www.reddit.com/submit?url=${u}&title=${t}`;
+    case 'threads':  return `https://www.threads.net/intent/post?text=${t}`;
+    case 'bluesky':  return `https://bsky.app/intent/compose?text=${t}`;
+  }
+}
+
+/* Remove any open share menu */
+function hideShareMenu(){
+  document.getElementById('shareMenuBackdrop')?.remove();
+  document.getElementById('shareMenuPopup')?.remove();
+}
+
+/* Render fallback menu near the trigger button */
+function showShareMenu(triggerBtn, shareText, shareUrl){
+  hideShareMenu();
+
+  /* Backdrop — captures outside click */
+  const bd = document.createElement('div');
+  bd.id = 'shareMenuBackdrop';
+  bd.className = 'share-menu-backdrop';
+  bd.addEventListener('click', hideShareMenu);
+  document.body.appendChild(bd);
+
+  /* Menu */
+  const menu = document.createElement('div');
+  menu.id = 'shareMenuPopup';
+  menu.className = 'share-menu';
+  menu.innerHTML = `
+    <div class="share-menu-title">Share via</div>
+    <button class="share-menu-item" id="smCopyLink">
+      <span class="share-menu-item-icon cp-icon">⧉</span>Copy link
+    </button>
+    <div class="share-menu-divider"></div>
+    <a class="share-menu-item" href="${platformShareUrl('x',shareText,shareUrl)}" target="_blank" rel="noopener">
+      <span class="share-menu-item-icon x-icon">𝕏</span>X (Twitter)
+    </a>
+    <a class="share-menu-item" href="${platformShareUrl('threads',shareText,shareUrl)}" target="_blank" rel="noopener">
+      <span class="share-menu-item-icon th-icon">@</span>Threads
+    </a>
+    <a class="share-menu-item" href="${platformShareUrl('bluesky',shareText,shareUrl)}" target="_blank" rel="noopener">
+      <span class="share-menu-item-icon bs-icon">🦋</span>Bluesky
+    </a>
+    <a class="share-menu-item" href="${platformShareUrl('facebook',shareText,shareUrl)}" target="_blank" rel="noopener">
+      <span class="share-menu-item-icon fb-icon">f</span>Facebook
+    </a>
+    <a class="share-menu-item" href="${platformShareUrl('reddit',shareText,shareUrl)}" target="_blank" rel="noopener">
+      <span class="share-menu-item-icon rd-icon">↑</span>Reddit
+    </a>`;
+  document.body.appendChild(menu);
+
+  /* Copy link from menu */
+  menu.querySelector('#smCopyLink').addEventListener('click', async()=>{
+    const ok = await copyToClipboard(shareUrl);
+    const btn = menu.querySelector('#smCopyLink');
+    btn.querySelector('.share-menu-item-icon').textContent = ok ? '✓' : '⧉';
+    btn.childNodes[1].textContent = ok ? 'Copied!' : 'Copy link';
+    if(ok) setTimeout(hideShareMenu, 800);
+  });
+
+  /* Position near trigger button */
+  const rect = triggerBtn.getBoundingClientRect();
+  const menuH = 280; /* approx */
+  const top = (rect.top + window.scrollY - menuH - 8 > 0)
+    ? rect.top + window.scrollY - menuH - 8
+    : rect.bottom + window.scrollY + 8;
+  const left = Math.min(
+    Math.max(8, rect.left + window.scrollX - 8),
+    window.innerWidth - 216
+  );
+  menu.style.top  = `${top}px`;
+  menu.style.left = `${left}px`;
+
+  /* Close on any menu link click */
+  menu.querySelectorAll('a').forEach(a=>a.addEventListener('click', ()=>setTimeout(hideShareMenu,300)));
+}
+
+/* Primary share action:
+   1. Try navigator.share (native sheet on iOS/Android)
+   2. Fall back to inline menu */
+async function doShare(triggerBtn, shareText, shareUrl, shareTitle='Track The Season'){
+  if(navigator.share){
+    try{
+      await navigator.share({ title: shareTitle, text: shareText, url: shareUrl });
+    } catch(e){
+      /* User cancelled or share failed — do nothing (spec requirement) */
+      if(e.name !== 'AbortError') console.warn('Share failed:', e.message);
+    }
+  } else {
+    showShareMenu(triggerBtn, shareText, shareUrl);
+  }
 }
 
 /* ═══════════════════════════════════════════════════════
