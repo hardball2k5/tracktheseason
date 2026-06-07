@@ -135,10 +135,20 @@ body{
   color:var(--chalk);cursor:pointer;transition:all .13s;white-space:nowrap;
 }
 .mom-btn:hover{border-color:rgba(255,255,255,.25);color:#e8edf8}
-.mom-btn.active-hot {background:var(--gain-bg); border-color:rgba(13,140,58,.35);  color:var(--gain-text);font-weight:700}
-.mom-btn.active-cold{background:var(--loss-bg); border-color:rgba(232,48,42,.35); color:var(--loss-text);font-weight:700}
-.mom-btn.active-neu {background:var(--caution-bg);border-color:rgba(245,200,66,.3);color:var(--caution-text);font-weight:700}
-.mom-btn.active-all {background:var(--signal);border-color:var(--signal);color:var(--ink);font-weight:700}
+/* Hot labels — green tones */
+.mom-btn.mom-hot{border-color:rgba(13,140,58,.25);color:rgba(78,203,119,.7)}
+.mom-btn.mom-hot:hover{border-color:var(--gain-text);color:var(--gain-text)}
+.mom-btn.mom-hot.active{background:var(--gain-bg);border-color:rgba(13,140,58,.5);color:var(--gain-text);font-weight:700}
+/* Neutral — amber tones */
+.mom-btn.mom-neu{border-color:rgba(245,200,66,.25);color:rgba(245,200,66,.6)}
+.mom-btn.mom-neu:hover{border-color:var(--caution-text);color:var(--caution-text)}
+.mom-btn.mom-neu.active{background:var(--caution-bg);border-color:rgba(245,200,66,.45);color:var(--caution-text);font-weight:700}
+/* Cold labels — red tones */
+.mom-btn.mom-cold{border-color:rgba(232,48,42,.25);color:rgba(244,117,112,.7)}
+.mom-btn.mom-cold:hover{border-color:var(--loss-text);color:var(--loss-text)}
+.mom-btn.mom-cold.active{background:var(--loss-bg);border-color:rgba(232,48,42,.5);color:var(--loss-text);font-weight:700}
+/* All teams button */
+.mom-btn.active-all{background:var(--signal);border-color:var(--signal);color:var(--ink);font-weight:700}
 .mom-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
 
 /* What does this mean link */
@@ -503,11 +513,16 @@ body{
 
   <!-- ══ MOMENTUM FILTER BAR ══════════ -->
   <div class="momentum-bar" id="momentumBar">
-    <span class="momentum-bar-label">Momentum</span>
+    <span class="momentum-bar-label">Filter by momentum</span>
     <button class="mom-btn active-all" data-mom="all">All teams</button>
-    <button class="mom-btn" data-mom="hot"  data-cls="chip-hot">🔥 Heating up</button>
-    <button class="mom-btn" data-mom="cold" data-cls="chip-cold">❄️ Struggling</button>
-    <button class="mom-btn" data-mom="neu"  data-cls="chip-neutral">➡️ Stable</button>
+    <button class="mom-btn mom-hot"  data-mom="Elite pace">    🔥 Elite pace</button>
+    <button class="mom-btn mom-hot"  data-mom="Heating up">   📈 Heating up</button>
+    <button class="mom-btn mom-hot"  data-mom="Strong stretch">✅ Strong stretch</button>
+    <button class="mom-btn mom-hot"  data-mom="Trending up">  ⬆️ Trending up</button>
+    <button class="mom-btn mom-neu"  data-mom="Stable">       ➡️ Stable</button>
+    <button class="mom-btn mom-cold" data-mom="Trending down"> ⬇️ Trending down</button>
+    <button class="mom-btn mom-cold" data-mom="Cooling off">  📉 Cooling off</button>
+    <button class="mom-btn mom-cold" data-mom="Struggling">   ❄️ Struggling</button>
     <button class="explain-link" id="explainBtn" aria-expanded="false" aria-controls="explainerPanel">
       What does this mean? ↓
     </button>
@@ -1012,24 +1027,15 @@ function closeModal(){
 /* ── Filter / sort ──────────────────────────────── */
 let activeFilter='all', activeSort='winpct', searchQuery='', activeMomentum='all';
 
-/* Map momentum labels to their chip class for filtering */
-const MOMENTUM_HOT  = new Set(['Elite pace','Heating up','Strong stretch','Trending up']);
-const MOMENTUM_COLD = new Set(['Struggling','Cooling off','Trending down']);
-const MOMENTUM_NEU  = new Set(['Stable']);
-
 function applyFiltersAndSort(){
   const grid=document.getElementById('teamGrid');
   const cards=[...grid.querySelectorAll('.team-card')];
   cards.forEach(c=>{
-    const matchFilter  = activeFilter==='all'||activeFilter===c.dataset.league||activeFilter===c.dataset.div;
-    const matchSearch  = !searchQuery||(c.dataset.name||'').toLowerCase().includes(searchQuery.toLowerCase());
-    /* Momentum filter uses the data-momentum-label attribute set on each card */
+    const matchFilter   = activeFilter==='all'||activeFilter===c.dataset.league||activeFilter===c.dataset.div;
+    const matchSearch   = !searchQuery||(c.dataset.name||'').toLowerCase().includes(searchQuery.toLowerCase());
+    /* Exact label match — data-momentum-label stores the raw label string (no emoji) */
     const label = c.dataset.momentumLabel||'';
-    const matchMomentum =
-      activeMomentum==='all' ||
-      (activeMomentum==='hot'  && MOMENTUM_HOT.has(label)) ||
-      (activeMomentum==='cold' && MOMENTUM_COLD.has(label)) ||
-      (activeMomentum==='neu'  && MOMENTUM_NEU.has(label));
+    const matchMomentum = activeMomentum==='all' || label===activeMomentum;
     c.classList.toggle('hidden-card',!matchFilter||!matchSearch||!matchMomentum);
   });
   const visible=cards.filter(c=>!c.classList.contains('hidden-card'));
@@ -1104,16 +1110,21 @@ async function loadAllTeams(){
   });
 });
 
-/* Momentum filter buttons */
+/* Momentum filter buttons — data-mom holds exact label or "all" */
 document.getElementById('momentumBar').addEventListener('click',e=>{
   const btn=e.target.closest('.mom-btn');
   if(!btn) return;
   activeMomentum=btn.dataset.mom;
+  /* Clear all active states */
   document.querySelectorAll('.mom-btn').forEach(b=>{
-    b.classList.remove('active-all','active-hot','active-cold','active-neu');
+    b.classList.remove('active-all','active');
   });
-  const clsMap={all:'active-all',hot:'active-hot',cold:'active-cold',neu:'active-neu'};
-  btn.classList.add(clsMap[activeMomentum]||'active-all');
+  /* Set active on clicked button */
+  if(activeMomentum==='all'){
+    btn.classList.add('active-all');
+  } else {
+    btn.classList.add('active');
+  }
   applyFiltersAndSort();
 });
 
