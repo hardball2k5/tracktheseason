@@ -3,23 +3,21 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Track The Season — MLB Pace Dashboard</title>
-<meta name="description" content="Every MLB team's win pace vs prior seasons. Records through each team's completed games. Updated daily."/>
-<meta property="og:title" content="Track The Season — MLB Pace Dashboard"/>
-<meta property="og:description" content="Every MLB team's win pace vs prior seasons. Updated daily."/>
+<title>Track The Season — MLB Pace Tracker</title>
+<meta name="description" content="See which MLB teams are ahead of pace, heating up, or fading. Live records, projected wins, and momentum for all 30 teams."/>
+<meta property="og:title" content="Track The Season — MLB Pace Tracker"/>
+<meta property="og:description" content="See which MLB teams are ahead of pace, heating up, or fading. Updated daily."/>
 <meta property="og:url" content="https://tracktheseason.com/"/>
+<meta name="theme-color" content="#0f1014"/>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet"/>
 <style>
 /* ═══════════════════════════════════════════════════
    TRACK THE SEASON — index.html
-   Style guide: IBM Plex Mono + Plex Sans
-   Dark ink surfaces · Electric green MLB accent
-   Expansion-ready sport token architecture
+   Mobile-first fan page. Three-second test:
+   1. What is this? 2. Why care today? 3. Find my team.
 ═══════════════════════════════════════════════════ */
-:root {
-  /* Foundation */
-  --paper:       #f5f3ee;
+:root{
   --ink:         #0f1014;
   --ink2:        #1a1d24;
   --ink3:        #252830;
@@ -27,138 +25,301 @@
   --chalk2:      #b4b2a9;
   --rule:        rgba(255,255,255,.07);
   --rule2:       rgba(255,255,255,.04);
-  /* Sport accent — MLB. Swap only these 3 vars for NBA/NFL/NHL */
   --signal:      #1aff6b;
   --field:       #0d8c3a;
-  --sport-dark:  #0a1a0e;
-  /* Semantic */
-  --gain:        #0d8c3a;
-  --gain-bg:     rgba(13,140,58,.13);
+  --gain-bg:     rgba(13,140,58,.14);
   --gain-text:   #4ecb77;
   --loss:        #e8302a;
-  --loss-bg:     rgba(232,48,42,.13);
+  --loss-bg:     rgba(232,48,42,.14);
   --loss-text:   #f47570;
   --caution:     #f5c842;
-  --caution-bg:  rgba(245,200,66,.13);
+  --caution-bg:  rgba(245,200,66,.14);
   --caution-text:#f9d96e;
-  /* Logo containers — always white */
   --logo-bg:     #ffffff;
   --logo-border: rgba(0,0,0,.10);
   --logo-shadow: 0 2px 8px rgba(0,0,0,.18);
-  /* Radius */
-  --r-xs: 4px; --r-sm: 6px; --r-md: 10px; --r-lg: 14px; --r-pill: 999px;
-  /* Fonts */
-  --mono: 'IBM Plex Mono', monospace;
-  --sans: 'IBM Plex Sans', sans-serif;
+  --r-xs:4px;--r-sm:6px;--r-md:10px;--r-lg:14px;--r-pill:999px;
+  --mono:'IBM Plex Mono',monospace;
+  --sans:'IBM Plex Sans',sans-serif;
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-html{scroll-behavior:smooth}
+html{scroll-behavior:smooth;-webkit-tap-highlight-color:transparent}
 body{
-  font-family:var(--sans);
-  background:var(--ink);
-  color:#e8edf8;
+  font-family:var(--sans);background:var(--ink);color:#e8edf8;
   min-height:100vh;
-  background-image:radial-gradient(ellipse 120% 40% at 50% -5%, rgba(26,255,107,.06) 0%, transparent 60%);
+  background-image:radial-gradient(ellipse 140% 50% at 50% -8%,rgba(26,255,107,.07) 0%,transparent 55%);
 }
 .wrap{max-width:1300px;margin:0 auto;padding:0 16px}
 
 /* ── NAV ─────────────────────────────── */
 .site-nav{
-  padding:11px 0;
-  border-bottom:1px solid var(--rule);
+  padding:11px 0;border-bottom:1px solid var(--rule);
   position:sticky;top:0;z-index:100;
-  background:rgba(15,16,20,.94);
-  backdrop-filter:blur(16px);
-  -webkit-backdrop-filter:blur(16px);
+  background:rgba(15,16,20,.95);
+  backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
 }
 .nav-inner{display:flex;align-items:center;gap:10px}
-.nav-logo{display:flex;align-items:center;gap:9px;text-decoration:none}
+.nav-logo{display:flex;align-items:center;gap:9px;text-decoration:none;flex-shrink:0}
 .nav-monogram{
-  width:30px;height:30px;
-  background:var(--signal);
-  border-radius:var(--r-sm);
+  width:30px;height:30px;background:var(--signal);border-radius:var(--r-sm);
   display:flex;align-items:center;justify-content:center;
-  font-family:var(--mono);font-size:11px;font-weight:700;color:var(--ink);
-  flex-shrink:0;
+  font-family:var(--mono);font-size:11px;font-weight:700;color:var(--ink);flex-shrink:0;
 }
-.nav-wordmark{
-  font-family:var(--mono);font-size:15px;font-weight:700;
-  color:#e8edf8;letter-spacing:-.01em;white-space:nowrap;
-}
+.nav-wordmark{font-family:var(--mono);font-size:15px;font-weight:700;color:#e8edf8;letter-spacing:-.01em;white-space:nowrap}
 .nav-wordmark .accent{color:var(--signal)}
-
 .nav-right{display:flex;align-items:center;gap:10px;margin-left:auto}
-.live-pill{
-  display:flex;align-items:center;gap:5px;
-  font-family:var(--mono);font-size:10px;font-weight:600;
-  letter-spacing:.1em;color:var(--signal);
-}
+.live-pill{display:flex;align-items:center;gap:5px;font-family:var(--mono);font-size:10px;font-weight:600;letter-spacing:.1em;color:var(--signal)}
 .live-dot{width:6px;height:6px;border-radius:50%;background:var(--signal);animation:blink 2s ease infinite}
 @keyframes blink{0%,100%{opacity:1}50%{opacity:.25}}
 .nav-date{font-family:var(--mono);font-size:11px;color:var(--chalk);display:none}
 @media(min-width:520px){.nav-date{display:block}}
 
-/* ── HERO ────────────────────────────── */
-.hero{padding:28px 0 20px;border-bottom:1px solid var(--rule)}
+/* ── HERO — fan-facing, 3-second test ──── */
+.hero{
+  padding:24px 0 20px;
+  border-bottom:1px solid var(--rule);
+}
+.hero-inner{
+  display:flex;flex-direction:column;gap:0;
+}
+.hero-eyebrow{
+  font-family:var(--mono);font-size:10px;font-weight:700;
+  letter-spacing:.14em;text-transform:uppercase;
+  color:var(--signal);margin-bottom:10px;
+  display:flex;align-items:center;gap:7px;
+}
+.hero-eyebrow-dot{width:5px;height:5px;border-radius:50%;background:var(--signal);animation:blink 2s ease infinite}
 .hero-hed{
   font-family:var(--mono);
-  font-size:clamp(24px,5vw,44px);
+  font-size:clamp(26px,7vw,52px);
   font-weight:700;letter-spacing:-.03em;line-height:.95;
   color:#e8edf8;
 }
 .hero-hed .accent{color:var(--signal)}
-.hero-sub{font-size:13px;color:var(--chalk);margin-top:8px;line-height:1.5;max-width:540px}
-.league-pills{display:flex;gap:8px;flex-wrap:wrap;margin-top:16px}
-.league-pill{
-  display:flex;align-items:center;gap:6px;
-  background:var(--ink2);border:1px solid var(--rule);
-  border-radius:var(--r-pill);padding:5px 12px;
-  font-family:var(--mono);font-size:11px;font-weight:600;color:var(--chalk);
+.hero-sub{
+  font-family:var(--sans);font-size:clamp(13px,2vw,15px);
+  color:rgba(255,255,255,.5);margin-top:10px;line-height:1.55;
+  max-width:500px;
 }
-.lp-dot{width:7px;height:7px;border-radius:50%}
+
+/* Team finder — prominent on mobile */
+.hero-finder{
+  display:flex;align-items:center;gap:8px;
+  margin-top:18px;
+  background:var(--ink2);
+  border:1px solid rgba(255,255,255,.12);
+  border-radius:var(--r-lg);
+  padding:10px 14px;
+  cursor:text;
+  transition:border-color .15s;
+}
+.hero-finder:focus-within{border-color:var(--signal)}
+.finder-icon{font-size:16px;flex-shrink:0;color:var(--chalk)}
+.finder-input{
+  flex:1;background:none;border:none;outline:none;
+  font-family:var(--mono);font-size:15px;font-weight:600;
+  color:#e8edf8;
+  caret-color:var(--signal);
+}
+.finder-input::placeholder{color:rgba(255,255,255,.25);font-weight:400}
+.finder-clear{
+  background:none;border:none;color:var(--chalk);
+  font-size:16px;cursor:pointer;padding:0 2px;
+  display:none;
+}
+.finder-clear.visible{display:block}
+
+/* League summary pills — moved below fold */
+.league-pills{display:flex;gap:6px;flex-wrap:wrap;margin-top:14px}
+.league-pill{
+  display:flex;align-items:center;gap:5px;
+  background:rgba(255,255,255,.04);border:1px solid var(--rule);
+  border-radius:var(--r-pill);padding:4px 10px;
+  font-family:var(--mono);font-size:10px;font-weight:600;color:var(--chalk);
+}
+.lp-dot{width:6px;height:6px;border-radius:50%}
+
+/* ── TODAY'S STORIES ─────────────────── */
+.stories-section{padding:16px 0 0}
+.stories-header{
+  display:flex;align-items:center;justify-content:space-between;
+  margin-bottom:12px;
+}
+.stories-title{
+  font-family:var(--mono);font-size:13px;font-weight:700;
+  letter-spacing:.04em;text-transform:uppercase;color:#e8edf8;
+}
+.stories-sub{font-family:var(--mono);font-size:10px;color:var(--chalk);font-weight:600}
+.stories-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:8px;
+}
+.story-card{
+  background:var(--ink2);border:1px solid var(--rule);
+  border-radius:var(--r-md);padding:13px 13px;
+  cursor:pointer;transition:border-color .15s,transform .15s;
+  display:flex;flex-direction:column;gap:6px;
+  text-decoration:none;color:inherit;
+  -webkit-user-select:none;user-select:none;
+}
+.story-card:hover{border-color:rgba(26,255,107,.3);transform:translateY(-1px)}
+.story-card:active{transform:scale(.98)}
+.story-card-eyebrow{
+  font-family:var(--mono);font-size:9px;font-weight:700;
+  letter-spacing:.12em;text-transform:uppercase;
+  color:var(--chalk);display:flex;align-items:center;gap:5px;
+}
+.story-card-icon{font-size:14px;line-height:1}
+.story-team{
+  font-family:var(--mono);font-size:15px;font-weight:700;
+  color:#e8edf8;line-height:1;
+}
+.story-stat{
+  font-family:var(--mono);font-size:20px;font-weight:700;
+  letter-spacing:-.02em;line-height:1;
+}
+.story-stat.green{color:var(--signal)}
+.story-stat.amber{color:var(--caution)}
+.story-stat.red  {color:var(--loss-text)}
+.story-detail{
+  font-family:var(--mono);font-size:10px;color:var(--chalk);
+  line-height:1.4;
+}
+/* Loading skeleton for stories */
+.story-skeleton{
+  background:linear-gradient(90deg,var(--ink2) 25%,var(--ink3) 50%,var(--ink2) 75%);
+  background-size:200% 100%;
+  animation:shimmer 1.5s infinite;
+  border-radius:var(--r-md);height:100px;
+}
+@keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+
+/* ── FEATURED TEAM CARD ──────────────── */
+.featured-section{padding:14px 0 0}
+.featured-card{
+  background:var(--ink2);
+  border:1px solid rgba(26,255,107,.2);
+  border-radius:var(--r-lg);
+  overflow:hidden;
+  position:relative;
+}
+/* Green left accent bar */
+.featured-card::before{
+  content:'';position:absolute;left:0;top:0;bottom:0;
+  width:3px;background:var(--signal);
+}
+.featured-inner{padding:14px 16px 14px 20px}
+.featured-label{
+  font-family:var(--mono);font-size:9px;font-weight:700;
+  letter-spacing:.14em;text-transform:uppercase;
+  color:var(--signal);margin-bottom:10px;
+  display:flex;align-items:center;gap:6px;
+}
+.featured-top{display:flex;align-items:flex-start;gap:12px}
+.featured-logo{
+  width:52px;height:52px;flex-shrink:0;
+  background:var(--logo-bg);border:1px solid var(--logo-border);
+  border-radius:var(--r-md);box-shadow:var(--logo-shadow);
+  display:flex;align-items:center;justify-content:center;overflow:hidden;
+}
+.featured-logo img{width:40px;height:40px;object-fit:contain}
+.featured-info{flex:1;min-width:0}
+.featured-team-name{font-family:var(--mono);font-size:20px;font-weight:700;color:#e8edf8;line-height:1}
+.featured-record{font-family:var(--mono);font-size:28px;font-weight:700;letter-spacing:-.02em;color:var(--signal);margin-top:3px;line-height:1}
+.featured-chips{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.featured-chip{
+  font-family:var(--mono);font-size:10px;font-weight:600;
+  padding:3px 9px;border-radius:var(--r-pill);white-space:nowrap;
+}
+.fchip-green{background:var(--gain-bg);color:var(--gain-text);border:1px solid rgba(13,140,58,.2)}
+.fchip-amber{background:var(--caution-bg);color:var(--caution-text);border:1px solid rgba(245,200,66,.2)}
+.fchip-red  {background:var(--loss-bg);color:var(--loss-text);border:1px solid rgba(232,48,42,.2)}
+.fchip-neu  {background:var(--ink3);color:var(--chalk);border:1px solid var(--rule)}
+.featured-cta{
+  display:block;margin:12px 0 0;
+  padding:11px 14px;
+  background:var(--signal);border-radius:var(--r-sm);border:0;
+  color:var(--ink);font-family:var(--mono);font-size:13px;font-weight:700;
+  letter-spacing:.02em;text-align:center;text-decoration:none;
+  transition:filter .13s;
+}
+.featured-cta:hover{filter:brightness(1.08)}
+
+/* ── SECTION DIVIDER LABEL ───────────── */
+.section-label{
+  font-family:var(--mono);font-size:10px;font-weight:700;
+  letter-spacing:.12em;text-transform:uppercase;
+  color:rgba(255,255,255,.25);
+  padding:18px 0 10px;
+  display:flex;align-items:center;gap:10px;
+}
+.section-label::after{content:'';flex:1;height:1px;background:var(--rule)}
 
 /* ── MOMENTUM FILTER BAR ─────────────── */
 .momentum-bar{
-  padding:10px 0 0;
-  display:flex;gap:6px;flex-wrap:wrap;align-items:center;
+  padding:8px 0 0;
+  display:flex;gap:5px;flex-wrap:nowrap;align-items:center;
+  overflow-x:auto;-webkit-overflow-scrolling:touch;
+  scrollbar-width:none;
+  /* Mobile: full-bleed scroll */
+  margin:0 -16px;padding:8px 16px 0;
 }
+.momentum-bar::-webkit-scrollbar{display:none}
 .momentum-bar-label{
   font-family:var(--mono);font-size:10px;font-weight:700;
   letter-spacing:.1em;text-transform:uppercase;
-  color:rgba(255,255,255,.25);white-space:nowrap;padding-right:4px;
+  color:rgba(255,255,255,.2);white-space:nowrap;padding-right:4px;flex-shrink:0;
+  /* Hide on mobile to save space */
+  display:none;
 }
+@media(min-width:640px){.momentum-bar-label{display:block}}
 .mom-btn{
-  display:inline-flex;align-items:center;gap:5px;
+  display:inline-flex;align-items:center;gap:4px;
   font-family:var(--mono);font-size:11px;font-weight:600;
-  padding:5px 11px;border-radius:var(--r-pill);
+  padding:6px 11px;border-radius:var(--r-pill);
   border:1px solid var(--rule);background:var(--ink2);
-  color:var(--chalk);cursor:pointer;transition:all .13s;white-space:nowrap;
+  color:var(--chalk);cursor:pointer;transition:all .13s;
+  white-space:nowrap;flex-shrink:0;
+  /* Larger tap targets on mobile */
+  min-height:36px;
 }
 .mom-btn:hover{border-color:rgba(255,255,255,.25);color:#e8edf8}
-/* Hot labels — green tones */
-.mom-btn.mom-hot{border-color:rgba(13,140,58,.25);color:rgba(78,203,119,.7)}
+.mom-btn.mom-hot  {border-color:rgba(13,140,58,.25); color:rgba(78,203,119,.8)}
 .mom-btn.mom-hot:hover{border-color:var(--gain-text);color:var(--gain-text)}
 .mom-btn.mom-hot.active{background:var(--gain-bg);border-color:rgba(13,140,58,.5);color:var(--gain-text);font-weight:700}
-/* Neutral — amber tones */
-.mom-btn.mom-neu{border-color:rgba(245,200,66,.25);color:rgba(245,200,66,.6)}
+.mom-btn.mom-neu  {border-color:rgba(245,200,66,.25);color:rgba(245,200,66,.7)}
 .mom-btn.mom-neu:hover{border-color:var(--caution-text);color:var(--caution-text)}
 .mom-btn.mom-neu.active{background:var(--caution-bg);border-color:rgba(245,200,66,.45);color:var(--caution-text);font-weight:700}
-/* Cold labels — red tones */
-.mom-btn.mom-cold{border-color:rgba(232,48,42,.25);color:rgba(244,117,112,.7)}
+.mom-btn.mom-cold {border-color:rgba(232,48,42,.25); color:rgba(244,117,112,.8)}
 .mom-btn.mom-cold:hover{border-color:var(--loss-text);color:var(--loss-text)}
 .mom-btn.mom-cold.active{background:var(--loss-bg);border-color:rgba(232,48,42,.5);color:var(--loss-text);font-weight:700}
-/* All teams button */
 .mom-btn.active-all{background:var(--signal);border-color:var(--signal);color:var(--ink);font-weight:700}
-.mom-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
 
-/* What does this mean link */
+/* Mobile simplified momentum — show grouped buttons on small screens */
+.mom-group{
+  display:none;flex-shrink:0;
+}
+@media(max-width:639px){
+  .mom-detailed{display:none}
+  .mom-group{display:inline-flex}
+}
+@media(min-width:640px){
+  .mom-detailed{display:inline-flex}
+  .mom-group{display:none}
+}
+
+/* Explain link */
 .explain-link{
   font-family:var(--mono);font-size:10px;font-weight:600;
   color:rgba(255,255,255,.2);cursor:pointer;
-  padding:5px 0;margin-left:auto;
-  text-decoration:none;transition:color .13s;white-space:nowrap;
+  padding:5px 0;margin-left:auto;flex-shrink:0;
+  text-decoration:none;transition:color .13s;
   background:none;border:none;letter-spacing:.04em;
+  white-space:nowrap;
+  display:none; /* hidden on mobile, shown on ≥640 */
 }
+@media(min-width:640px){.explain-link{display:block}}
 .explain-link:hover{color:var(--signal)}
 
 /* Explainer panel */
@@ -166,48 +327,43 @@ body{
   overflow:hidden;max-height:0;
   transition:max-height .3s cubic-bezier(.22,1,.36,1);
   background:var(--ink2);border-radius:var(--r-md);
-  border:1px solid var(--rule);margin-bottom:2px;
+  border:1px solid var(--rule);
 }
-.explainer-panel.open{max-height:600px}
+.explainer-panel.open{max-height:700px}
 .explainer-inner{padding:16px}
 .explainer-title{
   font-family:var(--mono);font-size:11px;font-weight:700;
   letter-spacing:.1em;text-transform:uppercase;
-  color:rgba(255,255,255,.3);margin-bottom:14px;
+  color:rgba(255,255,255,.3);margin-bottom:12px;
 }
-.explainer-intro{
-  font-family:var(--sans);font-size:13px;color:rgba(255,255,255,.5);
-  line-height:1.55;margin-bottom:14px;
-}
-.explainer-grid{
-  display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));
-  gap:8px;
-}
-.explainer-row{
-  display:flex;align-items:flex-start;gap:10px;
-  background:var(--ink3);border-radius:var(--r-sm);
-  padding:10px 12px;
-}
-.explainer-chip{
-  flex-shrink:0;padding:3px 9px;border-radius:var(--r-pill);
-  font-family:var(--mono);font-size:10px;font-weight:600;white-space:nowrap;
-}
-.explainer-chip.hot  {background:var(--gain-bg);color:var(--gain-text);border:1px solid rgba(13,140,58,.2)}
-.explainer-chip.cold {background:var(--loss-bg);color:var(--loss-text);border:1px solid rgba(232,48,42,.2)}
-.explainer-chip.neu  {background:var(--ink2);color:var(--chalk);border:1px solid var(--rule)}
+.explainer-intro{font-family:var(--sans);font-size:13px;color:rgba(255,255,255,.5);line-height:1.55;margin-bottom:12px}
+.explainer-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:8px}
+.explainer-row{display:flex;align-items:flex-start;gap:10px;background:var(--ink3);border-radius:var(--r-sm);padding:10px 12px}
+.explainer-chip{flex-shrink:0;padding:3px 9px;border-radius:var(--r-pill);font-family:var(--mono);font-size:10px;font-weight:600;white-space:nowrap}
+.explainer-chip.hot {background:var(--gain-bg);color:var(--gain-text);border:1px solid rgba(13,140,58,.2)}
+.explainer-chip.cold{background:var(--loss-bg);color:var(--loss-text);border:1px solid rgba(232,48,42,.2)}
+.explainer-chip.neu {background:var(--ink2);color:var(--chalk);border:1px solid var(--rule)}
 .explainer-text{font-family:var(--sans);font-size:12px;color:rgba(255,255,255,.45);line-height:1.5}
-.explainer-footer{
-  margin-top:12px;padding-top:12px;border-top:1px solid var(--rule);
-  font-family:var(--sans);font-size:11px;color:rgba(255,255,255,.25);line-height:1.6;
+.explainer-footer{margin-top:12px;padding-top:12px;border-top:1px solid var(--rule);font-family:var(--sans);font-size:11px;color:rgba(255,255,255,.25);line-height:1.6}
+
+/* Mobile explainer toggle button — visible only on small screens */
+.mobile-explain-btn{
+  display:flex;align-items:center;gap:6px;
+  font-family:var(--mono);font-size:11px;font-weight:600;
+  color:rgba(255,255,255,.3);cursor:pointer;
+  background:none;border:none;padding:8px 0 0;
+  letter-spacing:.04em;
 }
+.mobile-explain-btn:hover{color:var(--signal)}
+@media(min-width:640px){.mobile-explain-btn{display:none}}
 
 /* ── CONTROLS BAR ────────────────────── */
 .ctrl-bar{
   padding:10px 0;
-  display:flex;gap:8px;flex-wrap:wrap;align-items:center;
+  display:flex;gap:7px;flex-wrap:wrap;align-items:center;
   border-bottom:1px solid var(--rule);
   position:sticky;top:53px;z-index:90;
-  background:rgba(15,16,20,.96);
+  background:rgba(15,16,20,.97);
   backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
 }
 .filter-row{display:flex;gap:5px;flex-wrap:wrap}
@@ -216,46 +372,37 @@ body{
   padding:6px 12px;border-radius:var(--r-sm);
   border:1px solid var(--rule);background:var(--ink2);
   color:var(--chalk);cursor:pointer;transition:all .13s;white-space:nowrap;
+  min-height:34px;
 }
 .filter-btn:hover{border-color:var(--signal);color:var(--signal)}
 .filter-btn.active{background:var(--signal);border-color:var(--signal);color:var(--ink);font-weight:700}
-.search-wrap{position:relative;flex:1;min-width:130px;max-width:200px}
-.search-icon{position:absolute;left:9px;top:50%;transform:translateY(-50%);color:var(--chalk);font-size:13px;pointer-events:none}
-.search-input{
-  width:100%;background:var(--ink2);border:1px solid var(--rule);
-  border-radius:var(--r-sm);color:#e8edf8;
-  font-family:var(--mono);font-size:12px;padding:6px 10px 6px 28px;
-  outline:none;transition:border-color .13s;
-}
-.search-input:focus{border-color:var(--signal)}
-.search-input::placeholder{color:var(--ink3)}
 .sort-select{
   background:var(--ink2);border:1px solid var(--rule);
   border-radius:var(--r-sm);color:#e8edf8;
   font-family:var(--mono);font-size:12px;padding:6px 10px;
-  outline:none;cursor:pointer;margin-left:auto;
+  outline:none;cursor:pointer;margin-left:auto;min-height:34px;
 }
 .sort-select:focus{border-color:var(--signal)}
 
 /* ── TEAM GRID ───────────────────────── */
 .team-grid{
   display:grid;
-  grid-template-columns:repeat(auto-fill,minmax(272px,1fr));
-  gap:10px;padding:14px 0 48px;
+  grid-template-columns:1fr 1fr;
+  gap:8px;padding:12px 0 48px;
 }
+@media(min-width:480px){.team-grid{grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:10px}}
+@media(min-width:720px){.team-grid{grid-template-columns:repeat(auto-fill,minmax(270px,1fr))}}
+
 .team-card{
-  background:var(--ink2);
-  border:1px solid var(--rule);
+  background:var(--ink2);border:1px solid var(--rule);
   border-radius:var(--r-lg);overflow:hidden;
   cursor:pointer;display:block;
   transition:border-color .15s,transform .15s,box-shadow .15s;
   animation:fadeUp .3s ease both;
+  -webkit-tap-highlight-color:transparent;
 }
-.team-card:hover{
-  border-color:rgba(26,255,107,.35);
-  transform:translateY(-2px);
-  box-shadow:0 12px 40px rgba(0,0,0,.4);
-}
+.team-card:hover{border-color:rgba(26,255,107,.35);transform:translateY(-2px);box-shadow:0 12px 40px rgba(0,0,0,.4)}
+.team-card:active{transform:scale(.97)}
 .team-card.hidden-card{display:none}
 @keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
 .team-card:nth-child(1){animation-delay:.03s}
@@ -264,100 +411,93 @@ body{
 .team-card:nth-child(n+4){animation-delay:.12s}
 
 /* Card internals */
-.card-top{display:flex;align-items:center;gap:11px;padding:13px 13px 8px}
-/* Logo container — always white bg */
+.card-top{display:flex;align-items:center;gap:9px;padding:11px 11px 7px}
 .team-logo-wrap{
-  width:46px;height:46px;flex-shrink:0;
-  background:var(--logo-bg);
-  border:1px solid var(--logo-border);
-  border-radius:var(--r-md);
-  box-shadow:var(--logo-shadow);
+  width:40px;height:40px;flex-shrink:0;
+  background:var(--logo-bg);border:1px solid var(--logo-border);
+  border-radius:var(--r-sm);box-shadow:var(--logo-shadow);
   display:flex;align-items:center;justify-content:center;overflow:hidden;
 }
-.team-logo-wrap img{width:34px;height:34px;object-fit:contain}
-.team-logo-wrap .emoji-fb{font-size:20px;display:none}
+.team-logo-wrap img{width:30px;height:30px;object-fit:contain}
+.team-logo-wrap .emoji-fb{font-size:18px;display:none}
 .team-name-block{flex:1;min-width:0}
 .team-city{
-  font-family:var(--mono);font-size:9px;font-weight:600;
+  font-family:var(--mono);font-size:8px;font-weight:600;
   letter-spacing:.1em;text-transform:uppercase;
-  color:rgba(255,255,255,.28);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  color:rgba(255,255,255,.25);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
 }
 .team-name{
-  font-family:var(--mono);font-size:16px;font-weight:700;
+  font-family:var(--mono);font-size:14px;font-weight:700;
   color:#e8edf8;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
 }
 .momentum-chip{
-  flex-shrink:0;padding:3px 9px;border-radius:var(--r-pill);
-  font-family:var(--mono);font-size:10px;font-weight:600;
+  flex-shrink:0;padding:2px 7px;border-radius:var(--r-pill);
+  font-family:var(--mono);font-size:9px;font-weight:600;
   letter-spacing:.02em;white-space:nowrap;
 }
-.chip-hot   {background:var(--gain-bg);  color:var(--gain-text); border:1px solid rgba(13,140,58,.2)}
-.chip-cold  {background:var(--loss-bg);  color:var(--loss-text); border:1px solid rgba(232,48,42,.2)}
-.chip-neutral{background:var(--ink3);    color:var(--chalk);     border:1px solid var(--rule)}
+.chip-hot    {background:var(--gain-bg);  color:var(--gain-text); border:1px solid rgba(13,140,58,.2)}
+.chip-cold   {background:var(--loss-bg);  color:var(--loss-text); border:1px solid rgba(232,48,42,.2)}
+.chip-neutral{background:var(--ink3);     color:var(--chalk);     border:1px solid var(--rule)}
 
-.card-record{display:flex;align-items:baseline;gap:7px;padding:0 13px 7px}
+/* Hide momentum chip on smallest screens — show only record */
+@media(max-width:380px){.momentum-chip{display:none}}
+
+.card-record{display:flex;align-items:baseline;gap:6px;padding:0 11px 6px}
 .record-big{
-  font-family:var(--mono);font-size:26px;font-weight:700;
+  font-family:var(--mono);font-size:22px;font-weight:700;
   letter-spacing:-.02em;color:var(--signal);
 }
-.record-pct{font-family:var(--mono);font-size:12px;color:rgba(255,255,255,.3)}
-.record-gp{font-family:var(--mono);font-size:11px;color:rgba(255,255,255,.2);margin-left:auto}
+.record-pct{font-family:var(--mono);font-size:11px;color:rgba(255,255,255,.3)}
+.record-gp{font-family:var(--mono);font-size:10px;color:rgba(255,255,255,.18);margin-left:auto}
 
-.card-delta{padding:0 13px 8px;display:flex;align-items:center;gap:7px}
-.delta-label{font-family:var(--mono);font-size:10px;color:rgba(255,255,255,.25)}
-.delta-val{
-  font-family:var(--mono);font-size:11px;font-weight:700;
-  padding:2px 7px;border-radius:var(--r-xs);
-}
-.delta-pos{background:var(--gain-bg);  color:var(--gain-text)}
-.delta-neg{background:var(--loss-bg);  color:var(--loss-text)}
-.delta-neu{background:var(--ink3);     color:var(--chalk)}
-.proj-wins{font-family:var(--mono);font-size:11px;color:rgba(255,255,255,.25);margin-left:auto}
-.proj-wins strong{color:rgba(255,255,255,.55)}
+.card-delta{padding:0 11px 7px;display:flex;align-items:center;gap:6px}
+.delta-label{font-family:var(--mono);font-size:9px;color:rgba(255,255,255,.22)}
+.delta-val{font-family:var(--mono);font-size:10px;font-weight:700;padding:2px 6px;border-radius:var(--r-xs)}
+.delta-pos{background:var(--gain-bg);color:var(--gain-text)}
+.delta-neg{background:var(--loss-bg);color:var(--loss-text)}
+.delta-neu{background:var(--ink3);color:var(--chalk)}
+.proj-wins{font-family:var(--mono);font-size:10px;color:rgba(255,255,255,.22);margin-left:auto}
+.proj-wins strong{color:rgba(255,255,255,.5)}
 
-.card-spark{padding:0 13px 13px;height:38px}
+.card-spark{padding:0 11px 11px;height:34px}
 .spark-svg{width:100%;height:100%;overflow:visible}
 
 .card-footer{
-  border-top:1px solid var(--rule2);padding:6px 13px;
-  font-family:var(--mono);font-size:10px;color:rgba(255,255,255,.2);
+  border-top:1px solid var(--rule2);padding:5px 11px;
+  font-family:var(--mono);font-size:9px;color:rgba(255,255,255,.18);
   display:flex;justify-content:space-between;
 }
 
-/* ── STATE wrappers ──────────────────── */
+/* ── STATES ──────────────────────────── */
 .state-wrap{
   grid-column:1/-1;
   display:flex;flex-direction:column;align-items:center;
-  justify-content:center;padding:56px 20px;gap:14px;
-  color:var(--chalk);
+  justify-content:center;padding:48px 20px;gap:12px;color:var(--chalk);
 }
 .spinner{
-  width:32px;height:32px;border-radius:50%;
+  width:28px;height:28px;border-radius:50%;
   border:3px solid var(--rule);border-top-color:var(--signal);
   animation:spin .75s linear infinite;
 }
 @keyframes spin{to{transform:rotate(360deg)}}
-.state-text{font-family:var(--mono);font-size:13px;text-align:center;line-height:1.6}
+.state-text{font-family:var(--mono);font-size:12px;text-align:center;line-height:1.6}
 .error-box{
   background:var(--loss-bg);border:1px solid rgba(232,48,42,.3);
   border-radius:var(--r-md);padding:16px;color:#ffccc7;
-  font-size:13px;line-height:1.6;max-width:520px;
+  font-size:13px;line-height:1.6;max-width:480px;
 }
 
 /* ── MODAL ───────────────────────────── */
 .modal-overlay{
   position:fixed;inset:0;z-index:200;
-  background:rgba(0,0,0,.72);
-  backdrop-filter:blur(4px);
+  background:rgba(0,0,0,.72);backdrop-filter:blur(4px);
   display:flex;align-items:flex-end;
-  opacity:0;pointer-events:none;
-  transition:opacity .22s;
+  opacity:0;pointer-events:none;transition:opacity .22s;
 }
 .modal-overlay.open{opacity:1;pointer-events:auto}
 @media(min-width:640px){.modal-overlay{align-items:center;justify-content:center}}
 .modal-sheet{
-  background:var(--ink2);
-  border:1px solid var(--rule);
+  background:var(--ink2);border:1px solid var(--rule);
   border-radius:20px 20px 0 0;
   width:100%;max-height:92vh;
   overflow-y:auto;-webkit-overflow-scrolling:touch;
@@ -366,9 +506,7 @@ body{
   padding-bottom:env(safe-area-inset-bottom);
 }
 .modal-overlay.open .modal-sheet{transform:translateY(0)}
-@media(min-width:640px){
-  .modal-sheet{border-radius:16px;width:92%;max-width:720px;max-height:88vh}
-}
+@media(min-width:640px){.modal-sheet{border-radius:16px;width:92%;max-width:720px;max-height:88vh}}
 .modal-handle{width:36px;height:4px;border-radius:999px;background:var(--rule);margin:12px auto 0}
 .modal-header{
   display:flex;align-items:center;gap:11px;
@@ -376,13 +514,10 @@ body{
   border-bottom:1px solid var(--rule);
   position:sticky;top:0;background:var(--ink2);z-index:10;
 }
-/* Modal logo container — always white */
 .modal-team-logo{
   width:42px;height:42px;flex-shrink:0;
-  background:var(--logo-bg);
-  border:1px solid var(--logo-border);
-  border-radius:var(--r-md);
-  box-shadow:var(--logo-shadow);
+  background:var(--logo-bg);border:1px solid var(--logo-border);
+  border-radius:var(--r-md);box-shadow:var(--logo-shadow);
   display:flex;align-items:center;justify-content:center;overflow:hidden;
 }
 .modal-team-logo img{width:32px;height:32px;object-fit:contain}
@@ -390,69 +525,47 @@ body{
 .modal-team-name{font-family:var(--mono);font-size:20px;font-weight:700;color:#e8edf8}
 .modal-subtitle{font-family:var(--mono);font-size:11px;color:var(--chalk);margin-top:2px}
 .modal-close{
-  width:30px;height:30px;border-radius:50%;
+  width:32px;height:32px;border-radius:50%;
   background:var(--ink3);border:1px solid var(--rule);
   color:var(--chalk);font-size:18px;cursor:pointer;
   display:flex;align-items:center;justify-content:center;
-  transition:background .13s,color .13s;
+  transition:background .13s,color .13s;flex-shrink:0;
 }
 .modal-close:hover{background:var(--loss-bg);color:var(--loss-text)}
-
 .modal-body{padding:16px}
 .modal-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:16px}
-.mstat{
-  background:var(--ink3);border:1px solid var(--rule);
-  border-radius:var(--r-md);padding:11px 10px;text-align:center;
-}
+.mstat{background:var(--ink3);border:1px solid var(--rule);border-radius:var(--r-md);padding:11px 10px;text-align:center}
 .mstat-label{font-family:var(--mono);font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--chalk)}
 .mstat-val{font-family:var(--mono);font-size:22px;font-weight:700;letter-spacing:-.02em;margin-top:4px;color:#e8edf8}
 .mstat-sub{font-family:var(--mono);font-size:10px;color:var(--chalk);margin-top:2px}
-
 .modal-chart-svg{width:100%;height:180px;display:block;overflow:visible;margin-bottom:14px}
-.modal-section-title{
-  font-family:var(--mono);font-size:11px;font-weight:700;
-  letter-spacing:.08em;text-transform:uppercase;color:var(--chalk);
-  margin:14px 0 8px;
-}
+.modal-section-title{font-family:var(--mono);font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--chalk);margin:14px 0 8px}
 .comp-table{width:100%;border-collapse:collapse}
-.comp-table th{
-  text-align:left;padding:7px 9px;
-  font-family:var(--mono);font-size:10px;font-weight:700;
-  text-transform:uppercase;letter-spacing:.08em;color:var(--chalk);
-  background:var(--ink3);border-bottom:1px solid var(--rule);
-}
-.comp-table td{
-  padding:8px 9px;font-family:var(--mono);font-size:12px;color:rgba(255,255,255,.75);
-  border-bottom:1px solid var(--rule2);
-}
+.comp-table th{text-align:left;padding:7px 9px;font-family:var(--mono);font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--chalk);background:var(--ink3);border-bottom:1px solid var(--rule)}
+.comp-table td{padding:8px 9px;font-family:var(--mono);font-size:12px;color:rgba(255,255,255,.75);border-bottom:1px solid var(--rule2)}
 .comp-table tr:last-child td{border-bottom:none}
 .comp-table tr.cur-row td{background:rgba(26,255,107,.05)}
-.pill-sm{
-  display:inline-block;padding:2px 7px;border-radius:var(--r-xs);
-  font-size:11px;font-weight:700;
-}
+.pill-sm{display:inline-block;padding:2px 7px;border-radius:var(--r-xs);font-size:11px;font-weight:700}
 .pill-g{background:var(--gain-bg);color:var(--gain-text)}
 .pill-r{background:var(--loss-bg);color:var(--loss-text)}
 .pill-n{background:var(--ink3);color:var(--chalk)}
-
-/* Modal share row */
 .modal-share{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap}
 .share-btn{
   display:inline-flex;align-items:center;gap:6px;
   font-family:var(--mono);font-size:11px;font-weight:600;
-  padding:7px 13px;border-radius:var(--r-sm);cursor:pointer;
-  transition:all .13s;letter-spacing:.02em;
+  padding:9px 14px;border-radius:var(--r-sm);cursor:pointer;
+  transition:all .13s;letter-spacing:.02em;min-height:38px;
 }
 .share-btn-x{background:var(--ink);color:#e8edf8;border:1px solid rgba(255,255,255,.18)}
 .share-btn-x:hover{background:var(--ink3);border-color:rgba(255,255,255,.35)}
 .share-btn-copy{background:transparent;color:var(--chalk);border:1px solid var(--rule)}
 .share-btn-copy:hover{border-color:var(--signal);color:var(--signal)}
 .modal-cta{
-  display:block;width:100%;margin-top:12px;padding:12px;
+  display:block;width:100%;margin-top:12px;padding:14px;
   background:var(--signal);border-radius:var(--r-sm);border:0;
   color:var(--ink);font-family:var(--mono);font-size:15px;font-weight:700;
-  letter-spacing:.02em;text-align:center;cursor:pointer;
-  text-decoration:none;transition:filter .13s;
+  letter-spacing:.02em;text-align:center;cursor:pointer;text-decoration:none;
+  transition:filter .13s;
 }
 .modal-cta:hover{filter:brightness(1.08)}
 
@@ -462,40 +575,23 @@ body{
   display:flex;flex-wrap:wrap;gap:10px;
   align-items:center;justify-content:space-between;
 }
-.footer-logo{
-  font-family:var(--mono);font-weight:700;font-size:14px;
-  color:var(--chalk);text-decoration:none;
-}
+.footer-logo{font-family:var(--mono);font-weight:700;font-size:14px;color:var(--chalk);text-decoration:none}
 .footer-logo .accent{color:var(--signal)}
 .footer-links{display:flex;gap:14px}
 .footer-links a{font-size:12px;color:rgba(255,255,255,.25);text-decoration:none;transition:color .13s}
 .footer-links a:hover{color:var(--chalk)}
-.footer-note{font-family:var(--sans);font-size:11px;color:rgba(255,255,255,.2);line-height:1.65;width:100%}
-
-/* ── RESPONSIVE ──────────────────────── */
-@media(max-width:520px){
-  .team-grid{grid-template-columns:1fr;gap:8px}
-  .filter-row{gap:4px}
-  .filter-btn{font-size:10px;padding:5px 9px}
-  .ctrl-bar{gap:6px}
-  .search-wrap{max-width:100%}
-  .sort-select{margin-left:0}
-}
-@media(min-width:640px){
-  .team-grid{grid-template-columns:repeat(auto-fill,minmax(290px,1fr))}
-}
+.footer-note{font-family:var(--sans);font-size:11px;color:rgba(255,255,255,.18);line-height:1.65;width:100%}
 </style>
 </head>
 <body>
 
 <!-- ══ NAV ══════════════════════════════ -->
-<nav class="site-nav" aria-label="Site navigation">
+<nav class="site-nav">
   <div class="wrap nav-inner">
-    <a href="index.html" class="nav-logo" aria-label="Track The Season home">
+    <a href="index.html" class="nav-logo">
       <div class="nav-monogram">TTS</div>
       <div class="nav-wordmark">TRACK THE <span class="accent">SEASON</span></div>
     </a>
-
     <div class="nav-right">
       <div class="live-pill"><div class="live-dot"></div>LIVE</div>
       <div class="nav-date" id="headerDate"></div>
@@ -503,91 +599,124 @@ body{
   </div>
 </nav>
 
-<!-- ══ HERO ══════════════════════════════ -->
 <div class="wrap">
+
+  <!-- ══ HERO ══════════════════════════ -->
   <div class="hero">
-    <div class="hero-hed">MLB PACE<br><span class="accent">BOARD.</span></div>
-    <p class="hero-sub">Records through each team's completed games — compared to last year's pace, momentum, and projected finish.</p>
-    <div class="league-pills" id="leaguePills"></div>
+    <div class="hero-inner">
+      <div class="hero-eyebrow">
+        <div class="hero-eyebrow-dot"></div>
+        2026 MLB Season · Updated daily
+      </div>
+      <div class="hero-hed">How is your<br>team <span class="accent">tracking?</span></div>
+      <p class="hero-sub">Live records, win pace, and momentum for all 30 MLB teams — compared to last season.</p>
+
+      <!-- Find your team — prominent search -->
+      <div class="hero-finder">
+        <span class="finder-icon">⌕</span>
+        <input
+          class="finder-input"
+          id="finderInput"
+          type="text"
+          placeholder="Find your team…"
+          autocomplete="off"
+          autocorrect="off"
+          spellcheck="false"
+          inputmode="search"
+          aria-label="Search for a team"
+        />
+        <button class="finder-clear" id="finderClear" aria-label="Clear search">×</button>
+      </div>
+
+      <!-- League context pills — lower priority info -->
+      <div class="league-pills" id="leaguePills"></div>
+    </div>
+  </div>
+
+  <!-- ══ TODAY'S STORIES ═══════════════ -->
+  <div class="stories-section">
+    <div class="stories-header">
+      <div class="stories-title">Today's stories</div>
+      <div class="stories-sub" id="storiesDate"></div>
+    </div>
+    <div class="stories-grid" id="storiesGrid">
+      <!-- 4 skeleton cards while loading -->
+      <div class="story-skeleton"></div>
+      <div class="story-skeleton"></div>
+      <div class="story-skeleton"></div>
+      <div class="story-skeleton"></div>
+    </div>
+  </div>
+
+  <!-- ══ FEATURED TEAM ═════════════════ -->
+  <div class="featured-section" id="featuredSection" style="display:none">
+    <div class="section-label">Hottest team right now</div>
+    <div class="featured-card" id="featuredCard"></div>
   </div>
 
   <!-- ══ MOMENTUM FILTER BAR ══════════ -->
+  <div class="section-label" style="padding-top:20px">All 30 teams</div>
+
   <div class="momentum-bar" id="momentumBar">
-    <span class="momentum-bar-label">Filter by momentum</span>
-    <button class="mom-btn active-all" data-mom="all">All teams</button>
-    <button class="mom-btn mom-hot"  data-mom="Elite pace">    🔥 Elite pace</button>
-    <button class="mom-btn mom-hot"  data-mom="Heating up">   📈 Heating up</button>
-    <button class="mom-btn mom-hot"  data-mom="Strong stretch">✅ Strong stretch</button>
-    <button class="mom-btn mom-hot"  data-mom="Trending up">  ⬆️ Trending up</button>
-    <button class="mom-btn mom-neu"  data-mom="Stable">       ➡️ Stable</button>
-    <button class="mom-btn mom-cold" data-mom="Trending down"> ⬇️ Trending down</button>
-    <button class="mom-btn mom-cold" data-mom="Cooling off">  📉 Cooling off</button>
-    <button class="mom-btn mom-cold" data-mom="Struggling">   ❄️ Struggling</button>
-    <button class="explain-link" id="explainBtn" aria-expanded="false" aria-controls="explainerPanel">
-      What does this mean? ↓
-    </button>
+    <!-- All teams always visible -->
+    <button class="mom-btn active-all" data-mom="all">All</button>
+
+    <!-- Mobile: grouped 5 buttons -->
+    <button class="mom-btn mom-group mom-hot"  data-mom="__hot">🔥 Hot</button>
+    <button class="mom-btn mom-group mom-hot"  data-mom="__rising">📈 Rising</button>
+    <button class="mom-btn mom-group mom-neu"  data-mom="__stable">➡️ Stable</button>
+    <button class="mom-btn mom-group mom-cold" data-mom="__falling">⬇️ Falling</button>
+    <button class="mom-btn mom-group mom-cold" data-mom="__cold">❄️ Cold</button>
+
+    <!-- Desktop: individual 8 buttons -->
+    <button class="mom-btn mom-detailed mom-hot"  data-mom="Elite pace">🔥 Elite pace</button>
+    <button class="mom-btn mom-detailed mom-hot"  data-mom="Heating up">📈 Heating up</button>
+    <button class="mom-btn mom-detailed mom-hot"  data-mom="Strong stretch">✅ Strong stretch</button>
+    <button class="mom-btn mom-detailed mom-hot"  data-mom="Trending up">⬆️ Trending up</button>
+    <button class="mom-btn mom-detailed mom-neu"  data-mom="Stable">➡️ Stable</button>
+    <button class="mom-btn mom-detailed mom-cold" data-mom="Trending down">⬇️ Trending down</button>
+    <button class="mom-btn mom-detailed mom-cold" data-mom="Cooling off">📉 Cooling off</button>
+    <button class="mom-btn mom-detailed mom-cold" data-mom="Struggling">❄️ Struggling</button>
+    <button class="explain-link" id="explainBtn">What does this mean? ↓</button>
   </div>
 
-  <!-- ══ EXPLAINER PANEL ══════════════ -->
-  <div class="explainer-panel" id="explainerPanel" role="region" aria-label="Momentum label explanations">
+  <!-- Mobile explainer toggle -->
+  <button class="mobile-explain-btn" id="mobileExplainBtn">⚡ What do these labels mean?</button>
+
+  <!-- Explainer panel -->
+  <div class="explainer-panel" id="explainerPanel">
     <div class="explainer-inner">
       <div class="explainer-title">How momentum labels work</div>
       <p class="explainer-intro">
         Every label compares a team's <strong style="color:rgba(255,255,255,.7)">last-20 game win%</strong>
         to their <strong style="color:rgba(255,255,255,.7)">full-season win%</strong>.
-        The gap between those two numbers shows which direction they're moving —
-        regardless of where they sit in the standings.
+        The gap shows which direction they're moving — regardless of standings.
       </p>
       <div class="explainer-grid">
-        <div class="explainer-row">
-          <span class="explainer-chip hot">🔥 Elite pace</span>
-          <span class="explainer-text">Last 20 win% ≥ .650. Historically dominant recent stretch.</span>
-        </div>
-        <div class="explainer-row">
-          <span class="explainer-chip hot">📈 Heating up</span>
-          <span class="explainer-text">Last 20 ≥ .600 and meaningfully better than season average.</span>
-        </div>
-        <div class="explainer-row">
-          <span class="explainer-chip hot">✅ Strong stretch</span>
-          <span class="explainer-text">Last 20 ≥ .575. Playing above a 93-win pace recently.</span>
-        </div>
-        <div class="explainer-row">
-          <span class="explainer-chip hot">⬆️ Trending up</span>
-          <span class="explainer-text">Last 20 noticeably better than their season average.</span>
-        </div>
-        <div class="explainer-row">
-          <span class="explainer-chip neu">➡️ Stable</span>
-          <span class="explainer-text">Recent form roughly matches their overall season pace.</span>
-        </div>
-        <div class="explainer-row">
-          <span class="explainer-chip cold">⬇️ Trending down</span>
-          <span class="explainer-text">Last 20 noticeably worse than their season average.</span>
-        </div>
-        <div class="explainer-row">
-          <span class="explainer-chip cold">📉 Cooling off</span>
-          <span class="explainer-text">Last 20 ≤ .420 and significantly below season average.</span>
-        </div>
-        <div class="explainer-row">
-          <span class="explainer-chip cold">❄️ Struggling</span>
-          <span class="explainer-text">Last 20 win% ≤ .350. Recent stretch is historically bad.</span>
-        </div>
+        <div class="explainer-row"><span class="explainer-chip hot">🔥 Elite pace</span><span class="explainer-text">Last 20 win% ≥ .650. Historically dominant stretch.</span></div>
+        <div class="explainer-row"><span class="explainer-chip hot">📈 Heating up</span><span class="explainer-text">Last 20 ≥ .600 and meaningfully better than season average.</span></div>
+        <div class="explainer-row"><span class="explainer-chip hot">✅ Strong stretch</span><span class="explainer-text">Last 20 ≥ .575. Above a 93-win pace recently.</span></div>
+        <div class="explainer-row"><span class="explainer-chip hot">⬆️ Trending up</span><span class="explainer-text">Last 20 noticeably better than season average.</span></div>
+        <div class="explainer-row"><span class="explainer-chip neu">➡️ Stable</span><span class="explainer-text">Recent form roughly matches overall season pace.</span></div>
+        <div class="explainer-row"><span class="explainer-chip cold">⬇️ Trending down</span><span class="explainer-text">Last 20 noticeably worse than season average.</span></div>
+        <div class="explainer-row"><span class="explainer-chip cold">📉 Cooling off</span><span class="explainer-text">Last 20 ≤ .420 and significantly below season average.</span></div>
+        <div class="explainer-row"><span class="explainer-chip cold">❄️ Struggling</span><span class="explainer-text">Last 20 win% ≤ .350. Historically bad recent stretch.</span></div>
       </div>
       <p class="explainer-footer">
-        Example: A team sitting 40–31 (.563) but 7–13 in their last 20 (.350) is <strong style="color:rgba(255,255,255,.4)">📉 Cooling off</strong> —
-        the standings look fine but they're clearly fading. That's what these labels surface.
-        Needs at least 10 completed games to calculate.
+        Example: A team at 40–31 overall but 7–13 in their last 20 is 📉 Cooling off —
+        the standings look fine but they're fading. Needs 10+ completed games.
       </p>
     </div>
   </div>
 
   <!-- ══ CONTROLS ══════════════════════ -->
-  <div class="ctrl-bar" role="toolbar" aria-label="Filter and sort">
-    <div class="filter-row" id="leagueFilter" role="group" aria-label="League filter">
+  <div class="ctrl-bar" role="toolbar">
+    <div class="filter-row" id="leagueFilter">
       <button class="filter-btn active" data-filter="all">All 30</button>
       <button class="filter-btn" data-filter="AL">AL</button>
       <button class="filter-btn" data-filter="NL">NL</button>
     </div>
-    <div class="filter-row" id="divFilter" role="group" aria-label="Division filter">
+    <div class="filter-row" id="divFilter">
       <button class="filter-btn" data-filter="ALE">AL East</button>
       <button class="filter-btn" data-filter="ALC">AL Central</button>
       <button class="filter-btn" data-filter="ALW">AL West</button>
@@ -595,11 +724,7 @@ body{
       <button class="filter-btn" data-filter="NLC">NL Central</button>
       <button class="filter-btn" data-filter="NLW">NL West</button>
     </div>
-    <div class="search-wrap">
-      <span class="search-icon">⌕</span>
-      <input class="search-input" id="searchInput" type="text" placeholder="Search team…" autocomplete="off" aria-label="Search teams"/>
-    </div>
-    <select class="sort-select" id="sortSelect" aria-label="Sort teams">
+    <select class="sort-select" id="sortSelect">
       <option value="winpct">Sort: Win %</option>
       <option value="projwins">Sort: Proj. wins</option>
       <option value="delta">Sort: vs last year</option>
@@ -608,14 +733,15 @@ body{
     </select>
   </div>
 
-  <!-- ══ GRID ══════════════════════════ -->
-  <div class="team-grid" id="teamGrid" role="list" aria-label="MLB team cards">
+  <!-- ══ TEAM GRID ══════════════════════ -->
+  <div class="team-grid" id="teamGrid" role="list">
     <div class="state-wrap">
       <div class="spinner"></div>
-      <div class="state-text">Loading MLB teams…</div>
+      <div class="state-text">Loading all 30 teams…</div>
     </div>
   </div>
-</div>
+
+</div><!-- /wrap -->
 
 <!-- ══ FOOTER ════════════════════════════ -->
 <div class="wrap">
@@ -625,17 +751,15 @@ body{
       <a href="https://x.com/tracktheseason" target="_blank" rel="noopener">@tracktheseason</a>
     </div>
     <p class="footer-note">
-      Data: MLB Stats API schedule endpoint. Final regular-season games only.
-      Live, postponed, suspended, or non-final games are excluded until final.
-      Doubleheaders count as separate games. Not affiliated with or endorsed by MLB or its clubs.
+      Data: MLB Stats API. Final regular-season games only. Live, postponed, suspended, or non-final games excluded until final. Doubleheaders count as separate games. Not affiliated with or endorsed by MLB or its clubs.
     </p>
   </footer>
 </div>
 
 <!-- ══ MODAL ════════════════════════════ -->
 <div class="modal-overlay" id="modalOverlay" role="dialog" aria-modal="true" aria-labelledby="modalTeamName">
-  <div class="modal-sheet" id="modalSheet">
-    <div class="modal-handle" aria-hidden="true"></div>
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
     <div class="modal-header">
       <div class="modal-team-logo">
         <img id="modalLogoImg" src="" alt="" onerror="this.style.display='none';document.getElementById('modalLogoEmoji').style.display='block'"/>
@@ -645,7 +769,7 @@ body{
         <div class="modal-team-name" id="modalTeamName">—</div>
         <div class="modal-subtitle" id="modalSubtitle">—</div>
       </div>
-      <button class="modal-close" id="modalClose" aria-label="Close">×</button>
+      <button class="modal-close" id="modalClose">×</button>
     </div>
     <div class="modal-body" id="modalBody"></div>
   </div>
@@ -653,19 +777,17 @@ body{
 
 <script>
 /* ═══════════════════════════════════════════════════
-   TRACK THE SEASON — index.html
-   League-wide MLB pace dashboard
-   Architecture: constants → data → calculations → render → events
+   TRACK THE SEASON — index.html (mobile-optimised)
+   Architecture: constants → data → calculations →
+                 stories → featured → grid → events
 ═══════════════════════════════════════════════════ */
 
-/* ── Constants ──────────────────────────────────── */
 const API          = 'https://statsapi.mlb.com/api/v1';
 const TRACKER_PAGE = 'tracker.html';
 const CURRENT_YEAR = new Date().getFullYear();
 const COMPARE_YEAR = CURRENT_YEAR - 1;
-const SEASON_GAMES = 162; /* MLB regular season length */
+const SEASON_GAMES = 162;
 
-/* Division map — expansion: add NBA/NFL/NHL equivalents when needed */
 const DIVISIONS = {
   ALE:{name:'AL East',   teams:[111,110,139,141,147]},
   ALC:{name:'AL Central',teams:[116,145,142,114,118]},
@@ -674,54 +796,51 @@ const DIVISIONS = {
   NLC:{name:'NL Central',teams:[112,113,158,134,138]},
   NLW:{name:'NL West',   teams:[109,119,137,135,115]},
 };
-
-/* Emoji fallbacks when SVG logos fail to load */
 const TEAM_EMOJI = {
   108:'🦅',109:'⚾',110:'🦅',111:'🧦',112:'🐻',113:'🔴',114:'⚾',115:'🟣',
   116:'🐯',117:'⭐',118:'🔵',119:'💙',120:'🟥',121:'🔵',133:'🐘',134:'🏴‍☠️',
   135:'🟤',136:'🌊',137:'🟠',138:'🐦',139:'🐠',140:'🤠',141:'🍁',142:'🧤',
   143:'🔴',144:'🔨',145:'🌹',146:'🐟',147:'🟦',158:'🏃',
 };
-
-/* Momentum sort order for ranking */
 const MOMENTUM_RANK = {
   'Elite pace':6,'Heating up':5,'Strong stretch':4,
   'Trending up':3,'Stable':2,'Trending down':1,'Cooling off':0,'Struggling':-1,
 };
+/* Mobile grouped momentum filters */
+const MOMENTUM_HOT_LABELS    = new Set(['Elite pace','Heating up','Strong stretch','Trending up']);
+const MOMENTUM_RISING_LABELS = new Set(['Heating up','Trending up']);
+const MOMENTUM_STABLE_LABELS = new Set(['Stable']);
+const MOMENTUM_FALLING_LABELS= new Set(['Trending down','Cooling off']);
+const MOMENTUM_COLD_LABELS   = new Set(['Struggling','Cooling off']);
 
-/* Build reverse lookup: teamId → {league, divKey, divName} */
 const TEAM_DIV = {};
-for(const [k,d] of Object.entries(DIVISIONS)){
-  const lg = k.startsWith('AL')?'AL':'NL';
+for(const[k,d] of Object.entries(DIVISIONS)){
+  const lg=k.startsWith('AL')?'AL':'NL';
   for(const tid of d.teams) TEAM_DIV[tid]={league:lg,divKey:k,divName:d.name};
 }
 
-/* ── Cache & fetch ──────────────────────────────── */
-const cache = new Map();
+/* ── Cache & fetch ─────────────────────────────── */
+const cache=new Map();
 
 async function fetchJSON(url){
-  const r = await fetch(url);
-  if(!r.ok) throw new Error(`MLB API error ${r.status}`);
+  const r=await fetch(url);
+  if(!r.ok) throw new Error(`MLB API ${r.status}`);
   return r.json();
 }
 
-/* Load and process a team's final regular-season games for a given year.
-   Only Final-status games with a decided score are included.
-   Doubleheaders on the same date are sorted by gamePk (chronological proxy). */
-async function loadSchedule(teamId, year){
+async function loadSchedule(teamId,year){
   const key=`${teamId}:${year}`;
   if(cache.has(key)) return cache.get(key);
-  const data = await fetchJSON(`${API}/schedule?sportId=1&teamId=${teamId}&season=${year}&gameTypes=R`);
+  const data=await fetchJSON(`${API}/schedule?sportId=1&teamId=${teamId}&season=${year}&gameTypes=R`);
   const games=[];
-  for(const d of data.dates||[]){
+  for(const d of data.dates||[])
     for(const g of d.games||[]){
       if(g.status?.abstractGameState!=='Final') continue;
-      const h=g.teams?.home, a=g.teams?.away;
+      const h=g.teams?.home,a=g.teams?.away;
       if(h?.score==null||a?.score==null||h.score===a.score) continue;
       const isHome=String(h.team.id)===String(teamId);
       games.push({date:g.officialDate,gamePk:g.gamePk,win:isHome?h.score>a.score:a.score>h.score});
     }
-  }
   games.sort((a,b)=>a.date.localeCompare(b.date)||a.gamePk-b.gamePk);
   let cw=0,cl=0;
   games.forEach((g,i)=>{if(g.win)cw++;else cl++;g.gameNo=i+1;g.cumWins=cw;g.cumLosses=cl;});
@@ -729,7 +848,7 @@ async function loadSchedule(teamId, year){
   return games;
 }
 
-/* ── Calculations ───────────────────────────────── */
+/* ── Calculations ──────────────────────────────── */
 const winPct=(w,l)=>(w+l)?w/(w+l):0;
 const fmtPct=p=>p.toFixed(3).replace(/^0/,'');
 
@@ -739,41 +858,38 @@ function projWins(games){
   return Math.round(winPct(g.cumWins,g.cumLosses)*SEASON_GAMES);
 }
 
-/* Last-10 record from completed games */
 function last10(games){
   const s=games.slice(-10);
   const w=s.filter(g=>g.win).length;
-  return {w,l:s.length-w};
+  return{w,l:s.length-w};
 }
 
-/* Momentum based on last-20 win% vs season win% */
 function getMomentum(games){
   if(games.length<10) return{label:'Stable',cls:'chip-neutral',emoji:'➡️'};
   const last20=games.slice(-20);
   const rPct=winPct(last20.filter(g=>g.win).length,last20.filter(g=>!g.win).length);
   const sPct=winPct(games.filter(g=>g.win).length,games.filter(g=>!g.win).length);
   const d=rPct-sPct;
-  if(rPct>=.650) return{label:'Elite pace',   cls:'chip-hot', emoji:'🔥'};
-  if(rPct>=.600&&d>=.05) return{label:'Heating up',  cls:'chip-hot', emoji:'📈'};
-  if(rPct>=.575) return{label:'Strong stretch',cls:'chip-hot',emoji:'✅'};
-  if(rPct<=.350) return{label:'Struggling',   cls:'chip-cold',emoji:'❄️'};
-  if(rPct<=.420&&d<=-.05) return{label:'Cooling off',cls:'chip-cold',emoji:'📉'};
+  if(rPct>=.650) return{label:'Elite pace',    cls:'chip-hot', emoji:'🔥'};
+  if(rPct>=.600&&d>=.05) return{label:'Heating up',   cls:'chip-hot', emoji:'📈'};
+  if(rPct>=.575) return{label:'Strong stretch',cls:'chip-hot', emoji:'✅'};
+  if(rPct<=.350) return{label:'Struggling',    cls:'chip-cold',emoji:'❄️'};
+  if(rPct<=.420&&d<=-.05) return{label:'Cooling off', cls:'chip-cold',emoji:'📉'};
   if(d>=.05)  return{label:'Trending up',  cls:'chip-hot', emoji:'⬆️'};
   if(d<=-.05) return{label:'Trending down',cls:'chip-cold',emoji:'⬇️'};
   return{label:'Stable',cls:'chip-neutral',emoji:'➡️'};
 }
 
-/* Signal color for sparkline based on momentum */
 function momentumColor(label){
-  if(['Elite pace','Heating up','Strong stretch','Trending up'].includes(label)) return '#1aff6b';
+  if(MOMENTUM_HOT_LABELS.has(label)) return '#1aff6b';
   if(['Struggling','Cooling off','Trending down'].includes(label)) return '#f47570';
   return '#8a8a82';
 }
 
-/* ── Sparkline SVG ──────────────────────────────── */
-function buildSparkline(games, color){
+/* ── Sparkline ─────────────────────────────────── */
+function buildSparkline(games,color){
   if(!games.length) return '';
-  const W=300,H=38,p=2,maxG=games.length,maxW=games[games.length-1].cumWins||1;
+  const W=300,H=34,p=2,maxG=games.length,maxW=games[games.length-1].cumWins||1;
   const sx=x=>p+(x/maxG)*(W-p*2);
   const sy=y=>H-p-(y/maxW)*(H-p*2);
   const d=games.map((g,i)=>`${i?'L':'M'}${sx(g.gameNo).toFixed(1)},${sy(g.cumWins).toFixed(1)}`).join(' ');
@@ -789,41 +905,199 @@ function buildSparkline(games, color){
   </svg>`;
 }
 
-/* ── Build tracker deep-link URL ────────────────── */
-/* Each team card links to the tracker with pre-set params:
-   team ID, season, completed GP (through), and last-10 range */
-function trackerUrl(teamId, gp){
+/* ── URL / share helpers ───────────────────────── */
+function trackerUrl(teamId,gp){
   const rs=Math.max(1,gp-9);
   return `${TRACKER_PAGE}?team=${teamId}&season=${CURRENT_YEAR}&through=${gp}&rs=${rs}&re=${gp}`;
 }
 
-/* ── Share helpers ──────────────────────────────── */
 async function copyToClipboard(text){
-  try{
-    await navigator.clipboard.writeText(text);
-    return true;
-  }catch{
-    /* Fallback: prompt for manual copy */
-    window.prompt('Copy this link:', text);
-    return false;
-  }
+  try{await navigator.clipboard.writeText(text);return true;}
+  catch{window.prompt('Copy this:',text);return false;}
+}
+
+/* Brand-forward share text with @TrackTheSeason */
+function buildShareText(teamName,w,l,gp,proj,l10Rec,teamId){
+  const clubSlug=teamName.split(' ').pop().toLowerCase();
+  const url=`https://tracktheseason.com/${trackerUrl(teamId,gp)}`;
+  return `${teamName} pace check:\n${w}–${l} through ${gp} games.\nPace: ${proj??'—'} wins.\nLast 10: ${l10Rec.w}–${l10Rec.l}.\n\n${url}\n\nvia @TrackTheSeason #TrackTheSeason #${teamName.split(' ').map(w=>w[0].toUpperCase()+w.slice(1)).join('')}`;
 }
 
 function xShareUrl(text){
   return 'https://x.com/intent/tweet?text='+encodeURIComponent(text);
 }
 
-/* Build share text for a team */
-function buildShareText(teamName, w, l, gp, proj, last10Rec, teamId){
-  const url='https://tracktheseason.com/'+trackerUrl(teamId,gp);
-  return `${teamName} Pace Check:\n${w}–${l} through ${gp} games.\nProjected finish: ${proj??'—'} wins.\nLast 10: ${last10Rec.w}–${last10Rec.l}.\nTrack the season: ${url}`;
+/* ══════════════════════════════════════════════════
+   TODAY'S STORIES — dynamically generated from data
+   4 story types: pace leader, biggest gainer, best
+   last-10, biggest decliner. All from live game data.
+══════════════════════════════════════════════════ */
+function buildStories(allData){
+  const valid=allData.filter(t=>t.curGames.length>=10);
+  if(!valid.length) return;
+
+  /* Story 1: Highest projected wins */
+  const byProj=[...valid].sort((a,b)=>(projWins(b.curGames)||0)-(projWins(a.curGames)||0));
+  const top=byProj[0];
+  const topProj=projWins(top.curGames);
+  const topLast=top.curGames[top.curGames.length-1];
+
+  /* Story 2: Biggest improvement vs last year at same GP */
+  const byDelta=[...valid].sort((a,b)=>{
+    const da=getDelta(a);const db=getDelta(b);return db-da;
+  });
+  const gainer=byDelta[0];
+  const gainerDelta=getDelta(gainer);
+
+  /* Story 3: Best last-10 record */
+  const byL10=[...valid].sort((a,b)=>{
+    const la=last10(a.curGames);const lb=last10(b.curGames);
+    return lb.w-la.w;
+  });
+  const bestL10=byL10[0];
+  const bestL10rec=last10(bestL10.curGames);
+
+  /* Story 4: Biggest decliner vs last year */
+  const worstDelta=[...valid].sort((a,b)=>getDelta(a)-getDelta(b));
+  const fader=worstDelta[0];
+  const faderDelta=getDelta(fader);
+
+  const stories=[
+    {
+      eyebrow:'Pace leader',icon:'🔥',
+      team:top.team.clubName||top.team.name,
+      teamId:top.team.id,gp:top.curGames.length,
+      stat:`${topProj}W pace`,
+      statClass:'green',
+      detail:`${topLast.cumWins}–${topLast.cumLosses} · ${fmtPct(winPct(topLast.cumWins,topLast.cumLosses))}`,
+    },
+    {
+      eyebrow:`vs ${COMPARE_YEAR}`,icon:'📈',
+      team:gainer.team.clubName||gainer.team.name,
+      teamId:gainer.team.id,gp:gainer.curGames.length,
+      stat:`+${gainerDelta}W`,
+      statClass:'green',
+      detail:`ahead of last year's pace`,
+    },
+    {
+      eyebrow:'Last 10 games',icon:'⚡',
+      team:bestL10.team.clubName||bestL10.team.name,
+      teamId:bestL10.team.id,gp:bestL10.curGames.length,
+      stat:`${bestL10rec.w}–${bestL10rec.l}`,
+      statClass:'green',
+      detail:`best last-10 record in MLB`,
+    },
+    {
+      eyebrow:'Fading',icon:'📉',
+      team:fader.team.clubName||fader.team.name,
+      teamId:fader.team.id,gp:fader.curGames.length,
+      stat:`${faderDelta}W`,
+      statClass:'red',
+      detail:`behind last year's pace`,
+    },
+  ];
+
+  document.getElementById('storiesGrid').innerHTML=stories.map(s=>`
+    <a class="story-card" href="${trackerUrl(s.teamId,s.gp)}" aria-label="${s.team} story">
+      <div class="story-card-eyebrow">
+        <span class="story-card-icon">${s.icon}</span>${s.eyebrow}
+      </div>
+      <div class="story-team">${s.team}</div>
+      <div class="story-stat ${s.statClass}">${s.stat}</div>
+      <div class="story-detail">${s.detail}</div>
+    </a>`).join('');
+
+  document.getElementById('storiesDate').textContent=
+    new Date().toLocaleDateString('en-US',{month:'short',day:'numeric'});
 }
 
-/* ── Team card HTML ─────────────────────────────── */
-function buildCard(team, curGames, prevGames){
-  const last = curGames[curGames.length-1]||{cumWins:0,cumLosses:0};
+function getDelta(td){
+  const gp=td.curGames.length;
+  if(!gp||!td.prevGames.length||td.prevGames.length<gp) return 0;
+  const prev=td.prevGames[gp-1];
+  const cur=td.curGames[gp-1];
+  return prev&&cur ? cur.cumWins-prev.cumWins : 0;
+}
+
+/* ══════════════════════════════════════════════════
+   FEATURED TEAM — hottest team (highest momentum rank
+   then win%, then projected wins)
+══════════════════════════════════════════════════ */
+function buildFeatured(allData){
+  const valid=allData.filter(t=>t.curGames.length>=10);
+  if(!valid.length) return;
+
+  const ranked=[...valid].sort((a,b)=>{
+    const ma=getMomentum(a.curGames),mb=getMomentum(b.curGames);
+    const ra=MOMENTUM_RANK[ma.label]??2, rb=MOMENTUM_RANK[mb.label]??2;
+    if(rb!==ra) return rb-ra;
+    const pa=winPct(a.curGames.slice(-1)[0]?.cumWins||0,a.curGames.slice(-1)[0]?.cumLosses||0);
+    const pb=winPct(b.curGames.slice(-1)[0]?.cumWins||0,b.curGames.slice(-1)[0]?.cumLosses||0);
+    return pb-pa;
+  });
+
+  const td=ranked[0];
+  const cg=td.curGames;
+  const last=cg[cg.length-1];
+  const w=last.cumWins,l=last.cumLosses,gp=cg.length;
+  const proj=projWins(cg);
+  const l10=last10(cg);
+  const momentum=getMomentum(cg);
+  const delta=getDelta(td);
+  const logoUrl=`https://www.mlbstatic.com/team-logos/${td.team.id}.svg`;
+  const url=trackerUrl(td.team.id,gp);
+
+  /* Build chips */
+  const chips=[];
+  if(proj) chips.push({text:`${proj}W pace`,cls:'fchip-green'});
+  if(Math.abs(delta)>0) chips.push({text:delta>0?`+${delta}W vs ${COMPARE_YEAR}`:`${delta}W vs ${COMPARE_YEAR}`,cls:delta>0?'fchip-green':'fchip-red'});
+  chips.push({text:`Last 10: ${l10.w}–${l10.l}`,cls:l10.w>=7?'fchip-green':l10.w<=3?'fchip-red':'fchip-amber'});
+  chips.push({text:`${momentum.emoji} ${momentum.label}`,cls:'fchip-neu'});
+
+  document.getElementById('featuredCard').innerHTML=`
+    <div class="featured-inner">
+      <div class="featured-label">⚡ Today's hottest team</div>
+      <div class="featured-top">
+        <div class="featured-logo">
+          <img src="${logoUrl}" alt="${td.team.name}"
+            onerror="this.style.display='none';this.parentElement.innerHTML='<span style=font-size:24px>${TEAM_EMOJI[td.team.id]||'⚾'}</span>'"/>
+        </div>
+        <div class="featured-info">
+          <div class="featured-team-name">${td.team.clubName||td.team.name}</div>
+          <div class="featured-record">${w}–${l}</div>
+        </div>
+      </div>
+      <div class="featured-chips">
+        ${chips.map(c=>`<span class="featured-chip ${c.cls}">${c.text}</span>`).join('')}
+      </div>
+      <a class="featured-cta" href="${url}">Track the ${td.team.clubName||td.team.name} →</a>
+    </div>`;
+
+  document.getElementById('featuredSection').style.display='block';
+}
+
+/* ══════════════════════════════════════════════════
+   LEAGUE PILLS — lower priority summary context
+══════════════════════════════════════════════════ */
+function renderPills(allData){
+  const valid=allData.filter(t=>t.curGames.length>0);
+  const hot=valid.filter(t=>MOMENTUM_HOT_LABELS.has(getMomentum(t.curGames).label)).length;
+  const cold=valid.filter(t=>['Struggling','Cooling off'].includes(getMomentum(t.curGames).label)).length;
+  const gps=valid.map(t=>t.curGames.length);
+  const minGp=Math.min(...gps),maxGp=Math.max(...gps);
+  document.getElementById('leaguePills').innerHTML=`
+    <div class="league-pill"><div class="lp-dot" style="background:#1aff6b"></div>${hot} teams heating up</div>
+    <div class="league-pill"><div class="lp-dot" style="background:#f47570"></div>${cold} struggling</div>
+    <div class="league-pill"><div class="lp-dot" style="background:#8a8a82"></div>${minGp===maxGp?minGp:minGp+'–'+maxGp} GP completed</div>`;
+}
+
+/* ══════════════════════════════════════════════════
+   TEAM CARD
+══════════════════════════════════════════════════ */
+function buildCard(team,curGames,prevGames){
+  const last=curGames[curGames.length-1]||{cumWins:0,cumLosses:0};
   const gp=curGames.length;
-  const w=last.cumWins, l=last.cumLosses;
+  const w=last.cumWins,l=last.cumLosses;
   const pct=winPct(w,l);
   const proj=projWins(curGames);
   const l10=last10(curGames);
@@ -834,20 +1108,18 @@ function buildCard(team, curGames, prevGames){
   const emoji=TEAM_EMOJI[team.id]||'⚾';
   const url=trackerUrl(team.id,gp);
 
-  /* Delta vs prior year at same game count */
   let deltaNum=null,deltaCls='delta-neu',deltaStr='—';
   if(gp>0&&prevGames.length>=gp){
     const prev=prevGames[gp-1];
     if(prev){
       deltaNum=w-prev.cumWins;
-      deltaStr=deltaNum>0?`+${deltaNum}W vs ${COMPARE_YEAR}`:deltaNum<0?`${deltaNum}W vs ${COMPARE_YEAR}`:`Even vs ${COMPARE_YEAR}`;
+      deltaStr=deltaNum>0?`+${deltaNum}W`:deltaNum<0?`${deltaNum}W`:`Even`;
       deltaCls=deltaNum>0?'delta-pos':deltaNum<0?'delta-neg':'delta-neu';
     }
   }
 
-  /* Record shown if no games yet */
-  const recordDisplay = gp>0 ? `${w}–${l}` : '—';
-  const recordColor   = gp>0 ? '' : 'color:var(--chalk)';
+  const recordDisplay=gp>0?`${w}–${l}`:'—';
+  const recordColor=gp>0?'':'color:var(--chalk)';
 
   return `<div class="team-card"
     role="listitem"
@@ -861,10 +1133,10 @@ function buildCard(team, curGames, prevGames){
     data-momentum-label="${momentum.label}"
     data-name="${team.name}"
     data-gp="${gp}"
-    aria-label="View ${team.name} pace details">
+    aria-label="View ${team.name}">
     <div class="card-top">
       <div class="team-logo-wrap">
-        <img src="${logoUrl}" alt="${team.name} logo"
+        <img src="${logoUrl}" alt="${team.name}"
           onerror="this.style.display='none';this.nextElementSibling.style.display='block'"/>
         <span class="emoji-fb">${emoji}</span>
       </div>
@@ -880,41 +1152,22 @@ function buildCard(team, curGames, prevGames){
       <span class="record-gp">${gp} GP</span>
     </div>
     <div class="card-delta">
-      <span class="delta-label">vs last year</span>
+      <span class="delta-label">vs ${COMPARE_YEAR}</span>
       <span class="delta-val ${deltaCls}">${deltaStr}</span>
       ${proj!==null?`<span class="proj-wins">Proj. <strong>${proj}W</strong></span>`:''}
     </div>
     <div class="card-spark">${buildSparkline(curGames,sColor)}</div>
     <div class="card-footer">
       <span>${div.divName}</span>
-      <span>Last 10: ${gp>=10?`${l10.w}–${l10.l}`:'—'}</span>
+      <span>L10: ${gp>=10?`${l10.w}–${l10.l}`:'—'}</span>
     </div>
   </div>`;
 }
 
-/* ── League summary pills ───────────────────────── */
-function renderPills(allData){
-  const valid=allData.filter(t=>t.curGames.length>0);
-  const hot=valid.filter(t=>['Elite pace','Heating up','Strong stretch'].includes(getMomentum(t.curGames).label)).length;
-  const cold=valid.filter(t=>['Struggling','Cooling off'].includes(getMomentum(t.curGames).label)).length;
-  const ahead=valid.filter(t=>{
-    const gp=t.curGames.length;
-    if(!gp||!t.prevGames.length) return false;
-    const prev=t.prevGames[gp-1];
-    return prev&&t.curGames[gp-1].cumWins>prev.cumWins;
-  }).length;
-  const gps=valid.map(t=>t.curGames.length);
-  const minGp=Math.min(...gps),maxGp=Math.max(...gps);
-  const gpLabel=minGp===maxGp?`${minGp} GP`:`${minGp}–${maxGp} GP`;
-  document.getElementById('leaguePills').innerHTML=`
-    <div class="league-pill"><div class="lp-dot" style="background:#1aff6b"></div>${hot} heating up</div>
-    <div class="league-pill"><div class="lp-dot" style="background:#f47570"></div>${cold} struggling</div>
-    <div class="league-pill"><div class="lp-dot" style="background:#6fa0ff"></div>${ahead} ahead of last year</div>
-    <div class="league-pill"><div class="lp-dot" style="background:#8a8a82"></div>Teams: ${gpLabel} completed</div>`;
-}
-
-/* ── Modal ──────────────────────────────────────── */
-function openModal(team, curGames, prevGames){
+/* ══════════════════════════════════════════════════
+   MODAL
+══════════════════════════════════════════════════ */
+function openModal(team,curGames,prevGames){
   const gp=curGames.length;
   const last=curGames[gp-1]||{cumWins:0,cumLosses:0};
   const w=last.cumWins,l=last.cumLosses;
@@ -923,28 +1176,25 @@ function openModal(team, curGames, prevGames){
   const l10=last10(curGames);
   const momentum=getMomentum(curGames);
   const logoUrl=`https://www.mlbstatic.com/team-logos/${team.id}.svg`;
-  const div=TEAM_DIV[team.id]||{divName:'—',league:'—'};
+  const div=TEAM_DIV[team.id]||{divName:'—'};
   const url=trackerUrl(team.id,gp);
 
   document.getElementById('modalTeamName').textContent=team.name;
-  document.getElementById('modalSubtitle').textContent=`${CURRENT_YEAR} · ${div.divName} · ${gp} games played`;
-
+  document.getElementById('modalSubtitle').textContent=`${CURRENT_YEAR} · ${div.divName} · ${gp} GP`;
   const li=document.getElementById('modalLogoImg');
   const le=document.getElementById('modalLogoEmoji');
-  li.src=logoUrl; li.alt=team.name+' logo';
-  li.style.display='block'; le.style.display='none';
+  li.src=logoUrl;li.style.display='block';le.style.display='none';
 
-  /* Delta */
   let dStr='—',dCls='pill-n';
   if(gp>0&&prevGames.length>=gp){
     const prev=prevGames[gp-1];
     if(prev){const d=w-prev.cumWins;dStr=d>0?`+${d}W`:d<0?`${d}W`:'Even';dCls=d>0?'pill-g':d<0?'pill-r':'pill-n';}
   }
 
-  /* Mini chart — current vs prior year */
+  /* Mini chart */
   const W=600,H=175,p={l:32,r:16,t:10,b:26};
   const series=[
-    {games:curGames,color:'#1aff6b',label:String(CURRENT_YEAR),bold:true},
+    {games:curGames, color:'#1aff6b',label:String(CURRENT_YEAR),bold:true},
     {games:prevGames,color:'#8a8a82',label:String(COMPARE_YEAR),bold:false},
   ].filter(s=>s.games.length>0);
   const maxG=Math.max(...series.map(s=>s.games.length),1);
@@ -963,7 +1213,6 @@ function openModal(team, curGames, prevGames){
     paths+=`<text x="${sx(lg.gameNo)+4}" y="${sy(lg.cumWins)+4}" fill="${s.color}" font-size="11" font-weight="700" font-family="IBM Plex Mono,monospace">${s.label}</text>`;
   }
 
-  /* Comparison table rows */
   const cRows=[
     {year:CURRENT_YEAR,games:curGames,isCur:true},
     {year:COMPARE_YEAR,games:prevGames,isCur:false},
@@ -979,7 +1228,6 @@ function openModal(team, curGames, prevGames){
   }).join('');
 
   const shareText=buildShareText(team.name,w,l,gp,proj,l10,team.id);
-  const xUrl=xShareUrl(shareText);
   const fullUrl='https://tracktheseason.com/'+url;
 
   document.getElementById('modalBody').innerHTML=`
@@ -997,23 +1245,21 @@ function openModal(team, curGames, prevGames){
       <div class="mstat">
         <div class="mstat-label">Pace proj.</div>
         <div class="mstat-val">${proj!=null?proj+'W':'—'}${gp>0&&gp<162?'*':''}</div>
-        <div class="mstat-sub">vs last yr: <span class="pill-sm ${dCls}">${dStr}</span></div>
+        <div class="mstat-sub">vs ${COMPARE_YEAR}: <span class="pill-sm ${dCls}">${dStr}</span></div>
       </div>
     </div>
-    <svg class="modal-chart-svg" viewBox="0 0 ${W} ${H}" role="img" aria-label="Win curve for ${team.name}">
-      ${grid}${paths}
-    </svg>
+    <svg class="modal-chart-svg" viewBox="0 0 ${W} ${H}">${grid}${paths}</svg>
     <div class="modal-section-title">Year-over-year</div>
     <table class="comp-table">
       <thead><tr><th>Season</th><th>Record</th><th>Win%</th><th>Proj/Final</th></tr></thead>
       <tbody>${cRows}</tbody>
     </table>
     <div class="modal-share">
-      <a class="share-btn share-btn-x" href="${xUrl}" target="_blank" rel="noopener">𝕏 Post to X</a>
+      <a class="share-btn share-btn-x" href="${xShareUrl(shareText)}" target="_blank" rel="noopener">𝕏 Post to X</a>
       <button class="share-btn share-btn-copy" onclick="copyToClipboard('${fullUrl.replace(/'/g,"\\'")}').then(ok=>this.textContent=ok?'✓ Copied':'Link')">⧉ Copy link</button>
       <button class="share-btn share-btn-copy" onclick="copyToClipboard(${JSON.stringify(shareText)}).then(ok=>this.textContent=ok?'✓ Copied':'Text')">✦ Copy insight</button>
     </div>
-    <a class="modal-cta" href="${url}">Full pace tracker → ${team.clubName||team.name} ↗</a>`;
+    <a class="modal-cta" href="${url}">Full tracker → ${team.clubName||team.name} ↗</a>`;
 
   document.getElementById('modalOverlay').classList.add('open');
   document.body.style.overflow='hidden';
@@ -1024,18 +1270,30 @@ function closeModal(){
   document.body.style.overflow='';
 }
 
-/* ── Filter / sort ──────────────────────────────── */
-let activeFilter='all', activeSort='winpct', searchQuery='', activeMomentum='all';
+/* ══════════════════════════════════════════════════
+   FILTER / SORT
+══════════════════════════════════════════════════ */
+let activeFilter='all',activeSort='winpct',searchQuery='',activeMomentum='all';
+
+function momentumMatchesMobileGroup(label, group){
+  switch(group){
+    case '__hot':    return MOMENTUM_HOT_LABELS.has(label);
+    case '__rising': return MOMENTUM_RISING_LABELS.has(label);
+    case '__stable': return MOMENTUM_STABLE_LABELS.has(label);
+    case '__falling':return MOMENTUM_FALLING_LABELS.has(label);
+    case '__cold':   return MOMENTUM_COLD_LABELS.has(label);
+    default: return label===group;
+  }
+}
 
 function applyFiltersAndSort(){
   const grid=document.getElementById('teamGrid');
   const cards=[...grid.querySelectorAll('.team-card')];
   cards.forEach(c=>{
-    const matchFilter   = activeFilter==='all'||activeFilter===c.dataset.league||activeFilter===c.dataset.div;
-    const matchSearch   = !searchQuery||(c.dataset.name||'').toLowerCase().includes(searchQuery.toLowerCase());
-    /* Exact label match — data-momentum-label stores the raw label string (no emoji) */
-    const label = c.dataset.momentumLabel||'';
-    const matchMomentum = activeMomentum==='all' || label===activeMomentum;
+    const matchFilter   =activeFilter==='all'||activeFilter===c.dataset.league||activeFilter===c.dataset.div;
+    const matchSearch   =!searchQuery||(c.dataset.name||'').toLowerCase().includes(searchQuery.toLowerCase());
+    const label         =c.dataset.momentumLabel||'';
+    const matchMomentum =activeMomentum==='all'||momentumMatchesMobileGroup(label,activeMomentum);
     c.classList.toggle('hidden-card',!matchFilter||!matchSearch||!matchMomentum);
   });
   const visible=cards.filter(c=>!c.classList.contains('hidden-card'));
@@ -1052,17 +1310,18 @@ function applyFiltersAndSort(){
   visible.forEach(c=>grid.appendChild(c));
 }
 
-/* ── Render grid ────────────────────────────────── */
-function renderGrid(allData, total){
+function renderGrid(allData,total){
   const grid=document.getElementById('teamGrid');
   const done=allData.length>=total;
   const html=allData.map(({team,curGames,prevGames})=>buildCard(team,curGames,prevGames)).join('');
-  const loading=done?'':`<div class="state-wrap" id="loadingState"><div class="spinner"></div><div class="state-text">Loading ${allData.length} / ${total} teams…</div></div>`;
+  const loading=done?'':`<div class="state-wrap"><div class="spinner"></div><div class="state-text">Loading ${allData.length} / ${total} teams…</div></div>`;
   grid.innerHTML=html+loading;
   applyFiltersAndSort();
 }
 
-/* ── Main loader ────────────────────────────────── */
+/* ══════════════════════════════════════════════════
+   MAIN LOADER
+══════════════════════════════════════════════════ */
 async function loadAllTeams(){
   const grid=document.getElementById('teamGrid');
   const teamsData=await fetchJSON(`${API}/teams?sportId=1&activeStatus=Y`);
@@ -1083,10 +1342,16 @@ async function loadAllTeams(){
     }));
     for(const r of results) if(r.status==='fulfilled') allData.push(r.value);
     renderGrid(allData,teams.length);
+    /* Build stories + featured after first batch has enough data */
+    if(allData.length>=10&&document.querySelector('#storiesGrid .story-skeleton')){
+      buildStories(allData);
+    }
   }
   renderPills(allData);
+  buildStories(allData);
+  buildFeatured(allData);
 
-  /* Wire card clicks to open modal */
+  /* Wire card clicks */
   grid.addEventListener('click',e=>{
     const card=e.target.closest('.team-card');
     if(!card) return;
@@ -1098,55 +1363,71 @@ async function loadAllTeams(){
   });
 }
 
-/* ── Event wiring ───────────────────────────────── */
+/* ══════════════════════════════════════════════════
+   EVENT LISTENERS
+══════════════════════════════════════════════════ */
+/* Finder input — synced to hidden search state */
+const finderInput=document.getElementById('finderInput');
+const finderClear=document.getElementById('finderClear');
+finderInput.addEventListener('input',e=>{
+  searchQuery=e.target.value.trim();
+  finderClear.classList.toggle('visible',searchQuery.length>0);
+  applyFiltersAndSort();
+  /* Also scroll to grid on mobile when user starts typing */
+  if(searchQuery&&window.innerWidth<640){
+    document.getElementById('teamGrid').scrollIntoView({behavior:'smooth',block:'start'});
+  }
+});
+finderClear.addEventListener('click',()=>{
+  finderInput.value='';searchQuery='';
+  finderClear.classList.remove('visible');
+  applyFiltersAndSort();finderInput.focus();
+});
+
+/* League/division filters */
 ['leagueFilter','divFilter'].forEach(id=>{
   document.getElementById(id).addEventListener('click',e=>{
     const btn=e.target.closest('.filter-btn');
     if(!btn) return;
     document.querySelectorAll('#leagueFilter .filter-btn,#divFilter .filter-btn').forEach(b=>b.classList.remove('active'));
-    btn.classList.add('active');
-    activeFilter=btn.dataset.filter;
-    applyFiltersAndSort();
+    btn.classList.add('active');activeFilter=btn.dataset.filter;applyFiltersAndSort();
   });
 });
 
-/* Momentum filter buttons — data-mom holds exact label or "all" */
+/* Momentum filter — handles both mobile groups and desktop individual labels */
 document.getElementById('momentumBar').addEventListener('click',e=>{
   const btn=e.target.closest('.mom-btn');
-  if(!btn) return;
+  if(!btn||btn.id==='explainBtn') return;
   activeMomentum=btn.dataset.mom;
-  /* Clear all active states */
-  document.querySelectorAll('.mom-btn').forEach(b=>{
-    b.classList.remove('active-all','active');
-  });
-  /* Set active on clicked button */
-  if(activeMomentum==='all'){
-    btn.classList.add('active-all');
-  } else {
-    btn.classList.add('active');
-  }
+  document.querySelectorAll('.mom-btn').forEach(b=>b.classList.remove('active-all','active'));
+  btn.classList.add(activeMomentum==='all'?'active-all':'active');
   applyFiltersAndSort();
 });
 
-/* Explainer toggle */
-document.getElementById('explainBtn').addEventListener('click',()=>{
+/* Explainer toggles — desktop link and mobile button */
+function toggleExplainer(){
   const panel=document.getElementById('explainerPanel');
-  const btn=document.getElementById('explainBtn');
   const isOpen=panel.classList.toggle('open');
-  btn.textContent=isOpen?'What does this mean? ↑':'What does this mean? ↓';
-  btn.setAttribute('aria-expanded',isOpen);
-});
+  const desktopBtn=document.getElementById('explainBtn');
+  const mobileBtn=document.getElementById('mobileExplainBtn');
+  if(desktopBtn) desktopBtn.textContent=isOpen?'What does this mean? ↑':'What does this mean? ↓';
+  if(mobileBtn)  mobileBtn.textContent=isOpen?'⚡ Hide label explanations':'⚡ What do these labels mean?';
+}
+document.getElementById('explainBtn').addEventListener('click',toggleExplainer);
+document.getElementById('mobileExplainBtn').addEventListener('click',toggleExplainer);
+
 document.getElementById('sortSelect').addEventListener('change',e=>{activeSort=e.target.value;applyFiltersAndSort();});
-document.getElementById('searchInput').addEventListener('input',e=>{searchQuery=e.target.value.trim();applyFiltersAndSort();});
 document.getElementById('modalClose').addEventListener('click',closeModal);
 document.getElementById('modalOverlay').addEventListener('click',e=>{if(e.target===document.getElementById('modalOverlay'))closeModal();});
 document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal();});
-const headerDateEl=document.getElementById('headerDate');
-if(headerDateEl) headerDateEl.textContent=new Date().toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric',year:'numeric'});
 
-/* ── Boot ───────────────────────────────────────── */
+const headerDateEl=document.getElementById('headerDate');
+if(headerDateEl) headerDateEl.textContent=new Date().toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'});
+
+/* ── Boot ──────────────────────────────────────── */
 loadAllTeams().catch(err=>{
-  document.getElementById('teamGrid').innerHTML=`<div class="state-wrap"><div class="error-box"><strong>Could not load MLB data.</strong><br>${err.message}<br><br><span style="font-size:12px;color:var(--chalk)">If opening as a local file, serve via a local web server or deploy to Vercel/Netlify.</span></div></div>`;
+  document.getElementById('teamGrid').innerHTML=`<div class="state-wrap"><div class="error-box"><strong>Could not load MLB data.</strong><br>${err.message}<br><br><span style="font-size:12px;color:var(--chalk)">If viewing locally, serve via a web server or deploy to Vercel/Netlify.</span></div></div>`;
+  document.getElementById('storiesGrid').innerHTML='<div style="grid-column:1/-1;color:var(--chalk);font-size:13px;padding:8px 0">Stories unavailable — data not loaded.</div>';
 });
 </script>
 </body>
