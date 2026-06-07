@@ -324,6 +324,27 @@ tr.cur-row td{background:rgba(26,255,107,.05)}
   gtag('js', new Date());
   gtag('config', 'G-DCSQPGSY1D');
 </script>
+<!-- Team page view tracking — fires team_id as a custom dimension on every tracker page load -->
+<script>
+  (function(){
+    const p = new URLSearchParams(window.location.search);
+    const teamId = p.get('team');
+    const season = p.get('season');
+    const rs     = p.get('rs');
+    const re     = p.get('re');
+    if(teamId && typeof gtag === 'function'){
+      /* Set as user property so it persists across the session */
+      gtag('set', 'user_properties', { favorite_team: teamId });
+      /* Fire a page_view event with team context so you can pivot by team in GA4 */
+      gtag('event', 'tracker_page_view', {
+        team_id:    Number(teamId),
+        season:     season ? Number(season) : null,
+        start_game: rs ? Number(rs) : null,
+        end_game:   re ? Number(re) : null,
+      });
+    }
+  })();
+</script>
 </head>
 <body>
 
