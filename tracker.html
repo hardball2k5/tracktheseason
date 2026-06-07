@@ -97,16 +97,21 @@ body{
   display:none; /* hidden on desktop */
 }
 @media(max-width:860px){
-  .ctrl-toggle-bar{
+  /* The one inside controls-col: hidden on mobile */
+  .controls-col .ctrl-toggle-bar{
+    display:none !important;
+  }
+  /* The hero-positioned one: visible on mobile only */
+  .ctrl-toggle-hero{
     display:flex;align-items:center;gap:10px;
     background:var(--ink2);border:1px solid var(--rule);
     border-radius:var(--r-lg);padding:11px 14px;
-    cursor:pointer;width:100%;margin-bottom:10px;
+    cursor:pointer;width:100%;margin:10px 0 0;
     transition:border-color .15s;
     -webkit-tap-highlight-color:transparent;
   }
-  .ctrl-toggle-bar:hover{border-color:rgba(255,255,255,.2)}
-  .ctrl-toggle-bar.open{border-color:var(--signal)}
+  .ctrl-toggle-hero:hover{border-color:rgba(255,255,255,.2)}
+  .ctrl-toggle-hero.open{border-color:var(--signal)}
 }
 .ctrl-toggle-summary{
   flex:1;min-width:0;
@@ -465,6 +470,16 @@ tr.cur-row td{background:rgba(26,255,107,.05)}
     </div>
     <span id="heroBadge" class="hero-badge badge-neu"></span>
   </div>
+
+  <!-- Mobile-only control bar — sits between hero and stats.
+       The one inside controls-col is hidden on mobile via CSS. -->
+  <button class="ctrl-toggle-bar ctrl-toggle-hero" id="ctrlToggleBarHero" aria-expanded="false">
+    <div class="ctrl-toggle-summary">
+      <div class="ctrl-toggle-label">Change team / season / range</div>
+      <div class="ctrl-toggle-value" id="ctrlToggleValueHero">Loading…</div>
+    </div>
+    <span class="ctrl-toggle-arrow">⌄</span>
+  </button>
 
   <div class="page-grid">
     <!-- ── Controls ──────────────────────── -->
@@ -1786,9 +1801,7 @@ async function update(){
 
     /* Auto-close the accordion on mobile after updating */
     if(window.innerWidth <= 860){
-      ctrlCard.classList.remove('open');
-      ctrlToggleBar.classList.remove('open');
-      ctrlToggleBar.setAttribute('aria-expanded','false');
+      setAccordionState(false);
     }
 
   }catch(err){
@@ -1877,13 +1890,27 @@ async function init(){
    EVENT LISTENERS
 ═══════════════════════════════════════════════════════ */
 /* ── Mobile controls accordion ───────────────────── */
-const ctrlToggleBar = $('ctrlToggleBar');
-const ctrlCard      = $('ctrlCard');
+const ctrlToggleBar     = $('ctrlToggleBar');
+const ctrlToggleBarHero = $('ctrlToggleBarHero');
+const ctrlCard          = $('ctrlCard');
+
+function setAccordionState(open){
+  ctrlCard.classList.toggle('open', open);
+  ctrlToggleBar.classList.toggle('open', open);
+  ctrlToggleBarHero.classList.toggle('open', open);
+  ctrlToggleBar.setAttribute('aria-expanded', open);
+  ctrlToggleBarHero.setAttribute('aria-expanded', open);
+}
 
 ctrlToggleBar.addEventListener('click', ()=>{
-  const isOpen = ctrlCard.classList.toggle('open');
-  ctrlToggleBar.classList.toggle('open', isOpen);
-  ctrlToggleBar.setAttribute('aria-expanded', isOpen);
+  setAccordionState(!ctrlCard.classList.contains('open'));
+});
+ctrlToggleBarHero.addEventListener('click', ()=>{
+  setAccordionState(!ctrlCard.classList.contains('open'));
+  /* Scroll the open accordion into view so user sees the controls */
+  if(ctrlCard.classList.contains('open')){
+    setTimeout(()=> ctrlCard.scrollIntoView({behavior:'smooth', block:'nearest'}), 50);
+  }
 });
 
 /* Update the summary line shown on the collapsed toggle */
@@ -1893,7 +1920,9 @@ function updateCtrlSummary(){
   const rs        = $('gameFrom').value || '—';
   const re        = $('gameTo').value   || '—';
   const clubName  = teamName.split(' ').slice(-1)[0]; /* "Phillies" */
-  $('ctrlToggleValue').textContent = `${clubName} · ${season} · Games ${rs}–${re}`;
+  const summary   = `${clubName} · ${season} · Games ${rs}–${re}`;
+  $('ctrlToggleValue').textContent     = summary;
+  $('ctrlToggleValueHero').textContent = summary;
 }
 
 $('runBtn').addEventListener('click', update);
