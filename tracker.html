@@ -863,7 +863,9 @@ function renderSinceCard(moment, games, teamName, teamId, season){
   $('sinceProj').textContent    = proj  ? `${proj}W` : '—';
   $('sinceText').innerHTML      = narrative;
 
-  const sinceUrl = `https://tracktheseason.com/tracker.html?team=${teamId}&season=${season}&since=${moment.date}`;
+  /* Since URL preserves all tracker params plus the since date */
+  const baseUrl  = buildTrackerUrl();
+  const sinceUrl = `${baseUrl}&since=${moment.date}`;
   const txt = rec.g
     ? `${teamName} since ${moment.label}:\n${rec.w}–${rec.l} in ${rec.g} games (${fmtPct(pct)}).\nPace: ${proj??'—'} wins.\n\n${sinceUrl}\n\nvia @TrackTheSeason #TrackTheSeason`
     : `${teamName} — ${moment.label} (${moment.date})\n${sinceUrl}`;
@@ -872,14 +874,12 @@ function renderSinceCard(moment, games, teamName, teamId, season){
     <button class="since-share-btn share-btn-primary" id="sinceShareBtn">⬆ Share</button>
     <button class="since-share-btn share-btn-copy-ui" id="sinceCopyBtn">⧉ Copy link</button>`;
 
-  /* Wire: Share button */
   $('sinceShareBtn').addEventListener('click', function(){
-    doShare(this, txt, sinceUrl,
-      `${teamName} since ${moment.label} — Track The Season`);
+    doShare(this, txt, sinceUrl, `${teamName} since ${moment.label} — Track The Season`);
   });
-  /* Wire: Copy link with 2s feedback */
   $('sinceCopyBtn').addEventListener('click', function(){
-    copyLinkWithFeedback(this, sinceUrl);
+    const copyUrl = withUtm(sinceUrl, 'copy', 'social', 'share', buildUtmContent('copy'));
+    copyLinkWithFeedback(this, copyUrl);
   });
 
   $('sinceCard').classList.remove('hidden');
@@ -1175,9 +1175,11 @@ function renderInsights(params){
   $('heroBadge').className       = `hero-badge ${momentum.chipCls}`;
   $('paceStoryText').innerHTML   = ins.story;
 
-  const urlStr = `https://tracktheseason.com/tracker.html?team=${$('teamSelect').value}&season=${year}&rs=${rs}&re=${re}`;
+  /* Always build URL from live params so team/season/rs/re are current */
+  const urlStr  = buildTrackerUrl();
+  const copyUrl = withUtm(urlStr, 'copy', 'social', 'share', buildUtmContent('copy'));
 
-  /* Build dynamic share text per spec */
+  /* Build dynamic share text */
   const allData  = params.allData;
   const prior    = allData.filter(d=>d.year!==year);
   const delta    = prior.length ? curRec.w - (prior[0].games.slice(0,curRec.g).filter(g=>g.win).length) : 0;
@@ -1192,7 +1194,7 @@ function renderInsights(params){
     doShare(this, dynShare, urlStr, `${params.teamName} — Track The Season`);
   });
   $('copyLinkBtn').addEventListener('click', function(){
-    copyLinkWithFeedback(this, urlStr);
+    copyLinkWithFeedback(this, copyUrl);
   });
 
   $('insightsGrid').innerHTML=[
@@ -1212,8 +1214,9 @@ function renderInsights(params){
 
 /* ═══════════════════════════════════════════════════════
    SHARE SYSTEM
-   doShare() → native Web Share API → fallback menu
-   Platforms: X · Facebook · Reddit · Threads · Bluesky
+   - All URLs built from live window.location params
+   - UTM params appended with & (never overwrite existing params)
+   - GA4 events fired on every share and copy action
 ═══════════════════════════════════════════════════════ */
 
 async function copyToClipboard(text){
@@ -1221,7 +1224,55 @@ async function copyToClipboard(text){
   catch{window.prompt('Copy this:',text);return false;}
 }
 
-/* Build dynamic share text per spec */
+/* ── GA4 event tracking ─────────────────────────────
+   Safe wrapper — does nothing if gtag isn't loaded    */
+function trackEvent(eventName, params={}){
+  try{
+    if(typeof gtag === 'function'){
+      gtag('event', eventName, params);
+    }
+  } catch(e){ /* gtag not loaded — silently ignore */ }
+}
+
+/* ── URL builders ────────────────────────────────────
+   Always read team/season/rs/re from the current URL
+   so params are never stale, even if the user changed
+   them since the page loaded.                         */
+function getCurrentTrackerParams(){
+  const p = new URLSearchParams(window.location.search);
+  return {
+    team:   p.get('team')   || String(currentTeamId || ''),
+    season: p.get('season') || String(new Date().getFullYear()),
+    rs:     p.get('rs')     || $('gameFrom')?.value || '1',
+    re:     p.get('re')     || $('gameTo')?.value   || '10',
+  };
+}
+
+/* Build the canonical tracker URL from live params */
+function buildTrackerUrl(){
+  const {team,season,rs,re} = getCurrentTrackerParams();
+  return `https://tracktheseason.com/tracker.html?team=${team}&season=${season}&rs=${rs}&re=${re}`;
+}
+
+/* Append UTM params to any URL that already has query params.
+   Uses & because the base URL always has at least team=...    */
+function withUtm(baseUrl, source, medium='social', campaign='share', content=''){
+  let url = baseUrl;
+  url += `&utm_source=${encodeURIComponent(source)}`;
+  url += `&utm_medium=${encodeURIComponent(medium)}`;
+  url += `&utm_campaign=${encodeURIComponent(campaign)}`;
+  if(content) url += `&utm_content=${encodeURIComponent(content)}`;
+  return url;
+}
+
+/* Build utm_content from current state, e.g. "team_144_last10" */
+function buildUtmContent(platform){
+  const {team,rs,re} = getCurrentTrackerParams();
+  const gp = Number(re) - Number(rs) + 1;
+  return `team_${team}_g${rs}_${re}_${platform}`;
+}
+
+/* Dynamic share text per spec */
 function buildDynamicShareText(teamName, w, l, gp, delta, compareYear){
   const paceDesc = delta > 0 ? `${delta} win${delta!==1?'s':''} ahead of their ${compareYear} pace`
                  : delta < 0 ? `${Math.abs(delta)} win${Math.abs(delta)!==1?'s':''} behind their ${compareYear} pace`
@@ -1230,17 +1281,27 @@ function buildDynamicShareText(teamName, w, l, gp, delta, compareYear){
   return `The ${teamName} are ${w}-${l} through ${gp} games, ${paceDesc}. Track every MLB team's season at TrackTheSeason.\n\n#TrackTheSeason #${slug} #MLB`;
 }
 
-/* Copy URL with timed feedback */
+/* Copy URL with 2s timed feedback + GA4 event */
 async function copyLinkWithFeedback(btn, url){
   const original = btn.textContent;
   const ok = await copyToClipboard(url);
   btn.textContent = ok ? '✓ Copied!' : 'Copy failed';
   setTimeout(()=>{ btn.textContent = original; }, 2000);
+
+  const {team,season,rs,re} = getCurrentTrackerParams();
+  trackEvent('copy_link_clicked', {
+    team_id:         Number(team),
+    season:          Number(season),
+    start_game:      Number(rs),
+    end_game:        Number(re),
+    url_copied:      url,
+  });
 }
 
-/* Platform share URLs */
-function platformShareUrl(platform, text, url){
-  const t = encodeURIComponent(text), u = encodeURIComponent(url);
+/* Platform share URLs — each gets its own UTM source */
+function platformShareUrl(platform, shareText, baseUrl){
+  const utmUrl = withUtm(baseUrl, platform, 'social', 'share', buildUtmContent(platform));
+  const t = encodeURIComponent(shareText), u = encodeURIComponent(utmUrl);
   switch(platform){
     case 'x':        return `https://x.com/intent/tweet?text=${t}`;
     case 'facebook': return `https://www.facebook.com/sharer/sharer.php?u=${u}`;
@@ -1250,24 +1311,20 @@ function platformShareUrl(platform, text, url){
   }
 }
 
-/* Remove any open share menu */
 function hideShareMenu(){
   document.getElementById('shareMenuBackdrop')?.remove();
   document.getElementById('shareMenuPopup')?.remove();
 }
 
-/* Render fallback menu near the trigger button */
-function showShareMenu(triggerBtn, shareText, shareUrl){
+function showShareMenu(triggerBtn, shareText, baseUrl){
   hideShareMenu();
 
-  /* Backdrop — captures outside click */
   const bd = document.createElement('div');
   bd.id = 'shareMenuBackdrop';
   bd.className = 'share-menu-backdrop';
   bd.addEventListener('click', hideShareMenu);
   document.body.appendChild(bd);
 
-  /* Menu */
   const menu = document.createElement('div');
   menu.id = 'shareMenuPopup';
   menu.className = 'share-menu';
@@ -1277,62 +1334,92 @@ function showShareMenu(triggerBtn, shareText, shareUrl){
       <span class="share-menu-item-icon cp-icon">⧉</span>Copy link
     </button>
     <div class="share-menu-divider"></div>
-    <a class="share-menu-item" href="${platformShareUrl('x',shareText,shareUrl)}" target="_blank" rel="noopener">
+    <a class="share-menu-item" href="${platformShareUrl('x',shareText,baseUrl)}" target="_blank" rel="noopener" data-platform="x">
       <span class="share-menu-item-icon x-icon">𝕏</span>X (Twitter)
     </a>
-    <a class="share-menu-item" href="${platformShareUrl('threads',shareText,shareUrl)}" target="_blank" rel="noopener">
+    <a class="share-menu-item" href="${platformShareUrl('threads',shareText,baseUrl)}" target="_blank" rel="noopener" data-platform="threads">
       <span class="share-menu-item-icon th-icon">@</span>Threads
     </a>
-    <a class="share-menu-item" href="${platformShareUrl('bluesky',shareText,shareUrl)}" target="_blank" rel="noopener">
+    <a class="share-menu-item" href="${platformShareUrl('bluesky',shareText,baseUrl)}" target="_blank" rel="noopener" data-platform="bluesky">
       <span class="share-menu-item-icon bs-icon">🦋</span>Bluesky
     </a>
-    <a class="share-menu-item" href="${platformShareUrl('facebook',shareText,shareUrl)}" target="_blank" rel="noopener">
+    <a class="share-menu-item" href="${platformShareUrl('facebook',shareText,baseUrl)}" target="_blank" rel="noopener" data-platform="facebook">
       <span class="share-menu-item-icon fb-icon">f</span>Facebook
     </a>
-    <a class="share-menu-item" href="${platformShareUrl('reddit',shareText,shareUrl)}" target="_blank" rel="noopener">
+    <a class="share-menu-item" href="${platformShareUrl('reddit',shareText,baseUrl)}" target="_blank" rel="noopener" data-platform="reddit">
       <span class="share-menu-item-icon rd-icon">↑</span>Reddit
     </a>`;
   document.body.appendChild(menu);
 
+  /* Track platform clicks */
+  const {team,season,rs,re} = getCurrentTrackerParams();
+  menu.querySelectorAll('a[data-platform]').forEach(a=>{
+    a.addEventListener('click',()=>{
+      trackEvent('share_clicked',{
+        share_type:  a.dataset.platform,
+        team_id:     Number(team),
+        season:      Number(season),
+        start_game:  Number(rs),
+        end_game:    Number(re),
+        url_shared:  a.href,
+      });
+      setTimeout(hideShareMenu, 300);
+    });
+  });
+
   /* Copy link from menu */
   menu.querySelector('#smCopyLink').addEventListener('click', async()=>{
-    const ok = await copyToClipboard(shareUrl);
+    const copyUrl = withUtm(baseUrl, 'copy', 'social', 'share', buildUtmContent('copy'));
+    const ok = await copyToClipboard(copyUrl);
     const btn = menu.querySelector('#smCopyLink');
     btn.querySelector('.share-menu-item-icon').textContent = ok ? '✓' : '⧉';
     btn.childNodes[1].textContent = ok ? 'Copied!' : 'Copy link';
+
+    trackEvent('copy_link_clicked',{
+      team_id:    Number(team),
+      season:     Number(season),
+      start_game: Number(rs),
+      end_game:   Number(re),
+      url_copied: copyUrl,
+    });
     if(ok) setTimeout(hideShareMenu, 800);
   });
 
-  /* Position near trigger button */
+  /* Position near trigger */
   const rect = triggerBtn.getBoundingClientRect();
-  const menuH = 280; /* approx */
+  const menuH = 280;
   const top = (rect.top + window.scrollY - menuH - 8 > 0)
     ? rect.top + window.scrollY - menuH - 8
     : rect.bottom + window.scrollY + 8;
-  const left = Math.min(
-    Math.max(8, rect.left + window.scrollX - 8),
-    window.innerWidth - 216
-  );
+  const left = Math.min(Math.max(8, rect.left + window.scrollX - 8), window.innerWidth - 216);
   menu.style.top  = `${top}px`;
   menu.style.left = `${left}px`;
-
-  /* Close on any menu link click */
-  menu.querySelectorAll('a').forEach(a=>a.addEventListener('click', ()=>setTimeout(hideShareMenu,300)));
 }
 
-/* Primary share action:
-   1. Try navigator.share (native sheet on iOS/Android)
-   2. Fall back to inline menu */
-async function doShare(triggerBtn, shareText, shareUrl, shareTitle='Track The Season'){
+/* Primary share — native sheet on mobile, menu on desktop */
+async function doShare(triggerBtn, shareText, baseUrl, shareTitle='Track The Season'){
+  const {team,season,rs,re} = getCurrentTrackerParams();
+  /* Use live URL (always up to date) instead of whatever was passed in */
+  const liveBase = buildTrackerUrl();
+  const shareUrl = withUtm(liveBase, 'native', 'social', 'share', buildUtmContent('native'));
+
   if(navigator.share){
     try{
       await navigator.share({ title: shareTitle, text: shareText, url: shareUrl });
+      trackEvent('share_clicked',{
+        share_type:  'native',
+        team_id:     Number(team),
+        season:      Number(season),
+        start_game:  Number(rs),
+        end_game:    Number(re),
+        url_shared:  shareUrl,
+      });
     } catch(e){
-      /* User cancelled or share failed — do nothing (spec requirement) */
       if(e.name !== 'AbortError') console.warn('Share failed:', e.message);
+      /* AbortError = user cancelled — do nothing, no event fired */
     }
   } else {
-    showShareMenu(triggerBtn, shareText, shareUrl);
+    showShareMenu(triggerBtn, shareText, liveBase);
   }
 }
 
