@@ -10,8 +10,8 @@
 <style>
 /* ═══════════════════════════════════════════════════
    TRACK THE SEASON — tracker.html v3
-   Date-range controls · Google Sheets moments
-   URL: ?team=143&season=2026&from=2026-04-01&to=2026-06-07&since=2026-04-28
+   Game-range controls · Google Sheets moments
+   URL: ?team=143&season=2026&rs=54&re=71&since=2026-04-28
 ═══════════════════════════════════════════════════ */
 :root{
   --ink:#0f1014;--ink2:#1a1d24;--ink3:#252830;
@@ -87,11 +87,12 @@ body{
 .ctrl-input:focus{border-color:var(--signal)}
 .ctrl-input option{background:var(--ink2)}
 
-/* Date inputs */
-.date-row{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+/* Game range inputs */
+.game-range-row{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 .ctrl-sub-label{font-family:var(--mono);font-size:10px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:rgba(255,255,255,.2);display:block;margin-bottom:4px}
-input[type="date"].ctrl-input{color-scheme:dark;cursor:pointer}
-input[type="date"].ctrl-input::-webkit-calendar-picker-indicator{filter:invert(.4);cursor:pointer}
+input[type="number"].ctrl-input{-moz-appearance:textfield}
+input[type="number"].ctrl-input::-webkit-outer-spin-button,
+input[type="number"].ctrl-input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
 
 /* Preset chips */
 .preset-row{display:flex;flex-wrap:wrap;gap:5px;margin-top:8px}
@@ -304,24 +305,23 @@ tr.cur-row td{background:rgba(26,255,107,.05)}
         </div>
         <div class="ctrl-divider"></div>
 
-        <!-- Date range — replaces through-game -->
+        <!-- Game range -->
         <div>
-          <div class="ctrl-label">Date range</div>
-          <div class="date-row">
+          <div class="ctrl-label">Game range</div>
+          <div class="game-range-row">
             <div>
-              <span class="ctrl-sub-label">From</span>
-              <input id="dateFrom" type="date" class="ctrl-input"/>
+              <span class="ctrl-sub-label">From game</span>
+              <input id="gameFrom" type="number" min="1" max="162" class="ctrl-input" placeholder="1"/>
             </div>
             <div>
-              <span class="ctrl-sub-label">To</span>
-              <input id="dateTo" type="date" class="ctrl-input"/>
+              <span class="ctrl-sub-label">To game</span>
+              <input id="gameTo" type="number" min="1" max="162" class="ctrl-input" placeholder="10"/>
             </div>
           </div>
-          <p class="ctrl-helper">Select any date range to analyze that stretch.</p>
+          <p class="ctrl-helper">Game numbers align across all seasons for true YoY comparison.</p>
           <div class="preset-row" id="presetRow">
             <button class="preset-btn" data-preset="last10">Last 10</button>
             <button class="preset-btn" data-preset="last20">Last 20</button>
-            <button class="preset-btn" data-preset="thismonth">This month</button>
             <button class="preset-btn" data-preset="first27">G 1–27</button>
             <button class="preset-btn" data-preset="first63">G 28–63</button>
             <button class="preset-btn" data-preset="firsthalf">1st half</button>
@@ -455,7 +455,7 @@ tr.cur-row td{background:rgba(26,255,107,.05)}
               </table>
             </div>
             <div>
-              <div class="tbl-title">Date range comparison</div>
+              <div class="tbl-title">Game range comparison</div>
               <table id="rangeTable">
                 <thead><tr><th>Season</th><th>Range</th><th>Record</th><th>Win%</th><th>Pace</th></tr></thead>
                 <tbody></tbody>
@@ -483,9 +483,8 @@ tr.cur-row td{background:rgba(26,255,107,.05)}
 <script>
 /* ═══════════════════════════════════════════════════════
    TRACK THE SEASON — tracker.html v3
-   Date-range controls (no through-game)
-   Key moments fetched from Google Sheets
-   URL: ?team=143&season=2026&from=2026-04-01&to=2026-06-07&since=2026-04-28
+   Game-range controls · Google Sheets moments
+   URL: ?team=143&season=2026&rs=54&re=71&since=2026-04-28
 ═══════════════════════════════════════════════════════ */
 
 /* ── Configuration ─────────────────────────────────────
@@ -516,108 +515,64 @@ let allMoments      = [];     /* loaded from Google Sheets */
 
 /* ═══════════════════════════════════════════════════════
    URL PARAMETERS
-   ?team=143&season=2026&from=2026-04-01&to=2026-06-07&since=2026-04-28
+   ?team=143&season=2026&rs=54&re=71&since=2026-04-28
 ═══════════════════════════════════════════════════════ */
 function getUrlParams(){
   const p = new URLSearchParams(window.location.search);
   return{
     team:   p.get('team')   ? Number(p.get('team'))   : null,
     season: p.get('season') ? Number(p.get('season')) : null,
-    from:   p.get('from')   || null,
-    to:     p.get('to')     || null,
+    rs:     p.get('rs')     ? Number(p.get('rs'))     : null,
+    re:     p.get('re')     ? Number(p.get('re'))     : null,
     since:  p.get('since')  || null,
   };
 }
 
-function setUrlParams(teamId, season, from, to, since){
+function setUrlParams(teamId, season, rs, re, since){
   const url = new URL(window.location.href);
   url.searchParams.set('team',   teamId);
   url.searchParams.set('season', season);
-  if(from) url.searchParams.set('from', from); else url.searchParams.delete('from');
-  if(to)   url.searchParams.set('to',   to);   else url.searchParams.delete('to');
-  if(since)url.searchParams.set('since',since); else url.searchParams.delete('since');
+  url.searchParams.set('rs',     rs);
+  url.searchParams.set('re',     re);
+  if(since) url.searchParams.set('since', since);
+  else url.searchParams.delete('since');
   window.history.replaceState({}, '', url);
 }
 
 /* ═══════════════════════════════════════════════════════
-   DATE ↔ GAME NUMBER UTILITIES
+   GAME RANGE UTILITIES
+   All comparisons use sequential game numbers (1-based)
+   so every season aligns correctly for YoY comparison.
 ═══════════════════════════════════════════════════════ */
+const clamp = (v,mn,mx) => Math.max(mn, Math.min(mx, Number(v)||mn));
 
-/* Convert a game's date string to a comparable value */
-const dateStr = iso => iso ? iso.slice(0,10) : '';
+/* Completed game count for current season */
+function completedGP(games){ return games.length; }
 
-/* Get all games within a date range [fromISO, toISO] inclusive */
-function gamesInDateRange(games, fromISO, toISO){
-  const f = fromISO ? dateStr(fromISO) : '0000-00-00';
-  const t = toISO   ? dateStr(toISO)   : '9999-12-31';
-  return games.filter(g => g.date >= f && g.date <= t);
+/* Games within a game-number range [rs, re] inclusive */
+function gamesInRange(games, rs, re){
+  return games.filter(g => g.gameNo >= rs && g.gameNo <= re);
 }
 
-/* Get the latest game date in a team's schedule */
-function latestGameDate(games){
-  if(!games.length) return null;
-  return games[games.length-1].date;
-}
-
-/* Season start/end approximate dates */
-function seasonStartDate(year){ return `${year}-03-20`; }
-function seasonEndDate(year)  { return `${year}-11-01`; }
-function allstarDate(year)    { return `${year}-07-14`; } /* approx mid-July */
-
-/* Today's date as ISO string */
-function todayISO(){ return new Date().toISOString().slice(0,10); }
-
-/* N days ago */
-function daysAgoISO(n){
-  const d = new Date();
-  d.setDate(d.getDate()-n);
-  return d.toISOString().slice(0,10);
-}
-
-/* ═══════════════════════════════════════════════════════
-   PRESET RANGES — date-based
-═══════════════════════════════════════════════════════ */
-function computePresetDates(preset, games, season){
-  const latest = latestGameDate(games) || todayISO();
-  const year   = season || CURRENT_YEAR;
-
-  /* For past seasons use actual game dates */
-  const firstGame = games.length ? games[0].date : seasonStartDate(year);
-  const lastGame  = games.length ? games[games.length-1].date : latest;
-
-  /* Game-number based: find the date of game N */
-  const gameNDate = n => games[Math.min(n,games.length)-1]?.date || lastGame;
-
+/* ── Preset ranges — all game-number based ── */
+function computePresetRange(preset, games){
+  const gp = games.length || 1;
   switch(preset){
-    case 'last10':
-      return{ from: gamesInDateRange(games,null,latest).slice(-10)[0]?.date || firstGame, to: latest };
-    case 'last20':
-      return{ from: gamesInDateRange(games,null,latest).slice(-20)[0]?.date || firstGame, to: latest };
-    case 'thismonth':{
-      const now = new Date();
-      const monthStart = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-01`;
-      return{ from: monthStart, to: latest };
-    }
-    case 'first27':
-      return{ from: firstGame, to: gameNDate(27) };
-    case 'first63':
-      return{ from: gameNDate(28), to: gameNDate(63) };
-    case 'firsthalf':
-      return{ from: firstGame, to: gameNDate(81) };
-    case 'secondhalf':
-      return{ from: gameNDate(82), to: lastGame };
-    case 'fullseason':
-      return{ from: firstGame, to: lastGame };
-    default:
-      return{ from: firstGame, to: latest };
+    case 'last10':     return{ rs: Math.max(1, gp-9),  re: gp };
+    case 'last20':     return{ rs: Math.max(1, gp-19), re: gp };
+    case 'first27':    return{ rs: 1,  re: Math.min(27,  gp) };
+    case 'first63':    return{ rs: 28, re: Math.min(63,  gp) };
+    case 'firsthalf':  return{ rs: 1,  re: Math.min(81,  gp) };
+    case 'secondhalf': return{ rs: 82, re: gp };
+    case 'fullseason': return{ rs: 1,  re: gp };
+    default:           return{ rs: Math.max(1, gp-9), re: gp };
   }
 }
 
-/* Detect which preset matches current date range */
-function detectPreset(from, to, games, season){
-  for(const key of ['last10','last20','thismonth','first27','first63','firsthalf','secondhalf','fullseason']){
-    const p = computePresetDates(key, games, season);
-    if(p.from === from && p.to === to) return key;
+function detectPreset(rs, re, games){
+  for(const key of ['last10','last20','first27','first63','firsthalf','secondhalf','fullseason']){
+    const p = computePresetRange(key, games);
+    if(p.rs === rs && p.re === re) return key;
   }
   return null;
 }
@@ -736,7 +691,6 @@ function getMomentsForTeamSeason(teamId, season, games){
 ═══════════════════════════════════════════════════════ */
 const winPct = (w,l) => (w+l) ? w/(w+l) : 0;
 const fmtPct = p => p.toFixed(3).replace(/^0/,'');
-const clamp  = (v,mn,mx) => Math.max(mn, Math.min(mx, Number(v)||mn));
 const curYear= () => new Date().getFullYear();
 
 function recordFromGames(games){
@@ -749,14 +703,19 @@ function projectWins(rec){
   return Math.round((rec.w/rec.g)*SEASON_GAMES);
 }
 
-function curveSimilarity(a, b, upToDate){
-  /* Compare cumulative wins at common game counts up to upToDate */
-  const aSlice = a.filter(g=>g.date<=upToDate);
-  const bSlice = b.filter(g=>g.date<=upToDate);
-  const lim = Math.min(aSlice.length, bSlice.length);
+function curveSimilarity(a, b, upToGame){
+  /* Compare cumulative wins at each game number up to upToGame */
+  const lim = Math.min(
+    a.filter(g=>g.gameNo<=upToGame).length,
+    b.filter(g=>g.gameNo<=upToGame).length
+  );
   if(!lim) return Infinity;
   let d=0;
-  for(let i=0;i<lim;i++) d+=Math.abs(aSlice[i].cumWins - bSlice[i].cumWins);
+  for(let i=1;i<=lim;i++){
+    const ga = a.find(g=>g.gameNo===i);
+    const gb = b.find(g=>g.gameNo===i);
+    d += Math.abs((ga?.cumWins||0) - (gb?.cumWins||0));
+  }
   return d/lim;
 }
 
@@ -839,7 +798,7 @@ function renderSinceCard(moment, games, teamName, teamId, season){
     b.classList.toggle('active', b.dataset.date === moment.date);
   });
 
-  setUrlParams($('teamSelect').value, season, $('dateFrom').value, $('dateTo').value, moment.date);
+  setUrlParams($('teamSelect').value, season, $('gameFrom').value, $('gameTo').value, moment.date);
 }
 
 function dismissSince(){
@@ -857,7 +816,10 @@ function dismissSince(){
 function renderMomentsStrip(moments, games, teamName, teamId, season){
   const strip  = $('momentsStrip');
   const btnsEl = $('momentBtns');
-  const played = moments.filter(m => m.date <= (latestGameDate(games)||todayISO()));
+  const played = moments.filter(m => {
+    /* A moment is "played" if a game on or after that date exists */
+    return games.some(g => g.date >= m.date);
+  });
   if(!played.length){ strip.classList.add('hidden'); return; }
 
   btnsEl.innerHTML = '';
@@ -886,7 +848,7 @@ function renderMomentsStrip(moments, games, teamName, teamId, season){
 /* ═══════════════════════════════════════════════════════
    CHART
 ═══════════════════════════════════════════════════════ */
-function drawChart(series, fromDate, toDate, mode, moments=[]){
+function drawChart(series, rs, re, mode, moments=[]){
   lastSeries = series;
   const svg = $('mainChart'); svg.innerHTML = '';
   const W=1000, H=360, p={l:48,r:28,t:28,b:38};
@@ -895,16 +857,11 @@ function drawChart(series, fromDate, toDate, mode, moments=[]){
   const sx = x => p.l + (x/xMax)*(W-p.l-p.r);
   const sy = y => H-p.b - (y/yMax)*(H-p.t-p.b);
 
-  /* Find game numbers for fromDate/toDate on the current-season games */
-  const curSeries = series.find(s=>s.current);
-  const fromGame  = curSeries?.games.find(g=>g.date>=fromDate)?.gameNo || 1;
-  const toGame    = [...(curSeries?.games||[])].reverse().find(g=>g.date<=toDate)?.gameNo || SEASON_GAMES;
-
-  /* Range shade */
-  svg.appendChild(el('rect',{x:sx(fromGame-1),y:p.t,width:sx(toGame)-sx(fromGame-1),height:H-p.t-p.b,fill:'rgba(26,255,107,.06)'}));
-  [fromGame-1,toGame].forEach(xv=>svg.appendChild(el('line',{x1:sx(xv),x2:sx(xv),y1:p.t,y2:H-p.b,stroke:'rgba(26,255,107,.30)','stroke-width':1.5,'stroke-dasharray':'5 4'})));
-  const rlb=el('text',{x:sx((fromGame+toGame)/2),y:p.t-9,fill:'rgba(26,255,107,.55)','font-size':10,'text-anchor':'middle','font-family':'IBM Plex Mono,monospace','font-weight':'700'});
-  rlb.textContent=`${fromDate.slice(5)} – ${toDate.slice(5)}`; svg.appendChild(rlb);
+  /* Range shade using game numbers directly */
+  svg.appendChild(el('rect',{x:sx(rs-1),y:p.t,width:sx(re)-sx(rs-1),height:H-p.t-p.b,fill:'rgba(26,255,107,.06)'}));
+  [rs-1,re].forEach(xv=>svg.appendChild(el('line',{x1:sx(xv),x2:sx(xv),y1:p.t,y2:H-p.b,stroke:'rgba(26,255,107,.30)','stroke-width':1.5,'stroke-dasharray':'5 4'})));
+  const rlb=el('text',{x:sx((rs+re)/2),y:p.t-9,fill:'rgba(26,255,107,.55)','font-size':10,'text-anchor':'middle','font-family':'IBM Plex Mono,monospace','font-weight':'700'});
+  rlb.textContent=`G${rs}–${re}`; svg.appendChild(rlb);
 
   /* Y grid */
   const yTicks = mode==='pct' ? [0,.2,.4,.5,.6,.8,1] : [0,20,40,60,80,100];
@@ -951,14 +908,14 @@ function drawChart(series, fromDate, toDate, mode, moments=[]){
   }
 }
 
-function buildSeries(allData, year, fromDate, toDate){
+function buildSeries(allData, year, rs, re){
   return allData.map((d,i)=>{
     const color = SEASON_COLORS[i % SEASON_COLORS.length];
     const isCur = d.year === year;
     const pts=[]; let rw=0;
     d.games.forEach(g=>{
-      if(g.date>=fromDate&&g.date<=toDate) rw+=g.win?1:0;
-      pts.push({game:g.gameNo,wins:g.cumWins,pct:winPct(g.cumWins,g.cumLosses),rw:g.date>=fromDate?rw:null});
+      if(g.gameNo>=rs && g.gameNo<=re) rw+=g.win?1:0;
+      pts.push({game:g.gameNo,wins:g.cumWins,pct:winPct(g.cumWins,g.cumLosses),rw:g.gameNo>=rs?rw:null});
     });
     if(isCur&&d.games.length>0&&d.games.length<SEASON_GAMES){
       const lg=d.games[d.games.length-1];
@@ -995,21 +952,18 @@ function renderThroughTable(allData, year){
   }).join('');
 }
 
-function renderRangeTable(allData, year, fromDate, toDate){
+function renderRangeTable(allData, year, rs, re){
   document.querySelector('#rangeTable tbody').innerHTML = allData.map(d=>{
-    const rangeGames = gamesInDateRange(d.games, fromDate, toDate);
-    const r   = recordFromGames(rangeGames);
-    const isCur = d.year===year;
-    const pct = winPct(r.w,r.l);
-    const pace= r.g ? Math.round((r.w/r.g)*SEASON_GAMES) : 0;
-    const cls = pct>=.580?'pill-g':pct<=.420?'pill-r':'';
-    /* Show date range label using actual game dates for this season */
-    const rangeLabel = rangeGames.length
-      ? `${rangeGames[0].date.slice(5)}–${rangeGames[rangeGames.length-1].date.slice(5)}`
-      : `${fromDate.slice(5)}–${toDate.slice(5)}`;
+    /* Use game numbers — true YoY comparison, all seasons aligned */
+    const rangeGames = gamesInRange(d.games, rs, re);
+    const r    = recordFromGames(rangeGames);
+    const isCur= d.year===year;
+    const pct  = winPct(r.w,r.l);
+    const pace = r.g ? Math.round((r.w/r.g)*SEASON_GAMES) : 0;
+    const cls  = pct>=.580?'pill-g':pct<=.420?'pill-r':'';
     return `<tr class="${isCur?'cur-row':''}">
       <td><strong style="color:${isCur?'#1aff6b':'inherit'}">${d.year}${isCur?' ★':''}</strong></td>
-      <td style="font-size:10px">${rangeLabel}</td>
+      <td>G${rs}–${re}</td>
       <td><span class="pill ${cls}">${r.w}–${r.l}</span></td>
       <td>${fmtPct(pct)}</td>
       <td>${r.g?pace:'—'}</td></tr>`;
@@ -1019,7 +973,7 @@ function renderRangeTable(allData, year, fromDate, toDate){
 /* ═══════════════════════════════════════════════════════
    INSIGHTS
 ═══════════════════════════════════════════════════════ */
-function buildInsights({teamName, year, fromDate, toDate, curGames, allData, rangeGames}){
+function buildInsights({teamName, year, rs, re, curGames, allData, rangeGames}){
   const curRec    = recordFromGames(curGames);
   const rangeRec  = recordFromGames(rangeGames);
   const cTPct     = winPct(curRec.w, curRec.l);
@@ -1040,15 +994,17 @@ function buildInsights({teamName, year, fromDate, toDate, curGames, allData, ran
 
   /* Range comparison */
   const rcomps = prior.map(d=>{
-    const rg = gamesInDateRange(d.games, fromDate, toDate);
+    const rg = gamesInRange(d.games, rs, re);
     const r  = recordFromGames(rg);
     return{year:d.year,w:r.w,l:r.l,g:r.g,pct:winPct(r.w,r.l)};
   }).filter(c=>c.g>0);
   const rankPos = rcomps.filter(c=>c.pct>cRPct).length+1;
   const rankTot = rcomps.length+1;
-  let rangeText = `${fromDate.slice(5)} – ${toDate.slice(5)}: ${year} went <strong>${rangeRec.w}–${rangeRec.l}</strong> (${fmtPct(cRPct)}).`;
+  let rangeText = `G${rs}–${re}: ${year} went <strong>${rangeRec.w}–${rangeRec.l}</strong> (${fmtPct(cRPct)}).`;
   if(rankTot>1) rangeText+=` <strong>#${rankPos} of ${rankTot}</strong> seasons in this range.`;
-  if(!rangeRec.g) rangeText=`No completed games in this date range yet.`;
+  const bestR=[...rcomps].sort((a,b)=>b.pct-a.pct)[0];
+  if(bestR) rangeText+=` Best prior: ${bestR.year} (${bestR.w}–${bestR.l}).`;
+  if(!rangeRec.g) rangeText=`No completed games yet in G${rs}–${re}.`;
 
   /* vs avg/best */
   let compText='Select comparison seasons to compare.';
@@ -1059,15 +1015,15 @@ function buildInsights({teamName, year, fromDate, toDate, curGames, allData, ran
     compText=`vs. avg of selected seasons: <strong>${vsAvg>=0?'+':''}${vsAvg.toFixed(1)}W</strong>. Best comp: <strong>${best.year}</strong> (${best.w}W).`;
   }
 
-  /* Closest comp */
+  /* Closest comp — compare by game number */
   let closestText='Select more seasons to find a closest comp.';
   if(prior.length){
-    const sims=prior.map(d=>({year:d.year,sim:curveSimilarity(curGames,d.games,toDate)}))
+    const sims=prior.map(d=>({year:d.year,sim:curveSimilarity(curGames,d.games,re)}))
       .filter(s=>isFinite(s.sim)).sort((a,b)=>a.sim-b.sim);
     if(sims.length){
       const b=sims[0];
       const br=recordFromGames(allData.find(d=>d.year===b.year)?.games||[]);
-      closestText=`Most similar season: <strong>${b.year}</strong> (${br.w}–${br.l}). Avg divergence: ${b.sim.toFixed(1)} W/game.`;
+      closestText=`Most similar through game ${re}: <strong>${b.year}</strong> (${br.w}–${br.l}). Avg divergence: ${b.sim.toFixed(1)} W/game.`;
     }
   }
 
@@ -1075,14 +1031,14 @@ function buildInsights({teamName, year, fromDate, toDate, curGames, allData, ran
   const seasProj  = projectWins(curRec);
   const rangeProj = projectWins(rangeRec);
   let projText = seasProj!=null ? `Full-season pace: <strong>${seasProj} wins</strong>.` : '';
-  if(rangeProj!=null) projText+=` Date range pace: <strong>${rangeProj} wins</strong>.`;
+  if(rangeProj!=null) projText+=` G${rs}–${re} pace: <strong>${rangeProj} wins</strong>.`;
   if(!projText) projText='Insufficient games to project.';
   projText+=` <em style="color:var(--chalk);font-size:12px">Pace-based — not a predictive model.</em>`;
 
   /* Pace story */
   let story=`Through ${curRec.g} games, the ${year} ${teamName} are <strong>${curRec.w}–${curRec.l}</strong>`;
   if(tcomps.length){const r=tcomps[0];story+=r.delta>0?`, ${r.delta}W ahead of ${r.year}`:r.delta<0?`, ${Math.abs(r.delta)}W behind ${r.year}`:', matching last year\'s pace';}
-  story+=rangeRec.g>0?`. In the selected range: <strong>${rangeRec.w}–${rangeRec.l}</strong>.`+( seasProj?` Pace: <strong>${seasProj} wins</strong>.</strong>`:'.'):'.';
+  story+=rangeRec.g>0?`. G${rs}–${re}: <strong>${rangeRec.w}–${rangeRec.l}</strong>.`+(seasProj?` Pace: <strong>${seasProj} wins</strong>.`:'.'):'.';
 
   /* Last 10 */
   const l10 = curGames.slice(-10);
@@ -1094,7 +1050,7 @@ function buildInsights({teamName, year, fromDate, toDate, curGames, allData, ran
 
 function renderInsights(params){
   const ins = buildInsights(params);
-  const{year,fromDate,toDate,curGames,rangeGames} = params;
+  const{year,rs,re,curGames,rangeGames} = params;
   const curRec  = recordFromGames(curGames);
   const momentum= getMomentum(curGames, rangeGames);
 
@@ -1104,7 +1060,7 @@ function renderInsights(params){
   $('heroBadge').className       = `hero-badge ${momentum.chipCls}`;
   $('paceStoryText').innerHTML   = ins.story;
 
-  const urlStr=`https://tracktheseason.com/tracker.html?team=${$('teamSelect').value}&season=${year}&from=${fromDate}&to=${toDate}`;
+  const urlStr=`https://tracktheseason.com/tracker.html?team=${$('teamSelect').value}&season=${year}&rs=${rs}&re=${re}`;
   const shareText=`${params.teamName} Pace Check:\n${curRec.w}–${curRec.l} through ${curRec.g} games.\nPace: ${ins.seasProj??'—'} wins.\nLast 10: ${ins.l10str}.\n\n${urlStr}\n\nvia @TrackTheSeason #TrackTheSeason`;
   $('insightShare').innerHTML=`
     <a class="share-btn share-btn-x" href="https://x.com/intent/tweet?text=${encodeURIComponent(shareText)}" target="_blank" rel="noopener">𝕏 Post to X</a>
@@ -1115,12 +1071,12 @@ function renderInsights(params){
 
   $('insightsGrid').innerHTML=[
     {title:'Full season so far',  text:ins.throughText},
-    {title:`Range ${fromDate.slice(5)}–${toDate.slice(5)}`, text:ins.rangeText},
+    {title:`Game range G${rs}–${re}`, text:ins.rangeText},
     {title:'vs. selected seasons',text:ins.compText},
     {title:'Closest historical comp',text:ins.closestText},
     {title:'Current pace projection',text:ins.projText},
     {title:'⚠️ Range pace ≠ full season',
-     text:`A date range reflects recent form, not guaranteed pace. Projections are pace calculations — not predictive models.`,
+     text:`A game range reflects recent form, not guaranteed full-season pace. Projections are pace calculations — not predictive models.`,
      caution:true},
   ].map(c=>`<div class="insight-card${c.caution?' insight-caution':''}">
     <div class="insight-card-title">${c.title}</div>
@@ -1153,9 +1109,11 @@ async function update(){
                        .map(e=>Number(e.value)).sort((a,b)=>b-a);
     if(!years.length) throw new Error('Select at least one comparison season.');
 
-    const fromDate = $('dateFrom').value;
-    const toDate   = $('dateTo').value;
-    if(!fromDate||!toDate) throw new Error('Select a date range.');
+    const rs = clamp($('gameFrom').value, 1, SEASON_GAMES);
+    const re = clamp($('gameTo').value,   1, SEASON_GAMES);
+    const rangeStart = Math.min(rs, re);
+    const rangeEnd   = Math.max(rs, re);
+    if(!rangeStart||!rangeEnd) throw new Error('Enter a game range.');
 
     $('statusText').textContent = `Loading ${teamName} ${year}…`;
 
@@ -1167,17 +1125,16 @@ async function update(){
     const curData = allData.find(d=>d.year===year);
     if(!curData) throw new Error(`No ${year} data.`);
     const curGames   = curData.games;
-    const rangeGames = gamesInDateRange(curGames, fromDate, toDate);
+    const rangeGames = gamesInRange(curGames, rangeStart, rangeEnd);
     const curRec     = recordFromGames(curGames);
     const rangeRec   = recordFromGames(rangeGames);
     const proj       = projectWins(curRec);
 
-    /* Store for chart re-draw */
     currentTeamId   = Number(teamId);
     currentGames    = curGames;
     currentTeamName = teamName;
 
-    setUrlParams(teamId, year, fromDate, toDate, activeSinceDate);
+    setUrlParams(teamId, year, rangeStart, rangeEnd, activeSinceDate);
 
     /* Hero */
     const logoUrl=`https://www.mlbstatic.com/team-logos/${teamId}.svg`;
@@ -1192,35 +1149,34 @@ async function update(){
     document.title=`${teamName} — Track The Season`;
 
     /* Metrics */
-    $('mTeam').textContent  = teamName;
-    $('mSeason').textContent= `${year} regular season`;
+    $('mTeam').textContent      = teamName;
+    $('mSeason').textContent    = `${year} regular season`;
     $('mFullLabel').textContent = `Full season`;
-    $('mFull').textContent  = curRec.g>0 ? `${curRec.w}–${curRec.l}` : '—';
+    $('mFull').textContent      = curRec.g>0 ? `${curRec.w}–${curRec.l}` : '—';
     $('mFullSub').textContent   = curRec.g>0 ? `${fmtPct(winPct(curRec.w,curRec.l))} · ${curRec.g} GP` : '—';
-    $('mRangeLabel').textContent= `${fromDate.slice(5)} – ${toDate.slice(5)}`;
-    $('mRange').textContent = rangeRec.g>0 ? `${rangeRec.w}–${rangeRec.l}` : '—';
+    $('mRangeLabel').textContent= `G${rangeStart}–${rangeEnd}`;
+    $('mRange').textContent     = rangeRec.g>0 ? `${rangeRec.w}–${rangeRec.l}` : '—';
     $('mRangePct').textContent  = rangeRec.g>0 ? `${fmtPct(winPct(rangeRec.w,rangeRec.l))} · ${rangeRec.g} games` : 'No games in range';
     $('mProjection').textContent= proj!=null ? `${proj} W` : '—';
     $('mPace').textContent      = `${curRec.w}–${curRec.l} · ${curGames.length} GP`;
 
-    /* Moments from Google Sheets */
+    /* Moments */
     const moments = getMomentsForTeamSeason(Number(teamId), year, curGames);
     renderMomentsStrip(moments, curGames, teamName, Number(teamId), year);
     if(activeSinceDate && !moments.find(m=>m.date===activeSinceDate)) dismissSince();
 
     /* Chart */
     const sorted = [...allData].sort((a,b)=>a.year===year?-1:b.year===year?1:b.year-a.year);
-    const series = buildSeries(sorted, year, fromDate, toDate);
-    drawChart(series, fromDate, toDate, chartMode, moments);
-    $('chartTitle').textContent = chartMode==='cumulative'?'Cumulative wins by game':chartMode==='range'?`Wins in selected range`:'Win % by game';
+    const series = buildSeries(sorted, year, rangeStart, rangeEnd);
+    drawChart(series, rangeStart, rangeEnd, chartMode, moments);
+    $('chartTitle').textContent = chartMode==='cumulative'?'Cumulative wins by game':chartMode==='range'?`Wins in G${rangeStart}–${rangeEnd}`:'Win % by game';
     $('chartLegend').innerHTML  = series.map(s=>`<span><span class="legend-dot" style="background:${s.color}"></span>${s.label}${s.projected?' (proj.)':''}</span>`).join('');
 
     renderThroughTable(allData, year);
-    renderRangeTable(allData, year, fromDate, toDate);
-    renderInsights({teamName, year, fromDate, toDate, curGames, allData, rangeGames});
+    renderRangeTable(allData, year, rangeStart, rangeEnd);
+    renderInsights({teamName, year, rs:rangeStart, re:rangeEnd, curGames, allData, rangeGames});
 
-    /* Preset detection */
-    const matched = detectPreset(fromDate, toDate, curGames, year);
+    const matched = detectPreset(rangeStart, rangeEnd, curGames);
     if(matched) setActivePreset(matched); else clearActivePreset();
 
     $('statusCard').style.display='none';
@@ -1250,17 +1206,16 @@ function renderSeasonChecks(){
     <label class="check-item"><input type="checkbox" value="${yr}" ${yr>=y-4?'checked':''}/>${yr}</label>`).join('');
 }
 
-/* Apply a preset to the date inputs */
-function applyPreset(key, games, season){
-  const p = computePresetDates(key, games, season);
-  $('dateFrom').value = p.from;
-  $('dateTo').value   = p.to;
+/* Apply a preset to the game number inputs */
+function applyPreset(key, games){
+  const p = computePresetRange(key, games);
+  $('gameFrom').value = p.rs;
+  $('gameTo').value   = p.re;
   setActivePreset(key);
 }
 
 async function init(){
   try{
-    /* Load moments from Google Sheets first (non-blocking) */
     loadMomentsFromSheet().then(m=>{ allMoments=m; });
 
     const urlParams = getUrlParams();
@@ -1282,18 +1237,20 @@ async function init(){
       }
     }
 
-    /* Load current season to calculate default dates */
+    /* Load current season to calculate default game range */
     const teamId = $('teamSelect').value;
     const season = Number($('currentSeasonSelect').value);
     const cg     = await loadSchedule(teamId, season);
 
-    if(urlParams.from && urlParams.to){
-      $('dateFrom').value = urlParams.from;
-      $('dateTo').value   = urlParams.to;
+    if(urlParams.rs && urlParams.re){
+      $('gameFrom').value = urlParams.rs;
+      $('gameTo').value   = urlParams.re;
       if(urlParams.since) activeSinceDate = urlParams.since;
+      const matched = detectPreset(urlParams.rs, urlParams.re, cg);
+      if(matched) setActivePreset(matched);
     } else {
       /* Default: last 10 games */
-      applyPreset('last10', cg, season);
+      applyPreset('last10', cg);
     }
 
     await update();
@@ -1311,7 +1268,7 @@ $('runBtn').addEventListener('click', update);
 
 $('resetBtn').addEventListener('click', async()=>{
   const cg = await loadSchedule($('teamSelect').value, Number($('currentSeasonSelect').value));
-  applyPreset('last10', cg, Number($('currentSeasonSelect').value));
+  applyPreset('last10', cg);
   dismissSince();
   update();
 });
@@ -1319,9 +1276,9 @@ $('resetBtn').addEventListener('click', async()=>{
 $('sinceClose').addEventListener('click', ()=>{
   dismissSince();
   if(lastSeries.length){
-    const season   = Number($('currentSeasonSelect').value);
-    const moments  = getMomentsForTeamSeason(currentTeamId, season, currentGames);
-    drawChart(lastSeries, $('dateFrom').value, $('dateTo').value, chartMode, moments);
+    const season  = Number($('currentSeasonSelect').value);
+    const moments = getMomentsForTeamSeason(currentTeamId, season, currentGames);
+    drawChart(lastSeries, clamp($('gameFrom').value,1,SEASON_GAMES), clamp($('gameTo').value,1,SEASON_GAMES), chartMode, moments);
   }
 });
 
@@ -1334,10 +1291,12 @@ $('teamSelect').addEventListener('change', ()=>{
   window.history.replaceState({},'',$url);
 });
 
-/* Date input manual change clears preset */
-[$('dateFrom'),$('dateTo')].forEach(inp=>{
-  inp.addEventListener('change',()=>{
-    const matched=detectPreset($('dateFrom').value,$('dateTo').value,currentGames,Number($('currentSeasonSelect').value));
+/* Game input manual change → detect preset or clear */
+[$('gameFrom'),$('gameTo')].forEach(inp=>{
+  inp.addEventListener('input',()=>{
+    const rs=clamp($('gameFrom').value,1,SEASON_GAMES);
+    const re=clamp($('gameTo').value,1,SEASON_GAMES);
+    const matched=detectPreset(Math.min(rs,re),Math.max(rs,re),currentGames);
     if(matched) setActivePreset(matched); else clearActivePreset();
   });
 });
@@ -1348,7 +1307,7 @@ document.querySelectorAll('.preset-btn').forEach(btn=>{
     const cg = currentGames.length
       ? currentGames
       : await loadSchedule($('teamSelect').value, Number($('currentSeasonSelect').value));
-    applyPreset(btn.dataset.preset, cg, Number($('currentSeasonSelect').value));
+    applyPreset(btn.dataset.preset, cg);
   });
 });
 
@@ -1361,8 +1320,10 @@ document.querySelectorAll('.toggle-btn').forEach(btn=>{
     if(lastSeries.length){
       const season  = Number($('currentSeasonSelect').value);
       const moments = getMomentsForTeamSeason(currentTeamId, season, currentGames);
-      drawChart(lastSeries, $('dateFrom').value, $('dateTo').value, chartMode, moments);
-      $('chartTitle').textContent = chartMode==='cumulative'?'Cumulative wins by game':chartMode==='range'?'Wins in selected range':'Win % by game';
+      const rs=clamp($('gameFrom').value,1,SEASON_GAMES);
+      const re=clamp($('gameTo').value,1,SEASON_GAMES);
+      drawChart(lastSeries, Math.min(rs,re), Math.max(rs,re), chartMode, moments);
+      $('chartTitle').textContent = chartMode==='cumulative'?'Cumulative wins by game':chartMode==='range'?`Wins in G${rs}–${re}`:'Win % by game';
     }
   });
 });

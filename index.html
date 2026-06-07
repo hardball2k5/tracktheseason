@@ -908,7 +908,7 @@ function buildSparkline(games,color){
 /* ── URL / share helpers ───────────────────────── */
 function trackerUrl(teamId,gp){
   const rs=Math.max(1,gp-9);
-  return `${TRACKER_PAGE}?team=${teamId}&season=${CURRENT_YEAR}&through=${gp}&rs=${rs}&re=${gp}`;
+  return `${TRACKER_PAGE}?team=${teamId}&season=${CURRENT_YEAR}&rs=${rs}&re=${gp}`;
 }
 
 async function copyToClipboard(text){
