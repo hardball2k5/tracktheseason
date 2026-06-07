@@ -569,6 +569,115 @@ body{
 }
 .modal-cta:hover{filter:brightness(1.08)}
 
+/* ── HERO sub strong ─────────────────── */
+.hero-sub-strong{
+  color:#e8edf8;font-weight:600;font-style:normal;
+  display:block;margin-top:2px;
+}
+
+/* ── Trust line ──────────────────────── */
+.hero-trust{
+  font-family:var(--mono);font-size:11px;
+  color:rgba(255,255,255,.25);
+  margin-top:10px;text-align:center;
+  letter-spacing:.02em;
+}
+
+/* ── TODAY'S STORY HERO ──────────────── */
+.todays-story-section{padding:16px 0 0}
+.todays-story-hero{
+  background:var(--ink2);
+  border:1px solid rgba(26,255,107,.18);
+  border-radius:var(--r-lg);
+  overflow:hidden;position:relative;
+  cursor:pointer;
+  transition:border-color .15s,transform .15s;
+  -webkit-tap-highlight-color:transparent;
+}
+.todays-story-hero:hover{border-color:rgba(26,255,107,.4);transform:translateY(-1px)}
+.todays-story-hero:active{transform:scale(.99)}
+/* Green left accent bar */
+.todays-story-hero::before{
+  content:'';position:absolute;left:0;top:0;bottom:0;
+  width:3px;background:var(--signal);
+}
+.tsh-inner{padding:16px 16px 16px 20px}
+.tsh-eyebrow{
+  font-family:var(--mono);font-size:9px;font-weight:700;
+  letter-spacing:.14em;text-transform:uppercase;
+  color:var(--signal);margin-bottom:10px;
+  display:flex;align-items:center;gap:8px;
+}
+.tsh-top{display:flex;align-items:flex-start;gap:13px}
+.tsh-logo{
+  width:54px;height:54px;flex-shrink:0;
+  background:var(--logo-bg);border:1px solid var(--logo-border);
+  border-radius:var(--r-md);box-shadow:var(--logo-shadow);
+  display:flex;align-items:center;justify-content:center;overflow:hidden;
+}
+.tsh-logo img{width:42px;height:42px;object-fit:contain}
+.tsh-text{flex:1;min-width:0}
+.tsh-team{
+  font-family:var(--mono);font-size:13px;font-weight:700;
+  color:rgba(255,255,255,.5);line-height:1;margin-bottom:4px;
+}
+.tsh-narrative{
+  font-family:var(--sans);font-size:clamp(15px,3vw,18px);
+  font-weight:600;color:#e8edf8;line-height:1.35;
+}
+.tsh-narrative strong{color:var(--signal)}
+.tsh-stat{
+  font-family:var(--mono);font-size:12px;color:var(--chalk);
+  margin-top:8px;
+}
+.tsh-actions{
+  display:flex;align-items:center;gap:8px;
+  margin-top:14px;flex-wrap:wrap;
+}
+.tsh-cta{
+  flex:1;padding:11px 14px;
+  background:var(--signal);border-radius:var(--r-sm);border:0;
+  color:var(--ink);font-family:var(--mono);font-size:13px;font-weight:700;
+  letter-spacing:.02em;text-align:center;text-decoration:none;
+  display:block;transition:filter .13s;
+}
+.tsh-cta:hover{filter:brightness(1.08)}
+.tsh-share{
+  padding:11px 13px;border-radius:var(--r-sm);
+  background:transparent;border:1px solid var(--rule);
+  color:var(--chalk);font-family:var(--mono);font-size:12px;font-weight:600;
+  cursor:pointer;transition:all .13s;white-space:nowrap;
+}
+.tsh-share:hover{border-color:var(--signal);color:var(--signal)}
+
+/* ── GP TOOLTIP ──────────────────────── */
+.gp-tooltip-wrap{position:relative;display:inline-flex}
+.gp-tooltip{
+  position:absolute;bottom:calc(100% + 8px);left:50%;
+  transform:translateX(-50%);
+  background:var(--ink);border:1px solid rgba(255,255,255,.18);
+  border-radius:var(--r-md);padding:10px 13px;
+  font-family:var(--sans);font-size:12px;color:rgba(255,255,255,.75);
+  line-height:1.5;white-space:nowrap;
+  box-shadow:0 8px 24px rgba(0,0,0,.5);
+  opacity:0;pointer-events:none;
+  transition:opacity .15s;z-index:50;
+}
+.gp-tooltip::after{
+  content:'';position:absolute;top:100%;left:50%;transform:translateX(-50%);
+  border:5px solid transparent;border-top-color:rgba(255,255,255,.18);
+}
+.gp-tooltip-wrap.open .gp-tooltip{opacity:1;pointer-events:auto}
+
+/* ── INTERACTIVE LEAGUE PILLS ────────── */
+.lp-interactive{cursor:pointer;transition:all .13s;-webkit-tap-highlight-color:transparent}
+.lp-interactive:hover{border-color:rgba(255,255,255,.25);background:var(--ink3)}
+.lp-interactive.active-hot{background:var(--gain-bg);border-color:rgba(13,140,58,.35);color:var(--gain-text)}
+.lp-interactive.active-cold{background:var(--loss-bg);border-color:rgba(232,48,42,.35);color:var(--loss-text)}
+
+/* ── MORE STORIES header ─────────────── */
+#moreStoriesSection{padding-top:10px}
+
 /* ── FOOTER ──────────────────────────── */
 .site-footer{
   border-top:1px solid var(--rule);padding:18px 0 32px;
@@ -608,8 +717,16 @@ body{
         <div class="hero-eyebrow-dot"></div>
         2026 MLB Season · Updated daily
       </div>
+      <!-- Hero headline -->
       <div class="hero-hed">How is your<br>team <span class="accent">tracking?</span></div>
-      <p class="hero-sub">Live records, win pace, and momentum for all 30 MLB teams — compared to last season.</p>
+
+      <!-- Emotional subheadline — two lines, second line emphasized -->
+      <!-- A/B alt: "Every team. Every game. The full story behind the standings." -->
+      <!-- A/B alt: "Not just where teams are. Where they're headed." -->
+      <p class="hero-sub">
+        The standings tell you where teams are.<br>
+        <strong class="hero-sub-strong">Track The Season tells you where they're headed.</strong>
+      </p>
 
       <!-- Find your team — prominent search -->
       <div class="hero-finder">
@@ -628,19 +745,29 @@ body{
         <button class="finder-clear" id="finderClear" aria-label="Clear search">×</button>
       </div>
 
-      <!-- League context pills — lower priority info -->
+      <!-- Trust line — reinforces data is current -->
+      <div class="hero-trust">⚾ Updated after every final MLB game.</div>
+
+      <!-- League summary badges — now tappable filter chips -->
       <div class="league-pills" id="leaguePills"></div>
     </div>
   </div>
 
-  <!-- ══ TODAY'S STORIES ═══════════════ -->
-  <div class="stories-section">
+  <!-- ══ TODAY'S STORY — hero card ════════ -->
+  <div class="todays-story-section" id="todaysStorySection" style="display:none">
     <div class="stories-header">
-      <div class="stories-title">Today's stories</div>
+      <div class="stories-title">Today's story</div>
       <div class="stories-sub" id="storiesDate"></div>
     </div>
+    <div class="todays-story-hero" id="todaysStoryHero"></div>
+  </div>
+
+  <!-- ══ MORE STORIES ═══════════════════════ -->
+  <div class="stories-section" id="moreStoriesSection">
+    <div class="stories-header">
+      <div class="stories-title" id="moreStoriesTitle" style="font-size:12px;color:var(--chalk)">Also today</div>
+    </div>
     <div class="stories-grid" id="storiesGrid">
-      <!-- 4 skeleton cards while loading -->
       <div class="story-skeleton"></div>
       <div class="story-skeleton"></div>
       <div class="story-skeleton"></div>
@@ -928,80 +1055,105 @@ function xShareUrl(text){
 }
 
 /* ══════════════════════════════════════════════════
-   TODAY'S STORIES — dynamically generated from data
-   4 story types: pace leader, biggest gainer, best
-   last-10, biggest decliner. All from live game data.
+   TODAY'S STORY HERO + 4 supporting cards
+   Hero scored by interestingness:
+     1. Biggest gain vs prior year
+     2. Biggest decline vs prior year
+     3. Best pace
+     4. Best last-10
 ══════════════════════════════════════════════════ */
 function buildStories(allData){
   const valid=allData.filter(t=>t.curGames.length>=10);
   if(!valid.length) return;
 
-  /* Story 1: Highest projected wins */
-  const byProj=[...valid].sort((a,b)=>(projWins(b.curGames)||0)-(projWins(a.curGames)||0));
-  const top=byProj[0];
-  const topProj=projWins(top.curGames);
-  const topLast=top.curGames[top.curGames.length-1];
+  const byProj  =[...valid].sort((a,b)=>(projWins(b.curGames)||0)-(projWins(a.curGames)||0));
+  const byGain  =[...valid].filter(t=>getDelta(t)>0).sort((a,b)=>getDelta(b)-getDelta(a));
+  const byFade  =[...valid].filter(t=>getDelta(t)<0).sort((a,b)=>getDelta(a)-getDelta(b));
+  const byL10   =[...valid].sort((a,b)=>last10(b.curGames).w-last10(a.curGames).w);
 
-  /* Story 2: Biggest improvement vs last year at same GP */
-  const byDelta=[...valid].sort((a,b)=>{
-    const da=getDelta(a);const db=getDelta(b);return db-da;
-  });
-  const gainer=byDelta[0];
+  const top        =byProj[0];
+  const topProj    =projWins(top.curGames);
+  const topLast    =top.curGames[top.curGames.length-1];
+  const gainer     =byGain[0]||byProj[0];
   const gainerDelta=getDelta(gainer);
+  const fader      =byFade[0]||byProj[byProj.length-1];
+  const faderDelta =getDelta(fader);
+  const bestL10    =byL10[0];
+  const bestL10rec =last10(bestL10.curGames);
 
-  /* Story 3: Best last-10 record */
-  const byL10=[...valid].sort((a,b)=>{
-    const la=last10(a.curGames);const lb=last10(b.curGames);
-    return lb.w-la.w;
-  });
-  const bestL10=byL10[0];
-  const bestL10rec=last10(bestL10.curGames);
+  /* Score hero candidates */
+  const candidates=[
+    {score:Math.abs(gainerDelta)*2+(projWins(gainer.curGames)||80)/100, type:'gain', team:gainer, delta:gainerDelta},
+    {score:Math.abs(faderDelta)*1.8,                                    type:'fade', team:fader,  delta:faderDelta},
+    {score:(topProj||80)/10,                                            type:'pace', team:top},
+    {score:bestL10rec.w*1.2,                                            type:'l10',  team:bestL10, l10:bestL10rec},
+  ];
+  candidates.sort((a,b)=>b.score-a.score);
+  const hero=candidates[0];
 
-  /* Story 4: Biggest decliner vs last year */
-  const worstDelta=[...valid].sort((a,b)=>getDelta(a)-getDelta(b));
-  const fader=worstDelta[0];
-  const faderDelta=getDelta(fader);
+  /* Build hero narrative */
+  const hcg  =hero.team.curGames;
+  const hlast=hcg[hcg.length-1];
+  const hproj=projWins(hcg);
+  const hname=hero.team.team.clubName||hero.team.team.name;
+  const hgp  =hcg.length;
+  const hurl =trackerUrl(hero.team.team.id,hgp);
+  let heroNarrative='',heroStat='',heroEyebrow='';
 
-  const stories=[
-    {
-      eyebrow:'Pace leader',icon:'🔥',
-      team:top.team.clubName||top.team.name,
-      teamId:top.team.id,gp:top.curGames.length,
-      stat:`${topProj}W pace`,
-      statClass:'green',
-      detail:`${topLast.cumWins}–${topLast.cumLosses} · ${fmtPct(winPct(topLast.cumWins,topLast.cumLosses))}`,
-    },
-    {
-      eyebrow:`vs ${COMPARE_YEAR}`,icon:'📈',
-      team:gainer.team.clubName||gainer.team.name,
-      teamId:gainer.team.id,gp:gainer.curGames.length,
-      stat:`+${gainerDelta}W`,
-      statClass:'green',
-      detail:`ahead of last year's pace`,
-    },
-    {
-      eyebrow:'Last 10 games',icon:'⚡',
-      team:bestL10.team.clubName||bestL10.team.name,
-      teamId:bestL10.team.id,gp:bestL10.curGames.length,
-      stat:`${bestL10rec.w}–${bestL10rec.l}`,
-      statClass:'green',
-      detail:`best last-10 record in MLB`,
-    },
-    {
-      eyebrow:'Fading',icon:'📉',
-      team:fader.team.clubName||fader.team.name,
-      teamId:fader.team.id,gp:fader.curGames.length,
-      stat:`${faderDelta}W`,
-      statClass:'red',
-      detail:`behind last year's pace`,
-    },
+  if(hero.type==='gain'){
+    heroEyebrow=`📈 Biggest pace jump vs ${COMPARE_YEAR}`;
+    heroNarrative=`The <strong>${hname}</strong> are <strong>+${hero.delta} wins</strong> ahead of last year's pace through ${hgp} games.`;
+    heroStat=`${hlast.cumWins}–${hlast.cumLosses} · ${hproj?hproj+'W pace':''}`;
+  } else if(hero.type==='fade'){
+    heroEyebrow=`📉 Biggest drop vs ${COMPARE_YEAR}`;
+    heroNarrative=`The <strong>${hname}</strong> are <strong>${hero.delta} wins</strong> behind last year's pace through ${hgp} games.`;
+    heroStat=`${hlast.cumWins}–${hlast.cumLosses} · ${hproj?hproj+'W pace':''}`;
+  } else if(hero.type==='pace'){
+    heroEyebrow=`🔥 Best win pace in MLB`;
+    heroNarrative=`The <strong>${hname}</strong> are on a <strong>${hproj}-win pace</strong> — the best in baseball right now.`;
+    heroStat=`${hlast.cumWins}–${hlast.cumLosses} through ${hgp} games`;
+  } else {
+    heroEyebrow=`⚡ Hottest last 10 games`;
+    heroNarrative=`The <strong>${hname}</strong> have gone <strong>${hero.l10.w}–${hero.l10.l}</strong> over their last 10 — the best stretch in MLB.`;
+    heroStat=`${hlast.cumWins}–${hlast.cumLosses} · ${hproj?hproj+'W pace':''}`;
+  }
+
+  /* Share text */
+  const shareText=`${heroEyebrow}\n\n${hname}: ${hlast.cumWins}–${hlast.cumLosses} through ${hgp} games.${hproj?' '+hproj+'-win pace.':''}\n\nHow is your team tracking?\ntracktheseason.com\n\nvia @TrackTheSeason #TrackTheSeason #MLB`;
+  const xUrl='https://x.com/intent/tweet?text='+encodeURIComponent(shareText);
+  const logoUrl=`https://www.mlbstatic.com/team-logos/${hero.team.team.id}.svg`;
+
+  document.getElementById('todaysStoryHero').innerHTML=`
+    <div class="tsh-inner">
+      <div class="tsh-eyebrow">${heroEyebrow}</div>
+      <div class="tsh-top">
+        <div class="tsh-logo">
+          <img src="${logoUrl}" alt="${hname}" onerror="this.style.display='none'"/>
+        </div>
+        <div class="tsh-text">
+          <div class="tsh-team">${hname}</div>
+          <div class="tsh-narrative">${heroNarrative}</div>
+          <div class="tsh-stat">${heroStat}</div>
+        </div>
+      </div>
+      <div class="tsh-actions">
+        <a class="tsh-cta" href="${hurl}">Track the ${hname} →</a>
+        <a class="tsh-share" href="${xUrl}" target="_blank" rel="noopener">𝕏 Share</a>
+      </div>
+    </div>`;
+  document.getElementById('todaysStorySection').style.display='block';
+
+  /* 4 supporting story cards */
+  const allFour=[
+    {eyebrow:'Pace leader',    icon:'🔥',team:top.team.clubName||top.team.name,      teamId:top.team.id,    gp:top.curGames.length,    stat:`${topProj}W pace`,             statClass:'green',detail:`${topLast.cumWins}–${topLast.cumLosses} · ${fmtPct(winPct(topLast.cumWins,topLast.cumLosses))}`},
+    {eyebrow:`vs ${COMPARE_YEAR}`,icon:'📈',team:gainer.team.clubName||gainer.team.name,teamId:gainer.team.id,gp:gainer.curGames.length,stat:`+${gainerDelta}W`,statClass:'green',detail:"ahead of last year's pace"},
+    {eyebrow:'Last 10 games',  icon:'⚡',        team:bestL10.team.clubName||bestL10.team.name,teamId:bestL10.team.id,gp:bestL10.curGames.length,stat:`${bestL10rec.w}–${bestL10rec.l}`,statClass:'green',detail:'best last-10 record in MLB'},
+    {eyebrow:'Fading',         icon:'📉', team:fader.team.clubName||fader.team.name,  teamId:fader.team.id,  gp:fader.curGames.length,  stat:`${faderDelta}W`,              statClass:'red',  detail:"behind last year's pace"},
   ];
 
-  document.getElementById('storiesGrid').innerHTML=stories.map(s=>`
+  document.getElementById('storiesGrid').innerHTML=allFour.map(s=>`
     <a class="story-card" href="${trackerUrl(s.teamId,s.gp)}" aria-label="${s.team} story">
-      <div class="story-card-eyebrow">
-        <span class="story-card-icon">${s.icon}</span>${s.eyebrow}
-      </div>
+      <div class="story-card-eyebrow"><span class="story-card-icon">${s.icon}</span>${s.eyebrow}</div>
       <div class="story-team">${s.team}</div>
       <div class="story-stat ${s.statClass}">${s.stat}</div>
       <div class="story-detail">${s.detail}</div>
@@ -1077,18 +1229,85 @@ function buildFeatured(allData){
 }
 
 /* ══════════════════════════════════════════════════
-   LEAGUE PILLS — lower priority summary context
+   LEAGUE PILLS — interactive filter chips
+   Heating Up → filters to hot teams
+   Struggling  → filters to cold teams
+   GP range    → shows tooltip explaining variance
 ══════════════════════════════════════════════════ */
 function renderPills(allData){
   const valid=allData.filter(t=>t.curGames.length>0);
-  const hot=valid.filter(t=>MOMENTUM_HOT_LABELS.has(getMomentum(t.curGames).label)).length;
-  const cold=valid.filter(t=>['Struggling','Cooling off'].includes(getMomentum(t.curGames).label)).length;
-  const gps=valid.map(t=>t.curGames.length);
-  const minGp=Math.min(...gps),maxGp=Math.max(...gps);
+  const hot  =valid.filter(t=>MOMENTUM_HOT_LABELS.has(getMomentum(t.curGames).label)).length;
+  const cold =valid.filter(t=>['Struggling','Cooling off'].includes(getMomentum(t.curGames).label)).length;
+  const gps  =valid.map(t=>t.curGames.length);
+  const minGp=Math.min(...gps), maxGp=Math.max(...gps);
+  const gpLabel=minGp===maxGp?`${minGp} GP`:` ${minGp}–${maxGp} GP`;
+
   document.getElementById('leaguePills').innerHTML=`
-    <div class="league-pill"><div class="lp-dot" style="background:#1aff6b"></div>${hot} teams heating up</div>
-    <div class="league-pill"><div class="lp-dot" style="background:#f47570"></div>${cold} struggling</div>
-    <div class="league-pill"><div class="lp-dot" style="background:#8a8a82"></div>${minGp===maxGp?minGp:minGp+'–'+maxGp} GP completed</div>`;
+    <button class="league-pill lp-interactive" id="pillHot" data-action="filter-hot" aria-label="Show heating up teams">
+      <div class="lp-dot" style="background:#1aff6b"></div>${hot} heating up
+    </button>
+    <button class="league-pill lp-interactive" id="pillCold" data-action="filter-cold" aria-label="Show struggling teams">
+      <div class="lp-dot" style="background:#f47570"></div>${cold} struggling
+    </button>
+    <div class="league-pill gp-tooltip-wrap" id="gpPillWrap">
+      <div class="lp-dot" style="background:#8a8a82"></div>${gpLabel} completed
+      <div class="gp-tooltip" id="gpTooltip">
+        Teams have played ${minGp===maxGp?minGp:`${minGp}–${maxGp}`} games<br>
+        due to scheduling differences.<br>
+        All pace comparisons use each<br>
+        team's actual game count.
+      </div>
+    </div>`;
+
+  /* Hot pill → filter to heating up */
+  document.getElementById('pillHot').addEventListener('click',()=>{
+    const pill=document.getElementById('pillHot');
+    const isActive=pill.classList.contains('active-hot');
+    /* Reset both pills */
+    document.getElementById('pillHot').classList.remove('active-hot');
+    document.getElementById('pillCold').classList.remove('active-cold');
+    if(!isActive){
+      activeMomentum='__hot';
+      pill.classList.add('active-hot');
+      /* Also activate the matching mom-btn */
+      document.querySelectorAll('.mom-btn').forEach(b=>b.classList.remove('active-all','active'));
+      document.querySelector('.mom-btn[data-mom="__hot"]')?.classList.add('active');
+    } else {
+      activeMomentum='all';
+      document.querySelectorAll('.mom-btn').forEach(b=>b.classList.remove('active-all','active'));
+      document.querySelector('.mom-btn[data-mom="all"]')?.classList.add('active-all');
+    }
+    applyFiltersAndSort();
+  });
+
+  /* Cold pill → filter to struggling */
+  document.getElementById('pillCold').addEventListener('click',()=>{
+    const pill=document.getElementById('pillCold');
+    const isActive=pill.classList.contains('active-cold');
+    document.getElementById('pillHot').classList.remove('active-hot');
+    document.getElementById('pillCold').classList.remove('active-cold');
+    if(!isActive){
+      activeMomentum='__cold';
+      pill.classList.add('active-cold');
+      document.querySelectorAll('.mom-btn').forEach(b=>b.classList.remove('active-all','active'));
+      document.querySelector('.mom-btn[data-mom="__cold"]')?.classList.add('active');
+    } else {
+      activeMomentum='all';
+      document.querySelectorAll('.mom-btn').forEach(b=>b.classList.remove('active-all','active'));
+      document.querySelector('.mom-btn[data-mom="all"]')?.classList.add('active-all');
+    }
+    applyFiltersAndSort();
+  });
+
+  /* GP pill → toggle tooltip */
+  document.getElementById('gpPillWrap').addEventListener('click',e=>{
+    e.stopPropagation();
+    document.getElementById('gpPillWrap').classList.toggle('open');
+  });
+  /* Close tooltip on outside click */
+  document.addEventListener('click',()=>{
+    document.getElementById('gpPillWrap')?.classList.remove('open');
+  },{once:false,capture:false});
 }
 
 /* ══════════════════════════════════════════════════
