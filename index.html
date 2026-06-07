@@ -3,10 +3,10 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Track The Season — MLB Pace Tracker</title>
-<meta name="description" content="See which MLB teams are ahead of pace, heating up, or fading. Live records, projected wins, and momentum for all 30 teams."/>
-<meta property="og:title" content="Track The Season — MLB Pace Tracker"/>
-<meta property="og:description" content="See which MLB teams are ahead of pace, heating up, or fading. Updated daily."/>
+<title>Track The Season — MLB Pace Dashboard</title>
+<meta name="description" content="Which MLB teams are surging, collapsing, or heading for history? Updated after every final game."/>
+<meta property="og:title" content="Track The Season — MLB Pace Dashboard"/>
+<meta property="og:description" content="Which teams are surging, collapsing, or heading for history? Updated after every final game."/>
 <meta property="og:url" content="https://tracktheseason.com/"/>
 <meta name="theme-color" content="#0f1014"/>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
@@ -14,57 +14,31 @@
 <style>
 /* ═══════════════════════════════════════════════════
    TRACK THE SEASON — index.html
-   Mobile-first fan page. Three-second test:
-   1. What is this? 2. Why care today? 3. Find my team.
+   Daily MLB destination. Not a standings page.
 ═══════════════════════════════════════════════════ */
 :root{
-  --ink:         #0f1014;
-  --ink2:        #1a1d24;
-  --ink3:        #252830;
-  --chalk:       #8a8a82;
-  --chalk2:      #b4b2a9;
-  --rule:        rgba(255,255,255,.07);
-  --rule2:       rgba(255,255,255,.04);
-  --signal:      #1aff6b;
-  --field:       #0d8c3a;
-  --gain-bg:     rgba(13,140,58,.14);
-  --gain-text:   #4ecb77;
-  --loss:        #e8302a;
-  --loss-bg:     rgba(232,48,42,.14);
-  --loss-text:   #f47570;
-  --caution:     #f5c842;
-  --caution-bg:  rgba(245,200,66,.14);
-  --caution-text:#f9d96e;
-  --logo-bg:     #ffffff;
-  --logo-border: rgba(0,0,0,.10);
-  --logo-shadow: 0 2px 8px rgba(0,0,0,.18);
+  --ink:#0f1014;--ink2:#1a1d24;--ink3:#252830;
+  --chalk:#8a8a82;--chalk2:#b4b2a9;
+  --rule:rgba(255,255,255,.07);--rule2:rgba(255,255,255,.04);
+  --signal:#1aff6b;--field:#0d8c3a;
+  --gain-bg:rgba(13,140,58,.14);--gain-text:#4ecb77;
+  --loss:#e8302a;--loss-bg:rgba(232,48,42,.14);--loss-text:#f47570;
+  --caution:#f5c842;--caution-bg:rgba(245,200,66,.14);--caution-text:#f9d96e;
+  --logo-bg:#ffffff;--logo-border:rgba(0,0,0,.10);--logo-shadow:0 2px 8px rgba(0,0,0,.18);
   --r-xs:4px;--r-sm:6px;--r-md:10px;--r-lg:14px;--r-pill:999px;
-  --mono:'IBM Plex Mono',monospace;
-  --sans:'IBM Plex Sans',sans-serif;
+  --mono:'IBM Plex Mono',monospace;--sans:'IBM Plex Sans',sans-serif;
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth;-webkit-tap-highlight-color:transparent}
-body{
-  font-family:var(--sans);background:var(--ink);color:#e8edf8;
-  min-height:100vh;
-  background-image:radial-gradient(ellipse 140% 50% at 50% -8%,rgba(26,255,107,.07) 0%,transparent 55%);
-}
+body{font-family:var(--sans);background:var(--ink);color:#e8edf8;min-height:100vh;
+  background-image:radial-gradient(ellipse 140% 50% at 50% -8%,rgba(26,255,107,.07) 0%,transparent 55%)}
 .wrap{max-width:1300px;margin:0 auto;padding:0 16px}
 
 /* ── NAV ─────────────────────────────── */
-.site-nav{
-  padding:11px 0;border-bottom:1px solid var(--rule);
-  position:sticky;top:0;z-index:100;
-  background:rgba(15,16,20,.95);
-  backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
-}
+.site-nav{padding:11px 0;border-bottom:1px solid var(--rule);position:sticky;top:0;z-index:100;background:rgba(15,16,20,.95);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px)}
 .nav-inner{display:flex;align-items:center;gap:10px}
 .nav-logo{display:flex;align-items:center;gap:9px;text-decoration:none;flex-shrink:0}
-.nav-monogram{
-  width:30px;height:30px;background:var(--signal);border-radius:var(--r-sm);
-  display:flex;align-items:center;justify-content:center;
-  font-family:var(--mono);font-size:11px;font-weight:700;color:var(--ink);flex-shrink:0;
-}
+.nav-monogram{width:30px;height:30px;background:var(--signal);border-radius:var(--r-sm);display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:11px;font-weight:700;color:var(--ink);flex-shrink:0}
 .nav-wordmark{font-family:var(--mono);font-size:15px;font-weight:700;color:#e8edf8;letter-spacing:-.01em;white-space:nowrap}
 .nav-wordmark .accent{color:var(--signal)}
 .nav-right{display:flex;align-items:center;gap:10px;margin-left:auto}
@@ -74,382 +48,296 @@ body{
 .nav-date{font-family:var(--mono);font-size:11px;color:var(--chalk);display:none}
 @media(min-width:520px){.nav-date{display:block}}
 
-/* ── HERO — fan-facing, 3-second test ──── */
-.hero{
-  padding:24px 0 20px;
-  border-bottom:1px solid var(--rule);
-}
-.hero-inner{
-  display:flex;flex-direction:column;gap:0;
-}
-.hero-eyebrow{
-  font-family:var(--mono);font-size:10px;font-weight:700;
-  letter-spacing:.14em;text-transform:uppercase;
-  color:var(--signal);margin-bottom:10px;
-  display:flex;align-items:center;gap:7px;
-}
+/* ── HERO ────────────────────────────── */
+.hero{padding:28px 0 24px;border-bottom:1px solid var(--rule)}
+.hero-eyebrow{font-family:var(--mono);font-size:10px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--signal);margin-bottom:10px;display:flex;align-items:center;gap:7px}
 .hero-eyebrow-dot{width:5px;height:5px;border-radius:50%;background:var(--signal);animation:blink 2s ease infinite}
-.hero-hed{
-  font-family:var(--mono);
-  font-size:clamp(26px,7vw,52px);
-  font-weight:700;letter-spacing:-.03em;line-height:.95;
-  color:#e8edf8;
-}
+.hero-hed{font-family:var(--mono);font-size:clamp(26px,6vw,50px);font-weight:700;letter-spacing:-.03em;line-height:.95;color:#e8edf8}
 .hero-hed .accent{color:var(--signal)}
-.hero-sub{
-  font-family:var(--sans);font-size:clamp(13px,2vw,15px);
-  color:rgba(255,255,255,.5);margin-top:10px;line-height:1.55;
-  max-width:500px;
+.hero-sub{font-family:var(--sans);font-size:clamp(13px,2vw,16px);color:rgba(255,255,255,.5);margin-top:10px;line-height:1.55;max-width:520px}
+.hero-sub-strong{color:#e8edf8;font-weight:600;display:block;margin-top:2px}
+.hero-actions{display:flex;align-items:center;gap:10px;margin-top:18px;flex-wrap:wrap}
+.hero-cta{
+  display:inline-flex;align-items:center;gap:8px;
+  padding:12px 22px;background:var(--signal);border-radius:var(--r-sm);border:0;
+  color:var(--ink);font-family:var(--mono);font-size:14px;font-weight:700;
+  letter-spacing:.02em;cursor:pointer;text-decoration:none;transition:filter .13s;
 }
-
-/* Team finder — prominent on mobile */
-.hero-finder{
+.hero-cta:hover{filter:brightness(1.08)}
+.hero-finder-inline{
+  flex:1;min-width:180px;max-width:280px;
   display:flex;align-items:center;gap:8px;
-  margin-top:18px;
-  background:var(--ink2);
-  border:1px solid rgba(255,255,255,.12);
-  border-radius:var(--r-lg);
-  padding:10px 14px;
-  cursor:text;
-  transition:border-color .15s;
+  background:var(--ink2);border:1px solid rgba(255,255,255,.12);
+  border-radius:var(--r-lg);padding:10px 14px;cursor:text;transition:border-color .15s;
 }
-.hero-finder:focus-within{border-color:var(--signal)}
-.finder-icon{font-size:16px;flex-shrink:0;color:var(--chalk)}
-.finder-input{
-  flex:1;background:none;border:none;outline:none;
-  font-family:var(--mono);font-size:15px;font-weight:600;
-  color:#e8edf8;
-  caret-color:var(--signal);
-}
+.hero-finder-inline:focus-within{border-color:var(--signal)}
+.finder-icon{font-size:15px;flex-shrink:0;color:var(--chalk)}
+.finder-input{flex:1;background:none;border:none;outline:none;font-family:var(--mono);font-size:14px;font-weight:600;color:#e8edf8;caret-color:var(--signal)}
 .finder-input::placeholder{color:rgba(255,255,255,.25);font-weight:400}
-.finder-clear{
-  background:none;border:none;color:var(--chalk);
-  font-size:16px;cursor:pointer;padding:0 2px;
-  display:none;
-}
+.finder-clear{background:none;border:none;color:var(--chalk);font-size:16px;cursor:pointer;padding:0 2px;display:none}
 .finder-clear.visible{display:block}
-
-/* League summary pills — moved below fold */
-.league-pills{display:flex;gap:6px;flex-wrap:wrap;margin-top:14px}
-.league-pill{
-  display:flex;align-items:center;gap:5px;
-  background:rgba(255,255,255,.04);border:1px solid var(--rule);
-  border-radius:var(--r-pill);padding:4px 10px;
-  font-family:var(--mono);font-size:10px;font-weight:600;color:var(--chalk);
-}
+.hero-trust{font-family:var(--mono);font-size:11px;color:rgba(255,255,255,.22);margin-top:12px;letter-spacing:.02em}
+.league-pills{display:flex;gap:6px;flex-wrap:wrap;margin-top:12px}
+.league-pill{display:flex;align-items:center;gap:5px;background:rgba(255,255,255,.04);border:1px solid var(--rule);border-radius:var(--r-pill);padding:4px 10px;font-family:var(--mono);font-size:10px;font-weight:600;color:var(--chalk)}
 .lp-dot{width:6px;height:6px;border-radius:50%}
+.lp-interactive{cursor:pointer;transition:all .13s;-webkit-tap-highlight-color:transparent}
+.lp-interactive:hover{border-color:rgba(255,255,255,.25);background:var(--ink3)}
+.lp-interactive.active-hot{background:var(--gain-bg);border-color:rgba(13,140,58,.35);color:var(--gain-text)}
+.lp-interactive.active-cold{background:var(--loss-bg);border-color:rgba(232,48,42,.35);color:var(--loss-text)}
+.gp-tooltip-wrap{position:relative;display:inline-flex}
+.gp-tooltip{position:absolute;bottom:calc(100% + 8px);left:50%;transform:translateX(-50%);background:var(--ink);border:1px solid rgba(255,255,255,.18);border-radius:var(--r-md);padding:10px 13px;font-family:var(--sans);font-size:12px;color:rgba(255,255,255,.75);line-height:1.5;white-space:nowrap;box-shadow:0 8px 24px rgba(0,0,0,.5);opacity:0;pointer-events:none;transition:opacity .15s;z-index:50}
+.gp-tooltip::after{content:'';position:absolute;top:100%;left:50%;transform:translateX(-50%);border:5px solid transparent;border-top-color:rgba(255,255,255,.18)}
+.gp-tooltip-wrap.open .gp-tooltip{opacity:1;pointer-events:auto}
 
-/* ── TODAY'S STORIES ─────────────────── */
-.stories-section{padding:16px 0 0}
-.stories-header{
+/* ── SECTION HEADER ──────────────────── */
+.sec-header{
   display:flex;align-items:center;justify-content:space-between;
-  margin-bottom:12px;
+  padding:22px 0 12px;
 }
-.stories-title{
-  font-family:var(--mono);font-size:13px;font-weight:700;
-  letter-spacing:.04em;text-transform:uppercase;color:#e8edf8;
+.sec-title{font-family:var(--mono);font-size:15px;font-weight:700;letter-spacing:.01em;color:#e8edf8}
+.sec-sub{font-family:var(--mono);font-size:11px;color:var(--chalk)}
+.section-rule{height:1px;background:var(--rule);margin-bottom:0}
+
+/* ── LEAGUE SNAPSHOT ─────────────────── */
+.snapshot-grid{
+  display:grid;
+  grid-template-columns:repeat(5,1fr);
+  gap:8px;padding-bottom:4px;
 }
-.stories-sub{font-family:var(--mono);font-size:10px;color:var(--chalk);font-weight:600}
-.stories-grid{
+@media(max-width:700px){.snapshot-grid{grid-template-columns:1fr 1fr}}
+@media(max-width:380px){.snapshot-grid{grid-template-columns:1fr}}
+.snap-card{
+  background:var(--ink2);border:1px solid var(--rule);
+  border-radius:var(--r-md);padding:12px 12px 10px;
+  display:flex;flex-direction:column;gap:6px;
+  transition:border-color .13s;
+}
+.snap-card:hover{border-color:rgba(255,255,255,.15)}
+.snap-label{font-family:var(--mono);font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.28)}
+.snap-team{display:flex;align-items:center;gap:8px;margin-top:2px}
+.snap-logo{width:28px;height:28px;background:var(--logo-bg);border:1px solid var(--logo-border);border-radius:var(--r-xs);box-shadow:var(--logo-shadow);display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0}
+.snap-logo img{width:22px;height:22px;object-fit:contain}
+.snap-name{font-family:var(--mono);font-size:13px;font-weight:700;color:#e8edf8}
+.snap-val{font-family:var(--mono);font-size:20px;font-weight:700;letter-spacing:-.02em;line-height:1}
+.snap-val.green{color:var(--signal)}
+.snap-val.red{color:var(--loss-text)}
+.snap-val.amber{color:var(--caution)}
+.snap-detail{font-family:var(--mono);font-size:10px;color:var(--chalk)}
+
+/* ── MOVERS SECTION ──────────────────── */
+.movers-grid{
   display:grid;
   grid-template-columns:1fr 1fr;
+  gap:10px;
+}
+@media(min-width:860px){.movers-grid{grid-template-columns:repeat(3,1fr)}}
+.mover-card{
+  background:var(--ink2);border:1px solid var(--rule);
+  border-radius:var(--r-lg);padding:14px;
+  display:flex;flex-direction:column;gap:8px;
+  transition:border-color .15s,transform .15s;
+}
+.mover-card:hover{transform:translateY(-2px)}
+.mover-card.up{border-color:rgba(13,140,58,.2)}
+.mover-card.down{border-color:rgba(232,48,42,.15)}
+.mover-top{display:flex;align-items:center;gap:10px}
+.mover-logo{width:36px;height:36px;background:var(--logo-bg);border:1px solid var(--logo-border);border-radius:var(--r-sm);box-shadow:var(--logo-shadow);display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0}
+.mover-logo img{width:28px;height:28px;object-fit:contain}
+.mover-name{font-family:var(--mono);font-size:14px;font-weight:700;color:#e8edf8;line-height:1.1}
+.mover-arrow{font-size:18px;margin-left:auto}
+.mover-delta{font-family:var(--mono);font-size:24px;font-weight:700;letter-spacing:-.02em;line-height:1}
+.mover-delta.up{color:var(--signal)}
+.mover-delta.down{color:var(--loss-text)}
+.mover-stats{display:flex;gap:10px;flex-wrap:wrap}
+.mover-stat{font-family:var(--mono);font-size:10px;color:var(--chalk)}
+.mover-stat strong{color:rgba(255,255,255,.75);font-weight:600}
+.mover-link{
+  display:block;padding:7px 10px;border-radius:var(--r-sm);
+  background:transparent;border:1px solid var(--rule);
+  color:var(--chalk);font-family:var(--mono);font-size:11px;font-weight:600;
+  text-align:center;text-decoration:none;cursor:pointer;
+  transition:border-color .13s,color .13s;margin-top:2px;
+}
+.mover-link:hover{border-color:var(--signal);color:var(--signal)}
+
+/* ── HOT / COLD CAROUSEL ─────────────── */
+.carousel-wrap{
+  overflow-x:auto;-webkit-overflow-scrolling:touch;
+  scrollbar-width:none;margin:0 -16px;padding:0 16px;
+  display:flex;gap:10px;padding-bottom:4px;
+}
+.carousel-wrap::-webkit-scrollbar{display:none}
+@media(min-width:640px){
+  .carousel-wrap{overflow-x:visible;margin:0;padding:0;flex-wrap:wrap}
+}
+.hc-card{
+  background:var(--ink2);border:1px solid var(--rule);
+  border-radius:var(--r-lg);padding:14px;
+  min-width:180px;flex-shrink:0;
+  display:flex;flex-direction:column;gap:6px;
+  transition:border-color .15s;text-decoration:none;color:inherit;
+}
+@media(min-width:640px){.hc-card{min-width:0;flex:1}}
+.hc-card.hot{border-color:rgba(13,140,58,.2)}
+.hc-card.cold{border-color:rgba(232,48,42,.15)}
+.hc-card:hover{border-color:rgba(255,255,255,.25);transform:translateY(-1px)}
+.hc-top{display:flex;align-items:center;gap:9px}
+.hc-logo{width:34px;height:34px;background:var(--logo-bg);border:1px solid var(--logo-border);border-radius:var(--r-sm);box-shadow:var(--logo-shadow);display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0}
+.hc-logo img{width:26px;height:26px;object-fit:contain}
+.hc-name{font-family:var(--mono);font-size:13px;font-weight:700;color:#e8edf8;line-height:1.1}
+.hc-record{font-family:var(--mono);font-size:22px;font-weight:700;letter-spacing:-.02em;line-height:1}
+.hc-record.hot{color:var(--signal)}
+.hc-record.cold{color:var(--loss-text)}
+.hc-detail{font-family:var(--mono);font-size:10px;color:var(--chalk);line-height:1.4}
+
+/* ── TRENDING SECTION ────────────────── */
+.trending-grid{
+  display:grid;
+  grid-template-columns:1fr;
   gap:8px;
 }
-.story-card{
+@media(min-width:640px){.trending-grid{grid-template-columns:1fr 1fr}}
+@media(min-width:1000px){.trending-grid{grid-template-columns:repeat(3,1fr)}}
+.trend-card{
   background:var(--ink2);border:1px solid var(--rule);
-  border-radius:var(--r-md);padding:13px 13px;
-  cursor:pointer;transition:border-color .15s,transform .15s;
-  display:flex;flex-direction:column;gap:6px;
-  text-decoration:none;color:inherit;
-  -webkit-user-select:none;user-select:none;
+  border-radius:var(--r-lg);padding:14px;
+  display:flex;gap:12px;align-items:flex-start;
+  text-decoration:none;color:inherit;transition:border-color .15s;
 }
+.trend-card:hover{border-color:rgba(255,255,255,.2);transform:translateY(-1px)}
+.trend-card.up{border-left:3px solid var(--signal)}
+.trend-card.down{border-left:3px solid var(--loss-text)}
+.trend-logo{width:38px;height:38px;flex-shrink:0;background:var(--logo-bg);border:1px solid var(--logo-border);border-radius:var(--r-sm);box-shadow:var(--logo-shadow);display:flex;align-items:center;justify-content:center;overflow:hidden}
+.trend-logo img{width:30px;height:30px;object-fit:contain}
+.trend-body{flex:1;min-width:0}
+.trend-name{font-family:var(--mono);font-size:14px;font-weight:700;color:#e8edf8;margin-bottom:4px}
+.trend-pace{font-family:var(--mono);font-size:20px;font-weight:700;letter-spacing:-.02em;line-height:1;margin-bottom:5px}
+.trend-pace.up{color:var(--signal)}
+.trend-pace.down{color:var(--loss-text)}
+.trend-insight{font-family:var(--sans);font-size:12px;color:rgba(255,255,255,.55);line-height:1.45}
+.trend-chips{display:flex;gap:5px;flex-wrap:wrap;margin-top:6px}
+.trend-chip{font-family:var(--mono);font-size:10px;font-weight:600;padding:2px 7px;border-radius:var(--r-xs)}
+.trend-chip.g{background:var(--gain-bg);color:var(--gain-text)}
+.trend-chip.r{background:var(--loss-bg);color:var(--loss-text)}
+.trend-chip.n{background:var(--ink3);color:var(--chalk)}
+
+/* ── TODAY'S STORY HERO ──────────────── */
+.todays-story-section{padding:16px 0 0}
+.todays-story-hero{background:var(--ink2);border:1px solid rgba(26,255,107,.18);border-radius:var(--r-lg);overflow:hidden;position:relative;cursor:pointer;transition:border-color .15s,transform .15s;-webkit-tap-highlight-color:transparent}
+.todays-story-hero:hover{border-color:rgba(26,255,107,.4);transform:translateY(-1px)}
+.todays-story-hero:active{transform:scale(.99)}
+.todays-story-hero::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--signal)}
+.tsh-inner{padding:16px 16px 16px 20px}
+.tsh-eyebrow{font-family:var(--mono);font-size:9px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--signal);margin-bottom:10px;display:flex;align-items:center;gap:8px}
+.tsh-top{display:flex;align-items:flex-start;gap:13px}
+.tsh-logo{width:54px;height:54px;flex-shrink:0;background:var(--logo-bg);border:1px solid var(--logo-border);border-radius:var(--r-md);box-shadow:var(--logo-shadow);display:flex;align-items:center;justify-content:center;overflow:hidden}
+.tsh-logo img{width:42px;height:42px;object-fit:contain}
+.tsh-text{flex:1;min-width:0}
+.tsh-team{font-family:var(--mono);font-size:13px;font-weight:700;color:rgba(255,255,255,.5);line-height:1;margin-bottom:4px}
+.tsh-narrative{font-family:var(--sans);font-size:clamp(15px,3vw,18px);font-weight:600;color:#e8edf8;line-height:1.35}
+.tsh-narrative strong{color:var(--signal)}
+.tsh-stat{font-family:var(--mono);font-size:12px;color:var(--chalk);margin-top:8px}
+.tsh-actions{display:flex;align-items:center;gap:8px;margin-top:14px;flex-wrap:wrap}
+.tsh-cta{flex:1;padding:11px 14px;background:var(--signal);border-radius:var(--r-sm);border:0;color:var(--ink);font-family:var(--mono);font-size:13px;font-weight:700;letter-spacing:.02em;text-align:center;text-decoration:none;display:block;transition:filter .13s}
+.tsh-cta:hover{filter:brightness(1.08)}
+.tsh-share{padding:11px 13px;border-radius:var(--r-sm);background:transparent;border:1px solid var(--rule);color:var(--chalk);font-family:var(--mono);font-size:12px;font-weight:600;cursor:pointer;transition:all .13s;white-space:nowrap}
+.tsh-share:hover{border-color:var(--signal);color:var(--signal)}
+
+/* ── STORIES GRID ────────────────────── */
+.stories-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.stories-title{font-family:var(--mono);font-size:13px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:#e8edf8}
+.stories-sub{font-family:var(--mono);font-size:10px;color:var(--chalk);font-weight:600}
+.stories-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.story-card{background:var(--ink2);border:1px solid var(--rule);border-radius:var(--r-md);padding:13px;cursor:pointer;transition:border-color .15s,transform .15s;display:flex;flex-direction:column;gap:6px;text-decoration:none;color:inherit;-webkit-user-select:none;user-select:none}
 .story-card:hover{border-color:rgba(26,255,107,.3);transform:translateY(-1px)}
 .story-card:active{transform:scale(.98)}
-.story-card-eyebrow{
-  font-family:var(--mono);font-size:9px;font-weight:700;
-  letter-spacing:.12em;text-transform:uppercase;
-  color:var(--chalk);display:flex;align-items:center;gap:5px;
-}
+.story-card-eyebrow{font-family:var(--mono);font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--chalk);display:flex;align-items:center;gap:5px}
 .story-card-icon{font-size:14px;line-height:1}
-.story-team{
-  font-family:var(--mono);font-size:15px;font-weight:700;
-  color:#e8edf8;line-height:1;
-}
-.story-stat{
-  font-family:var(--mono);font-size:20px;font-weight:700;
-  letter-spacing:-.02em;line-height:1;
-}
+.story-team{font-family:var(--mono);font-size:15px;font-weight:700;color:#e8edf8;line-height:1}
+.story-stat{font-family:var(--mono);font-size:20px;font-weight:700;letter-spacing:-.02em;line-height:1}
 .story-stat.green{color:var(--signal)}
 .story-stat.amber{color:var(--caution)}
-.story-stat.red  {color:var(--loss-text)}
-.story-detail{
-  font-family:var(--mono);font-size:10px;color:var(--chalk);
-  line-height:1.4;
-}
-/* Loading skeleton for stories */
-.story-skeleton{
-  background:linear-gradient(90deg,var(--ink2) 25%,var(--ink3) 50%,var(--ink2) 75%);
-  background-size:200% 100%;
-  animation:shimmer 1.5s infinite;
-  border-radius:var(--r-md);height:100px;
-}
+.story-stat.red{color:var(--loss-text)}
+.story-detail{font-family:var(--mono);font-size:10px;color:var(--chalk);line-height:1.4}
+.story-skeleton{background:linear-gradient(90deg,var(--ink2) 25%,var(--ink3) 50%,var(--ink2) 75%);background-size:200% 100%;animation:shimmer 1.5s infinite;border-radius:var(--r-md);height:100px}
 @keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
 
-/* ── FEATURED TEAM CARD ──────────────── */
-.featured-section{padding:14px 0 0}
-.featured-card{
-  background:var(--ink2);
-  border:1px solid rgba(26,255,107,.2);
-  border-radius:var(--r-lg);
-  overflow:hidden;
-  position:relative;
-}
-/* Green left accent bar */
-.featured-card::before{
-  content:'';position:absolute;left:0;top:0;bottom:0;
-  width:3px;background:var(--signal);
-}
-.featured-inner{padding:14px 16px 14px 20px}
-.featured-label{
-  font-family:var(--mono);font-size:9px;font-weight:700;
-  letter-spacing:.14em;text-transform:uppercase;
-  color:var(--signal);margin-bottom:10px;
-  display:flex;align-items:center;gap:6px;
-}
-.featured-top{display:flex;align-items:flex-start;gap:12px}
-.featured-logo{
-  width:52px;height:52px;flex-shrink:0;
-  background:var(--logo-bg);border:1px solid var(--logo-border);
-  border-radius:var(--r-md);box-shadow:var(--logo-shadow);
-  display:flex;align-items:center;justify-content:center;overflow:hidden;
-}
-.featured-logo img{width:40px;height:40px;object-fit:contain}
-.featured-info{flex:1;min-width:0}
-.featured-team-name{font-family:var(--mono);font-size:20px;font-weight:700;color:#e8edf8;line-height:1}
-.featured-record{font-family:var(--mono);font-size:28px;font-weight:700;letter-spacing:-.02em;color:var(--signal);margin-top:3px;line-height:1}
-.featured-chips{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
-.featured-chip{
-  font-family:var(--mono);font-size:10px;font-weight:600;
-  padding:3px 9px;border-radius:var(--r-pill);white-space:nowrap;
-}
-.fchip-green{background:var(--gain-bg);color:var(--gain-text);border:1px solid rgba(13,140,58,.2)}
-.fchip-amber{background:var(--caution-bg);color:var(--caution-text);border:1px solid rgba(245,200,66,.2)}
-.fchip-red  {background:var(--loss-bg);color:var(--loss-text);border:1px solid rgba(232,48,42,.2)}
-.fchip-neu  {background:var(--ink3);color:var(--chalk);border:1px solid var(--rule)}
-.featured-cta{
-  display:block;margin:12px 0 0;
-  padding:11px 14px;
-  background:var(--signal);border-radius:var(--r-sm);border:0;
-  color:var(--ink);font-family:var(--mono);font-size:13px;font-weight:700;
-  letter-spacing:.02em;text-align:center;text-decoration:none;
-  transition:filter .13s;
-}
-.featured-cta:hover{filter:brightness(1.08)}
-
-/* ── SECTION DIVIDER LABEL ───────────── */
-.section-label{
-  font-family:var(--mono);font-size:10px;font-weight:700;
-  letter-spacing:.12em;text-transform:uppercase;
-  color:rgba(255,255,255,.25);
-  padding:18px 0 10px;
-  display:flex;align-items:center;gap:10px;
-}
+/* ── MOMENTUM FILTER ─────────────────── */
+.section-label{font-family:var(--mono);font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.25);padding:18px 0 10px;display:flex;align-items:center;gap:10px}
 .section-label::after{content:'';flex:1;height:1px;background:var(--rule)}
-
-/* ── MOMENTUM FILTER BAR ─────────────── */
-.momentum-bar{
-  padding:8px 0 0;
-  display:flex;gap:5px;flex-wrap:nowrap;align-items:center;
-  overflow-x:auto;-webkit-overflow-scrolling:touch;
-  scrollbar-width:none;
-  /* Mobile: full-bleed scroll */
-  margin:0 -16px;padding:8px 16px 0;
-}
+.momentum-bar{padding:8px 0 0;display:flex;gap:5px;flex-wrap:nowrap;align-items:center;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;margin:0 -16px;padding:8px 16px 0}
 .momentum-bar::-webkit-scrollbar{display:none}
-.momentum-bar-label{
-  font-family:var(--mono);font-size:10px;font-weight:700;
-  letter-spacing:.1em;text-transform:uppercase;
-  color:rgba(255,255,255,.2);white-space:nowrap;padding-right:4px;flex-shrink:0;
-  /* Hide on mobile to save space */
-  display:none;
-}
+.momentum-bar-label{font-family:var(--mono);font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.2);white-space:nowrap;padding-right:4px;flex-shrink:0;display:none}
 @media(min-width:640px){.momentum-bar-label{display:block}}
-.mom-btn{
-  display:inline-flex;align-items:center;gap:4px;
-  font-family:var(--mono);font-size:11px;font-weight:600;
-  padding:6px 11px;border-radius:var(--r-pill);
-  border:1px solid var(--rule);background:var(--ink2);
-  color:var(--chalk);cursor:pointer;transition:all .13s;
-  white-space:nowrap;flex-shrink:0;
-  /* Larger tap targets on mobile */
-  min-height:36px;
-}
+.mom-btn{display:inline-flex;align-items:center;gap:4px;font-family:var(--mono);font-size:11px;font-weight:600;padding:6px 11px;border-radius:var(--r-pill);border:1px solid var(--rule);background:var(--ink2);color:var(--chalk);cursor:pointer;transition:all .13s;white-space:nowrap;flex-shrink:0;min-height:36px}
 .mom-btn:hover{border-color:rgba(255,255,255,.25);color:#e8edf8}
-.mom-btn.mom-hot  {border-color:rgba(13,140,58,.25); color:rgba(78,203,119,.8)}
+.mom-btn.mom-hot{border-color:rgba(13,140,58,.25);color:rgba(78,203,119,.8)}
 .mom-btn.mom-hot:hover{border-color:var(--gain-text);color:var(--gain-text)}
 .mom-btn.mom-hot.active{background:var(--gain-bg);border-color:rgba(13,140,58,.5);color:var(--gain-text);font-weight:700}
-.mom-btn.mom-neu  {border-color:rgba(245,200,66,.25);color:rgba(245,200,66,.7)}
+.mom-btn.mom-neu{border-color:rgba(245,200,66,.25);color:rgba(245,200,66,.7)}
 .mom-btn.mom-neu:hover{border-color:var(--caution-text);color:var(--caution-text)}
 .mom-btn.mom-neu.active{background:var(--caution-bg);border-color:rgba(245,200,66,.45);color:var(--caution-text);font-weight:700}
-.mom-btn.mom-cold {border-color:rgba(232,48,42,.25); color:rgba(244,117,112,.8)}
+.mom-btn.mom-cold{border-color:rgba(232,48,42,.25);color:rgba(244,117,112,.8)}
 .mom-btn.mom-cold:hover{border-color:var(--loss-text);color:var(--loss-text)}
 .mom-btn.mom-cold.active{background:var(--loss-bg);border-color:rgba(232,48,42,.5);color:var(--loss-text);font-weight:700}
 .mom-btn.active-all{background:var(--signal);border-color:var(--signal);color:var(--ink);font-weight:700}
-
-/* Mobile simplified momentum — show grouped buttons on small screens */
-.mom-group{
-  display:none;flex-shrink:0;
-}
-@media(max-width:639px){
-  .mom-detailed{display:none}
-  .mom-group{display:inline-flex}
-}
-@media(min-width:640px){
-  .mom-detailed{display:inline-flex}
-  .mom-group{display:none}
-}
-
-/* Explain link */
-.explain-link{
-  font-family:var(--mono);font-size:10px;font-weight:600;
-  color:rgba(255,255,255,.2);cursor:pointer;
-  padding:5px 0;margin-left:auto;flex-shrink:0;
-  text-decoration:none;transition:color .13s;
-  background:none;border:none;letter-spacing:.04em;
-  white-space:nowrap;
-  display:none; /* hidden on mobile, shown on ≥640 */
-}
+.mom-group{display:none;flex-shrink:0}
+@media(max-width:639px){.mom-detailed{display:none}.mom-group{display:inline-flex}}
+@media(min-width:640px){.mom-detailed{display:inline-flex}.mom-group{display:none}}
+.explain-link{font-family:var(--mono);font-size:10px;font-weight:600;color:rgba(255,255,255,.2);cursor:pointer;padding:5px 0;margin-left:auto;flex-shrink:0;text-decoration:none;transition:color .13s;background:none;border:none;letter-spacing:.04em;white-space:nowrap;display:none}
 @media(min-width:640px){.explain-link{display:block}}
 .explain-link:hover{color:var(--signal)}
-
-/* Explainer panel */
-.explainer-panel{
-  overflow:hidden;max-height:0;
-  transition:max-height .3s cubic-bezier(.22,1,.36,1);
-  background:var(--ink2);border-radius:var(--r-md);
-  border:1px solid var(--rule);
-}
+.explainer-panel{overflow:hidden;max-height:0;transition:max-height .3s cubic-bezier(.22,1,.36,1);background:var(--ink2);border-radius:var(--r-md);border:1px solid var(--rule)}
 .explainer-panel.open{max-height:700px}
 .explainer-inner{padding:16px}
-.explainer-title{
-  font-family:var(--mono);font-size:11px;font-weight:700;
-  letter-spacing:.1em;text-transform:uppercase;
-  color:rgba(255,255,255,.3);margin-bottom:12px;
-}
+.explainer-title{font-family:var(--mono);font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.3);margin-bottom:12px}
 .explainer-intro{font-family:var(--sans);font-size:13px;color:rgba(255,255,255,.5);line-height:1.55;margin-bottom:12px}
 .explainer-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:8px}
 .explainer-row{display:flex;align-items:flex-start;gap:10px;background:var(--ink3);border-radius:var(--r-sm);padding:10px 12px}
 .explainer-chip{flex-shrink:0;padding:3px 9px;border-radius:var(--r-pill);font-family:var(--mono);font-size:10px;font-weight:600;white-space:nowrap}
-.explainer-chip.hot {background:var(--gain-bg);color:var(--gain-text);border:1px solid rgba(13,140,58,.2)}
+.explainer-chip.hot{background:var(--gain-bg);color:var(--gain-text);border:1px solid rgba(13,140,58,.2)}
 .explainer-chip.cold{background:var(--loss-bg);color:var(--loss-text);border:1px solid rgba(232,48,42,.2)}
-.explainer-chip.neu {background:var(--ink2);color:var(--chalk);border:1px solid var(--rule)}
+.explainer-chip.neu{background:var(--ink2);color:var(--chalk);border:1px solid var(--rule)}
 .explainer-text{font-family:var(--sans);font-size:12px;color:rgba(255,255,255,.45);line-height:1.5}
 .explainer-footer{margin-top:12px;padding-top:12px;border-top:1px solid var(--rule);font-family:var(--sans);font-size:11px;color:rgba(255,255,255,.25);line-height:1.6}
-
-/* Mobile explainer toggle button — visible only on small screens */
-.mobile-explain-btn{
-  display:flex;align-items:center;gap:6px;
-  font-family:var(--mono);font-size:11px;font-weight:600;
-  color:rgba(255,255,255,.3);cursor:pointer;
-  background:none;border:none;padding:8px 0 0;
-  letter-spacing:.04em;
-}
+.mobile-explain-btn{display:flex;align-items:center;gap:6px;font-family:var(--mono);font-size:11px;font-weight:600;color:rgba(255,255,255,.3);cursor:pointer;background:none;border:none;padding:8px 0 0;letter-spacing:.04em}
 .mobile-explain-btn:hover{color:var(--signal)}
 @media(min-width:640px){.mobile-explain-btn{display:none}}
 
 /* ── CONTROLS BAR ────────────────────── */
-.ctrl-bar{
-  padding:10px 0;
-  display:flex;gap:7px;flex-wrap:wrap;align-items:center;
-  border-bottom:1px solid var(--rule);
-  position:sticky;top:53px;z-index:90;
-  background:rgba(15,16,20,.97);
-  backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
-}
+.ctrl-bar{padding:10px 0;display:flex;gap:7px;flex-wrap:wrap;align-items:center;border-bottom:1px solid var(--rule);position:sticky;top:53px;z-index:90;background:rgba(15,16,20,.97);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
 .filter-row{display:flex;gap:5px;flex-wrap:wrap}
-.filter-btn{
-  font-family:var(--mono);font-size:11px;font-weight:600;
-  padding:6px 12px;border-radius:var(--r-sm);
-  border:1px solid var(--rule);background:var(--ink2);
-  color:var(--chalk);cursor:pointer;transition:all .13s;white-space:nowrap;
-  min-height:34px;
-}
+.filter-btn{font-family:var(--mono);font-size:11px;font-weight:600;padding:6px 12px;border-radius:var(--r-sm);border:1px solid var(--rule);background:var(--ink2);color:var(--chalk);cursor:pointer;transition:all .13s;white-space:nowrap;min-height:34px}
 .filter-btn:hover{border-color:var(--signal);color:var(--signal)}
 .filter-btn.active{background:var(--signal);border-color:var(--signal);color:var(--ink);font-weight:700}
-.sort-select{
-  background:var(--ink2);border:1px solid var(--rule);
-  border-radius:var(--r-sm);color:#e8edf8;
-  font-family:var(--mono);font-size:12px;padding:6px 10px;
-  outline:none;cursor:pointer;margin-left:auto;min-height:34px;
-}
+.sort-select{background:var(--ink2);border:1px solid var(--rule);border-radius:var(--r-sm);color:#e8edf8;font-family:var(--mono);font-size:12px;padding:6px 10px;outline:none;cursor:pointer;margin-left:auto;min-height:34px}
 .sort-select:focus{border-color:var(--signal)}
 
 /* ── TEAM GRID ───────────────────────── */
-.team-grid{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:8px;padding:12px 0 48px;
-}
+.team-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:12px 0 48px}
 @media(min-width:480px){.team-grid{grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:10px}}
 @media(min-width:720px){.team-grid{grid-template-columns:repeat(auto-fill,minmax(270px,1fr))}}
-
-.team-card{
-  background:var(--ink2);border:1px solid var(--rule);
-  border-radius:var(--r-lg);overflow:hidden;
-  cursor:pointer;display:block;
-  transition:border-color .15s,transform .15s,box-shadow .15s;
-  animation:fadeUp .3s ease both;
-  -webkit-tap-highlight-color:transparent;
-}
+.team-card{background:var(--ink2);border:1px solid var(--rule);border-radius:var(--r-lg);overflow:hidden;cursor:pointer;display:block;transition:border-color .15s,transform .15s,box-shadow .15s;animation:fadeUp .3s ease both;-webkit-tap-highlight-color:transparent}
 .team-card:hover{border-color:rgba(26,255,107,.35);transform:translateY(-2px);box-shadow:0 12px 40px rgba(0,0,0,.4)}
 .team-card:active{transform:scale(.97)}
 .team-card.hidden-card{display:none}
 @keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
-.team-card:nth-child(1){animation-delay:.03s}
-.team-card:nth-child(2){animation-delay:.06s}
-.team-card:nth-child(3){animation-delay:.09s}
-.team-card:nth-child(n+4){animation-delay:.12s}
-
-/* Card internals */
 .card-top{display:flex;align-items:center;gap:9px;padding:11px 11px 7px}
-.team-logo-wrap{
-  width:40px;height:40px;flex-shrink:0;
-  background:var(--logo-bg);border:1px solid var(--logo-border);
-  border-radius:var(--r-sm);box-shadow:var(--logo-shadow);
-  display:flex;align-items:center;justify-content:center;overflow:hidden;
-}
+.team-logo-wrap{width:40px;height:40px;flex-shrink:0;background:var(--logo-bg);border:1px solid var(--logo-border);border-radius:var(--r-sm);box-shadow:var(--logo-shadow);display:flex;align-items:center;justify-content:center;overflow:hidden}
 .team-logo-wrap img{width:30px;height:30px;object-fit:contain}
 .team-logo-wrap .emoji-fb{font-size:18px;display:none}
 .team-name-block{flex:1;min-width:0}
-.team-city{
-  font-family:var(--mono);font-size:8px;font-weight:600;
-  letter-spacing:.1em;text-transform:uppercase;
-  color:rgba(255,255,255,.25);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
-}
-.team-name{
-  font-family:var(--mono);font-size:14px;font-weight:700;
-  color:#e8edf8;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
-}
-.momentum-chip{
-  flex-shrink:0;padding:2px 7px;border-radius:var(--r-pill);
-  font-family:var(--mono);font-size:9px;font-weight:600;
-  letter-spacing:.02em;white-space:nowrap;
-}
-.chip-hot    {background:var(--gain-bg);  color:var(--gain-text); border:1px solid rgba(13,140,58,.2)}
-.chip-cold   {background:var(--loss-bg);  color:var(--loss-text); border:1px solid rgba(232,48,42,.2)}
-.chip-neutral{background:var(--ink3);     color:var(--chalk);     border:1px solid var(--rule)}
-
-/* Hide momentum chip on smallest screens — show only record */
+.team-city{font-family:var(--mono);font-size:8px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.25);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.team-name{font-family:var(--mono);font-size:14px;font-weight:700;color:#e8edf8;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.momentum-chip{flex-shrink:0;padding:2px 7px;border-radius:var(--r-pill);font-family:var(--mono);font-size:9px;font-weight:600;letter-spacing:.02em;white-space:nowrap}
+.chip-hot{background:var(--gain-bg);color:var(--gain-text);border:1px solid rgba(13,140,58,.2)}
+.chip-cold{background:var(--loss-bg);color:var(--loss-text);border:1px solid rgba(232,48,42,.2)}
+.chip-neutral{background:var(--ink3);color:var(--chalk);border:1px solid var(--rule)}
 @media(max-width:380px){.momentum-chip{display:none}}
-
 .card-record{display:flex;align-items:baseline;gap:6px;padding:0 11px 6px}
-.record-big{
-  font-family:var(--mono);font-size:22px;font-weight:700;
-  letter-spacing:-.02em;color:var(--signal);
-}
+.record-big{font-family:var(--mono);font-size:22px;font-weight:700;letter-spacing:-.02em;color:var(--signal)}
 .record-pct{font-family:var(--mono);font-size:11px;color:rgba(255,255,255,.3)}
 .record-gp{font-family:var(--mono);font-size:10px;color:rgba(255,255,255,.18);margin-left:auto}
-
 .card-delta{padding:0 11px 7px;display:flex;align-items:center;gap:6px}
 .delta-label{font-family:var(--mono);font-size:9px;color:rgba(255,255,255,.22)}
 .delta-val{font-family:var(--mono);font-size:10px;font-weight:700;padding:2px 6px;border-radius:var(--r-xs)}
@@ -458,79 +346,32 @@ body{
 .delta-neu{background:var(--ink3);color:var(--chalk)}
 .proj-wins{font-family:var(--mono);font-size:10px;color:rgba(255,255,255,.22);margin-left:auto}
 .proj-wins strong{color:rgba(255,255,255,.5)}
-
 .card-spark{padding:0 11px 11px;height:34px}
 .spark-svg{width:100%;height:100%;overflow:visible}
-
-.card-footer{
-  border-top:1px solid var(--rule2);padding:5px 11px;
-  font-family:var(--mono);font-size:9px;color:rgba(255,255,255,.18);
-  display:flex;justify-content:space-between;
-}
+.card-footer{border-top:1px solid var(--rule2);padding:5px 11px;font-family:var(--mono);font-size:9px;color:rgba(255,255,255,.18);display:flex;justify-content:space-between}
 
 /* ── STATES ──────────────────────────── */
-.state-wrap{
-  grid-column:1/-1;
-  display:flex;flex-direction:column;align-items:center;
-  justify-content:center;padding:48px 20px;gap:12px;color:var(--chalk);
-}
-.spinner{
-  width:28px;height:28px;border-radius:50%;
-  border:3px solid var(--rule);border-top-color:var(--signal);
-  animation:spin .75s linear infinite;
-}
+.state-wrap{grid-column:1/-1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:48px 20px;gap:12px;color:var(--chalk)}
+.spinner{width:28px;height:28px;border-radius:50%;border:3px solid var(--rule);border-top-color:var(--signal);animation:spin .75s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
 .state-text{font-family:var(--mono);font-size:12px;text-align:center;line-height:1.6}
-.error-box{
-  background:var(--loss-bg);border:1px solid rgba(232,48,42,.3);
-  border-radius:var(--r-md);padding:16px;color:#ffccc7;
-  font-size:13px;line-height:1.6;max-width:480px;
-}
+.error-box{background:var(--loss-bg);border:1px solid rgba(232,48,42,.3);border-radius:var(--r-md);padding:16px;color:#ffccc7;font-size:13px;line-height:1.6;max-width:480px}
 
 /* ── MODAL ───────────────────────────── */
-.modal-overlay{
-  position:fixed;inset:0;z-index:200;
-  background:rgba(0,0,0,.72);backdrop-filter:blur(4px);
-  display:flex;align-items:flex-end;
-  opacity:0;pointer-events:none;transition:opacity .22s;
-}
+.modal-overlay{position:fixed;inset:0;z-index:200;background:rgba(0,0,0,.72);backdrop-filter:blur(4px);display:flex;align-items:flex-end;opacity:0;pointer-events:none;transition:opacity .22s}
 .modal-overlay.open{opacity:1;pointer-events:auto}
 @media(min-width:640px){.modal-overlay{align-items:center;justify-content:center}}
-.modal-sheet{
-  background:var(--ink2);border:1px solid var(--rule);
-  border-radius:20px 20px 0 0;
-  width:100%;max-height:92vh;
-  overflow-y:auto;-webkit-overflow-scrolling:touch;
-  transform:translateY(20px);
-  transition:transform .26s cubic-bezier(.22,1,.36,1);
-  padding-bottom:env(safe-area-inset-bottom);
-}
+.modal-sheet{background:var(--ink2);border:1px solid var(--rule);border-radius:20px 20px 0 0;width:100%;max-height:92vh;overflow-y:auto;-webkit-overflow-scrolling:touch;transform:translateY(20px);transition:transform .26s cubic-bezier(.22,1,.36,1);padding-bottom:env(safe-area-inset-bottom)}
 .modal-overlay.open .modal-sheet{transform:translateY(0)}
 @media(min-width:640px){.modal-sheet{border-radius:16px;width:92%;max-width:720px;max-height:88vh}}
 .modal-handle{width:36px;height:4px;border-radius:999px;background:var(--rule);margin:12px auto 0}
-.modal-header{
-  display:flex;align-items:center;gap:11px;
-  padding:14px 16px 12px;
-  border-bottom:1px solid var(--rule);
-  position:sticky;top:0;background:var(--ink2);z-index:10;
-}
-.modal-team-logo{
-  width:42px;height:42px;flex-shrink:0;
-  background:var(--logo-bg);border:1px solid var(--logo-border);
-  border-radius:var(--r-md);box-shadow:var(--logo-shadow);
-  display:flex;align-items:center;justify-content:center;overflow:hidden;
-}
+.modal-header{display:flex;align-items:center;gap:11px;padding:14px 16px 12px;border-bottom:1px solid var(--rule);position:sticky;top:0;background:var(--ink2);z-index:10}
+.modal-team-logo{width:42px;height:42px;flex-shrink:0;background:var(--logo-bg);border:1px solid var(--logo-border);border-radius:var(--r-md);box-shadow:var(--logo-shadow);display:flex;align-items:center;justify-content:center;overflow:hidden}
 .modal-team-logo img{width:32px;height:32px;object-fit:contain}
 .modal-title-block{flex:1}
 .modal-team-name{font-family:var(--mono);font-size:20px;font-weight:700;color:#e8edf8}
 .modal-subtitle{font-family:var(--mono);font-size:11px;color:var(--chalk);margin-top:2px}
-.modal-close{
-  width:32px;height:32px;border-radius:50%;
-  background:var(--ink3);border:1px solid var(--rule);
-  color:var(--chalk);font-size:18px;cursor:pointer;
-  display:flex;align-items:center;justify-content:center;
-  transition:background .13s,color .13s;flex-shrink:0;
-}
+.modal-close{width:32px;height:32px;border-radius:50%;background:var(--ink3);border:1px solid var(--rule);color:var(--chalk);font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .13s,color .13s;flex-shrink:0}
 .modal-close:hover{background:var(--loss-bg);color:var(--loss-text)}
 .modal-body{padding:16px}
 .modal-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:16px}
@@ -550,178 +391,52 @@ body{
 .pill-r{background:var(--loss-bg);color:var(--loss-text)}
 .pill-n{background:var(--ink3);color:var(--chalk)}
 .modal-share{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap}
-.share-btn{
-  display:inline-flex;align-items:center;gap:6px;
-  font-family:var(--mono);font-size:11px;font-weight:600;
-  padding:9px 14px;border-radius:var(--r-sm);cursor:pointer;
-  transition:all .13s;letter-spacing:.02em;min-height:38px;
-}
-.share-btn-x{background:var(--ink);color:#e8edf8;border:1px solid rgba(255,255,255,.18)}
-.share-btn-x:hover{background:var(--ink3);border-color:rgba(255,255,255,.35)}
-.share-btn-copy{background:transparent;color:var(--chalk);border:1px solid var(--rule)}
-.share-btn-copy:hover{border-color:var(--signal);color:var(--signal)}
-.modal-cta{
-  display:block;width:100%;margin-top:12px;padding:14px;
-  background:var(--signal);border-radius:var(--r-sm);border:0;
-  color:var(--ink);font-family:var(--mono);font-size:15px;font-weight:700;
-  letter-spacing:.02em;text-align:center;cursor:pointer;text-decoration:none;
-  transition:filter .13s;
-}
-.modal-cta:hover{filter:brightness(1.08)}
-
-/* ── HERO sub strong ─────────────────── */
-.hero-sub-strong{
-  color:#e8edf8;font-weight:600;font-style:normal;
-  display:block;margin-top:2px;
-}
-
-/* ── Trust line ──────────────────────── */
-.hero-trust{
-  font-family:var(--mono);font-size:11px;
-  color:rgba(255,255,255,.25);
-  margin-top:10px;text-align:center;
-  letter-spacing:.02em;
-}
-
-/* ── TODAY'S STORY HERO ──────────────── */
-.todays-story-section{padding:16px 0 0}
-.todays-story-hero{
-  background:var(--ink2);
-  border:1px solid rgba(26,255,107,.18);
-  border-radius:var(--r-lg);
-  overflow:hidden;position:relative;
-  cursor:pointer;
-  transition:border-color .15s,transform .15s;
-  -webkit-tap-highlight-color:transparent;
-}
-.todays-story-hero:hover{border-color:rgba(26,255,107,.4);transform:translateY(-1px)}
-.todays-story-hero:active{transform:scale(.99)}
-/* Green left accent bar */
-.todays-story-hero::before{
-  content:'';position:absolute;left:0;top:0;bottom:0;
-  width:3px;background:var(--signal);
-}
-.tsh-inner{padding:16px 16px 16px 20px}
-.tsh-eyebrow{
-  font-family:var(--mono);font-size:9px;font-weight:700;
-  letter-spacing:.14em;text-transform:uppercase;
-  color:var(--signal);margin-bottom:10px;
-  display:flex;align-items:center;gap:8px;
-}
-.tsh-top{display:flex;align-items:flex-start;gap:13px}
-.tsh-logo{
-  width:54px;height:54px;flex-shrink:0;
-  background:var(--logo-bg);border:1px solid var(--logo-border);
-  border-radius:var(--r-md);box-shadow:var(--logo-shadow);
-  display:flex;align-items:center;justify-content:center;overflow:hidden;
-}
-.tsh-logo img{width:42px;height:42px;object-fit:contain}
-.tsh-text{flex:1;min-width:0}
-.tsh-team{
-  font-family:var(--mono);font-size:13px;font-weight:700;
-  color:rgba(255,255,255,.5);line-height:1;margin-bottom:4px;
-}
-.tsh-narrative{
-  font-family:var(--sans);font-size:clamp(15px,3vw,18px);
-  font-weight:600;color:#e8edf8;line-height:1.35;
-}
-.tsh-narrative strong{color:var(--signal)}
-.tsh-stat{
-  font-family:var(--mono);font-size:12px;color:var(--chalk);
-  margin-top:8px;
-}
-.tsh-actions{
-  display:flex;align-items:center;gap:8px;
-  margin-top:14px;flex-wrap:wrap;
-}
-.tsh-cta{
-  flex:1;padding:11px 14px;
-  background:var(--signal);border-radius:var(--r-sm);border:0;
-  color:var(--ink);font-family:var(--mono);font-size:13px;font-weight:700;
-  letter-spacing:.02em;text-align:center;text-decoration:none;
-  display:block;transition:filter .13s;
-}
-.tsh-cta:hover{filter:brightness(1.08)}
-.tsh-share{
-  padding:11px 13px;border-radius:var(--r-sm);
-  background:transparent;border:1px solid var(--rule);
-  color:var(--chalk);font-family:var(--mono);font-size:12px;font-weight:600;
-  cursor:pointer;transition:all .13s;white-space:nowrap;
-}
-.tsh-share:hover{border-color:var(--signal);color:var(--signal)}
-
-/* ── GP TOOLTIP ──────────────────────── */
-.gp-tooltip-wrap{position:relative;display:inline-flex}
-.gp-tooltip{
-  position:absolute;bottom:calc(100% + 8px);left:50%;
-  transform:translateX(-50%);
-  background:var(--ink);border:1px solid rgba(255,255,255,.18);
-  border-radius:var(--r-md);padding:10px 13px;
-  font-family:var(--sans);font-size:12px;color:rgba(255,255,255,.75);
-  line-height:1.5;white-space:nowrap;
-  box-shadow:0 8px 24px rgba(0,0,0,.5);
-  opacity:0;pointer-events:none;
-  transition:opacity .15s;z-index:50;
-}
-.gp-tooltip::after{
-  content:'';position:absolute;top:100%;left:50%;transform:translateX(-50%);
-  border:5px solid transparent;border-top-color:rgba(255,255,255,.18);
-}
-.gp-tooltip-wrap.open .gp-tooltip{opacity:1;pointer-events:auto}
-
-/* ── INTERACTIVE LEAGUE PILLS ────────── */
-.lp-interactive{cursor:pointer;transition:all .13s;-webkit-tap-highlight-color:transparent}
-.lp-interactive:hover{border-color:rgba(255,255,255,.25);background:var(--ink3)}
-.lp-interactive.active-hot{background:var(--gain-bg);border-color:rgba(13,140,58,.35);color:var(--gain-text)}
-.lp-interactive.active-cold{background:var(--loss-bg);border-color:rgba(232,48,42,.35);color:var(--loss-text)}
-
-/* ── MORE STORIES header ─────────────── */
-#moreStoriesSection{padding-top:10px}
-
-/* ── SHARE SYSTEM ────────────────────── */
+.share-btn{display:inline-flex;align-items:center;gap:6px;font-family:var(--mono);font-size:11px;font-weight:600;padding:9px 14px;border-radius:var(--r-sm);cursor:pointer;transition:all .13s;letter-spacing:.02em;min-height:38px}
 .share-btn-primary{background:var(--signal);color:var(--ink);border:none;font-weight:700}
 .share-btn-primary:hover{filter:brightness(1.08)}
+.share-btn-copy{background:transparent;color:var(--chalk);border:1px solid var(--rule)}
+.share-btn-copy:hover{border-color:var(--signal);color:var(--signal)}
+.modal-cta{display:block;width:100%;margin-top:12px;padding:14px;background:var(--signal);border-radius:var(--r-sm);border:0;color:var(--ink);font-family:var(--mono);font-size:15px;font-weight:700;letter-spacing:.02em;text-align:center;cursor:pointer;text-decoration:none;transition:filter .13s}
+.modal-cta:hover{filter:brightness(1.08)}
 .share-menu-backdrop{position:fixed;inset:0;z-index:299}
-.share-menu{
-  position:fixed;z-index:300;
-  background:var(--ink2);border:1px solid rgba(255,255,255,.18);
-  border-radius:var(--r-lg);padding:6px;min-width:200px;
-  box-shadow:0 16px 48px rgba(0,0,0,.6),0 4px 16px rgba(0,0,0,.4);
-  animation:menuPop .16s cubic-bezier(.22,1,.36,1) both;
-}
+.share-menu{position:fixed;z-index:300;background:var(--ink2);border:1px solid rgba(255,255,255,.18);border-radius:var(--r-lg);padding:6px;min-width:200px;box-shadow:0 16px 48px rgba(0,0,0,.6),0 4px 16px rgba(0,0,0,.4);animation:menuPop .16s cubic-bezier(.22,1,.36,1) both}
 @keyframes menuPop{from{opacity:0;transform:scale(.94) translateY(4px)}to{opacity:1;transform:scale(1) translateY(0)}}
 .share-menu-title{font-family:var(--mono);font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.25);padding:6px 10px 8px;border-bottom:1px solid var(--rule);margin-bottom:4px}
 .share-menu-item{display:flex;align-items:center;gap:10px;width:100%;padding:9px 10px;border-radius:var(--r-sm);border:none;background:transparent;color:rgba(255,255,255,.8);font-family:var(--mono);font-size:12px;font-weight:600;cursor:pointer;text-decoration:none;transition:background .12s,color .12s;white-space:nowrap}
 .share-menu-item:hover{background:var(--ink3);color:#e8edf8}
 .share-menu-item-icon{width:26px;height:26px;border-radius:var(--r-xs);display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0}
-.share-menu-item-icon.x-icon  {background:#000;color:#fff}
-.share-menu-item-icon.fb-icon {background:#1877f2;color:#fff}
-.share-menu-item-icon.rd-icon {background:#ff4500;color:#fff}
-.share-menu-item-icon.th-icon {background:#000;color:#fff}
-.share-menu-item-icon.bs-icon {background:#0085ff;color:#fff}
-.share-menu-item-icon.cp-icon {background:var(--ink3);color:var(--chalk)}
+.share-menu-item-icon.x-icon{background:#000;color:#fff}
+.share-menu-item-icon.fb-icon{background:#1877f2;color:#fff}
+.share-menu-item-icon.rd-icon{background:#ff4500;color:#fff}
+.share-menu-item-icon.th-icon{background:#000;color:#fff}
+.share-menu-item-icon.bs-icon{background:#0085ff;color:#fff}
+.share-menu-item-icon.cp-icon{background:var(--ink3);color:var(--chalk)}
 .share-menu-divider{height:1px;background:var(--rule);margin:4px 0}
 
 /* ── FOOTER ──────────────────────────── */
-.site-footer{
-  border-top:1px solid var(--rule);padding:18px 0 32px;
-  display:flex;flex-wrap:wrap;gap:10px;
-  align-items:center;justify-content:space-between;
-}
+.site-footer{border-top:1px solid var(--rule);padding:18px 0 32px;display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between}
 .footer-logo{font-family:var(--mono);font-weight:700;font-size:14px;color:var(--chalk);text-decoration:none}
 .footer-logo .accent{color:var(--signal)}
 .footer-links{display:flex;gap:14px}
 .footer-links a{font-size:12px;color:rgba(255,255,255,.25);text-decoration:none;transition:color .13s}
 .footer-links a:hover{color:var(--chalk)}
 .footer-note{font-family:var(--sans);font-size:11px;color:rgba(255,255,255,.18);line-height:1.65;width:100%}
+
+/* ── RESPONSIVE helpers ──────────────── */
+@media(max-width:520px){
+  .filter-row{gap:4px}
+  .filter-btn{font-size:10px;padding:5px 9px}
+  .ctrl-bar{gap:6px}
+  .sort-select{margin-left:0}
+}
 </style>
 <!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-DCSQPGSY1D"></script>
 <script>
-  window.dataLayer = window.dataLayer || [];
+  window.dataLayer=window.dataLayer||[];
   function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-  gtag('config', 'G-DCSQPGSY1D');
+  gtag('js',new Date());
+  gtag('config','G-DCSQPGSY1D');
 </script>
 </head>
 <body>
@@ -744,156 +459,172 @@ body{
 
   <!-- ══ HERO ══════════════════════════ -->
   <div class="hero">
-    <div class="hero-inner">
-      <div class="hero-eyebrow">
-        <div class="hero-eyebrow-dot"></div>
-        2026 MLB Season · Updated daily
-      </div>
-      <div class="hero-hed">Every season<br>tells a <span class="accent">story.</span></div>
-
-      <!-- Emotional subheadline -->
-      <p class="hero-sub">
-        The standings tell you where teams are.<br>
-        <strong class="hero-sub-strong">Track The Season tells you where they're headed.</strong>
-      </p>
-
-      <!-- Find your team — prominent search -->
-      <div class="hero-finder">
+    <div class="hero-eyebrow"><div class="hero-eyebrow-dot"></div>2026 MLB Season</div>
+    <div class="hero-hed">Every season<br>tells a <span class="accent">story.</span></div>
+    <p class="hero-sub">
+      The standings tell you where teams are.<br>
+      <strong class="hero-sub-strong">Track The Season tells you where they're headed.</strong>
+    </p>
+    <div class="hero-actions">
+      <a href="#all-teams" class="hero-cta">View All Teams ↓</a>
+      <div class="hero-finder-inline">
         <span class="finder-icon">⌕</span>
-        <input
-          class="finder-input"
-          id="finderInput"
-          type="text"
-          placeholder="Find your team…"
-          autocomplete="off"
-          autocorrect="off"
-          spellcheck="false"
-          inputmode="search"
-          aria-label="Search for a team"
-        />
-        <button class="finder-clear" id="finderClear" aria-label="Clear search">×</button>
+        <input class="finder-input" id="finderInput" type="text" placeholder="Find your team…"
+          autocomplete="off" autocorrect="off" spellcheck="false" inputmode="search" aria-label="Search teams"/>
+        <button class="finder-clear" id="finderClear" aria-label="Clear">×</button>
       </div>
-
-      <!-- Trust line — reinforces data is current -->
-      <div class="hero-trust">⚾ Updated after every final MLB game.</div>
-
-      <!-- League summary badges — now tappable filter chips -->
-      <div class="league-pills" id="leaguePills"></div>
     </div>
+    <div class="hero-trust">⚾ Updated automatically after every final MLB game.</div>
+    <div class="league-pills" id="leaguePills"></div>
   </div>
 
-  <!-- ══ TODAY'S STORY — hero card ════════ -->
-  <div class="todays-story-section" id="todaysStorySection" style="display:none">
-    <div class="stories-header">
-      <div class="stories-title">Today's story</div>
-      <div class="stories-sub" id="storiesDate"></div>
+  <!-- ══ LEAGUE SNAPSHOT ═══════════════ -->
+  <div class="sec-header" id="snapshotSection">
+    <div class="sec-title">League Snapshot</div>
+    <div class="sec-sub" id="snapshotDate"></div>
+  </div>
+  <div class="snapshot-grid" id="snapshotGrid">
+    <div class="snap-card"><div class="snap-label">Loading…</div></div>
+  </div>
+
+  <!-- ══ TODAY'S STORY ═════════════════ -->
+  <div id="todaysStorySection" style="display:none">
+    <div class="sec-header" style="padding-top:24px">
+      <div class="sec-title">Today's Story</div>
+      <div class="sec-sub" id="storiesDate"></div>
     </div>
     <div class="todays-story-hero" id="todaysStoryHero"></div>
   </div>
 
-  <!-- ══ MORE STORIES ═══════════════════════ -->
-  <div class="stories-section" id="moreStoriesSection">
+  <!-- ══ BIGGEST MOVERS ════════════════ -->
+  <div class="sec-header" style="padding-top:24px">
+    <div class="sec-title">📊 Biggest Movers</div>
+    <div class="sec-sub">vs last season at same GP</div>
+  </div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+    <div>
+      <div style="font-family:var(--mono);font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--gain-text);margin-bottom:8px">↑ Rising</div>
+      <div class="movers-grid" id="moversUpGrid"></div>
+    </div>
+    <div>
+      <div style="font-family:var(--mono);font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--loss-text);margin-bottom:8px">↓ Falling</div>
+      <div class="movers-grid" id="moversDownGrid"></div>
+    </div>
+  </div>
+
+  <!-- ══ HOT / COLD ════════════════════ -->
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:24px">
+    <div>
+      <div class="sec-header" style="padding-top:0;margin-bottom:8px">
+        <div class="sec-title">🔥 Hottest Teams</div>
+      </div>
+      <div class="carousel-wrap" id="hotTeams"></div>
+    </div>
+    <div>
+      <div class="sec-header" style="padding-top:0;margin-bottom:8px">
+        <div class="sec-title">❄️ Coldest Teams</div>
+      </div>
+      <div class="carousel-wrap" id="coldTeams"></div>
+    </div>
+  </div>
+
+  <!-- ══ TRENDING UP / DOWN ════════════ -->
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:24px">
+    <div>
+      <div class="sec-header" style="padding-top:0;margin-bottom:8px">
+        <div class="sec-title">🚀 Trending Up</div>
+      </div>
+      <div class="trending-grid" id="trendingUp"></div>
+    </div>
+    <div>
+      <div class="sec-header" style="padding-top:0;margin-bottom:8px">
+        <div class="sec-title">⚠️ Trending Down</div>
+      </div>
+      <div class="trending-grid" id="trendingDown"></div>
+    </div>
+  </div>
+
+  <!-- ══ ALSO TODAY ════════════════════ -->
+  <div id="moreStoriesSection" style="padding-top:24px">
     <div class="stories-header">
-      <div class="stories-title" id="moreStoriesTitle" style="font-size:12px;color:var(--chalk)">Also today</div>
+      <div class="stories-title" style="font-size:12px;color:var(--chalk)">Also today</div>
     </div>
     <div class="stories-grid" id="storiesGrid">
-      <div class="story-skeleton"></div>
-      <div class="story-skeleton"></div>
-      <div class="story-skeleton"></div>
-      <div class="story-skeleton"></div>
+      <div class="story-skeleton"></div><div class="story-skeleton"></div>
+      <div class="story-skeleton"></div><div class="story-skeleton"></div>
     </div>
   </div>
 
-  <!-- ══ FEATURED TEAM ═════════════════ -->
-  <div class="featured-section" id="featuredSection" style="display:none">
-    <div class="section-label">Hottest team right now</div>
-    <div class="featured-card" id="featuredCard"></div>
-  </div>
+  <!-- ══ ALL TEAMS ═════════════════════ -->
+  <div id="all-teams">
+    <div class="section-label" style="padding-top:28px">All 30 Teams</div>
 
-  <!-- ══ MOMENTUM FILTER BAR ══════════ -->
-  <div class="section-label" style="padding-top:20px">All 30 teams</div>
-
-  <div class="momentum-bar" id="momentumBar">
-    <!-- All teams always visible -->
-    <button class="mom-btn active-all" data-mom="all">All</button>
-
-    <!-- Mobile: grouped 5 buttons -->
-    <button class="mom-btn mom-group mom-hot"  data-mom="__hot">🔥 Hot</button>
-    <button class="mom-btn mom-group mom-hot"  data-mom="__rising">📈 Rising</button>
-    <button class="mom-btn mom-group mom-neu"  data-mom="__stable">➡️ Stable</button>
-    <button class="mom-btn mom-group mom-cold" data-mom="__falling">⬇️ Falling</button>
-    <button class="mom-btn mom-group mom-cold" data-mom="__cold">❄️ Cold</button>
-
-    <!-- Desktop: individual 8 buttons -->
-    <button class="mom-btn mom-detailed mom-hot"  data-mom="Elite pace">🔥 Elite pace</button>
-    <button class="mom-btn mom-detailed mom-hot"  data-mom="Heating up">📈 Heating up</button>
-    <button class="mom-btn mom-detailed mom-hot"  data-mom="Strong stretch">✅ Strong stretch</button>
-    <button class="mom-btn mom-detailed mom-hot"  data-mom="Trending up">⬆️ Trending up</button>
-    <button class="mom-btn mom-detailed mom-neu"  data-mom="Stable">➡️ Stable</button>
-    <button class="mom-btn mom-detailed mom-cold" data-mom="Trending down">⬇️ Trending down</button>
-    <button class="mom-btn mom-detailed mom-cold" data-mom="Cooling off">📉 Cooling off</button>
-    <button class="mom-btn mom-detailed mom-cold" data-mom="Struggling">❄️ Struggling</button>
-    <button class="explain-link" id="explainBtn">What does this mean? ↓</button>
-  </div>
-
-  <!-- Mobile explainer toggle -->
-  <button class="mobile-explain-btn" id="mobileExplainBtn">⚡ What do these labels mean?</button>
-
-  <!-- Explainer panel -->
-  <div class="explainer-panel" id="explainerPanel">
-    <div class="explainer-inner">
-      <div class="explainer-title">How momentum labels work</div>
-      <p class="explainer-intro">
-        Every label compares a team's <strong style="color:rgba(255,255,255,.7)">last-20 game win%</strong>
-        to their <strong style="color:rgba(255,255,255,.7)">full-season win%</strong>.
-        The gap shows which direction they're moving — regardless of standings.
-      </p>
-      <div class="explainer-grid">
-        <div class="explainer-row"><span class="explainer-chip hot">🔥 Elite pace</span><span class="explainer-text">Last 20 win% ≥ .650. Historically dominant stretch.</span></div>
-        <div class="explainer-row"><span class="explainer-chip hot">📈 Heating up</span><span class="explainer-text">Last 20 ≥ .600 and meaningfully better than season average.</span></div>
-        <div class="explainer-row"><span class="explainer-chip hot">✅ Strong stretch</span><span class="explainer-text">Last 20 ≥ .575. Above a 93-win pace recently.</span></div>
-        <div class="explainer-row"><span class="explainer-chip hot">⬆️ Trending up</span><span class="explainer-text">Last 20 noticeably better than season average.</span></div>
-        <div class="explainer-row"><span class="explainer-chip neu">➡️ Stable</span><span class="explainer-text">Recent form roughly matches overall season pace.</span></div>
-        <div class="explainer-row"><span class="explainer-chip cold">⬇️ Trending down</span><span class="explainer-text">Last 20 noticeably worse than season average.</span></div>
-        <div class="explainer-row"><span class="explainer-chip cold">📉 Cooling off</span><span class="explainer-text">Last 20 ≤ .420 and significantly below season average.</span></div>
-        <div class="explainer-row"><span class="explainer-chip cold">❄️ Struggling</span><span class="explainer-text">Last 20 win% ≤ .350. Historically bad recent stretch.</span></div>
+    <!-- Momentum filter -->
+    <div class="momentum-bar" id="momentumBar">
+      <button class="mom-btn active-all" data-mom="all">All</button>
+      <button class="mom-btn mom-group mom-hot"  data-mom="__hot">🔥 Hot</button>
+      <button class="mom-btn mom-group mom-hot"  data-mom="__rising">📈 Rising</button>
+      <button class="mom-btn mom-group mom-neu"  data-mom="__stable">➡️ Stable</button>
+      <button class="mom-btn mom-group mom-cold" data-mom="__falling">⬇️ Falling</button>
+      <button class="mom-btn mom-group mom-cold" data-mom="__cold">❄️ Cold</button>
+      <button class="mom-btn mom-detailed mom-hot"  data-mom="Elite pace">🔥 Elite pace</button>
+      <button class="mom-btn mom-detailed mom-hot"  data-mom="Heating up">📈 Heating up</button>
+      <button class="mom-btn mom-detailed mom-hot"  data-mom="Strong stretch">✅ Strong stretch</button>
+      <button class="mom-btn mom-detailed mom-hot"  data-mom="Trending up">⬆️ Trending up</button>
+      <button class="mom-btn mom-detailed mom-neu"  data-mom="Stable">➡️ Stable</button>
+      <button class="mom-btn mom-detailed mom-cold" data-mom="Trending down">⬇️ Trending down</button>
+      <button class="mom-btn mom-detailed mom-cold" data-mom="Cooling off">📉 Cooling off</button>
+      <button class="mom-btn mom-detailed mom-cold" data-mom="Struggling">❄️ Struggling</button>
+      <button class="explain-link" id="explainBtn">What does this mean? ↓</button>
+    </div>
+    <button class="mobile-explain-btn" id="mobileExplainBtn">⚡ What do these labels mean?</button>
+    <div class="explainer-panel" id="explainerPanel">
+      <div class="explainer-inner">
+        <div class="explainer-title">How momentum labels work</div>
+        <p class="explainer-intro">Every label compares a team's <strong style="color:rgba(255,255,255,.7)">last-20 game win%</strong> to their <strong style="color:rgba(255,255,255,.7)">full-season win%</strong>.</p>
+        <div class="explainer-grid">
+          <div class="explainer-row"><span class="explainer-chip hot">🔥 Elite pace</span><span class="explainer-text">Last 20 win% ≥ .650. Historically dominant stretch.</span></div>
+          <div class="explainer-row"><span class="explainer-chip hot">📈 Heating up</span><span class="explainer-text">Last 20 ≥ .600 and meaningfully better than season average.</span></div>
+          <div class="explainer-row"><span class="explainer-chip hot">✅ Strong stretch</span><span class="explainer-text">Last 20 ≥ .575. Above a 93-win pace recently.</span></div>
+          <div class="explainer-row"><span class="explainer-chip hot">⬆️ Trending up</span><span class="explainer-text">Last 20 noticeably better than season average.</span></div>
+          <div class="explainer-row"><span class="explainer-chip neu">➡️ Stable</span><span class="explainer-text">Recent form roughly matches overall season pace.</span></div>
+          <div class="explainer-row"><span class="explainer-chip cold">⬇️ Trending down</span><span class="explainer-text">Last 20 noticeably worse than season average.</span></div>
+          <div class="explainer-row"><span class="explainer-chip cold">📉 Cooling off</span><span class="explainer-text">Last 20 ≤ .420 and significantly below season average.</span></div>
+          <div class="explainer-row"><span class="explainer-chip cold">❄️ Struggling</span><span class="explainer-text">Last 20 win% ≤ .350. Historically bad recent stretch.</span></div>
+        </div>
+        <p class="explainer-footer">Needs 10+ completed games to calculate.</p>
       </div>
-      <p class="explainer-footer">
-        Example: A team at 40–31 overall but 7–13 in their last 20 is 📉 Cooling off —
-        the standings look fine but they're fading. Needs 10+ completed games.
-      </p>
     </div>
-  </div>
 
-  <!-- ══ CONTROLS ══════════════════════ -->
-  <div class="ctrl-bar" role="toolbar">
-    <div class="filter-row" id="leagueFilter">
-      <button class="filter-btn active" data-filter="all">All 30</button>
-      <button class="filter-btn" data-filter="AL">AL</button>
-      <button class="filter-btn" data-filter="NL">NL</button>
+    <!-- League/division filter bar -->
+    <div class="ctrl-bar" role="toolbar">
+      <div class="filter-row" id="leagueFilter">
+        <button class="filter-btn active" data-filter="all">All 30</button>
+        <button class="filter-btn" data-filter="AL">AL</button>
+        <button class="filter-btn" data-filter="NL">NL</button>
+      </div>
+      <div class="filter-row" id="divFilter">
+        <button class="filter-btn" data-filter="ALE">AL East</button>
+        <button class="filter-btn" data-filter="ALC">AL Central</button>
+        <button class="filter-btn" data-filter="ALW">AL West</button>
+        <button class="filter-btn" data-filter="NLE">NL East</button>
+        <button class="filter-btn" data-filter="NLC">NL Central</button>
+        <button class="filter-btn" data-filter="NLW">NL West</button>
+      </div>
+      <select class="sort-select" id="sortSelect">
+        <option value="winpct">Sort: Win %</option>
+        <option value="projwins">Sort: Proj. wins</option>
+        <option value="delta">Sort: vs last year</option>
+        <option value="momentum">Sort: Momentum</option>
+        <option value="alpha">Sort: A–Z</option>
+      </select>
     </div>
-    <div class="filter-row" id="divFilter">
-      <button class="filter-btn" data-filter="ALE">AL East</button>
-      <button class="filter-btn" data-filter="ALC">AL Central</button>
-      <button class="filter-btn" data-filter="ALW">AL West</button>
-      <button class="filter-btn" data-filter="NLE">NL East</button>
-      <button class="filter-btn" data-filter="NLC">NL Central</button>
-      <button class="filter-btn" data-filter="NLW">NL West</button>
-    </div>
-    <select class="sort-select" id="sortSelect">
-      <option value="winpct">Sort: Win %</option>
-      <option value="projwins">Sort: Proj. wins</option>
-      <option value="delta">Sort: vs last year</option>
-      <option value="momentum">Sort: Momentum</option>
-      <option value="alpha">Sort: A–Z</option>
-    </select>
-  </div>
 
-  <!-- ══ TEAM GRID ══════════════════════ -->
-  <div class="team-grid" id="teamGrid" role="list">
-    <div class="state-wrap">
-      <div class="spinner"></div>
-      <div class="state-text">Loading all 30 teams…</div>
+    <div class="team-grid" id="teamGrid" role="list">
+      <div class="state-wrap">
+        <div class="spinner"></div>
+        <div class="state-text">Loading all 30 teams…</div>
+      </div>
     </div>
   </div>
 
@@ -906,9 +637,7 @@ body{
     <div class="footer-links">
       <a href="https://x.com/tracktheseason" target="_blank" rel="noopener">@tracktheseason</a>
     </div>
-    <p class="footer-note">
-      Data: MLB Stats API. Final regular-season games only. Live, postponed, suspended, or non-final games excluded until final. Doubleheaders count as separate games. Not affiliated with or endorsed by MLB or its clubs.
-    </p>
+    <p class="footer-note">Data: MLB Stats API. Final regular-season games only. Live, postponed, or suspended games excluded until final. Doubleheaders count as separate games. Not affiliated with or endorsed by MLB or its clubs.</p>
   </footer>
 </div>
 
@@ -933,11 +662,9 @@ body{
 
 <script>
 /* ═══════════════════════════════════════════════════
-   TRACK THE SEASON — index.html (mobile-optimised)
-   Architecture: constants → data → calculations →
-                 stories → featured → grid → events
+   TRACK THE SEASON — index.html
+   Daily MLB destination dashboard
 ═══════════════════════════════════════════════════ */
-
 const API          = 'https://statsapi.mlb.com/api/v1';
 const TRACKER_PAGE = 'tracker.html';
 const CURRENT_YEAR = new Date().getFullYear();
@@ -962,7 +689,6 @@ const MOMENTUM_RANK = {
   'Elite pace':6,'Heating up':5,'Strong stretch':4,
   'Trending up':3,'Stable':2,'Trending down':1,'Cooling off':0,'Struggling':-1,
 };
-/* Mobile grouped momentum filters */
 const MOMENTUM_HOT_LABELS    = new Set(['Elite pace','Heating up','Strong stretch','Trending up']);
 const MOMENTUM_RISING_LABELS = new Set(['Heating up','Trending up']);
 const MOMENTUM_STABLE_LABELS = new Set(['Stable']);
@@ -976,14 +702,12 @@ for(const[k,d] of Object.entries(DIVISIONS)){
 }
 
 /* ── Cache & fetch ─────────────────────────────── */
-const cache=new Map();
-
+const cache = new Map();
 async function fetchJSON(url){
   const r=await fetch(url);
   if(!r.ok) throw new Error(`MLB API ${r.status}`);
   return r.json();
 }
-
 async function loadSchedule(teamId,year){
   const key=`${teamId}:${year}`;
   if(cache.has(key)) return cache.get(key);
@@ -1007,19 +731,16 @@ async function loadSchedule(teamId,year){
 /* ── Calculations ──────────────────────────────── */
 const winPct=(w,l)=>(w+l)?w/(w+l):0;
 const fmtPct=p=>p.toFixed(3).replace(/^0/,'');
-
 function projWins(games){
   if(!games.length) return null;
   const g=games[games.length-1];
   return Math.round(winPct(g.cumWins,g.cumLosses)*SEASON_GAMES);
 }
-
 function last10(games){
   const s=games.slice(-10);
   const w=s.filter(g=>g.win).length;
   return{w,l:s.length-w};
 }
-
 function getMomentum(games){
   if(games.length<10) return{label:'Stable',cls:'chip-neutral',emoji:'➡️'};
   const last20=games.slice(-20);
@@ -1035,134 +756,74 @@ function getMomentum(games){
   if(d<=-.05) return{label:'Trending down',cls:'chip-cold',emoji:'⬇️'};
   return{label:'Stable',cls:'chip-neutral',emoji:'➡️'};
 }
-
 function momentumColor(label){
   if(MOMENTUM_HOT_LABELS.has(label)) return '#1aff6b';
   if(['Struggling','Cooling off','Trending down'].includes(label)) return '#f47570';
   return '#8a8a82';
 }
-
-/* ── Sparkline ─────────────────────────────────── */
-function buildSparkline(games,color){
-  if(!games.length) return '';
-  const W=300,H=34,p=2,maxG=games.length,maxW=games[games.length-1].cumWins||1;
-  const sx=x=>p+(x/maxG)*(W-p*2);
-  const sy=y=>H-p-(y/maxW)*(H-p*2);
-  const d=games.map((g,i)=>`${i?'L':'M'}${sx(g.gameNo).toFixed(1)},${sy(g.cumWins).toFixed(1)}`).join(' ');
-  const area=d+` L${sx(maxG).toFixed(1)},${H} L${sx(games[0].gameNo).toFixed(1)},${H} Z`;
-  const gid='sg'+Math.random().toString(36).slice(2,6);
-  return `<svg class="spark-svg" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none">
-    <defs><linearGradient id="${gid}" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0%" stop-color="${color}" stop-opacity=".25"/>
-      <stop offset="100%" stop-color="${color}" stop-opacity="0"/>
-    </linearGradient></defs>
-    <path d="${area}" fill="url(#${gid})"/>
-    <path d="${d}" fill="none" stroke="${color}" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-  </svg>`;
+function getDelta(td){
+  const gp=td.curGames.length;
+  if(!gp||!td.prevGames.length||td.prevGames.length<gp) return 0;
+  const prev=td.prevGames[gp-1];
+  const cur=td.curGames[gp-1];
+  return prev&&cur?cur.cumWins-prev.cumWins:0;
 }
 
-/* ── URL / share helpers ───────────────────────── */
+/* ── Tracker URL ───────────────────────────────── */
 function trackerUrl(teamId,gp){
   const rs=Math.max(1,gp-9);
   return `${TRACKER_PAGE}?team=${teamId}&season=${CURRENT_YEAR}&rs=${rs}&re=${gp}`;
 }
 
+/* ── Logo helper ────────────────────────────────── */
+function logoImg(teamId,size=28){
+  return `<img src="https://www.mlbstatic.com/team-logos/${teamId}.svg" width="${size}" height="${size}" style="object-fit:contain" onerror="this.style.display='none'"/>`;
+}
+
+/* ── Share helpers ─────────────────────────────── */
 async function copyToClipboard(text){
   try{await navigator.clipboard.writeText(text);return true;}
   catch{window.prompt('Copy this:',text);return false;}
 }
-
-/* ── Per-platform share text system ───────────────── */
-function momentumPhrase(w, l, delta){
-  const pct = w/(w+l||1);
-  if(pct >= .650) return 'on an absolute tear';
-  if(pct >= .600 && delta > 0) return 'heating up fast';
-  if(pct >= .580) return 'playing some of their best baseball';
-  if(pct <= .380) return 'in a serious funk';
-  if(pct <= .420 && delta < 0) return 'trending in the wrong direction';
-  if(delta >= 5) return 'way ahead of last year\'s pace';
-  if(delta <= -5) return 'well behind last year\'s pace';
-  return 'tracking close to last year';
-}
-function pacePhrase(proj){
-  if(!proj) return '';
-  if(proj >= 100) return `They're on pace for ${proj} wins.`;
-  if(proj >= 90)  return `Projecting to ${proj} wins.`;
-  if(proj >= 85)  return `Current pace: ${proj} wins.`;
-  return `Pace: ${proj} wins.`;
-}
-function deltaPhrase(delta, compareYear){
-  if(delta === 0) return `even with ${compareYear}`;
-  const abs = Math.abs(delta), wins=`win${abs!==1?'s':''}`;
-  return delta > 0 ? `${abs} ${wins} ahead of ${compareYear}` : `${abs} ${wins} behind ${compareYear}`;
-}
-function clubSlug(teamName){ return teamName.split(' ').pop(); }
-
-function buildShareTextForPlatform(platform, teamName, w, l, gp, delta, compareYear, proj, url){
-  const club   = clubSlug(teamName);
-  const hash   = `#TrackTheSeason #${club} #MLB`;
-  const record = `${w}–${l}`;
-  const dPhrase= deltaPhrase(delta, compareYear);
-  const mPhrase= momentumPhrase(w, l, delta);
-  const pPhrase= pacePhrase(proj);
-
+function clubSlug(name){return name.split(' ').pop();}
+function buildShareTextForPlatform(platform,teamName,w,l,gp,delta,compareYear,proj,url){
+  const club=clubSlug(teamName),hash=`#TrackTheSeason #${club} #MLB`;
+  const record=`${w}–${l}`;
+  const dPhrase=delta>0?`${delta} wins ahead of ${compareYear}`:delta<0?`${Math.abs(delta)} wins behind ${compareYear}`:`even with ${compareYear}`;
+  const pPhrase=proj>=100?`They're on pace for ${proj} wins.`:proj>=90?`Projecting to ${proj} wins.`:proj?`Current pace: ${proj} wins.`:'';
   switch(platform){
-    case 'x':
-    case 'threads':
-    case 'bluesky':{
+    case 'x':case 'threads':case 'bluesky':{
       const lines=[];
-      if(delta > 3)       lines.push(`The ${club} are ${mPhrase} — ${delta} wins ahead of last year's pace.`);
-      else if(delta < -3) lines.push(`The ${club} are ${mPhrase} — ${Math.abs(delta)} wins behind last year.`);
-      else if(proj >= 95) lines.push(`The ${club} are on pace for ${proj} wins. 🔥`);
-      else if(proj && proj <= 72) lines.push(`The ${club} are pacing for just ${proj} wins.`);
+      if(delta>3) lines.push(`The ${club} are heating up fast — ${delta} wins ahead of last year's pace.`);
+      else if(delta<-3) lines.push(`The ${club} are ${Math.abs(delta)} wins behind last year's pace.`);
+      else if(proj>=95) lines.push(`The ${club} are on pace for ${proj} wins. 🔥`);
       else lines.push(`The ${club} are ${record} through ${gp} games.`);
       lines.push(`${record} · ${gp} GP · ${dPhrase}`);
       if(pPhrase) lines.push(pPhrase);
-      lines.push(''); lines.push(url); lines.push(''); lines.push(hash);
+      lines.push('');lines.push(url);lines.push('');lines.push(hash);
       return lines.join('\n');
     }
     case 'facebook':
-      return [`${club} fans — here's where your team stands.`,``,
-        `The ${teamName} are ${record} through ${gp} games this season, ${dPhrase}.`,
-        pPhrase,``,
-        `Track The Season shows you every MLB team's pace vs prior seasons — updated after every game.`,``,url
+      return [`${club} fans — here's where your team stands.`,'',
+        `The ${teamName} are ${record} through ${gp} games, ${dPhrase}.`,pPhrase,'',
+        `Track The Season shows every MLB team's pace vs prior seasons.`,'',url
       ].filter(Boolean).join('\n');
     case 'reddit':
-      return [`${teamName} pace check (through ${gp} games):`,``,
-        `Record: ${record} (${(w/(w+l||1)).toFixed(3).replace(/^0/,'')})`,
-        delta !== 0 ? `vs ${compareYear}: ${dPhrase}` : null,
-        proj ? `162-game pace: ${proj} wins` : null,``,
-        `Full breakdown: ${url}`
+      return [`${teamName} pace check (through ${gp} games):`, '',
+        `Record: ${record}`,delta!==0?`vs ${compareYear}: ${dPhrase}`:null,
+        proj?`162-game pace: ${proj} wins`:null,'',`Full breakdown: ${url}`
       ].filter(Boolean).join('\n');
     default:
       return [`${teamName}: ${record} through ${gp} games.`,
         `${dPhrase.charAt(0).toUpperCase()+dPhrase.slice(1)}.`,
-        pPhrase||null,``,url,``,hash
+        pPhrase||null,'',url,'',hash
       ].filter(Boolean).join('\n');
   }
 }
-
-/* Backwards compat */
-function buildDynamicShareText(teamName, w, l, gp, delta, compareYear, proj){
-  const url = `https://tracktheseason.com/tracker.html?team=${CURRENT_YEAR}`;
-  return buildShareTextForPlatform('default', teamName, w, l, gp, delta, compareYear, proj, url);
-}
-
-/* Copy URL with 2s timed feedback */
-async function copyLinkWithFeedback(btn, url){
-  const original = btn.textContent;
-  const ok = await copyToClipboard(url);
-  btn.textContent = ok ? '✓ Copied!' : 'Copy failed';
-  setTimeout(()=>{ btn.textContent = original; }, 2000);
-}
-
-/* Platform share URLs */
-function platformShareUrl(platform, shareParams, shareUrl){
-  const isObj = typeof shareParams === 'object' && shareParams !== null;
-  const text = isObj
-    ? buildShareTextForPlatform(platform, shareParams.teamName, shareParams.w, shareParams.l, shareParams.gp, shareParams.delta, shareParams.compareYear, shareParams.proj, shareUrl)
-    : shareParams;
-  const t=encodeURIComponent(text), u=encodeURIComponent(shareUrl);
+function platformShareUrl(platform,shareParams,baseUrl){
+  const isObj=typeof shareParams==='object'&&shareParams!==null;
+  const text=isObj?buildShareTextForPlatform(platform,shareParams.teamName,shareParams.w,shareParams.l,shareParams.gp,shareParams.delta,shareParams.compareYear,shareParams.proj,baseUrl):shareParams;
+  const t=encodeURIComponent(text),u=encodeURIComponent(baseUrl);
   switch(platform){
     case 'x':        return `https://x.com/intent/tweet?text=${t}`;
     case 'facebook': return `https://www.facebook.com/sharer/sharer.php?u=${u}&quote=${t}`;
@@ -1171,86 +832,210 @@ function platformShareUrl(platform, shareParams, shareUrl){
     case 'bluesky':  return `https://bsky.app/intent/compose?text=${t}`;
   }
 }
-
 function hideShareMenu(){
   document.getElementById('shareMenuBackdrop')?.remove();
   document.getElementById('shareMenuPopup')?.remove();
 }
-
-function showShareMenu(triggerBtn, shareText, shareUrl){
+function showShareMenu(triggerBtn,shareParams,baseUrl){
   hideShareMenu();
-  const bd=document.createElement('div');
-  bd.id='shareMenuBackdrop'; bd.className='share-menu-backdrop';
-  bd.addEventListener('click',hideShareMenu);
-  document.body.appendChild(bd);
-
-  const menu=document.createElement('div');
-  menu.id='shareMenuPopup'; menu.className='share-menu';
-  menu.innerHTML=`
-    <div class="share-menu-title">Share via</div>
-    <button class="share-menu-item" id="smCopyLink">
-      <span class="share-menu-item-icon cp-icon">⧉</span>Copy link
-    </button>
+  const bd=document.createElement('div');bd.id='shareMenuBackdrop';bd.className='share-menu-backdrop';
+  bd.addEventListener('click',hideShareMenu);document.body.appendChild(bd);
+  const menu=document.createElement('div');menu.id='shareMenuPopup';menu.className='share-menu';
+  menu.innerHTML=`<div class="share-menu-title">Share via</div>
+    <button class="share-menu-item" id="smCopyLink"><span class="share-menu-item-icon cp-icon">⧉</span>Copy link</button>
     <div class="share-menu-divider"></div>
-    <a class="share-menu-item" href="${platformShareUrl('x',shareText,shareUrl)}" target="_blank" rel="noopener">
-      <span class="share-menu-item-icon x-icon">𝕏</span>X (Twitter)
-    </a>
-    <a class="share-menu-item" href="${platformShareUrl('threads',shareText,shareUrl)}" target="_blank" rel="noopener">
-      <span class="share-menu-item-icon th-icon">@</span>Threads
-    </a>
-    <a class="share-menu-item" href="${platformShareUrl('bluesky',shareText,shareUrl)}" target="_blank" rel="noopener">
-      <span class="share-menu-item-icon bs-icon">🦋</span>Bluesky
-    </a>
-    <a class="share-menu-item" href="${platformShareUrl('facebook',shareText,shareUrl)}" target="_blank" rel="noopener">
-      <span class="share-menu-item-icon fb-icon">f</span>Facebook
-    </a>
-    <a class="share-menu-item" href="${platformShareUrl('reddit',shareText,shareUrl)}" target="_blank" rel="noopener">
-      <span class="share-menu-item-icon rd-icon">↑</span>Reddit
-    </a>`;
+    <a class="share-menu-item" href="${platformShareUrl('x',shareParams,baseUrl)}" target="_blank" rel="noopener"><span class="share-menu-item-icon x-icon">𝕏</span>X (Twitter)</a>
+    <a class="share-menu-item" href="${platformShareUrl('threads',shareParams,baseUrl)}" target="_blank" rel="noopener"><span class="share-menu-item-icon th-icon">@</span>Threads</a>
+    <a class="share-menu-item" href="${platformShareUrl('bluesky',shareParams,baseUrl)}" target="_blank" rel="noopener"><span class="share-menu-item-icon bs-icon">🦋</span>Bluesky</a>
+    <a class="share-menu-item" href="${platformShareUrl('facebook',shareParams,baseUrl)}" target="_blank" rel="noopener"><span class="share-menu-item-icon fb-icon">f</span>Facebook</a>
+    <a class="share-menu-item" href="${platformShareUrl('reddit',shareParams,baseUrl)}" target="_blank" rel="noopener"><span class="share-menu-item-icon rd-icon">↑</span>Reddit</a>`;
   document.body.appendChild(menu);
-
   menu.querySelector('#smCopyLink').addEventListener('click',async()=>{
-    const ok=await copyToClipboard(shareUrl);
-    const btn=menu.querySelector('#smCopyLink');
-    btn.querySelector('.share-menu-item-icon').textContent=ok?'✓':'⧉';
-    btn.childNodes[1].textContent=ok?'Copied!':'Copy link';
+    const ok=await copyToClipboard(baseUrl);
+    menu.querySelector('#smCopyLink').querySelector('.share-menu-item-icon').textContent=ok?'✓':'⧉';
+    menu.querySelector('#smCopyLink').childNodes[1].textContent=ok?'Copied!':'Copy link';
     if(ok) setTimeout(hideShareMenu,800);
   });
-
-  /* Position near trigger */
   const rect=triggerBtn.getBoundingClientRect();
-  const menuH=280;
-  const top=(rect.top+window.scrollY-menuH-8>0)
-    ?rect.top+window.scrollY-menuH-8
-    :rect.bottom+window.scrollY+8;
+  const menuH=260,top=(rect.top+window.scrollY-menuH-8>0)?rect.top+window.scrollY-menuH-8:rect.bottom+window.scrollY+8;
   const left=Math.min(Math.max(8,rect.left+window.scrollX-8),window.innerWidth-216);
-  menu.style.top=`${top}px`; menu.style.left=`${left}px`;
+  menu.style.top=`${top}px`;menu.style.left=`${left}px`;
   menu.querySelectorAll('a').forEach(a=>a.addEventListener('click',()=>setTimeout(hideShareMenu,300)));
 }
-
-async function doShare(triggerBtn, shareText, shareUrl, shareTitle='Track The Season'){
+async function doShare(triggerBtn,shareParams,nativeText,shareUrl,shareTitle='Track The Season'){
   if(navigator.share){
-    try{ await navigator.share({title:shareTitle,text:shareText,url:shareUrl}); }
-    catch(e){ if(e.name!=='AbortError') console.warn('Share failed:',e.message); }
+    try{await navigator.share({title:shareTitle,text:nativeText,url:shareUrl});}
+    catch(e){if(e.name!=='AbortError')console.warn('Share failed:',e.message);}
   } else {
-    showShareMenu(triggerBtn,shareText,shareUrl);
+    showShareMenu(triggerBtn,shareParams,shareUrl);
   }
 }
 
-/* Legacy — kept for any remaining internal references */
-function xShareUrl(text){
-  return 'https://x.com/intent/tweet?text='+encodeURIComponent(text);
+/* ═══════════════════════════════════════════════════
+   LEAGUE SNAPSHOT
+═══════════════════════════════════════════════════ */
+function buildSnapshot(allData){
+  const valid=allData.filter(t=>t.curGames.length>=10);
+  if(!valid.length) return;
+
+  const byProj   =[...valid].sort((a,b)=>(projWins(b.curGames)||0)-(projWins(a.curGames)||0));
+  const byDelta  =[...valid].filter(t=>getDelta(t)!==null).sort((a,b)=>getDelta(b)-getDelta(a));
+  const byL10    =[...valid].sort((a,b)=>last10(b.curGames).w-last10(a.curGames).w);
+  const byMom    =[...valid].sort((a,b)=>(MOMENTUM_RANK[getMomentum(b.curGames).label]??2)-(MOMENTUM_RANK[getMomentum(a.curGames).label]??2));
+
+  const best      =byProj[0];
+  const surprise  =byDelta[0];
+  const disappoint=byDelta[byDelta.length-1];
+  const hottest   =byL10[0];
+  const coldest   =byL10[byL10.length-1];
+
+  const snaps=[
+    {label:'Best Pace',      team:best,       val:`${projWins(best.curGames)}W pace`,       cls:'green'},
+    {label:'Biggest Surprise',team:surprise,  val:`+${getDelta(surprise)}W vs ${COMPARE_YEAR}`,cls:'green'},
+    {label:'Biggest Drop',   team:disappoint, val:`${getDelta(disappoint)}W vs ${COMPARE_YEAR}`,cls:'red'},
+    {label:'Hottest Team',   team:hottest,    val:`${last10(hottest.curGames).w}–${last10(hottest.curGames).l} L10`, cls:'green'},
+    {label:'Coldest Team',   team:coldest,    val:`${last10(coldest.curGames).w}–${last10(coldest.curGames).l} L10`, cls:'red'},
+  ];
+
+  document.getElementById('snapshotGrid').innerHTML=snaps.map(s=>`
+    <a class="snap-card" href="${trackerUrl(s.team.team.id,s.team.curGames.length)}" style="text-decoration:none">
+      <div class="snap-label">${s.label}</div>
+      <div class="snap-team">
+        <div class="snap-logo">${logoImg(s.team.team.id,22)}</div>
+        <div class="snap-name">${s.team.team.clubName||s.team.team.name}</div>
+      </div>
+      <div class="snap-val ${s.cls}">${s.val}</div>
+    </a>`).join('');
+
+  document.getElementById('snapshotDate').textContent=
+    new Date().toLocaleDateString('en-US',{month:'short',day:'numeric'});
 }
 
-/* ══════════════════════════════════════════════════
-   TODAY'S STORY HERO + 4 supporting cards
-   Hero scored by interestingness:
-     1. Biggest gain vs prior year
-     2. Biggest decline vs prior year
-     3. Best pace
-     4. Best last-10
-══════════════════════════════════════════════════ */
-function buildStories(allData){
+/* ═══════════════════════════════════════════════════
+   BIGGEST MOVERS
+═══════════════════════════════════════════════════ */
+function buildMovers(allData){
+  const valid=allData.filter(t=>t.curGames.length>=15);
+  const withDelta=valid.map(t=>({...t,delta:getDelta(t)}));
+  const risers  =withDelta.filter(t=>t.delta>0).sort((a,b)=>b.delta-a.delta).slice(0,3);
+  const fallers =withDelta.filter(t=>t.delta<0).sort((a,b)=>a.delta-b.delta).slice(0,3);
+
+  function moverCard(td,dir){
+    const last=td.curGames[td.curGames.length-1];
+    const w=last.cumWins,l=last.cumLosses,gp=td.curGames.length;
+    const proj=projWins(td.curGames);
+    const l10=last10(td.curGames);
+    const url=trackerUrl(td.team.id,gp);
+    const isUp=dir==='up';
+    return `<a class="mover-card ${dir}" href="${url}" style="text-decoration:none">
+      <div class="mover-top">
+        <div class="mover-logo">${logoImg(td.team.id,28)}</div>
+        <div class="mover-name">${td.team.clubName||td.team.name}</div>
+        <div class="mover-arrow">${isUp?'↑':'↓'}</div>
+      </div>
+      <div class="mover-delta ${dir}">${isUp?'+':''}${td.delta}W vs ${COMPARE_YEAR}</div>
+      <div class="mover-stats">
+        <div class="mover-stat"><strong>${w}–${l}</strong> record</div>
+        <div class="mover-stat"><strong>${proj??'—'}W</strong> pace</div>
+        <div class="mover-stat">L10: <strong>${l10.w}–${l10.l}</strong></div>
+      </div>
+    </a>`;
+  }
+
+  document.getElementById('moversUpGrid').innerHTML=risers.map(t=>moverCard(t,'up')).join('');
+  document.getElementById('moversDownGrid').innerHTML=fallers.map(t=>moverCard(t,'down')).join('');
+}
+
+/* ═══════════════════════════════════════════════════
+   HOT / COLD TEAMS
+═══════════════════════════════════════════════════ */
+function buildHotCold(allData){
+  const valid=allData.filter(t=>t.curGames.length>=10);
+  const byL10=[...valid].sort((a,b)=>last10(b.curGames).w-last10(a.curGames).w);
+  const hot=byL10.slice(0,5), cold=byL10.slice(-5).reverse();
+
+  function hcCard(td,type){
+    const l10=last10(td.curGames);
+    const proj=projWins(td.curGames);
+    const delta=getDelta(td);
+    const url=trackerUrl(td.team.id,td.curGames.length);
+    const isHot=type==='hot';
+    return `<a class="hc-card ${type}" href="${url}" style="text-decoration:none">
+      <div class="hc-top">
+        <div class="hc-logo">${logoImg(td.team.id,26)}</div>
+        <div class="hc-name">${td.team.clubName||td.team.name}</div>
+      </div>
+      <div class="hc-record ${type}">${l10.w}–${l10.l}</div>
+      <div class="hc-detail">
+        ${proj?proj+'W pace · ':''}${delta!==0?(delta>0?'+':'')+delta+'W vs '+COMPARE_YEAR:''}
+      </div>
+    </a>`;
+  }
+
+  document.getElementById('hotTeams').innerHTML=hot.map(t=>hcCard(t,'hot')).join('');
+  document.getElementById('coldTeams').innerHTML=cold.map(t=>hcCard(t,'cold')).join('');
+}
+
+/* ═══════════════════════════════════════════════════
+   TRENDING UP / DOWN
+═══════════════════════════════════════════════════ */
+function buildTrending(allData){
+  const valid=allData.filter(t=>t.curGames.length>=20);
+
+  function trendingInsight(td,dir){
+    const l10=last10(td.curGames);
+    const delta=getDelta(td);
+    const proj=projWins(td.curGames);
+    if(dir==='up'){
+      if(l10.w>=8) return `Winning ${l10.w} of their last 10.`;
+      if(delta>=5) return `Playing ${delta} wins ahead of last season's pace.`;
+      if(proj>=100) return `On pace for ${proj} wins — a historic season.`;
+      return `One of the hottest teams in baseball right now.`;
+    } else {
+      if(l10.l>=8) return `Lost ${l10.l} of their last 10.`;
+      if(delta<=-5) return `Falling ${Math.abs(delta)} wins behind last year's pace.`;
+      if(proj&&proj<=72) return `Pacing for just ${proj} wins — among MLB's worst.`;
+      return `Trending in the wrong direction.`;
+    }
+  }
+
+  function trendCard(td,dir){
+    const last=td.curGames[td.curGames.length-1];
+    const w=last.cumWins,l=last.cumLosses,gp=td.curGames.length;
+    const proj=projWins(td.curGames);
+    const delta=getDelta(td);
+    const l10=last10(td.curGames);
+    const url=trackerUrl(td.team.id,gp);
+    const isUp=dir==='up';
+    return `<a class="trend-card ${dir}" href="${url}" style="text-decoration:none">
+      <div class="trend-logo">${logoImg(td.team.id,30)}</div>
+      <div class="trend-body">
+        <div class="trend-name">${td.team.clubName||td.team.name}</div>
+        <div class="trend-pace ${dir}">${proj??'—'}W pace</div>
+        <div class="trend-insight">${trendingInsight(td,dir)}</div>
+        <div class="trend-chips">
+          <span class="trend-chip ${isUp?'g':'r'}">${w}–${l}</span>
+          <span class="trend-chip ${delta>0?'g':delta<0?'r':'n'}">${delta>0?'+':''}${delta}W vs ${COMPARE_YEAR}</span>
+          <span class="trend-chip n">L10: ${l10.w}–${l10.l}</span>
+        </div>
+      </div>
+    </a>`;
+  }
+
+  /* Trending up: biggest positive delta, good recent form */
+  const up=[...valid].filter(t=>getDelta(t)>0)
+    .sort((a,b)=>getDelta(b)-getDelta(a)).slice(0,3);
+  const down=[...valid].filter(t=>getDelta(t)<0)
+    .sort((a,b)=>getDelta(a)-getDelta(b)).slice(0,3);
+
+  document.getElementById('trendingUp').innerHTML   = up.map(t=>trendCard(t,'up')).join('')   || '<div style="color:var(--chalk);font-size:13px;padding:8px">Loading…</div>';
+  document.getElementById('trendingDown').innerHTML = down.map(t=>trendCard(t,'down')).join('')|| '<div style="color:var(--chalk);font-size:13px;padding:8px">Loading…</div>';
+}
+
+/* ═══════════════════════════════════════════════════
+   TODAY'S STORY HERO
+═══════════════════════════════════════════════════ */
+function buildTodaysStory(allData){
   const valid=allData.filter(t=>t.curGames.length>=10);
   if(!valid.length) return;
 
@@ -1259,33 +1044,22 @@ function buildStories(allData){
   const byFade  =[...valid].filter(t=>getDelta(t)<0).sort((a,b)=>getDelta(a)-getDelta(b));
   const byL10   =[...valid].sort((a,b)=>last10(b.curGames).w-last10(a.curGames).w);
 
-  const top        =byProj[0];
-  const topProj    =projWins(top.curGames);
-  const topLast    =top.curGames[top.curGames.length-1];
-  const gainer     =byGain[0]||byProj[0];
-  const gainerDelta=getDelta(gainer);
-  const fader      =byFade[0]||byProj[byProj.length-1];
-  const faderDelta =getDelta(fader);
-  const bestL10    =byL10[0];
-  const bestL10rec =last10(bestL10.curGames);
+  const top=byProj[0], gainer=byGain[0]||byProj[0], fader=byFade[0]||byProj[byProj.length-1], bestL10=byL10[0];
+  const gainerDelta=getDelta(gainer), faderDelta=getDelta(fader), bestL10rec=last10(bestL10.curGames);
 
-  /* Score hero candidates */
   const candidates=[
-    {score:Math.abs(gainerDelta)*2+(projWins(gainer.curGames)||80)/100, type:'gain', team:gainer, delta:gainerDelta},
-    {score:Math.abs(faderDelta)*1.8,                                    type:'fade', team:fader,  delta:faderDelta},
-    {score:(topProj||80)/10,                                            type:'pace', team:top},
-    {score:bestL10rec.w*1.2,                                            type:'l10',  team:bestL10, l10:bestL10rec},
+    {score:Math.abs(gainerDelta)*2+(projWins(gainer.curGames)||80)/100,type:'gain',team:gainer,delta:gainerDelta},
+    {score:Math.abs(faderDelta)*1.8,type:'fade',team:fader,delta:faderDelta},
+    {score:(projWins(top.curGames)||80)/10,type:'pace',team:top},
+    {score:bestL10rec.w*1.2,type:'l10',team:bestL10,l10:bestL10rec},
   ];
   candidates.sort((a,b)=>b.score-a.score);
   const hero=candidates[0];
 
-  /* Build hero narrative */
-  const hcg  =hero.team.curGames;
-  const hlast=hcg[hcg.length-1];
-  const hproj=projWins(hcg);
-  const hname=hero.team.team.clubName||hero.team.team.name;
-  const hgp  =hcg.length;
-  const hurl =trackerUrl(hero.team.team.id,hgp);
+  const hcg=hero.team.curGames,hlast=hcg[hcg.length-1],hproj=projWins(hcg);
+  const hname=hero.team.team.clubName||hero.team.team.name,hgp=hcg.length;
+  const hurl=trackerUrl(hero.team.team.id,hgp);
+  const logoUrl=`https://www.mlbstatic.com/team-logos/${hero.team.team.id}.svg`;
   let heroNarrative='',heroStat='',heroEyebrow='';
 
   if(hero.type==='gain'){
@@ -1306,21 +1080,15 @@ function buildStories(allData){
     heroStat=`${hlast.cumWins}–${hlast.cumLosses} · ${hproj?hproj+'W pace':''}`;
   }
 
-  /* Share for hero — computed from hero data */
-  const logoUrl    = `https://www.mlbstatic.com/team-logos/${hero.team.team.id}.svg`;
-  const heroShareText = buildDynamicShareText(
-    hname, hlast.cumWins, hlast.cumLosses, hgp,
-    hero.delta ?? 0, COMPARE_YEAR
-  );
-  const heroPageUrl = `https://tracktheseason.com/${hurl}`;
+  const shareParams={teamName:hero.team.team.name,w:hlast.cumWins,l:hlast.cumLosses,gp:hgp,delta:hero.delta??0,compareYear:COMPARE_YEAR,proj:hproj};
+  const heroPageUrl=`https://tracktheseason.com/${hurl}`;
+  const nativeText=buildShareTextForPlatform('default',shareParams.teamName,shareParams.w,shareParams.l,shareParams.gp,shareParams.delta,shareParams.compareYear,shareParams.proj,heroPageUrl);
 
   document.getElementById('todaysStoryHero').innerHTML=`
     <div class="tsh-inner">
       <div class="tsh-eyebrow">${heroEyebrow}</div>
       <div class="tsh-top">
-        <div class="tsh-logo">
-          <img src="${logoUrl}" alt="${hname}" onerror="this.style.display='none'"/>
-        </div>
+        <div class="tsh-logo"><img src="${logoUrl}" alt="${hname}" onerror="this.style.display='none'"/></div>
         <div class="tsh-text">
           <div class="tsh-team">${hname}</div>
           <div class="tsh-narrative">${heroNarrative}</div>
@@ -1332,22 +1100,38 @@ function buildStories(allData){
         <button class="tsh-share" id="heroShareBtn">⬆ Share</button>
       </div>
     </div>`;
-
-  document.getElementById('heroShareBtn').addEventListener('click', function(){
-    doShare(this, heroShareText, heroPageUrl, `${hname} — Track The Season`);
+  document.getElementById('heroShareBtn').addEventListener('click',function(){
+    doShare(this,shareParams,nativeText,heroPageUrl,`${hname} — Track The Season`);
   });
   document.getElementById('todaysStorySection').style.display='block';
+}
 
-  /* 4 supporting story cards */
-  const allFour=[
-    {eyebrow:'Pace leader',    icon:'🔥',team:top.team.clubName||top.team.name,      teamId:top.team.id,    gp:top.curGames.length,    stat:`${topProj}W pace`,             statClass:'green',detail:`${topLast.cumWins}–${topLast.cumLosses} · ${fmtPct(winPct(topLast.cumWins,topLast.cumLosses))}`},
-    {eyebrow:`vs ${COMPARE_YEAR}`,icon:'📈',team:gainer.team.clubName||gainer.team.name,teamId:gainer.team.id,gp:gainer.curGames.length,stat:`+${gainerDelta}W`,statClass:'green',detail:"ahead of last year's pace"},
-    {eyebrow:'Last 10 games',  icon:'⚡',        team:bestL10.team.clubName||bestL10.team.name,teamId:bestL10.team.id,gp:bestL10.curGames.length,stat:`${bestL10rec.w}–${bestL10rec.l}`,statClass:'green',detail:'best last-10 record in MLB'},
-    {eyebrow:'Fading',         icon:'📉', team:fader.team.clubName||fader.team.name,  teamId:fader.team.id,  gp:fader.curGames.length,  stat:`${faderDelta}W`,              statClass:'red',  detail:"behind last year's pace"},
+/* ═══════════════════════════════════════════════════
+   4 SUPPORTING STORY CARDS
+═══════════════════════════════════════════════════ */
+function buildStoriesGrid(allData){
+  const valid=allData.filter(t=>t.curGames.length>=10);
+  if(!valid.length) return;
+
+  const byProj=[...valid].sort((a,b)=>(projWins(b.curGames)||0)-(projWins(a.curGames)||0));
+  const byGain=[...valid].sort((a,b)=>getDelta(b)-getDelta(a));
+  const byL10=[...valid].sort((a,b)=>last10(b.curGames).w-last10(a.curGames).w);
+  const byFade=[...valid].sort((a,b)=>getDelta(a)-getDelta(b));
+
+  const top=byProj[0],topProj=projWins(top.curGames),topLast=top.curGames[top.curGames.length-1];
+  const gainer=byGain[0],gainerDelta=getDelta(gainer);
+  const bestL10=byL10[0],bestL10rec=last10(bestL10.curGames);
+  const fader=byFade[0],faderDelta=getDelta(fader);
+
+  const cards=[
+    {eyebrow:'Pace leader',    icon:'🔥',team:top.team.clubName||top.team.name,   teamId:top.team.id,   gp:top.curGames.length,    stat:`${topProj}W pace`,              statClass:'green',detail:`${topLast.cumWins}–${topLast.cumLosses} · ${fmtPct(winPct(topLast.cumWins,topLast.cumLosses))}`},
+    {eyebrow:`vs ${COMPARE_YEAR}`,icon:'📈',team:gainer.team.clubName||gainer.team.name,teamId:gainer.team.id,gp:gainer.curGames.length,stat:`+${gainerDelta}W`,         statClass:'green',detail:"ahead of last year's pace"},
+    {eyebrow:'Last 10 games',  icon:'⚡',team:bestL10.team.clubName||bestL10.team.name,teamId:bestL10.team.id,gp:bestL10.curGames.length,stat:`${bestL10rec.w}–${bestL10rec.l}`,statClass:'green',detail:'best last-10 in MLB'},
+    {eyebrow:'Fading',         icon:'📉',team:fader.team.clubName||fader.team.name, teamId:fader.team.id,  gp:fader.curGames.length,  stat:`${faderDelta}W`,               statClass:'red',  detail:"behind last year's pace"},
   ];
 
-  document.getElementById('storiesGrid').innerHTML=allFour.map(s=>`
-    <a class="story-card" href="${trackerUrl(s.teamId,s.gp)}" aria-label="${s.team} story">
+  document.getElementById('storiesGrid').innerHTML=cards.map(s=>`
+    <a class="story-card" href="${trackerUrl(s.teamId,s.gp)}">
       <div class="story-card-eyebrow"><span class="story-card-icon">${s.icon}</span>${s.eyebrow}</div>
       <div class="story-team">${s.team}</div>
       <div class="story-stat ${s.statClass}">${s.stat}</div>
@@ -1358,165 +1142,86 @@ function buildStories(allData){
     new Date().toLocaleDateString('en-US',{month:'short',day:'numeric'});
 }
 
-function getDelta(td){
-  const gp=td.curGames.length;
-  if(!gp||!td.prevGames.length||td.prevGames.length<gp) return 0;
-  const prev=td.prevGames[gp-1];
-  const cur=td.curGames[gp-1];
-  return prev&&cur ? cur.cumWins-prev.cumWins : 0;
-}
-
-/* ══════════════════════════════════════════════════
-   FEATURED TEAM — hottest team (highest momentum rank
-   then win%, then projected wins)
-══════════════════════════════════════════════════ */
-function buildFeatured(allData){
-  const valid=allData.filter(t=>t.curGames.length>=10);
-  if(!valid.length) return;
-
-  const ranked=[...valid].sort((a,b)=>{
-    const ma=getMomentum(a.curGames),mb=getMomentum(b.curGames);
-    const ra=MOMENTUM_RANK[ma.label]??2, rb=MOMENTUM_RANK[mb.label]??2;
-    if(rb!==ra) return rb-ra;
-    const pa=winPct(a.curGames.slice(-1)[0]?.cumWins||0,a.curGames.slice(-1)[0]?.cumLosses||0);
-    const pb=winPct(b.curGames.slice(-1)[0]?.cumWins||0,b.curGames.slice(-1)[0]?.cumLosses||0);
-    return pb-pa;
-  });
-
-  const td=ranked[0];
-  const cg=td.curGames;
-  const last=cg[cg.length-1];
-  const w=last.cumWins,l=last.cumLosses,gp=cg.length;
-  const proj=projWins(cg);
-  const l10=last10(cg);
-  const momentum=getMomentum(cg);
-  const delta=getDelta(td);
-  const logoUrl=`https://www.mlbstatic.com/team-logos/${td.team.id}.svg`;
-  const url=trackerUrl(td.team.id,gp);
-
-  /* Build chips */
-  const chips=[];
-  if(proj) chips.push({text:`${proj}W pace`,cls:'fchip-green'});
-  if(Math.abs(delta)>0) chips.push({text:delta>0?`+${delta}W vs ${COMPARE_YEAR}`:`${delta}W vs ${COMPARE_YEAR}`,cls:delta>0?'fchip-green':'fchip-red'});
-  chips.push({text:`Last 10: ${l10.w}–${l10.l}`,cls:l10.w>=7?'fchip-green':l10.w<=3?'fchip-red':'fchip-amber'});
-  chips.push({text:`${momentum.emoji} ${momentum.label}`,cls:'fchip-neu'});
-
-  document.getElementById('featuredCard').innerHTML=`
-    <div class="featured-inner">
-      <div class="featured-label">⚡ Today's hottest team</div>
-      <div class="featured-top">
-        <div class="featured-logo">
-          <img src="${logoUrl}" alt="${td.team.name}"
-            onerror="this.style.display='none';this.parentElement.innerHTML='<span style=font-size:24px>${TEAM_EMOJI[td.team.id]||'⚾'}</span>'"/>
-        </div>
-        <div class="featured-info">
-          <div class="featured-team-name">${td.team.clubName||td.team.name}</div>
-          <div class="featured-record">${w}–${l}</div>
-        </div>
-      </div>
-      <div class="featured-chips">
-        ${chips.map(c=>`<span class="featured-chip ${c.cls}">${c.text}</span>`).join('')}
-      </div>
-      <a class="featured-cta" href="${url}">Track the ${td.team.clubName||td.team.name} →</a>
-    </div>`;
-
-  document.getElementById('featuredSection').style.display='block';
-}
-
-/* ══════════════════════════════════════════════════
-   LEAGUE PILLS — interactive filter chips
-   Heating Up → filters to hot teams
-   Struggling  → filters to cold teams
-   GP range    → shows tooltip explaining variance
-══════════════════════════════════════════════════ */
+/* ═══════════════════════════════════════════════════
+   LEAGUE PILLS (interactive filter chips)
+═══════════════════════════════════════════════════ */
 function renderPills(allData){
   const valid=allData.filter(t=>t.curGames.length>0);
-  const hot  =valid.filter(t=>MOMENTUM_HOT_LABELS.has(getMomentum(t.curGames).label)).length;
-  const cold =valid.filter(t=>['Struggling','Cooling off'].includes(getMomentum(t.curGames).label)).length;
-  const gps  =valid.map(t=>t.curGames.length);
-  const minGp=Math.min(...gps), maxGp=Math.max(...gps);
-  const gpLabel=minGp===maxGp?`${minGp} GP`:` ${minGp}–${maxGp} GP`;
+  const hot =valid.filter(t=>MOMENTUM_HOT_LABELS.has(getMomentum(t.curGames).label)).length;
+  const cold=valid.filter(t=>['Struggling','Cooling off'].includes(getMomentum(t.curGames).label)).length;
+  const gps =valid.map(t=>t.curGames.length);
+  const minGp=Math.min(...gps),maxGp=Math.max(...gps);
+  const gpLabel=minGp===maxGp?`${minGp} GP`:`${minGp}–${maxGp} GP`;
 
   document.getElementById('leaguePills').innerHTML=`
-    <button class="league-pill lp-interactive" id="pillHot" data-action="filter-hot" aria-label="Show heating up teams">
+    <button class="league-pill lp-interactive" id="pillHot">
       <div class="lp-dot" style="background:#1aff6b"></div>${hot} heating up
     </button>
-    <button class="league-pill lp-interactive" id="pillCold" data-action="filter-cold" aria-label="Show struggling teams">
+    <button class="league-pill lp-interactive" id="pillCold">
       <div class="lp-dot" style="background:#f47570"></div>${cold} struggling
     </button>
     <div class="league-pill gp-tooltip-wrap" id="gpPillWrap">
       <div class="lp-dot" style="background:#8a8a82"></div>${gpLabel} completed
       <div class="gp-tooltip" id="gpTooltip">
         Teams have played ${minGp===maxGp?minGp:`${minGp}–${maxGp}`} games<br>
-        due to scheduling differences.<br>
-        All pace comparisons use each<br>
-        team's actual game count.
+        due to scheduling differences.
       </div>
     </div>`;
 
-  /* Hot pill → filter to heating up */
   document.getElementById('pillHot').addEventListener('click',()=>{
     const pill=document.getElementById('pillHot');
     const isActive=pill.classList.contains('active-hot');
-    /* Reset both pills */
     document.getElementById('pillHot').classList.remove('active-hot');
     document.getElementById('pillCold').classList.remove('active-cold');
-    if(!isActive){
-      activeMomentum='__hot';
-      pill.classList.add('active-hot');
-      /* Also activate the matching mom-btn */
-      document.querySelectorAll('.mom-btn').forEach(b=>b.classList.remove('active-all','active'));
-      document.querySelector('.mom-btn[data-mom="__hot"]')?.classList.add('active');
-    } else {
-      activeMomentum='all';
-      document.querySelectorAll('.mom-btn').forEach(b=>b.classList.remove('active-all','active'));
-      document.querySelector('.mom-btn[data-mom="all"]')?.classList.add('active-all');
-    }
-    applyFiltersAndSort();
+    activeMomentum=isActive?'all':'__hot';
+    if(!isActive) pill.classList.add('active-hot');
+    syncMomBtns();applyFiltersAndSort();scrollToTeams();
   });
-
-  /* Cold pill → filter to struggling */
   document.getElementById('pillCold').addEventListener('click',()=>{
     const pill=document.getElementById('pillCold');
     const isActive=pill.classList.contains('active-cold');
     document.getElementById('pillHot').classList.remove('active-hot');
     document.getElementById('pillCold').classList.remove('active-cold');
-    if(!isActive){
-      activeMomentum='__cold';
-      pill.classList.add('active-cold');
-      document.querySelectorAll('.mom-btn').forEach(b=>b.classList.remove('active-all','active'));
-      document.querySelector('.mom-btn[data-mom="__cold"]')?.classList.add('active');
-    } else {
-      activeMomentum='all';
-      document.querySelectorAll('.mom-btn').forEach(b=>b.classList.remove('active-all','active'));
-      document.querySelector('.mom-btn[data-mom="all"]')?.classList.add('active-all');
-    }
-    applyFiltersAndSort();
+    activeMomentum=isActive?'all':'__cold';
+    if(!isActive) pill.classList.add('active-cold');
+    syncMomBtns();applyFiltersAndSort();scrollToTeams();
   });
-
-  /* GP pill → toggle tooltip */
   document.getElementById('gpPillWrap').addEventListener('click',e=>{
     e.stopPropagation();
     document.getElementById('gpPillWrap').classList.toggle('open');
   });
-  /* Close tooltip on outside click */
-  document.addEventListener('click',()=>{
-    document.getElementById('gpPillWrap')?.classList.remove('open');
-  },{once:false,capture:false});
+  document.addEventListener('click',()=>document.getElementById('gpPillWrap')?.classList.remove('open'));
 }
 
-/* ══════════════════════════════════════════════════
-   TEAM CARD
-══════════════════════════════════════════════════ */
+function scrollToTeams(){
+  document.getElementById('all-teams').scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+/* ═══════════════════════════════════════════════════
+   TEAM CARD + SPARKLINE
+═══════════════════════════════════════════════════ */
+function buildSparkline(games,color){
+  if(!games.length) return '';
+  const W=300,H=34,p=2,maxG=games.length,maxW=games[games.length-1].cumWins||1;
+  const sx=x=>p+(x/maxG)*(W-p*2),sy=y=>H-p-(y/maxW)*(H-p*2);
+  const d=games.map((g,i)=>`${i?'L':'M'}${sx(g.gameNo).toFixed(1)},${sy(g.cumWins).toFixed(1)}`).join(' ');
+  const area=d+` L${sx(maxG).toFixed(1)},${H} L${sx(games[0].gameNo).toFixed(1)},${H} Z`;
+  const gid='sg'+Math.random().toString(36).slice(2,6);
+  return `<svg class="spark-svg" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none">
+    <defs><linearGradient id="${gid}" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="${color}" stop-opacity=".25"/>
+      <stop offset="100%" stop-color="${color}" stop-opacity="0"/>
+    </linearGradient></defs>
+    <path d="${area}" fill="url(#${gid})"/>
+    <path d="${d}" fill="none" stroke="${color}" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+  </svg>`;
+}
+
 function buildCard(team,curGames,prevGames){
   const last=curGames[curGames.length-1]||{cumWins:0,cumLosses:0};
-  const gp=curGames.length;
-  const w=last.cumWins,l=last.cumLosses;
-  const pct=winPct(w,l);
-  const proj=projWins(curGames);
-  const l10=last10(curGames);
-  const momentum=getMomentum(curGames);
-  const sColor=momentumColor(momentum.label);
+  const gp=curGames.length,w=last.cumWins,l=last.cumLosses;
+  const pct=winPct(w,l),proj=projWins(curGames),l10=last10(curGames);
+  const momentum=getMomentum(curGames),sColor=momentumColor(momentum.label);
   const div=TEAM_DIV[team.id]||{divName:'—',league:'—',divKey:''};
   const logoUrl=`https://www.mlbstatic.com/team-logos/${team.id}.svg`;
   const emoji=TEAM_EMOJI[team.id]||'⚾';
@@ -1525,13 +1230,8 @@ function buildCard(team,curGames,prevGames){
   let deltaNum=null,deltaCls='delta-neu',deltaStr='—';
   if(gp>0&&prevGames.length>=gp){
     const prev=prevGames[gp-1];
-    if(prev){
-      deltaNum=w-prev.cumWins;
-      deltaStr=deltaNum>0?`+${deltaNum}W`:deltaNum<0?`${deltaNum}W`:`Even`;
-      deltaCls=deltaNum>0?'delta-pos':deltaNum<0?'delta-neg':'delta-neu';
-    }
+    if(prev){deltaNum=w-prev.cumWins;deltaStr=deltaNum>0?`+${deltaNum}W`:deltaNum<0?`${deltaNum}W`:'Even';deltaCls=deltaNum>0?'delta-pos':deltaNum<0?'delta-neg':'delta-neu';}
   }
-
   const recordDisplay=gp>0?`${w}–${l}`:'—';
   const recordColor=gp>0?'':'color:var(--chalk)';
 
@@ -1550,8 +1250,7 @@ function buildCard(team,curGames,prevGames){
     aria-label="View ${team.name}">
     <div class="card-top">
       <div class="team-logo-wrap">
-        <img src="${logoUrl}" alt="${team.name}"
-          onerror="this.style.display='none';this.nextElementSibling.style.display='block'"/>
+        <img src="${logoUrl}" alt="${team.name}" onerror="this.style.display='none';this.nextElementSibling.style.display='block'"/>
         <span class="emoji-fb">${emoji}</span>
       </div>
       <div class="team-name-block">
@@ -1578,43 +1277,27 @@ function buildCard(team,curGames,prevGames){
   </div>`;
 }
 
-/* ══════════════════════════════════════════════════
+/* ═══════════════════════════════════════════════════
    MODAL
-══════════════════════════════════════════════════ */
+═══════════════════════════════════════════════════ */
 function openModal(team,curGames,prevGames){
-  const gp=curGames.length;
-  const last=curGames[gp-1]||{cumWins:0,cumLosses:0};
-  const w=last.cumWins,l=last.cumLosses;
-  const pct=winPct(w,l);
-  const proj=projWins(curGames);
-  const l10=last10(curGames);
-  const momentum=getMomentum(curGames);
-  const logoUrl=`https://www.mlbstatic.com/team-logos/${team.id}.svg`;
-  const div=TEAM_DIV[team.id]||{divName:'—'};
-  const url=trackerUrl(team.id,gp);
+  const gp=curGames.length,last=curGames[gp-1]||{cumWins:0,cumLosses:0};
+  const w=last.cumWins,l=last.cumLosses,pct=winPct(w,l),proj=projWins(curGames),l10=last10(curGames);
+  const momentum=getMomentum(curGames),logoUrl=`https://www.mlbstatic.com/team-logos/${team.id}.svg`;
+  const div=TEAM_DIV[team.id]||{divName:'—'},url=trackerUrl(team.id,gp);
 
   document.getElementById('modalTeamName').textContent=team.name;
   document.getElementById('modalSubtitle').textContent=`${CURRENT_YEAR} · ${div.divName} · ${gp} GP`;
-  const li=document.getElementById('modalLogoImg');
-  const le=document.getElementById('modalLogoEmoji');
+  const li=document.getElementById('modalLogoImg'),le=document.getElementById('modalLogoEmoji');
   li.src=logoUrl;li.style.display='block';le.style.display='none';
 
   let dStr='—',dCls='pill-n';
-  if(gp>0&&prevGames.length>=gp){
-    const prev=prevGames[gp-1];
-    if(prev){const d=w-prev.cumWins;dStr=d>0?`+${d}W`:d<0?`${d}W`:'Even';dCls=d>0?'pill-g':d<0?'pill-r':'pill-n';}
-  }
+  if(gp>0&&prevGames.length>=gp){const prev=prevGames[gp-1];if(prev){const d=w-prev.cumWins;dStr=d>0?`+${d}W`:d<0?`${d}W`:'Even';dCls=d>0?'pill-g':d<0?'pill-r':'pill-n';}}
 
-  /* Mini chart */
   const W=600,H=175,p={l:32,r:16,t:10,b:26};
-  const series=[
-    {games:curGames, color:'#1aff6b',label:String(CURRENT_YEAR),bold:true},
-    {games:prevGames,color:'#8a8a82',label:String(COMPARE_YEAR),bold:false},
-  ].filter(s=>s.games.length>0);
-  const maxG=Math.max(...series.map(s=>s.games.length),1);
-  const maxW=Math.max(...series.map(s=>s.games[s.games.length-1]?.cumWins||0),1);
-  const sx=x=>p.l+(x/maxG)*(W-p.l-p.r);
-  const sy=y=>H-p.b-(y/(maxW*1.1||1))*(H-p.t-p.b);
+  const series=[{games:curGames,color:'#1aff6b',label:String(CURRENT_YEAR),bold:true},{games:prevGames,color:'#8a8a82',label:String(COMPARE_YEAR),bold:false}].filter(s=>s.games.length>0);
+  const maxG=Math.max(...series.map(s=>s.games.length),1),maxW=Math.max(...series.map(s=>s.games[s.games.length-1]?.cumWins||0),1);
+  const sx=x=>p.l+(x/maxG)*(W-p.l-p.r),sy=y=>H-p.b-(y/(maxW*1.1||1))*(H-p.t-p.b);
   let paths='',grid='';
   for(let y=0;y<=maxW;y+=20){
     grid+=`<line x1="${p.l}" x2="${W-p.r}" y1="${sy(y)}" y2="${sy(y)}" stroke="rgba(255,255,255,.05)"/>`;
@@ -1622,49 +1305,33 @@ function openModal(team,curGames,prevGames){
   }
   for(const s of series){
     const d=s.games.map((g,i)=>`${i?'L':'M'}${sx(g.gameNo).toFixed(1)},${sy(g.cumWins).toFixed(1)}`).join(' ');
-    paths+=`<path d="${d}" fill="none" stroke="${s.color}" stroke-width="${s.bold?2.5:1.5}" stroke-linecap="round" stroke-linejoin="round"/>`;
+    paths+=`<path d="${d}" fill="none" stroke="${s.color}" stroke-width="${s.bold?2.5:1.5}" stroke-linecap="round"/>`;
     const lg=s.games[s.games.length-1];
     paths+=`<text x="${sx(lg.gameNo)+4}" y="${sy(lg.cumWins)+4}" fill="${s.color}" font-size="11" font-weight="700" font-family="IBM Plex Mono,monospace">${s.label}</text>`;
   }
 
-  const cRows=[
-    {year:CURRENT_YEAR,games:curGames,isCur:true},
-    {year:COMPARE_YEAR,games:prevGames,isCur:false},
-  ].filter(r=>r.games.length>0).map(r=>{
-    const rg=r.games[Math.min(gp,r.games.length)-1]||r.games[r.games.length-1];
-    const rw=rg?.cumWins||0,rl=rg?.cumLosses||0;
-    const rproj=projWins(r.games);
-    return `<tr class="${r.isCur?'cur-row':''}">
-      <td><strong style="color:${r.isCur?'#1aff6b':'inherit'}">${r.year}${r.isCur?' ★':''}</strong></td>
-      <td>${rw}–${rl}</td><td>${fmtPct(winPct(rw,rl))}</td>
-      <td>${rproj!=null?rproj+(r.isCur&&r.games.length<162?'*':''):'—'}</td>
-    </tr>`;
-  }).join('');
+  const prevAtGP=prevGames.slice(0,gp),prevWinsAtGP=prevAtGP.filter(g=>g.win).length;
+  const delta=gp>0&&prevGames.length>=gp?w-prevWinsAtGP:0;
+  const dynShareTxt=buildShareTextForPlatform('default',team.name,w,l,gp,delta,COMPARE_YEAR,proj,`https://tracktheseason.com/${url}`);
+  const shareParams={teamName:team.name,w,l,gp,delta,compareYear:COMPARE_YEAR,proj};
+  const fullUrl=`https://tracktheseason.com/${url}`;
 
-  /* Build delta for dynamic share text */
-  const prevAtGP   = prevGames.slice(0, gp);
-  const prevWinsAtGP = prevAtGP.filter(g=>g.win).length;
-  const delta      = gp > 0 && prevGames.length >= gp ? w - prevWinsAtGP : 0;
-  const dynShareTxt= buildDynamicShareText(team.name, w, l, gp, delta, COMPARE_YEAR);
-  const fullUrl    = 'https://tracktheseason.com/'+url;
+  const cRows=[{year:CURRENT_YEAR,games:curGames,isCur:true},{year:COMPARE_YEAR,games:prevGames,isCur:false}]
+    .filter(r=>r.games.length>0).map(r=>{
+      const rg=r.games[Math.min(gp,r.games.length)-1]||r.games[r.games.length-1];
+      const rw=rg?.cumWins||0,rl=rg?.cumLosses||0,rproj=projWins(r.games);
+      return `<tr class="${r.isCur?'cur-row':''}">
+        <td><strong style="color:${r.isCur?'#1aff6b':'inherit'}">${r.year}${r.isCur?' ★':''}</strong></td>
+        <td>${rw}–${rl}</td><td>${fmtPct(winPct(rw,rl))}</td>
+        <td>${rproj!=null?rproj+(r.isCur&&r.games.length<162?'*':''):'—'}</td>
+      </tr>`;
+    }).join('');
 
   document.getElementById('modalBody').innerHTML=`
     <div class="modal-stats">
-      <div class="mstat">
-        <div class="mstat-label">Record</div>
-        <div class="mstat-val" style="color:#1aff6b">${gp>0?w+'–'+l:'—'}</div>
-        <div class="mstat-sub">${gp} games</div>
-      </div>
-      <div class="mstat">
-        <div class="mstat-label">Win %</div>
-        <div class="mstat-val">${gp>0?fmtPct(pct):'—'}</div>
-        <div class="mstat-sub">${momentum.emoji} ${momentum.label}</div>
-      </div>
-      <div class="mstat">
-        <div class="mstat-label">Pace proj.</div>
-        <div class="mstat-val">${proj!=null?proj+'W':'—'}${gp>0&&gp<162?'*':''}</div>
-        <div class="mstat-sub">vs ${COMPARE_YEAR}: <span class="pill-sm ${dCls}">${dStr}</span></div>
-      </div>
+      <div class="mstat"><div class="mstat-label">Record</div><div class="mstat-val" style="color:#1aff6b">${gp>0?w+'–'+l:'—'}</div><div class="mstat-sub">${gp} games</div></div>
+      <div class="mstat"><div class="mstat-label">Win %</div><div class="mstat-val">${gp>0?fmtPct(pct):'—'}</div><div class="mstat-sub">${momentum.emoji} ${momentum.label}</div></div>
+      <div class="mstat"><div class="mstat-label">Pace proj.</div><div class="mstat-val">${proj!=null?proj+'W':'—'}${gp>0&&gp<162?'*':''}</div><div class="mstat-sub">vs ${COMPARE_YEAR}: <span class="pill-sm ${dCls}">${dStr}</span></div></div>
     </div>
     <svg class="modal-chart-svg" viewBox="0 0 ${W} ${H}">${grid}${paths}</svg>
     <div class="modal-section-title">Year-over-year</div>
@@ -1678,28 +1345,29 @@ function openModal(team,curGames,prevGames){
     </div>
     <a class="modal-cta" href="${url}">Full tracker → ${team.clubName||team.name} ↗</a>`;
 
-  document.getElementById('modalShareBtn').addEventListener('click', function(){
-    doShare(this, dynShareTxt, fullUrl, `${team.name} — Track The Season`);
+  document.getElementById('modalShareBtn').addEventListener('click',function(){
+    doShare(this,shareParams,dynShareTxt,fullUrl,`${team.name} — Track The Season`);
   });
-  document.getElementById('modalCopyLink').addEventListener('click', function(){
-    copyLinkWithFeedback(this, fullUrl);
+  document.getElementById('modalCopyLink').addEventListener('click',async function(){
+    const ok=await copyToClipboard(fullUrl);
+    this.textContent=ok?'✓ Copied!':'Copy failed';
+    setTimeout(()=>this.textContent='⧉ Copy link',2000);
   });
 
   document.getElementById('modalOverlay').classList.add('open');
   document.body.style.overflow='hidden';
 }
-
 function closeModal(){
   document.getElementById('modalOverlay').classList.remove('open');
   document.body.style.overflow='';
 }
 
-/* ══════════════════════════════════════════════════
+/* ═══════════════════════════════════════════════════
    FILTER / SORT
-══════════════════════════════════════════════════ */
+═══════════════════════════════════════════════════ */
 let activeFilter='all',activeSort='winpct',searchQuery='',activeMomentum='all';
 
-function momentumMatchesMobileGroup(label, group){
+function momentumMatchesMobileGroup(label,group){
   switch(group){
     case '__hot':    return MOMENTUM_HOT_LABELS.has(label);
     case '__rising': return MOMENTUM_RISING_LABELS.has(label);
@@ -1709,7 +1377,6 @@ function momentumMatchesMobileGroup(label, group){
     default: return label===group;
   }
 }
-
 function applyFiltersAndSort(){
   const grid=document.getElementById('teamGrid');
   const cards=[...grid.querySelectorAll('.team-card')];
@@ -1733,7 +1400,12 @@ function applyFiltersAndSort(){
   });
   visible.forEach(c=>grid.appendChild(c));
 }
-
+function syncMomBtns(){
+  document.querySelectorAll('.mom-btn').forEach(b=>b.classList.remove('active-all','active'));
+  const active=document.querySelector(`.mom-btn[data-mom="${activeMomentum}"]`);
+  if(active) active.classList.add(activeMomentum==='all'?'active-all':'active');
+  else document.querySelector('.mom-btn[data-mom="all"]')?.classList.add('active-all');
+}
 function renderGrid(allData,total){
   const grid=document.getElementById('teamGrid');
   const done=allData.length>=total;
@@ -1743,64 +1415,61 @@ function renderGrid(allData,total){
   applyFiltersAndSort();
 }
 
-/* ══════════════════════════════════════════════════
+/* ═══════════════════════════════════════════════════
    MAIN LOADER
-══════════════════════════════════════════════════ */
+═══════════════════════════════════════════════════ */
 async function loadAllTeams(){
-  const grid=document.getElementById('teamGrid');
   const teamsData=await fetchJSON(`${API}/teams?sportId=1&activeStatus=Y`);
-  const teams=teamsData.teams
-    .filter(t=>t.sport?.id===1&&TEAM_DIV[t.id])
-    .sort((a,b)=>a.name.localeCompare(b.name));
+  const teams=teamsData.teams.filter(t=>t.sport?.id===1&&TEAM_DIV[t.id]).sort((a,b)=>a.name.localeCompare(b.name));
+  const allData=[],BATCH=5;
 
-  const allData=[];
-  const BATCH=5;
   for(let i=0;i<teams.length;i+=BATCH){
     const batch=teams.slice(i,i+BATCH);
     const results=await Promise.allSettled(batch.map(async team=>{
-      const[curGames,prevGames]=await Promise.all([
-        loadSchedule(team.id,CURRENT_YEAR),
-        loadSchedule(team.id,COMPARE_YEAR),
-      ]);
+      const[curGames,prevGames]=await Promise.all([loadSchedule(team.id,CURRENT_YEAR),loadSchedule(team.id,COMPARE_YEAR)]);
       return{team,curGames,prevGames};
     }));
     for(const r of results) if(r.status==='fulfilled') allData.push(r.value);
     renderGrid(allData,teams.length);
-    /* Build stories + featured after first batch has enough data */
-    if(allData.length>=10&&document.querySelector('#storiesGrid .story-skeleton')){
-      buildStories(allData);
+    /* Build dashboard sections as data comes in */
+    if(allData.length>=8){
+      buildSnapshot(allData);
+      buildTodaysStory(allData);
+      buildStoriesGrid(allData);
+      buildMovers(allData);
+      buildHotCold(allData);
+      buildTrending(allData);
     }
   }
+  /* Final rebuild with complete data */
   renderPills(allData);
-  buildStories(allData);
-  buildFeatured(allData);
+  buildSnapshot(allData);
+  buildTodaysStory(allData);
+  buildStoriesGrid(allData);
+  buildMovers(allData);
+  buildHotCold(allData);
+  buildTrending(allData);
 
   /* Wire card clicks */
-  grid.addEventListener('click',e=>{
+  document.getElementById('teamGrid').addEventListener('click',e=>{
     const card=e.target.closest('.team-card');
     if(!card) return;
     const td=allData.find(d=>d.team.id===Number(card.dataset.teamId));
     if(td) openModal(td.team,td.curGames,td.prevGames);
   });
-  grid.addEventListener('keydown',e=>{
-    if(e.key==='Enter'||e.key===' '){const c=e.target.closest('.team-card');if(c)c.click();}
-  });
 }
 
-/* ══════════════════════════════════════════════════
+/* ═══════════════════════════════════════════════════
    EVENT LISTENERS
-══════════════════════════════════════════════════ */
-/* Finder input — synced to hidden search state */
+═══════════════════════════════════════════════════ */
+/* Finder */
 const finderInput=document.getElementById('finderInput');
 const finderClear=document.getElementById('finderClear');
 finderInput.addEventListener('input',e=>{
   searchQuery=e.target.value.trim();
   finderClear.classList.toggle('visible',searchQuery.length>0);
   applyFiltersAndSort();
-  /* Also scroll to grid on mobile when user starts typing */
-  if(searchQuery&&window.innerWidth<640){
-    document.getElementById('teamGrid').scrollIntoView({behavior:'smooth',block:'start'});
-  }
+  if(searchQuery&&window.innerWidth<640) scrollToTeams();
 });
 finderClear.addEventListener('click',()=>{
   finderInput.value='';searchQuery='';
@@ -1818,24 +1487,23 @@ finderClear.addEventListener('click',()=>{
   });
 });
 
-/* Momentum filter — handles both mobile groups and desktop individual labels */
+/* Momentum filter */
 document.getElementById('momentumBar').addEventListener('click',e=>{
   const btn=e.target.closest('.mom-btn');
   if(!btn||btn.id==='explainBtn') return;
   activeMomentum=btn.dataset.mom;
-  document.querySelectorAll('.mom-btn').forEach(b=>b.classList.remove('active-all','active'));
-  btn.classList.add(activeMomentum==='all'?'active-all':'active');
+  syncMomBtns();
   applyFiltersAndSort();
 });
 
-/* Explainer toggles — desktop link and mobile button */
+/* Explainer toggles */
 function toggleExplainer(){
   const panel=document.getElementById('explainerPanel');
   const isOpen=panel.classList.toggle('open');
   const desktopBtn=document.getElementById('explainBtn');
   const mobileBtn=document.getElementById('mobileExplainBtn');
   if(desktopBtn) desktopBtn.textContent=isOpen?'What does this mean? ↑':'What does this mean? ↓';
-  if(mobileBtn)  mobileBtn.textContent=isOpen?'⚡ Hide label explanations':'⚡ What do these labels mean?';
+  if(mobileBtn) mobileBtn.textContent=isOpen?'⚡ Hide explanations':'⚡ What do these labels mean?';
 }
 document.getElementById('explainBtn').addEventListener('click',toggleExplainer);
 document.getElementById('mobileExplainBtn').addEventListener('click',toggleExplainer);
@@ -1850,8 +1518,8 @@ if(headerDateEl) headerDateEl.textContent=new Date().toLocaleDateString('en-US',
 
 /* ── Boot ──────────────────────────────────────── */
 loadAllTeams().catch(err=>{
-  document.getElementById('teamGrid').innerHTML=`<div class="state-wrap"><div class="error-box"><strong>Could not load MLB data.</strong><br>${err.message}<br><br><span style="font-size:12px;color:var(--chalk)">If viewing locally, serve via a web server or deploy to Vercel/Netlify.</span></div></div>`;
-  document.getElementById('storiesGrid').innerHTML='<div style="grid-column:1/-1;color:var(--chalk);font-size:13px;padding:8px 0">Stories unavailable — data not loaded.</div>';
+  document.getElementById('teamGrid').innerHTML=`<div class="state-wrap"><div class="error-box"><strong>Could not load MLB data.</strong><br>${err.message}</div></div>`;
+  document.getElementById('storiesGrid').innerHTML='<div style="grid-column:1/-1;color:var(--chalk);font-size:13px;padding:8px 0">Unavailable — check connection.</div>';
 });
 </script>
 </body>
