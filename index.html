@@ -1231,6 +1231,7 @@ function buildStories(allData){
   }
 
   /* Share for hero — computed from hero data */
+  const logoUrl    = `https://www.mlbstatic.com/team-logos/${hero.team.team.id}.svg`;
   const heroShareText = buildDynamicShareText(
     hname, hlast.cumWins, hlast.cumLosses, hgp,
     hero.delta ?? 0, COMPARE_YEAR
