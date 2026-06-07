@@ -1099,7 +1099,7 @@ async function update(){
     $('teamHero').style.display='flex';
 
     /* Nav */
-    $('navTeamLogo').querySelector('img')&&($('navTeamLogo').querySelector('img').src=logoUrl);
+    $('navTeamLogo').src=logoUrl; $('navTeamLogo').style.display='block';
     $('navTeamName').textContent=teamName;
     $('navTeamWrap').classList.add('visible');
     document.title=`${teamName} — Track The Season`;

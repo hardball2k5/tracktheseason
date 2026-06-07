@@ -475,7 +475,7 @@ body{
   <div class="team-grid" id="teamGrid" role="list" aria-label="MLB team cards">
     <div class="state-wrap">
       <div class="spinner"></div>
-      <div class="state-text" id="loadingText">Loading MLB teams…</div>
+      <div class="state-text">Loading MLB teams…</div>
     </div>
   </div>
 </div>
@@ -917,7 +917,7 @@ function renderGrid(allData, total){
   const grid=document.getElementById('teamGrid');
   const done=allData.length>=total;
   const html=allData.map(({team,curGames,prevGames})=>buildCard(team,curGames,prevGames)).join('');
-  const loading=done?'':'<div class="state-wrap"><div class="spinner"></div><div class="state-text">Loading '+allData.length+' / '+total+' teams…</div></div>';
+  const loading=done?'':`<div class="state-wrap" id="loadingState"><div class="spinner"></div><div class="state-text">Loading ${allData.length} / ${total} teams…</div></div>`;
   grid.innerHTML=html+loading;
   applyFiltersAndSort();
 }
@@ -934,7 +934,6 @@ async function loadAllTeams(){
   const BATCH=5;
   for(let i=0;i<teams.length;i+=BATCH){
     const batch=teams.slice(i,i+BATCH);
-    document.getElementById('loadingText').textContent=`Loading ${i} / ${teams.length} teams…`;
     const results=await Promise.allSettled(batch.map(async team=>{
       const[curGames,prevGames]=await Promise.all([
         loadSchedule(team.id,CURRENT_YEAR),
@@ -975,7 +974,8 @@ document.getElementById('searchInput').addEventListener('input',e=>{searchQuery=
 document.getElementById('modalClose').addEventListener('click',closeModal);
 document.getElementById('modalOverlay').addEventListener('click',e=>{if(e.target===document.getElementById('modalOverlay'))closeModal();});
 document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal();});
-document.getElementById('headerDate').textContent=new Date().toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric',year:'numeric'});
+const headerDateEl=document.getElementById('headerDate');
+if(headerDateEl) headerDateEl.textContent=new Date().toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric',year:'numeric'});
 
 /* ── Boot ───────────────────────────────────────── */
 loadAllTeams().catch(err=>{
