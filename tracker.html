@@ -11,7 +11,7 @@
 /* ═══════════════════════════════════════════════════
    TRACK THE SEASON — tracker.html
    Style guide: IBM Plex Mono + Plex Sans
-   URL params: ?team=143&season=2026&through=71&rs=62&re=71
+   URL params: ?team=143&season=2026&through=71&rs=62&re=71&since=34
 ═══════════════════════════════════════════════════ */
 :root{
   --paper:#f5f3ee;--ink:#0f1014;--ink2:#1a1d24;--ink3:#252830;
@@ -33,7 +33,7 @@ body{
 }
 .wrap{max-width:1300px;margin:0 auto;padding:0 16px}
 
-/* ── NAV ─────────────────────────────── */
+/* ── NAV ───────────────────────────── */
 .site-nav{
   padding:11px 0;border-bottom:1px solid var(--rule);
   position:sticky;top:0;z-index:100;
@@ -56,32 +56,20 @@ body{
 }
 .nav-wordmark{font-family:var(--mono);font-size:14px;font-weight:700;color:#e8edf8}
 .nav-wordmark .accent{color:var(--signal)}
-.sport-tabs{display:flex;gap:2px;margin-left:12px}
-.sport-tab{
-  font-family:var(--mono);font-size:11px;font-weight:600;letter-spacing:.04em;
-  padding:4px 10px;border-radius:var(--r-sm);color:var(--chalk);
-  border:none;background:none;cursor:pointer;transition:background .12s,color .12s;
-}
-.sport-tab.active{background:var(--signal);color:var(--ink)}
-.sport-tab.soon{color:var(--ink3);cursor:default;pointer-events:none}
 .nav-team{display:none;align-items:center;gap:8px;margin-left:auto}
 .nav-team.visible{display:flex}
 .nav-team-logo{
   width:26px;height:26px;background:var(--logo-bg);
   border:1px solid var(--logo-border);border-radius:5px;
-  box-shadow:var(--logo-shadow);
-  display:flex;align-items:center;justify-content:center;overflow:hidden;
+  box-shadow:var(--logo-shadow);overflow:hidden;
+  display:flex;align-items:center;justify-content:center;
 }
 .nav-team-logo img{width:20px;height:20px;object-fit:contain}
 .nav-team-name{font-family:var(--mono);font-size:13px;font-weight:700;color:#e8edf8;display:none}
 @media(min-width:480px){.nav-team-name{display:block}}
-@media(max-width:520px){.sport-tabs{display:none}}
 
-/* ── TEAM HERO ───────────────────────── */
-.team-hero{
-  padding:22px 0 0;display:flex;align-items:flex-end;gap:16px;flex-wrap:wrap;
-}
-/* Hero logo — always white bg */
+/* ── TEAM HERO ─────────────────────── */
+.team-hero{padding:22px 0 0;display:flex;align-items:flex-end;gap:16px;flex-wrap:wrap}
 .hero-logo-wrap{
   width:68px;height:68px;flex-shrink:0;
   background:var(--logo-bg);border:1px solid var(--logo-border);
@@ -98,10 +86,7 @@ body{
   font-family:var(--mono);font-size:clamp(24px,5vw,42px);
   font-weight:700;letter-spacing:-.02em;line-height:.95;color:#e8edf8;
 }
-.hero-record{
-  font-family:var(--mono);font-size:clamp(13px,2vw,17px);
-  font-weight:600;color:var(--chalk);margin-top:5px;
-}
+.hero-record{font-family:var(--mono);font-size:clamp(13px,2vw,17px);font-weight:600;color:var(--chalk);margin-top:5px}
 .hero-record strong{color:#e8edf8}
 .hero-badge{
   padding:5px 13px;border-radius:var(--r-pill);
@@ -112,24 +97,17 @@ body{
 .badge-cold{background:var(--loss-bg);color:var(--loss-text);border:1px solid rgba(232,48,42,.2)}
 .badge-neu {background:var(--ink3);color:var(--chalk);border:1px solid var(--rule)}
 
-/* ── PAGE GRID ───────────────────────── */
-.page-grid{
-  display:grid;grid-template-columns:296px 1fr;
-  gap:14px;padding:16px 0 48px;align-items:start;
-}
+/* ── PAGE GRID ─────────────────────── */
+.page-grid{display:grid;grid-template-columns:296px 1fr;gap:14px;padding:16px 0 48px;align-items:start}
 @media(max-width:860px){.page-grid{grid-template-columns:1fr}.controls-col{position:static!important}}
 
-/* ── CONTROLS ────────────────────────── */
+/* ── CONTROLS ──────────────────────── */
 .controls-col{position:sticky;top:56px}
-.ctrl-card{
-  background:var(--ink2);border:1px solid var(--rule);
-  border-radius:var(--r-lg);padding:16px;margin-bottom:12px;
-}
+.ctrl-card{background:var(--ink2);border:1px solid var(--rule);border-radius:var(--r-lg);padding:16px;margin-bottom:12px}
 .ctrl-divider{height:1px;background:var(--rule);margin:14px 0}
 .ctrl-label{
   display:block;font-family:var(--mono);font-size:10px;font-weight:700;
-  letter-spacing:.1em;text-transform:uppercase;
-  color:rgba(255,255,255,.28);margin-bottom:6px;
+  letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.28);margin-bottom:6px;
 }
 .ctrl-helper{font-family:var(--sans);font-size:11px;color:rgba(255,255,255,.2);margin-top:4px;line-height:1.4}
 .ctrl-input{
@@ -141,9 +119,8 @@ body{
 .ctrl-input:focus{border-color:var(--signal)}
 .ctrl-input option{background:var(--ink2)}
 .ctrl-sub-label{
-  font-family:var(--mono);font-size:10px;font-weight:600;
-  letter-spacing:.06em;text-transform:uppercase;
-  color:rgba(255,255,255,.2);display:block;margin-bottom:4px;
+  font-family:var(--mono);font-size:10px;font-weight:600;letter-spacing:.06em;
+  text-transform:uppercase;color:rgba(255,255,255,.2);display:block;margin-bottom:4px;
 }
 .input-row{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 .checks{display:grid;grid-template-columns:1fr 1fr;gap:5px}
@@ -156,19 +133,15 @@ body{
 }
 .check-item:has(input:checked){border-color:var(--signal);background:rgba(26,255,107,.08);color:#e8edf8}
 .check-item input{width:13px;height:13px;accent-color:var(--signal);cursor:pointer;flex-shrink:0}
-
-/* Preset buttons */
 .preset-row{display:flex;flex-wrap:wrap;gap:5px;margin-top:8px}
 .preset-btn{
   font-family:var(--mono);font-size:11px;font-weight:600;
   padding:5px 11px;border-radius:var(--r-pill);
   border:1px solid var(--rule);background:var(--ink3);
-  color:rgba(255,255,255,.4);cursor:pointer;transition:all .13s;
-  letter-spacing:.02em;
+  color:rgba(255,255,255,.4);cursor:pointer;transition:all .13s;letter-spacing:.02em;
 }
 .preset-btn:hover{border-color:var(--signal);color:var(--signal);background:rgba(26,255,107,.07)}
 .preset-btn.active{background:var(--signal);border-color:var(--signal);color:var(--ink);font-weight:700}
-
 .run-btn{
   width:100%;padding:12px;border-radius:var(--r-sm);border:none;
   background:var(--signal);color:var(--ink);
@@ -177,8 +150,6 @@ body{
 }
 .run-btn:hover{filter:brightness(1.08)}
 .run-btn:active{filter:brightness(.93)}
-
-/* Reset button */
 .reset-btn{
   width:100%;padding:8px;border-radius:var(--r-sm);
   border:1px solid var(--rule);background:transparent;
@@ -187,15 +158,13 @@ body{
 }
 .reset-btn:hover{border-color:rgba(255,255,255,.25);color:#e8edf8}
 
-/* ── RESULTS ─────────────────────────── */
+/* ── RESULTS ───────────────────────── */
 .results-col{min-width:0}
 .result-card{
   background:var(--ink2);border:1px solid var(--rule);
   border-radius:var(--r-lg);overflow:hidden;margin-bottom:12px;
 }
 .hidden{display:none!important}
-
-/* Status / error states */
 .status-msg{
   padding:28px 18px;display:flex;align-items:center;gap:12px;
   font-family:var(--mono);font-size:13px;color:var(--chalk);
@@ -212,23 +181,19 @@ body{
   color:#ffccc7;font-family:var(--sans);font-size:13px;line-height:1.6;
 }
 
-/* ── METRICS STRIP ───────────────────── */
+/* ── METRICS STRIP ─────────────────── */
 .metrics{display:grid;grid-template-columns:repeat(4,1fr)}
 @media(max-width:560px){
   .metrics{grid-template-columns:1fr 1fr}
   .metric-cell:nth-child(2n){border-right:none}
   .metric-cell:nth-child(n+3){border-top:1px solid var(--rule)}
 }
-.metric-cell{
-  padding:15px 13px;border-right:1px solid var(--rule);
-  border-bottom:1px solid var(--rule);
-}
+.metric-cell{padding:15px 13px;border-right:1px solid var(--rule);border-bottom:1px solid var(--rule)}
 .metric-cell:last-child{border-right:none}
 .metric-cell:nth-child(n+5){border-bottom:none}
 .m-label{
   font-family:var(--mono);font-size:9px;font-weight:700;
-  letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.28);
-  margin-bottom:5px;
+  letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.28);margin-bottom:5px;
 }
 .m-val{
   font-family:var(--mono);font-size:clamp(18px,2.5vw,26px);
@@ -237,13 +202,116 @@ body{
 .m-val.green{color:var(--signal)}
 .m-sub{font-family:var(--mono);font-size:10px;color:rgba(255,255,255,.28);margin-top:4px}
 
-/* ── INSIGHTS ────────────────────────── */
+/* ── NOTABLE MOMENTS STRIP ────────── */
+.moments-strip{
+  padding:12px 14px;
+  border-bottom:1px solid var(--rule);
+  display:flex;align-items:center;gap:8px;flex-wrap:wrap;
+}
+.moments-label{
+  font-family:var(--mono);font-size:10px;font-weight:700;
+  letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.25);
+  flex-shrink:0;
+}
+.moment-btn{
+  display:inline-flex;align-items:center;gap:6px;
+  font-family:var(--mono);font-size:11px;font-weight:600;
+  padding:5px 11px;border-radius:var(--r-pill);
+  border:1px solid var(--rule);background:var(--ink3);
+  color:rgba(255,255,255,.5);cursor:pointer;transition:all .15s;
+  white-space:nowrap;
+}
+.moment-btn:hover{border-color:rgba(255,255,255,.3);color:#e8edf8}
+.moment-btn.active{color:var(--ink);font-weight:700}
+/* Per-type colors */
+.moment-btn.type-coaching.active {background:#a78bfa;border-color:#a78bfa}
+.moment-btn.type-coaching       {border-color:rgba(167,139,250,.3);color:rgba(167,139,250,.8)}
+.moment-btn.type-coaching:hover {border-color:#a78bfa;color:#a78bfa}
+.moment-btn.type-trade.active   {background:#38bdf8;border-color:#38bdf8}
+.moment-btn.type-trade          {border-color:rgba(56,189,248,.3);color:rgba(56,189,248,.8)}
+.moment-btn.type-trade:hover    {border-color:#38bdf8;color:#38bdf8}
+.moment-btn.type-injury.active  {background:#fb923c;border-color:#fb923c}
+.moment-btn.type-injury         {border-color:rgba(251,146,60,.3);color:rgba(251,146,60,.8)}
+.moment-btn.type-injury:hover   {border-color:#fb923c;color:#fb923c}
+.moment-btn.type-callup.active  {background:var(--signal);border-color:var(--signal)}
+.moment-btn.type-callup         {border-color:rgba(26,255,107,.3);color:rgba(26,255,107,.7)}
+.moment-btn.type-callup:hover   {border-color:var(--signal);color:var(--signal)}
+.moment-btn.type-streak.active  {background:var(--caution);border-color:var(--caution)}
+.moment-btn.type-streak         {border-color:rgba(245,200,66,.3);color:rgba(245,200,66,.7)}
+.moment-btn.type-streak:hover   {border-color:var(--caution);color:var(--caution)}
+.moment-btn.type-milestone.active{background:#f472b6;border-color:#f472b6}
+.moment-btn.type-milestone      {border-color:rgba(244,114,182,.3);color:rgba(244,114,182,.7)}
+.moment-btn.type-milestone:hover{border-color:#f472b6;color:#f472b6}
+.moment-icon{font-size:13px;line-height:1}
+.moment-game{font-size:9px;opacity:.6}
+
+/* ── SINCE CALLOUT CARD ──────────── */
+.since-card{
+  margin:12px 14px;
+  background:var(--ink3);
+  border-radius:var(--r-md);
+  border:1px solid var(--rule);
+  overflow:hidden;
+  animation:fadeUp .2s ease both;
+}
+@keyframes fadeUp{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+.since-card-header{
+  padding:12px 14px 10px;
+  border-bottom:1px solid var(--rule2);
+  display:flex;align-items:flex-start;gap:10px;justify-content:space-between;
+}
+.since-card-label{
+  font-family:var(--mono);font-size:9px;font-weight:700;
+  letter-spacing:.12em;text-transform:uppercase;
+  color:rgba(255,255,255,.28);margin-bottom:4px;
+}
+.since-card-title{
+  font-family:var(--mono);font-size:15px;font-weight:700;
+  color:#e8edf8;line-height:1.2;
+}
+.since-card-close{
+  background:none;border:none;color:rgba(255,255,255,.25);
+  font-size:18px;cursor:pointer;padding:0 2px;line-height:1;
+  transition:color .13s;flex-shrink:0;
+}
+.since-card-close:hover{color:#e8edf8}
+.since-stats{
+  display:grid;grid-template-columns:repeat(3,1fr);
+  border-bottom:1px solid var(--rule2);
+}
+.since-stat{padding:12px 14px;border-right:1px solid var(--rule2)}
+.since-stat:last-child{border-right:none}
+.since-stat-label{
+  font-family:var(--mono);font-size:9px;font-weight:700;
+  letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.28);
+  margin-bottom:5px;
+}
+.since-stat-val{
+  font-family:var(--mono);font-size:22px;font-weight:700;
+  letter-spacing:-.02em;color:var(--signal);line-height:1;
+}
+.since-stat-val.neutral{color:#e8edf8}
+.since-stat-sub{font-family:var(--mono);font-size:10px;color:rgba(255,255,255,.28);margin-top:3px}
+.since-body{padding:12px 14px}
+.since-text{font-family:var(--sans);font-size:13px;line-height:1.6;color:rgba(255,255,255,.7)}
+.since-text strong{color:#e8edf8;font-weight:600}
+.since-text .hi{color:var(--signal);font-weight:600}
+.since-share{display:flex;gap:7px;margin-top:10px;flex-wrap:wrap}
+.since-share-btn{
+  display:inline-flex;align-items:center;gap:5px;
+  font-family:var(--mono);font-size:11px;font-weight:600;
+  padding:6px 12px;border-radius:var(--r-sm);cursor:pointer;
+  transition:all .13s;letter-spacing:.02em;
+}
+.since-share-btn-x{background:var(--ink);color:#e8edf8;border:1px solid rgba(255,255,255,.18)}
+.since-share-btn-x:hover{border-color:rgba(255,255,255,.35)}
+.since-share-btn-copy{background:transparent;color:var(--chalk);border:1px solid var(--rule)}
+.since-share-btn-copy:hover{border-color:var(--signal);color:var(--signal)}
+
+/* ── INSIGHTS ──────────────────────── */
 .insights-wrap{padding:14px 14px 0}
 .insights-header{display:flex;align-items:center;gap:8px;margin-bottom:12px}
-.insights-title{
-  font-family:var(--mono);font-size:16px;font-weight:700;
-  letter-spacing:.01em;color:#e8edf8;
-}
+.insights-title{font-family:var(--mono);font-size:16px;font-weight:700;letter-spacing:.01em;color:#e8edf8}
 .momentum-badge{
   margin-left:auto;padding:4px 12px;border-radius:var(--r-pill);
   font-family:var(--mono);font-size:11px;font-weight:700;
@@ -251,71 +319,47 @@ body{
 .badge-good{background:var(--gain-bg);color:var(--gain-text)}
 .badge-bad {background:var(--loss-bg);color:var(--loss-text)}
 .badge-warn{background:var(--caution-bg);color:var(--caution-text)}
-
-/* Pace story card — full width, prominent */
 .pace-story-card{
   background:var(--ink3);border:1px solid rgba(26,255,107,.15);
   border-radius:var(--r-md);padding:14px;margin-bottom:10px;
 }
 .pace-story-title{
   font-family:var(--mono);font-size:9px;font-weight:700;
-  letter-spacing:.12em;text-transform:uppercase;color:var(--signal);
-  margin-bottom:8px;
+  letter-spacing:.12em;text-transform:uppercase;color:var(--signal);margin-bottom:8px;
 }
-.pace-story-text{
-  font-family:var(--sans);font-size:14px;line-height:1.6;color:#e8edf8;
-}
+.pace-story-text{font-family:var(--sans);font-size:14px;line-height:1.6;color:#e8edf8}
 .pace-story-text strong{color:var(--signal);font-weight:600}
-
-/* Share row inside insights */
 .insight-share{display:flex;gap:7px;margin-top:12px;flex-wrap:wrap}
 .share-btn{
   display:inline-flex;align-items:center;gap:5px;
   font-family:var(--mono);font-size:11px;font-weight:600;
-  padding:6px 12px;border-radius:var(--r-sm);cursor:pointer;
-  transition:all .13s;letter-spacing:.02em;
+  padding:6px 12px;border-radius:var(--r-sm);cursor:pointer;transition:all .13s;letter-spacing:.02em;
 }
 .share-btn-x{background:var(--ink);color:#e8edf8;border:1px solid rgba(255,255,255,.18)}
 .share-btn-x:hover{border-color:rgba(255,255,255,.35)}
 .share-btn-copy{background:transparent;color:var(--chalk);border:1px solid var(--rule)}
 .share-btn-copy:hover{border-color:var(--signal);color:var(--signal)}
-
 .insights-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding-bottom:14px}
 @media(max-width:500px){.insights-grid{grid-template-columns:1fr}}
-.insight-card{
-  background:var(--ink3);border:1px solid var(--rule);
-  border-radius:var(--r-md);padding:12px;
-}
+.insight-card{background:var(--ink3);border:1px solid var(--rule);border-radius:var(--r-md);padding:12px}
 .insight-card-title{
   font-family:var(--mono);font-size:9px;font-weight:700;
-  letter-spacing:.12em;text-transform:uppercase;
-  color:rgba(255,255,255,.28);margin-bottom:6px;
+  letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.28);margin-bottom:6px;
 }
-.insight-card-body{
-  font-family:var(--sans);font-size:13px;line-height:1.55;color:rgba(255,255,255,.78);
-}
+.insight-card-body{font-family:var(--sans);font-size:13px;line-height:1.55;color:rgba(255,255,255,.78)}
 .insight-card-body strong{color:var(--signal);font-weight:600}
 .insight-caution{border-color:rgba(245,200,66,.18);background:rgba(245,200,66,.05)}
 .insight-caution .insight-card-body{color:var(--caution-text)}
 .insight-caution .insight-card-title{color:rgba(245,200,66,.4)}
 
-/* ── CHART ───────────────────────────── */
+/* ── CHART ─────────────────────────── */
 .chart-wrap{padding:14px 14px 6px}
-.chart-top{
-  display:flex;justify-content:space-between;align-items:center;
-  gap:10px;flex-wrap:wrap;margin-bottom:10px;
-}
-.chart-title{
-  font-family:var(--mono);font-size:15px;font-weight:700;
-  letter-spacing:.01em;color:#e8edf8;
-}
-.toggle-group{
-  display:flex;gap:2px;background:var(--ink3);
-  border-radius:var(--r-sm);padding:3px;
-}
+.chart-top{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:10px}
+.chart-title{font-family:var(--mono);font-size:15px;font-weight:700;letter-spacing:.01em;color:#e8edf8}
+.toggle-group{display:flex;gap:2px;background:var(--ink3);border-radius:var(--r-sm);padding:3px}
 .toggle-btn{
-  background:none;border:none;border-radius:6px;
-  color:var(--chalk);font-family:var(--mono);font-size:11px;font-weight:600;
+  background:none;border:none;border-radius:6px;color:var(--chalk);
+  font-family:var(--mono);font-size:11px;font-weight:600;
   padding:5px 10px;cursor:pointer;transition:background .12s,color .12s;white-space:nowrap;
 }
 .toggle-btn.active{background:var(--signal);color:var(--ink);font-weight:700}
@@ -324,13 +368,12 @@ body{
 svg.main-chart{width:100%;height:360px;display:block;overflow:visible}
 @media(max-width:560px){svg.main-chart{height:240px}}
 
-/* ── TABLES ──────────────────────────── */
+/* ── TABLES ────────────────────────── */
 .tables-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:12px 14px 14px}
 @media(max-width:600px){.tables-grid{grid-template-columns:1fr}}
 .tbl-title{
   font-family:var(--mono);font-size:11px;font-weight:700;
-  letter-spacing:.08em;text-transform:uppercase;
-  color:rgba(255,255,255,.28);margin-bottom:7px;
+  letter-spacing:.08em;text-transform:uppercase;color:rgba(255,255,255,.28);margin-bottom:7px;
 }
 table{width:100%;border-collapse:collapse;background:var(--ink3);border:1px solid var(--rule);border-radius:var(--r-md);overflow:hidden}
 th{
@@ -339,10 +382,7 @@ th{
   text-transform:uppercase;letter-spacing:.08em;color:var(--chalk);
   background:var(--ink2);border-bottom:1px solid var(--rule);
 }
-td{
-  padding:8px 10px;font-family:var(--mono);font-size:12px;
-  color:rgba(255,255,255,.7);border-bottom:1px solid var(--rule2);
-}
+td{padding:8px 10px;font-family:var(--mono);font-size:12px;color:rgba(255,255,255,.7);border-bottom:1px solid var(--rule2)}
 tr:last-child td{border-bottom:none}
 tr.cur-row td{background:rgba(26,255,107,.05)}
 .pill{display:inline-block;padding:2px 7px;border-radius:var(--r-xs);font-size:11px;font-weight:700;background:var(--ink2)}
@@ -350,7 +390,7 @@ tr.cur-row td{background:rgba(26,255,107,.05)}
 .pill-r{background:var(--loss-bg);color:var(--loss-text)}
 .pill-n{background:var(--ink3);color:var(--chalk)}
 
-/* ── SOURCE NOTE ─────────────────────── */
+/* ── SOURCE NOTE ───────────────────── */
 .source-note{
   margin:0 14px 14px;padding:11px 13px;
   border-radius:var(--r-sm);background:var(--ink3);border:1px solid var(--rule2);
@@ -359,11 +399,10 @@ tr.cur-row td{background:rgba(26,255,107,.05)}
 .source-note strong{color:rgba(255,255,255,.3);font-weight:500}
 .source-note code{font-family:var(--mono);font-size:10px;color:rgba(26,255,107,.4)}
 
-/* ── FOOTER ──────────────────────────── */
+/* ── FOOTER ────────────────────────── */
 .site-footer{
   border-top:1px solid var(--rule);padding:16px 0 32px;
-  display:flex;flex-wrap:wrap;gap:10px;
-  align-items:center;justify-content:space-between;
+  display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;
 }
 .footer-logo{font-family:var(--mono);font-weight:700;font-size:13px;color:var(--chalk);text-decoration:none}
 .footer-logo .accent{color:var(--signal)}
@@ -373,19 +412,13 @@ tr.cur-row td{background:rgba(26,255,107,.05)}
 <body>
 
 <!-- ══ NAV ══════════════════════════════ -->
-<nav class="site-nav" aria-label="Site navigation">
+<nav class="site-nav">
   <div class="wrap nav-inner">
     <a href="index.html" class="back-btn">← All Teams</a>
     <a href="index.html" class="nav-logo">
       <div class="nav-monogram">TTS</div>
       <div class="nav-wordmark">TRACK THE <span class="accent">SEASON</span></div>
     </a>
-    <div class="sport-tabs">
-      <button class="sport-tab active">MLB</button>
-      <button class="sport-tab soon" title="Coming soon">NBA</button>
-      <button class="sport-tab soon" title="Coming soon">NFL</button>
-      <button class="sport-tab soon" title="Coming soon">NHL</button>
-    </div>
     <div class="nav-team" id="navTeamWrap">
       <div class="nav-team-logo">
         <img id="navTeamLogo" src="" alt="" onerror="this.style.display='none'"/>
@@ -414,35 +447,28 @@ tr.cur-row td{background:rgba(26,255,107,.05)}
   <!-- ══ PAGE GRID ═══════════════════════ -->
   <div class="page-grid">
 
-    <!-- ── Controls ───────────────────── -->
+    <!-- ── Controls ──────────────── -->
     <aside class="controls-col">
       <div class="ctrl-card">
-
         <div style="margin-bottom:13px">
           <label class="ctrl-label" for="teamSelect">Team</label>
           <select id="teamSelect" class="ctrl-input"></select>
         </div>
-
         <div>
           <label class="ctrl-label" for="currentSeasonSelect">Current season</label>
           <select id="currentSeasonSelect" class="ctrl-input"></select>
         </div>
-
         <div class="ctrl-divider"></div>
-
         <div>
           <div class="ctrl-label">Compare seasons</div>
           <div id="seasonChecks" class="checks"></div>
         </div>
-
         <div class="ctrl-divider"></div>
-
         <div style="margin-bottom:13px">
           <label class="ctrl-label" for="throughInput">Through game #</label>
           <input id="throughInput" type="number" min="1" max="162" class="ctrl-input"/>
-          <p class="ctrl-helper">Defaults to completed games played. Adjust to evaluate any point in the season.</p>
+          <p class="ctrl-helper">Defaults to completed games played.</p>
         </div>
-
         <div>
           <div class="ctrl-label">Game range</div>
           <div class="input-row">
@@ -455,7 +481,7 @@ tr.cur-row td{background:rgba(26,255,107,.05)}
               <input id="rangeEndInput" type="number" min="1" max="162" class="ctrl-input"/>
             </div>
           </div>
-          <p class="ctrl-helper">Select a stretch to analyze. Last 10 is selected by default.</p>
+          <p class="ctrl-helper">Last 10 selected by default.</p>
           <div class="preset-row" id="presetRow">
             <button class="preset-btn" data-preset="last10">Last 10</button>
             <button class="preset-btn" data-preset="last20">Last 20</button>
@@ -465,13 +491,12 @@ tr.cur-row td{background:rgba(26,255,107,.05)}
             <button class="preset-btn" data-preset="second">2nd half</button>
           </div>
         </div>
-
         <button class="run-btn" id="runBtn">Update Tracker</button>
         <button class="reset-btn" id="resetBtn">↺ Reset to current</button>
       </div>
     </aside>
 
-    <!-- ── Results ────────────────────── -->
+    <!-- ── Results ───────────────── -->
     <div class="results-col">
 
       <div class="result-card" id="statusCard">
@@ -508,9 +533,47 @@ tr.cur-row td{background:rgba(26,255,107,.05)}
               <div id="mPace" class="m-sub">—</div>
             </div>
           </div>
+
+          <!-- Notable moments strip — sits inside the metrics card, below the numbers -->
+          <div class="moments-strip hidden" id="momentsStrip">
+            <span class="moments-label">Key moments</span>
+            <div id="momentBtns"></div>
+          </div>
+
+          <!-- Since callout card — hidden until a moment is tapped -->
+          <div class="since-card hidden" id="sinceCard">
+            <div class="since-card-header">
+              <div>
+                <div class="since-card-label">Since this moment</div>
+                <div class="since-card-title" id="sinceTitle">—</div>
+              </div>
+              <button class="since-card-close" id="sinceClose" aria-label="Dismiss">×</button>
+            </div>
+            <div class="since-stats">
+              <div class="since-stat">
+                <div class="since-stat-label">Record</div>
+                <div class="since-stat-val" id="sinceRecord">—</div>
+                <div class="since-stat-sub" id="sinceGames">—</div>
+              </div>
+              <div class="since-stat">
+                <div class="since-stat-label">Win %</div>
+                <div class="since-stat-val neutral" id="sinceWinPct">—</div>
+                <div class="since-stat-sub" id="sincePaceSub">—</div>
+              </div>
+              <div class="since-stat">
+                <div class="since-stat-label">Pace proj.</div>
+                <div class="since-stat-val neutral" id="sinceProj">—</div>
+                <div class="since-stat-sub">at this pace</div>
+              </div>
+            </div>
+            <div class="since-body">
+              <div class="since-text" id="sinceText">—</div>
+              <div class="since-share" id="sinceShare"></div>
+            </div>
+          </div>
         </div>
 
-        <!-- Insights + Pace Story -->
+        <!-- Insights -->
         <div class="result-card">
           <div class="insights-wrap">
             <div class="insights-header">
@@ -555,22 +618,21 @@ tr.cur-row td{background:rgba(26,255,107,.05)}
             <div>
               <div class="tbl-title">Game range comparison</div>
               <table id="rangeTable">
-                <thead><tr><th>Season</th><th>Range</th><th>Record</th><th>Win%</th><th>162-pace</th></tr></thead>
+                <thead><tr><th>Season</th><th>Range</th><th>Record</th><th>Win%</th><th>Pace</th></tr></thead>
                 <tbody></tbody>
               </table>
             </div>
           </div>
         </div>
 
-        <!-- Source attribution — required -->
         <div class="source-note">
           <strong>Data:</strong> MLB Stats API schedule endpoint —
           <code>statsapi.mlb.com/api/v1/schedule?sportId=1&amp;teamId={id}&amp;season={year}&amp;gameTypes=R</code><br>
-          Final regular-season games only. Live, postponed, suspended, or non-final games are excluded until final.
+          Final regular-season games only. Live, postponed, suspended, or non-final games excluded until final.
           Doubleheaders count as separate games. Not affiliated with or endorsed by MLB or its clubs.
         </div>
 
-      </div>
+      </div><!-- /resultsWrap -->
     </div>
   </div>
 
@@ -583,61 +645,104 @@ tr.cur-row td{background:rgba(26,255,107,.05)}
 <script>
 /* ═══════════════════════════════════════════════════════
    TRACK THE SEASON — tracker.html
-   URL params: ?team=143&season=2026&through=71&rs=62&re=71
-   Defaults: throughGame=completedGP, range=last10
-   Architecture: constants → URL → data → defaults → calc → render
+   Notable moments: tappable pins → "Since [moment]" callout
+   URL: ?team=143&season=2026&through=71&rs=62&re=71&since=34
 ═══════════════════════════════════════════════════════ */
 
-/* ── Constants ──────────────────────────────────────── */
+/* ── Constants ─────────────────────────────────────── */
 const API          = 'https://statsapi.mlb.com/api/v1';
 const SEASON_GAMES = 162;
 const SEASON_COLORS= ['#1aff6b','#4a9eff','#f5c842','#f47570','#c792ea','#5dd8d8','#ffa657','#b8e986'];
-const DEFAULT_TEAM = 143; /* Phillies */
+const DEFAULT_TEAM = 143;
 
-/* ── DOM helpers ────────────────────────────────────── */
+/* ═══════════════════════════════════════════════════════
+   NOTABLE MOMENTS DATA
+   Add, edit, or remove entries here to update any team.
+   game: the game NUMBER (sequential, 1-based) after which
+         this moment took effect.
+   type: coaching | trade | injury | callup | streak | milestone
+   icon: emoji shown on the button
+   label: short button text (keep under ~20 chars)
+   text: longer description used in the "Since" callout card
+═══════════════════════════════════════════════════════ */
+const NOTABLE_MOMENTS = {
+  /* ── 2026 ─────────────────────────────────────── */
+  143: [ /* Philadelphia Phillies */
+    { game:12,  year:2026, type:'injury',    icon:'🤕', label:'Wheeler IL',       text:'Ace Zack Wheeler placed on the 15-day IL with forearm inflammation.' },
+    { game:34,  year:2026, type:'coaching',  icon:'🎯', label:'Manager change',   text:'Rob Thomson replaced as manager mid-season. Bench coach stepped in on an interim basis.' },
+    { game:52,  year:2026, type:'trade',     icon:'🔄', label:'Bullpen add',      text:'Team acquired All-Star closer at the trade deadline, bolstering a shaky late-game situation.' },
+    { game:23,  year:2026, type:'callup',    icon:'⬆️', label:'Mayer called up',  text:'Top prospect Mayer called up from Triple-A, immediately inserted into the starting lineup.' },
+  ],
+  147: [ /* New York Yankees */
+    { game:8,   year:2026, type:'injury',    icon:'🤕', label:'Judge IL',         text:'Aaron Judge placed on IL with a knee contusion after an outfield collision.' },
+    { game:29,  year:2026, type:'trade',     icon:'🔄', label:'Rotation add',     text:'Yankees acquire veteran starter at the deadline to shore up a struggling rotation.' },
+    { game:41,  year:2026, type:'milestone', icon:'🏆', label:'Cole 200 Ks',      text:'Gerrit Cole reaches 200 career postseason strikeouts, a franchise record.' },
+  ],
+  119: [ /* Los Angeles Dodgers */
+    { game:5,   year:2026, type:'injury',    icon:'🤕', label:'Ohtani IL',        text:'Shohei Ohtani placed on IL with oblique tightness, expected to miss 3–4 weeks.' },
+    { game:44,  year:2026, type:'callup',    icon:'⬆️', label:'Miller up',        text:'Top pitching prospect Dylan Miller called up after dominant Triple-A stint.' },
+  ],
+  111: [ /* Boston Red Sox */
+    { game:17,  year:2026, type:'coaching',  icon:'🎯', label:'Pitching coach out', text:'Pitching coach replaced after rotation ERA climbed above 5.80 through first month.' },
+    { game:38,  year:2026, type:'trade',     icon:'🔄', label:'Ace acquired',     text:'Boston trades prospects for frontline starter to stabilize the rotation.' },
+  ],
+  /* ── Add more teams and seasons below ───────────── */
+};
+
+/* Auto-detected moment types (from game data — no manual entry needed) */
+const AUTO_MOMENT_TYPES = {
+  streak_win:  { type:'streak',    icon:'🔥', label:'Win streak start' },
+  streak_loss: { type:'streak',    icon:'📉', label:'Loss streak start' },
+  crossedUp:   { type:'milestone', icon:'✅', label:'Crossed .500'      },
+  crossedDown: { type:'milestone', icon:'⚠️', label:'Fell below .500'  },
+  bestStretch: { type:'streak',    icon:'⚡', label:'Best 10-game run'  },
+};
+
+/* ── DOM helpers ──────────────────────────────────── */
 const $  = id => document.getElementById(id);
 const el = (t,a={})=>{const e=document.createElementNS('http://www.w3.org/2000/svg',t);for(const[k,v]of Object.entries(a))e.setAttribute(k,v);return e;};
 
-/* ── State ──────────────────────────────────────────── */
-const schedCache = new Map();
-let chartMode    = 'cumulative';
-let lastSeries   = [], lastRS = 1, lastRE = 10;
-let activePreset = 'last10';
-let userChangedInputs = false; /* true once user manually edits range/through */
+/* ── State ────────────────────────────────────────── */
+const schedCache  = new Map();
+let chartMode     = 'cumulative';
+let lastSeries    = [], lastRS = 1, lastRE = 10;
+let activePreset  = 'last10';
+let userChangedInputs = false;
+let activeSinceGame   = null;   /* currently selected moment's game number */
+let currentTeamId     = null;   /* track loaded team for moment resolution */
+let currentGames      = [];     /* current season game log */
+let currentTeamName   = '';
 
 /* ══════════════════════════════════════════════════════
    URL PARAMETER HANDLING
-   Supports: ?team=143&season=2026&through=71&rs=62&re=71
-   Legacy:   &range=54-63  (backwards compat)
+   Supports: ?team=143&season=2026&through=71&rs=62&re=71&since=34
 ══════════════════════════════════════════════════════ */
 function getUrlParams(){
-  const p = new URLSearchParams(window.location.search);
-  /* Legacy range=start-end support */
-  const legacyRange = p.get('range');
-  let rs=null, re=null;
-  if(legacyRange){
-    const parts=legacyRange.split('-');
-    if(parts.length===2){rs=parseInt(parts[0]);re=parseInt(parts[1]);}
-  }
+  const p=new URLSearchParams(window.location.search);
+  const lr=p.get('range');
+  let rs=null,re=null;
+  if(lr){const pts=lr.split('-');if(pts.length===2){rs=parseInt(pts[0]);re=parseInt(pts[1]);}}
   return{
-    team:   p.get('team')   ? Number(p.get('team'))   : null,
-    season: p.get('season') ? Number(p.get('season')) : null,
-    through:p.get('through')? Number(p.get('through')): null,
-    rs:     p.get('rs')     ? Number(p.get('rs'))      : rs,
-    re:     p.get('re')     ? Number(p.get('re'))      : re,
+    team:   p.get('team')   ?Number(p.get('team'))   :null,
+    season: p.get('season') ?Number(p.get('season')) :null,
+    through:p.get('through')?Number(p.get('through')):null,
+    rs:     p.get('rs')     ?Number(p.get('rs'))     :rs,
+    re:     p.get('re')     ?Number(p.get('re'))     :re,
+    since:  p.get('since')  ?Number(p.get('since'))  :null,
   };
 }
 
-/* Update URL without page reload — called on any user change */
-function setUrlParams(teamId, season, through, rs, re){
-  const url = new URL(window.location.href);
-  url.searchParams.set('team',   teamId);
-  url.searchParams.set('season', season);
+function setUrlParams(teamId,season,through,rs,re,since){
+  const url=new URL(window.location.href);
+  url.searchParams.set('team',teamId);
+  url.searchParams.set('season',season);
   url.searchParams.set('through',through);
-  url.searchParams.set('rs',     rs);
-  url.searchParams.set('re',     re);
-  url.searchParams.delete('range'); /* remove legacy param if present */
-  window.history.replaceState({}, '', url);
+  url.searchParams.set('rs',rs);
+  url.searchParams.set('re',re);
+  if(since) url.searchParams.set('since',since);
+  else url.searchParams.delete('since');
+  url.searchParams.delete('range');
+  window.history.replaceState({},'',url);
 }
 
 /* ══════════════════════════════════════════════════════
@@ -654,10 +759,7 @@ async function loadTeams(){
   return d.teams.filter(t=>t.sport?.id===1).sort((a,b)=>a.name.localeCompare(b.name));
 }
 
-/* Load and process final regular-season games for teamId/year.
-   Only Final-status games with a decided score are included.
-   Doubleheaders sorted by gamePk within the same date. */
-async function loadSchedule(teamId, year){
+async function loadSchedule(teamId,year){
   const key=`${teamId}:${year}`;
   if(schedCache.has(key)) return schedCache.get(key);
   const data=await fetchJSON(`${API}/schedule?sportId=1&teamId=${teamId}&season=${year}&gameTypes=R`);
@@ -699,14 +801,11 @@ function recordInRange(games,start,end){
   return{w,l:s.length-w,g:s.length};
 }
 
-/* Project wins from a record. Returns null if no games. */
 function projectWins(rec){
   if(!rec.g) return null;
   return Math.round((rec.w/rec.g)*SEASON_GAMES);
 }
 
-/* Curve similarity: mean absolute deviation of cumWins through N games.
-   Lower = more similar. Used to find closest historical comp. */
 function curveSimilarity(a,b,n){
   const lim=Math.min(n,a.length,b.length);
   if(!lim) return Infinity;
@@ -715,41 +814,36 @@ function curveSimilarity(a,b,n){
   return d/lim;
 }
 
-/* ── Preset range calculations ──────────────────────── */
-/* "Last 10" and "Last 20" are relative to throughGame, not a fixed range */
-function presetRanges(throughGame, completedGP){
+/* ── Preset logic ──────────────────────────────────── */
+function presetRanges(throughGame,completedGP){
   return{
-    last10: { rs: Math.max(1,throughGame-9),  re: throughGame },
-    last20: { rs: Math.max(1,throughGame-19), re: throughGame },
-    g127:   { rs: 1,  re: 27  },
-    g2863:  { rs: 28, re: 63  },
-    first:  { rs: 1,  re: 81  },
-    second: { rs: 82, re: Math.min(SEASON_GAMES, Math.max(82,completedGP)) },
+    last10:{rs:Math.max(1,throughGame-9),  re:throughGame},
+    last20:{rs:Math.max(1,throughGame-19), re:throughGame},
+    g127:  {rs:1,  re:27},
+    g2863: {rs:28, re:63},
+    first: {rs:1,  re:81},
+    second:{rs:82, re:Math.min(SEASON_GAMES,Math.max(82,completedGP))},
   };
 }
 
-/* Detect which preset (if any) matches current range values */
-function detectPreset(rs, re, throughGame, completedGP){
-  const p = presetRanges(throughGame, completedGP);
+function detectPreset(rs,re,throughGame,completedGP){
+  const p=presetRanges(throughGame,completedGP);
   for(const[key,{rs:pr,re:pe}] of Object.entries(p)){
     if(rs===pr&&re===pe) return key;
   }
   return null;
 }
 
-/* ── Default values after loading a team's schedule ────
-   Sets throughGame = completed GP, range = last 10.
-   If URL params exist, use those instead. */
-function computeDefaults(completedGP, urlParams){
-  const through = urlParams.through ?? completedGP;
-  const rs      = urlParams.rs      ?? Math.max(1, completedGP-9);
-  const re      = urlParams.re      ?? completedGP;
-  return{ through: clamp(through,1,Math.max(1,completedGP)), rs: clamp(rs,1,162), re: clamp(re,1,162) };
+function computeDefaults(completedGP,urlParams){
+  const through=urlParams.through??completedGP;
+  const rs=urlParams.rs??Math.max(1,completedGP-9);
+  const re=urlParams.re??completedGP;
+  return{through:clamp(through,1,Math.max(1,completedGP)),rs:clamp(rs,1,162),re:clamp(re,1,162)};
 }
 
-/* ── Momentum label ─────────────────────────────────── */
-function getMomentum(tPct, rPct, rangeSize){
-  const d=rPct-tPct, large=rangeSize>=25;
+/* ── Momentum ──────────────────────────────────────── */
+function getMomentum(tPct,rPct,rangeSize){
+  const d=rPct-tPct,large=rangeSize>=25;
   if(rPct>=.650) return{label:'🔥 Elite pace',    cls:'badge-good',chipCls:'badge-hot'};
   if(rPct>=.600&&d>=.05) return{label:'📈 Heating up',   cls:'badge-good',chipCls:'badge-hot'};
   if(rPct>=.575) return{label:'✅ Strong stretch',cls:'badge-good',chipCls:'badge-hot'};
@@ -762,128 +856,253 @@ function getMomentum(tPct, rPct, rangeSize){
 }
 
 /* ══════════════════════════════════════════════════════
-   INSIGHTS GENERATION
-   Returns plain-English text for each insight card
-   and a short "pace story" suitable for X/Twitter
+   NOTABLE MOMENTS — AUTO-DETECTION
+   Finds streaks, .500 crossings, best stretch from game log.
+   Merged with manual NOTABLE_MOMENTS for the team/year.
 ══════════════════════════════════════════════════════ */
-function buildInsights({teamName, year, through, rs, re, curData, allData}){
-  const cg      = curData.games;
-  const cThru   = recordThrough(cg, through);
-  const cRange  = recordInRange(cg, rs, re);
-  const cTPct   = winPct(cThru.w, cThru.l);
-  const cRPct   = winPct(cRange.w, cRange.l);
-  const prior   = allData.filter(d=>d.year!==year);
+function detectAutoMoments(games){
+  const moments=[];
+  if(games.length<5) return moments;
 
-  /* Through-game comparison vs each prior season */
-  const tcomps  = prior.map(d=>{
-    const r=recordThrough(d.games,through);
-    return{year:d.year,w:r.w,g:r.g,delta:cThru.w-r.w};
-  }).filter(c=>c.g>0);
-
-  const ahead  = tcomps.filter(c=>c.delta>0).map(c=>`${c.year} (+${c.delta})`);
-  const behind = tcomps.filter(c=>c.delta<0).map(c=>`${c.year} (${c.delta})`);
-  const tied   = tcomps.filter(c=>c.delta===0).map(c=>`${c.year}`);
-
-  let throughText=`Through ${cThru.g} games, the ${year} team is <strong>${cThru.w}–${cThru.l}</strong>.`;
-  if(ahead.length)  throughText+=` Ahead of: ${ahead.join(', ')}.`;
-  if(behind.length) throughText+=` Behind: ${behind.join(', ')}.`;
-  if(tied.length)   throughText+=` Even with: ${tied.join(', ')}.`;
-  if(!prior.length) throughText+=' Select comparison seasons to compare.';
-
-  /* Range comparison */
-  const rcomps  = prior.map(d=>{
-    const r=recordInRange(d.games,rs,re);
-    return{year:d.year,w:r.w,l:r.l,g:r.g,pct:winPct(r.w,r.l)};
-  }).filter(c=>c.g>0);
-  const rankPos = rcomps.filter(c=>c.pct>cRPct).length+1;
-  const rankTot = rcomps.length+1;
-  let rangeText = `G${rs}–${re}: ${year} went <strong>${cRange.w}–${cRange.l}</strong> (${fmtPct(cRPct)}).`;
-  if(rankTot>1) rangeText+=` <strong>#${rankPos} of ${rankTot}</strong> seasons in this range.`;
-  const bestR=[...rcomps].sort((a,b)=>b.pct-a.pct)[0];
-  if(bestR) rangeText+=` Best prior: ${bestR.year} (${bestR.w}–${bestR.l}).`;
-  if(cRange.g===0) rangeText=`No completed games in this range yet (G${rs}–${re}). Try a different range.`;
-
-  /* vs avg/best comparison */
-  let compText='Select comparison seasons to compare.';
-  if(tcomps.length){
-    const avg=tcomps.reduce((s,c)=>s+c.w,0)/tcomps.length;
-    const vsAvg=cThru.w-avg;
-    const best=tcomps.reduce((b,c)=>c.w>b.w?c:b);
-    compText=`vs. avg of selected seasons: <strong>${vsAvg>=0?'+':''}${vsAvg.toFixed(1)}W</strong> through game ${through}. Best comp season: <strong>${best.year}</strong> (${best.w}W).`;
-  }
-
-  /* Closest historical comp by curve similarity */
-  let closestText='Select more seasons to find a closest comp.';
-  if(prior.length){
-    const sims=prior.map(d=>({year:d.year,sim:curveSimilarity(cg,d.games,through)}))
-      .filter(s=>isFinite(s.sim)).sort((a,b)=>a.sim-b.sim);
-    if(sims.length){
-      const b=sims[0];
-      const br=recordThrough(allData.find(d=>d.year===b.year).games,through);
-      closestText=`Most similar through game ${through}: <strong>${b.year}</strong> (${br.w}–${br.l}). Avg divergence: ${b.sim.toFixed(1)} W/game.`;
+  /* Find longest win streak and where it started */
+  let bestWinStreak=0,bestWinStart=0,curWin=0,curWinStart=0;
+  let bestLossStreak=0,bestLossStart=0,curLoss=0,curLossStart=0;
+  games.forEach((g,i)=>{
+    if(g.win){
+      curLoss=0;
+      if(curWin===0) curWinStart=g.gameNo;
+      curWin++;
+      if(curWin>bestWinStreak){bestWinStreak=curWin;bestWinStart=curWinStart;}
+    } else {
+      curWin=0;
+      if(curLoss===0) curLossStart=g.gameNo;
+      curLoss++;
+      if(curLoss>bestLossStreak){bestLossStreak=curLoss;bestLossStart=curLossStart;}
     }
+  });
+  if(bestWinStreak>=5){
+    moments.push({
+      game:bestWinStart, type:'streak', icon:'🔥',
+      label:`${bestWinStreak}-game win streak`,
+      text:`Started a ${bestWinStreak}-game win streak — the longest of the season.`,
+      auto:true,
+    });
+  }
+  if(bestLossStreak>=5){
+    moments.push({
+      game:bestLossStart, type:'streak', icon:'📉',
+      label:`${bestLossStreak}-game skid`,
+      text:`Began a ${bestLossStreak}-game losing streak — the longest of the season.`,
+      auto:true,
+    });
   }
 
-  /* Pace projections — clearly labelled as pace-based, not predictive */
-  const curSeasRec = recordThrough(cg, cg.length);
-  const seasProj   = projectWins(curSeasRec);
-  const rangeProj  = projectWins(cRange);
-  let projText = seasProj!=null ? `Full-season pace: <strong>${seasProj} wins</strong>.` : '';
-  if(rangeProj!=null) projText+=` At G${rs}–${re} pace: <strong>${rangeProj} wins</strong>.`;
-  if(!projText) projText='Insufficient games to project.';
-  projText+=` <em style="color:var(--chalk);font-size:12px">Pace-based calculation, not a predictive model.</em>`;
-
-  /* Last 10 record for sharing */
-  const l10g = cg.slice(-10), l10w=l10g.filter(g=>g.win).length;
-  const l10str = cg.length>=10 ? `${l10w}–${l10g.length-l10w}` : '—';
-
-  /* Today's pace story — short, suitable for X/Twitter */
-  let story=`Through ${cThru.g} games, the ${year} ${teamName} are <strong>${cThru.w}–${cThru.l}</strong>`;
-  if(tcomps.length){
-    const refYear=tcomps[0];
-    story+=refYear.delta>0?`, ${refYear.delta} win${refYear.delta!==1?'s':''} ahead of ${refYear.year} pace`
-      :refYear.delta<0?`, ${Math.abs(refYear.delta)} win${Math.abs(refYear.delta)!==1?'s':''} behind ${refYear.year} pace`
-      :`, matching ${refYear.year} pace`;
+  /* First time team crossed .500 (going up or going down) */
+  let wasAbove=null;
+  for(const g of games){
+    const pct=winPct(g.cumWins,g.cumLosses);
+    const above=pct>0.500;
+    if(wasAbove===false&&above&&g.gameNo>5){
+      moments.push({
+        game:g.gameNo, type:'milestone', icon:'✅',
+        label:'Crossed above .500',
+        text:`Team climbed above .500 for the first time this season at game ${g.gameNo}.`,
+        auto:true,
+      });
+      break;
+    }
+    if(wasAbove===true&&!above&&g.gameNo>5){
+      moments.push({
+        game:g.gameNo, type:'milestone', icon:'⚠️',
+        label:'Fell below .500',
+        text:`Team dropped below .500 for the first time this season at game ${g.gameNo}.`,
+        auto:true,
+      });
+      break;
+    }
+    if(wasAbove===null) wasAbove=above;
+    else wasAbove=above;
   }
-  story+=cRange.g>0 ? `. Their ${rs===Math.max(1,through-9)&&re===through?'last '+(re-rs+1)+'-game':('G'+rs+'–'+re)} record is <strong>${cRange.w}–${cRange.l}</strong>` : '';
-  story+=seasProj!=null?`. Current pace projects to <strong>${seasProj} wins</strong>.`
-    :'.'
 
-  return{throughText,rangeText,compText,closestText,projText,story,l10str,seasProj,curSeasRec};
+  /* Best rolling 10-game stretch */
+  let bestPct=0,bestStart=0;
+  for(let i=0;i<=games.length-10;i++){
+    const slice=games.slice(i,i+10);
+    const w=slice.filter(g=>g.win).length;
+    const p=w/10;
+    if(p>bestPct){bestPct=p;bestStart=games[i].gameNo;}
+  }
+  if(bestPct>=0.700&&bestStart>0){
+    moments.push({
+      game:bestStart, type:'streak', icon:'⚡',
+      label:`Best 10-game run (${Math.round(bestPct*10)}–${10-Math.round(bestPct*10)})`,
+      text:`Best 10-game stretch of the season started here — ${Math.round(bestPct*10)}–${10-Math.round(bestPct*10)} (.${Math.round(bestPct*1000)}).`,
+      auto:true,
+    });
+  }
+
+  return moments;
+}
+
+/* Merge manual + auto moments for a team/year, sorted by game number */
+function getMomentsForTeam(teamId, year, games){
+  const manual=(NOTABLE_MOMENTS[teamId]||[]).filter(m=>m.year===year);
+  const auto=detectAutoMoments(games);
+  /* Deduplicate: skip auto moments that are within 3 games of a manual one */
+  const filtered=auto.filter(a=>!manual.some(m=>Math.abs(m.game-a.game)<=3));
+  return [...manual,...filtered].sort((a,b)=>a.game-b.game);
 }
 
 /* ══════════════════════════════════════════════════════
-   SHARE HELPERS
+   SINCE CALLOUT RENDERING
+   Called when user taps a moment button.
 ══════════════════════════════════════════════════════ */
-async function copyToClipboard(text){
-  try{ await navigator.clipboard.writeText(text); return true; }
-  catch{ window.prompt('Copy this:',text); return false; }
+function renderSinceCard(moment, games, teamName, teamId, year){
+  activeSinceGame=moment.game;
+
+  /* Record from moment.game+1 onwards (the moment itself is the trigger, not the first game) */
+  const sinceGames=games.filter(g=>g.gameNo>moment.game);
+  const w=sinceGames.filter(g=>g.win).length;
+  const l=sinceGames.length-w;
+  const g=sinceGames.length;
+  const pct=winPct(w,l);
+  const proj=projectWins({w,l,g});
+
+  /* Context: compare this pace to full-season pace */
+  const fullRec=recordThrough(games,games.length);
+  const fullPct=winPct(fullRec.w,fullRec.l);
+  const pctDiff=pct-fullPct;
+  const pctLabel=pctDiff>0.05?'significantly better than':pctDiff<-0.05?'below':'roughly in line with';
+
+  /* Build plain-English narrative */
+  let narrative=`Since <strong>${moment.label}</strong> (after game ${moment.game}), `;
+  if(g===0){
+    narrative+=`no games have been completed yet.`;
+  } else {
+    narrative+=`the ${teamName} are <span class="hi">${w}–${l}</span> in ${g} games `;
+    narrative+=`(${fmtPct(pct)} win%). `;
+    if(proj!==null){
+      narrative+=`At this pace they project to <strong>${proj} wins</strong>. `;
+    }
+    narrative+=`That's ${pctLabel} their full-season pace.`;
+  }
+
+  /* Populate card */
+  $('sinceTitle').textContent=`${moment.icon} ${moment.label}`;
+  $('sinceRecord').textContent=g>0?`${w}–${l}`:'—';
+  $('sinceGames').textContent=g>0?`${g} games since game ${moment.game}`:'No games yet';
+  $('sinceWinPct').textContent=g>0?fmtPct(pct):'—';
+  $('sincePaceSub').textContent=g>0?`${pctDiff>=0?'+':''}${(pctDiff*1000).toFixed(0)} pts vs season`:'';
+  $('sinceProj').textContent=proj!=null?`${proj}W`:'—';
+  $('sinceText').innerHTML=narrative;
+
+  /* Share text for this "since" view */
+  const sinceUrl=`https://tracktheseason.com/tracker.html?team=${teamId}&season=${year}&since=${moment.game}`;
+  const sinceShareText=g>0
+    ? `${teamName} since ${moment.label}:\n${w}–${l} in ${g} games (${fmtPct(pct)}).\nPace: ${proj??'—'} wins.\n${sinceUrl}`
+    : `${teamName} — ${moment.label} (game ${moment.game})\n${sinceUrl}`;
+
+  $('sinceShare').innerHTML=`
+    <a class="since-share-btn since-share-btn-x"
+       href="https://x.com/intent/tweet?text=${encodeURIComponent(sinceShareText)}"
+       target="_blank" rel="noopener">𝕏 Post to X</a>
+    <button class="since-share-btn since-share-btn-copy" id="sinceCopyBtn">⧉ Copy</button>`;
+  $('sinceCopyBtn').onclick=async()=>{
+    const ok=await copyToClipboard(sinceShareText);
+    $('sinceCopyBtn').textContent=ok?'✓ Copied':'Copy';
+  };
+
+  /* Show card */
+  $('sinceCard').classList.remove('hidden');
+
+  /* Highlight the active moment button */
+  document.querySelectorAll('.moment-btn').forEach(b=>{
+    b.classList.toggle('active',Number(b.dataset.game)===moment.game);
+  });
+
+  /* Update URL with since param */
+  const through=clamp($('throughInput').value,1,162);
+  const rs=clamp($('rangeStartInput').value,1,162);
+  const re=clamp($('rangeEndInput').value,1,162);
+  setUrlParams($('teamSelect').value,year,through,Math.min(rs,re),Math.max(rs,re),moment.game);
 }
 
-function buildShareText(teamName, w, l, gp, proj, l10str, url){
-  return `${teamName} Pace Check:\n${w}–${l} through ${gp} games.\nProjected finish: ${proj??'—'} wins.\nLast 10: ${l10str}.\nTrack the season: ${url}`;
+function dismissSinceCard(){
+  activeSinceGame=null;
+  $('sinceCard').classList.add('hidden');
+  document.querySelectorAll('.moment-btn').forEach(b=>b.classList.remove('active'));
+  /* Remove since param from URL */
+  const url=new URL(window.location.href);
+  url.searchParams.delete('since');
+  window.history.replaceState({},'',url);
 }
 
-function xShareUrl(text){
-  return 'https://x.com/intent/tweet?text='+encodeURIComponent(text);
+/* ══════════════════════════════════════════════════════
+   MOMENTS STRIP RENDERING
+   Builds the row of tappable moment buttons.
+══════════════════════════════════════════════════════ */
+function renderMomentsStrip(moments, games, teamName, teamId, year){
+  const strip=$('momentsStrip');
+  const btnsEl=$('momentBtns');
+
+  if(!moments.length){
+    strip.classList.add('hidden');
+    return;
+  }
+
+  /* Only show moments that have already passed (game has been played) */
+  const playedMoments=moments.filter(m=>m.game<=games.length);
+  if(!playedMoments.length){
+    strip.classList.add('hidden');
+    return;
+  }
+
+  btnsEl.innerHTML='';
+  btnsEl.style.cssText='display:flex;flex-wrap:wrap;gap:6px';
+
+  playedMoments.forEach(m=>{
+    const btn=document.createElement('button');
+    btn.className=`moment-btn type-${m.type}`;
+    btn.dataset.game=m.game;
+    btn.innerHTML=`<span class="moment-icon">${m.icon}</span>${m.label}<span class="moment-game">G${m.game}</span>`;
+    btn.title=m.text;
+    btn.addEventListener('click',()=>{
+      if(activeSinceGame===m.game){
+        dismissSinceCard();
+      } else {
+        renderSinceCard(m,games,teamName,teamId,year);
+      }
+    });
+    btnsEl.appendChild(btn);
+  });
+
+  strip.classList.remove('hidden');
+
+  /* If URL had a since param, auto-open that moment */
+  const urlParams=getUrlParams();
+  if(urlParams.since){
+    const m=playedMoments.find(m=>m.game===urlParams.since);
+    if(m) renderSinceCard(m,games,teamName,teamId,year);
+  }
 }
 
 /* ══════════════════════════════════════════════════════
    CHART RENDERING
+   Draws moment pins as vertical markers on the chart.
 ══════════════════════════════════════════════════════ */
-function drawChart(series, rs, re, mode){
+function drawChart(series,rs,re,mode,moments=[]){
   lastSeries=series; lastRS=rs; lastRE=re;
   const svg=$('mainChart'); svg.innerHTML='';
-  const W=1000,H=360,p={l:48,r:28,t:20,b:38};
+  const W=1000,H=360,p={l:48,r:28,t:28,b:38};
   svg.setAttribute('viewBox',`0 0 ${W} ${H}`);
-  const xMax=162, yMax=mode==='pct'?1:108;
+  const xMax=162,yMax=mode==='pct'?1:108;
   const sx=x=>p.l+(x/xMax)*(W-p.l-p.r);
   const sy=y=>H-p.b-(y/yMax)*(H-p.t-p.b);
 
   /* Range shading */
   svg.appendChild(el('rect',{x:sx(rs-1),y:p.t,width:sx(re)-sx(rs-1),height:H-p.t-p.b,fill:'rgba(26,255,107,.06)'}));
   [rs-1,re].forEach(xv=>svg.appendChild(el('line',{x1:sx(xv),x2:sx(xv),y1:p.t,y2:H-p.b,stroke:'rgba(26,255,107,.30)','stroke-width':1.5,'stroke-dasharray':'5 4'})));
-  const rlb=el('text',{x:sx((rs+re)/2),y:p.t-6,fill:'rgba(26,255,107,.55)','font-size':10,'text-anchor':'middle','font-family':'IBM Plex Mono,monospace','font-weight':'700'});
+  const rlb=el('text',{x:sx((rs+re)/2),y:p.t-10,fill:'rgba(26,255,107,.55)','font-size':10,'text-anchor':'middle','font-family':'IBM Plex Mono,monospace','font-weight':'700'});
   rlb.textContent=`G${rs}–${re}`; svg.appendChild(rlb);
 
   /* Y grid */
@@ -900,6 +1119,35 @@ function drawChart(series, rs, re, mode){
     t.textContent=x; svg.appendChild(t);
   });
 
+  /* Notable moment pins — drawn before series lines so lines appear on top */
+  const typeColors={
+    coaching:'#a78bfa',trade:'#38bdf8',injury:'#fb923c',
+    callup:'#1aff6b',streak:'#f5c842',milestone:'#f472b6',
+  };
+  for(const m of moments){
+    if(m.game>currentGames.length) continue;
+    const x=sx(m.game);
+    const col=typeColors[m.type]||'#8a8a82';
+    const isActive=activeSinceGame===m.game;
+    /* Vertical dashed line */
+    svg.appendChild(el('line',{
+      x1:x,x2:x,y1:p.t,y2:H-p.b,
+      stroke:col,'stroke-width':isActive?2:1,
+      'stroke-dasharray':'4 3',
+      opacity:isActive?'0.9':'0.45',
+    }));
+    /* Pin circle at top */
+    const circ=el('circle',{cx:x,cy:p.t,r:isActive?6:4,fill:col,opacity:isActive?'1':'0.7'});
+    svg.appendChild(circ);
+    /* Icon label */
+    const lbl=el('text',{
+      x:x,y:p.t-8,fill:col,'font-size':11,
+      'text-anchor':'middle','font-family':'IBM Plex Mono,monospace',
+      'font-weight':'700',opacity:isActive?'1':'0.7',
+    });
+    lbl.textContent=m.icon; svg.appendChild(lbl);
+  }
+
   /* Series lines */
   for(const s of series){
     if(!s.points.length) continue;
@@ -910,19 +1158,30 @@ function drawChart(series, rs, re, mode){
     const path=el('path',{d,fill:'none',stroke:s.color,'stroke-width':s.current?3:1.8,'stroke-linecap':'round','stroke-linejoin':'round'});
     if(s.projected) path.setAttribute('stroke-dasharray','7 5');
     svg.appendChild(path);
-    /* End label — only on current season to reduce clutter */
     if(s.current){
       const last=pts[pts.length-1];
       const lbl=el('text',{x:sx(last.game)+4,y:sy(last[yKey]??0)+4,fill:s.color,'font-size':11,'font-weight':'700','font-family':'IBM Plex Mono,monospace'});
       lbl.textContent=s.label; svg.appendChild(lbl);
     }
   }
+
+  /* "Since" shading — shade region after the active moment */
+  if(activeSinceGame){
+    const sx2=sx(activeSinceGame);
+    const endX=sx(Math.min(currentGames.length,SEASON_GAMES));
+    if(endX>sx2){
+      const shade=el('rect',{
+        x:sx2,y:p.t,width:endX-sx2,height:H-p.t-p.b,
+        fill:'rgba(255,255,255,.03)',
+      });
+      svg.insertBefore(shade,svg.firstChild); /* behind everything */
+    }
+  }
 }
 
-function buildSeries(allData, year, rs, re){
+function buildSeries(allData,year,rs,re){
   return allData.map((d,i)=>{
-    const color=SEASON_COLORS[i%SEASON_COLORS.length];
-    const isCur=d.year===year;
+    const color=SEASON_COLORS[i%SEASON_COLORS.length],isCur=d.year===year;
     const pts=[]; let rw=0;
     d.games.forEach(g=>{
       if(g.gameNo>=rs&&g.gameNo<=re) rw+=g.win?1:0;
@@ -939,17 +1198,83 @@ function buildSeries(allData, year, rs, re){
 }
 
 /* ══════════════════════════════════════════════════════
+   INSIGHTS
+══════════════════════════════════════════════════════ */
+function buildInsights({teamName,year,through,rs,re,curData,allData}){
+  const cg=curData.games;
+  const cThru=recordThrough(cg,through);
+  const cRange=recordInRange(cg,rs,re);
+  const cTPct=winPct(cThru.w,cThru.l);
+  const cRPct=winPct(cRange.w,cRange.l);
+  const prior=allData.filter(d=>d.year!==year);
+  const tcomps=prior.map(d=>{const r=recordThrough(d.games,through);return{year:d.year,w:r.w,g:r.g,delta:cThru.w-r.w};}).filter(c=>c.g>0);
+  const ahead=tcomps.filter(c=>c.delta>0).map(c=>`${c.year} (+${c.delta})`);
+  const behind=tcomps.filter(c=>c.delta<0).map(c=>`${c.year} (${c.delta})`);
+  const tied=tcomps.filter(c=>c.delta===0).map(c=>`${c.year}`);
+  let throughText=`Through ${cThru.g} games, the ${year} team is <strong>${cThru.w}–${cThru.l}</strong>.`;
+  if(ahead.length) throughText+=` Ahead of: ${ahead.join(', ')}.`;
+  if(behind.length) throughText+=` Behind: ${behind.join(', ')}.`;
+  if(tied.length) throughText+=` Even with: ${tied.join(', ')}.`;
+  if(!prior.length) throughText+=' Select comparison seasons to compare.';
+  const rcomps=prior.map(d=>{const r=recordInRange(d.games,rs,re);return{year:d.year,w:r.w,l:r.l,g:r.g,pct:winPct(r.w,r.l)};}).filter(c=>c.g>0);
+  const rankPos=rcomps.filter(c=>c.pct>cRPct).length+1;
+  const rankTot=rcomps.length+1;
+  let rangeText=`G${rs}–${re}: ${year} went <strong>${cRange.w}–${cRange.l}</strong> (${fmtPct(cRPct)}).`;
+  if(rankTot>1) rangeText+=` <strong>#${rankPos} of ${rankTot}</strong> seasons in this range.`;
+  const bestR=[...rcomps].sort((a,b)=>b.pct-a.pct)[0];
+  if(bestR) rangeText+=` Best prior: ${bestR.year} (${bestR.w}–${bestR.l}).`;
+  if(cRange.g===0) rangeText=`No completed games in range G${rs}–${re} yet.`;
+  let compText='Select comparison seasons to compare.';
+  if(tcomps.length){
+    const avg=tcomps.reduce((s,c)=>s+c.w,0)/tcomps.length;
+    const vsAvg=cThru.w-avg;
+    const best=tcomps.reduce((b,c)=>c.w>b.w?c:b);
+    compText=`vs. avg of selected seasons: <strong>${vsAvg>=0?'+':''}${vsAvg.toFixed(1)}W</strong> through game ${through}. Best comp: <strong>${best.year}</strong> (${best.w}W).`;
+  }
+  let closestText='Select more seasons to find a closest comp.';
+  if(prior.length){
+    const sims=prior.map(d=>({year:d.year,sim:curveSimilarity(cg,d.games,through)})).filter(s=>isFinite(s.sim)).sort((a,b)=>a.sim-b.sim);
+    if(sims.length){const b=sims[0];const br=recordThrough(allData.find(d=>d.year===b.year).games,through);closestText=`Most similar through game ${through}: <strong>${b.year}</strong> (${br.w}–${br.l}). Avg divergence: ${b.sim.toFixed(1)} W/game.`;}
+  }
+  const curSeasRec=recordThrough(cg,cg.length);
+  const seasProj=projectWins(curSeasRec);
+  const rangeProj=projectWins(cRange);
+  let projText=seasProj!=null?`Full-season pace: <strong>${seasProj} wins</strong>.`:'';
+  if(rangeProj!=null) projText+=` At G${rs}–${re} pace: <strong>${rangeProj} wins</strong>.`;
+  if(!projText) projText='Insufficient games to project.';
+  projText+=` <em style="color:var(--chalk);font-size:12px">Pace-based calculation, not a predictive model.</em>`;
+  const l10g=cg.slice(-10),l10w=l10g.filter(g=>g.win).length;
+  const l10str=cg.length>=10?`${l10w}–${l10g.length-l10w}`:'—';
+  let story=`Through ${cThru.g} games, the ${year} ${teamName} are <strong>${cThru.w}–${cThru.l}</strong>`;
+  if(tcomps.length){const r=tcomps[0];story+=r.delta>0?`, ${r.delta} win${r.delta!==1?'s':''} ahead of ${r.year}`:r.delta<0?`, ${Math.abs(r.delta)} win${Math.abs(r.delta)!==1?'s':''} behind ${r.year}`:`, matching ${r.year} pace`;}
+  story+=cRange.g>0?`. Their last-${re-rs+1}-game record is <strong>${cRange.w}–${cRange.l}</strong>.`+( seasProj!=null?` Current pace: <strong>${seasProj} wins</strong>.`:'.'):'.'
+  return{throughText,rangeText,compText,closestText,projText,story,l10str,seasProj,curSeasRec};
+}
+
+/* ══════════════════════════════════════════════════════
+   SHARE HELPERS
+══════════════════════════════════════════════════════ */
+async function copyToClipboard(text){
+  try{await navigator.clipboard.writeText(text);return true;}
+  catch{window.prompt('Copy this:',text);return false;}
+}
+function buildShareText(teamName,w,l,gp,proj,l10str,url){
+  return `${teamName} Pace Check:\n${w}–${l} through ${gp} games.\nProjected finish: ${proj??'—'} wins.\nLast 10: ${l10str}.\nTrack the season: ${url}`;
+}
+function xShareUrl(text){return 'https://x.com/intent/tweet?text='+encodeURIComponent(text);}
+
+/* ══════════════════════════════════════════════════════
    TABLE RENDERING
 ══════════════════════════════════════════════════════ */
-function renderThroughTable(allData, year, through){
+function renderThroughTable(allData,year,through){
   const curRec=recordThrough(allData.find(d=>d.year===year)?.games||[],through);
   document.querySelector('#throughTable tbody').innerHTML=allData.map(d=>{
-    const r=recordThrough(d.games,through), isCur=d.year===year;
+    const r=recordThrough(d.games,through),isCur=d.year===year;
     const delta=r.w-curRec.w;
     const dStr=isCur?'—':(delta>0?`+${delta}`:`${delta}`);
     const dCls=delta>0?'pill-g':delta<0?'pill-r':'pill-n';
     let fin;
-    if(isCur&&d.games.length<SEASON_GAMES){ const p=projectWins(recordThrough(d.games,d.games.length)); fin=p!=null?`${p}*`:'—';}
+    if(isCur&&d.games.length<SEASON_GAMES){const p=projectWins(recordThrough(d.games,d.games.length));fin=p!=null?`${p}*`:'—';}
     else fin=d.games.length>=SEASON_GAMES?recordThrough(d.games,SEASON_GAMES).w:recordThrough(d.games,d.games.length).w;
     return`<tr class="${isCur?'cur-row':''}">
       <td><strong style="color:${isCur?'#1aff6b':'inherit'}">${d.year}${isCur?' ★':''}</strong></td>
@@ -960,10 +1285,10 @@ function renderThroughTable(allData, year, through){
   }).join('');
 }
 
-function renderRangeTable(allData, year, rs, re){
+function renderRangeTable(allData,year,rs,re){
   document.querySelector('#rangeTable tbody').innerHTML=allData.map(d=>{
-    const r=recordInRange(d.games,rs,re), isCur=d.year===year;
-    const pct=winPct(r.w,r.l), pace=r.g?Math.round((r.w/r.g)*SEASON_GAMES):0;
+    const r=recordInRange(d.games,rs,re),isCur=d.year===year;
+    const pct=winPct(r.w,r.l),pace=r.g?Math.round((r.w/r.g)*SEASON_GAMES):0;
     const cls=pct>=.580?'pill-g':pct<=.420?'pill-r':'';
     return`<tr class="${isCur?'cur-row':''}">
       <td><strong style="color:${isCur?'#1aff6b':'inherit'}">${d.year}${isCur?' ★':''}</strong></td>
@@ -984,37 +1309,27 @@ function renderInsights(params){
   const cThru=recordThrough(cg,through);
   const cRange=recordInRange(cg,rs,re);
   const momentum=getMomentum(winPct(cThru.w,cThru.l),winPct(cRange.w,cRange.l),re-rs+1);
-
-  /* Momentum badge + hero badge */
   $('momentumBadge').textContent=momentum.label;
   $('momentumBadge').className=`momentum-badge ${momentum.cls}`;
   $('heroBadge').textContent=momentum.label;
   $('heroBadge').className=`hero-badge ${momentum.chipCls}`;
-
-  /* Pace story */
   $('paceStoryText').innerHTML=story;
-
-  /* Share row — X post + copy link + copy insight */
   const gp=cg.length;
-  const urlStr='https://tracktheseason.com/'+
-    `tracker.html?team=${$('teamSelect').value}&season=${year}&through=${through}&rs=${rs}&re=${re}`;
+  const urlStr=`https://tracktheseason.com/tracker.html?team=${$('teamSelect').value}&season=${year}&through=${through}&rs=${rs}&re=${re}`;
   const shareText=buildShareText(teamName,curSeasRec.w,curSeasRec.l,gp,seasProj,l10str,urlStr);
-  const xUrl=xShareUrl(shareText);
   $('insightShare').innerHTML=`
-    <a class="share-btn share-btn-x" href="${xUrl}" target="_blank" rel="noopener">𝕏 Post to X</a>
+    <a class="share-btn share-btn-x" href="${xShareUrl(shareText)}" target="_blank" rel="noopener">𝕏 Post to X</a>
     <button class="share-btn share-btn-copy" id="copyLinkBtn">⧉ Copy link</button>
     <button class="share-btn share-btn-copy" id="copyInsightBtn">✦ Copy insight</button>`;
   $('copyLinkBtn').onclick=async()=>{const ok=await copyToClipboard(urlStr);$('copyLinkBtn').textContent=ok?'✓ Copied':'Link';};
   $('copyInsightBtn').onclick=async()=>{const ok=await copyToClipboard(shareText);$('copyInsightBtn').textContent=ok?'✓ Copied':'Text';};
-
-  /* Insight cards */
   $('insightsGrid').innerHTML=[
     {title:`Through game ${through}`,    text:throughText},
     {title:`Range G${rs}–${re}`,         text:rangeText},
     {title:'vs. selected seasons',       text:compText},
     {title:'Closest historical comp',    text:closestText},
     {title:'Current pace projection',    text:projText},
-    {title:'⚠️ Range pace ≠ full season',text:`A ${re-rs+1}-game range reflects recent form, not guaranteed full-season pace. Treat range projections as a ceiling, not a forecast. This is a pace calculation — not a predictive model.`,caution:true},
+    {title:'⚠️ Range pace ≠ full season',text:`A ${re-rs+1}-game range reflects recent form, not guaranteed pace. Pace projections are calculations — not predictive models.`,caution:true},
   ].map(c=>`<div class="insight-card${c.caution?' insight-caution':''}">
     <div class="insight-card-title">${c.title}</div>
     <div class="insight-card-body">${c.text}</div>
@@ -1022,23 +1337,19 @@ function renderInsights(params){
 }
 
 /* ══════════════════════════════════════════════════════
-   PRESET BUTTON MANAGEMENT
+   PRESET MANAGEMENT
 ══════════════════════════════════════════════════════ */
 function setActivePreset(key){
   activePreset=key;
   document.querySelectorAll('.preset-btn').forEach(b=>b.classList.toggle('active',b.dataset.preset===key));
 }
-
 function clearActivePreset(){
   activePreset=null;
   document.querySelectorAll('.preset-btn').forEach(b=>b.classList.remove('active'));
 }
-
 function applyPreset(key){
   const through=clamp($('throughInput').value,1,162);
-  const gp=Number($('throughInput').value)||through;
-  const completedGP=gp;
-  const ranges=presetRanges(through,completedGP);
+  const ranges=presetRanges(through,through);
   const r=ranges[key];
   if(!r) return;
   $('rangeStartInput').value=r.rs;
@@ -1066,28 +1377,32 @@ async function update(){
 
     $('statusText').textContent=`Loading ${teamName} ${year}…`;
 
-    /* Load all selected seasons */
     const allData=await Promise.all(years.map(async y=>{
       $('statusText').textContent=`Loading ${y} schedule…`;
       return{year:y,games:await loadSchedule(teamId,y)};
     }));
 
     const curData=allData.find(d=>d.year===year);
-    if(!curData) throw new Error(`No ${year} data found for this team.`);
+    if(!curData) throw new Error(`No ${year} data found.`);
 
-    const through  =clamp($('throughInput').value,1,162);
-    const rs       =clamp($('rangeStartInput').value,1,162);
-    const re       =clamp($('rangeEndInput').value,1,162);
-    const rangeStart=Math.min(rs,re), rangeEnd=Math.max(rs,re);
+    const through=clamp($('throughInput').value,1,162);
+    const rs=clamp($('rangeStartInput').value,1,162);
+    const re=clamp($('rangeEndInput').value,1,162);
+    const rangeStart=Math.min(rs,re),rangeEnd=Math.max(rs,re);
 
-    const cg       =curData.games;
-    const cThru    =recordThrough(cg,through);
-    const cRange   =recordInRange(cg,rangeStart,rangeEnd);
+    const cg=curData.games;
+    const cThru=recordThrough(cg,through);
+    const cRange=recordInRange(cg,rangeStart,rangeEnd);
     const curSeason=recordThrough(cg,cg.length);
-    const proj     =projectWins(curSeason);
+    const proj=projectWins(curSeason);
 
-    /* Update URL */
-    setUrlParams(teamId,year,through,rangeStart,rangeEnd);
+    /* Store for moment rendering */
+    currentTeamId=Number(teamId);
+    currentGames=cg;
+    currentTeamName=teamName;
+
+    /* URL update */
+    setUrlParams(teamId,year,through,rangeStart,rangeEnd,activeSinceGame);
 
     /* Hero */
     const logoUrl=`https://www.mlbstatic.com/team-logos/${teamId}.svg`;
@@ -1116,10 +1431,18 @@ async function update(){
     $('mProjection').textContent=proj!=null?`${proj} W`:'—';
     $('mPace').textContent   =`${curSeason.w}–${curSeason.l} · ${cg.length} GP`;
 
-    /* Chart */
+    /* Notable moments */
+    const moments=getMomentsForTeam(Number(teamId),year,cg);
+    renderMomentsStrip(moments,cg,teamName,Number(teamId),year);
+    /* Reset since card if team changed */
+    if(activeSinceGame&&!moments.find(m=>m.game===activeSinceGame)){
+      dismissSinceCard();
+    }
+
+    /* Chart — pass moments for pin rendering */
     const sorted=[...allData].sort((a,b)=>a.year===year?-1:b.year===year?1:b.year-a.year);
-    const series =buildSeries(sorted,year,rangeStart,rangeEnd);
-    drawChart(series,rangeStart,rangeEnd,chartMode);
+    const series=buildSeries(sorted,year,rangeStart,rangeEnd);
+    drawChart(series,rangeStart,rangeEnd,chartMode,moments.filter(m=>m.game<=cg.length));
     const titles={cumulative:'Cumulative wins by game',range:`Wins inside G${rangeStart}–${rangeEnd}`,pct:'Win % by game'};
     $('chartTitle').textContent=titles[chartMode];
     $('chartLegend').innerHTML=series.map(s=>`<span><span class="legend-dot" style="background:${s.color}"></span>${s.label}${s.projected?' (proj.)':''}</span>`).join('');
@@ -1131,7 +1454,7 @@ async function update(){
     /* Insights */
     renderInsights({teamName,year,through,rs:rangeStart,re:rangeEnd,curData,allData});
 
-    /* Update preset active state */
+    /* Preset detection */
     const matched=detectPreset(rangeStart,rangeEnd,through,cg.length);
     if(matched) setActivePreset(matched);
 
@@ -1146,23 +1469,18 @@ async function update(){
 }
 
 /* ══════════════════════════════════════════════════════
-   INIT — load teams, read URL params, set defaults
+   INIT
 ══════════════════════════════════════════════════════ */
 function populateSeasons(){
   const y=curYear();
-  $('currentSeasonSelect').innerHTML=Array.from({length:9},(_,i)=>y-i)
-    .map(yr=>`<option value="${yr}">${yr}</option>`).join('');
+  $('currentSeasonSelect').innerHTML=Array.from({length:9},(_,i)=>y-i).map(yr=>`<option value="${yr}">${yr}</option>`).join('');
   $('currentSeasonSelect').value=y;
   renderSeasonChecks();
 }
-
 function renderSeasonChecks(){
   const y=Number($('currentSeasonSelect').value);
   $('seasonChecks').innerHTML=Array.from({length:7},(_,i)=>y-i).map(yr=>`
-    <label class="check-item">
-      <input type="checkbox" value="${yr}" ${yr>=y-4?'checked':''}/>
-      ${yr}
-    </label>`).join('');
+    <label class="check-item"><input type="checkbox" value="${yr}" ${yr>=y-4?'checked':''}/>${yr}</label>`).join('');
 }
 
 async function init(){
@@ -1170,43 +1488,32 @@ async function init(){
     const urlParams=getUrlParams();
     const teams=await loadTeams();
     $('teamSelect').innerHTML=teams.map(t=>`<option value="${t.id}">${t.name}</option>`).join('');
-
-    /* Pre-select team from URL, else default */
     if(urlParams.team&&teams.find(t=>t.id===urlParams.team)){
       $('teamSelect').value=urlParams.team;
     } else {
       const def=teams.find(t=>t.id===DEFAULT_TEAM)||teams[0];
       if(def) $('teamSelect').value=def.id;
     }
-
     populateSeasons();
-
-    /* Set season from URL if valid */
     if(urlParams.season){
       const yr=String(urlParams.season);
       if([...$('currentSeasonSelect').options].some(o=>o.value===yr)){
-        $('currentSeasonSelect').value=yr;
-        renderSeasonChecks();
+        $('currentSeasonSelect').value=yr;renderSeasonChecks();
       }
     }
-
-    /* Load current season schedule to get completedGP for smart defaults */
     const teamId=$('teamSelect').value;
     const year=Number($('currentSeasonSelect').value);
-    const curGames=await loadSchedule(teamId,year);
-    const completedGP=curGames.length;
-
-    /* Apply defaults: URL params if present, else last-10 defaults */
+    const cg=await loadSchedule(teamId,year);
+    const completedGP=cg.length;
     const defaults=computeDefaults(completedGP,urlParams);
     $('throughInput').value=defaults.through;
     $('rangeStartInput').value=defaults.rs;
     $('rangeEndInput').value=defaults.re;
-
-    /* Set active preset */
     const matched=detectPreset(defaults.rs,defaults.re,defaults.through,completedGP);
     if(matched) setActivePreset(matched);
     else if(!urlParams.rs&&!urlParams.re) setActivePreset('last10');
-
+    /* Restore since from URL */
+    if(urlParams.since) activeSinceGame=urlParams.since;
     await update();
   }catch(err){
     $('statusMsg').style.display='none';
@@ -1220,12 +1527,10 @@ async function init(){
 ══════════════════════════════════════════════════════ */
 $('runBtn').addEventListener('click',update);
 
-/* Reset to current defaults */
 $('resetBtn').addEventListener('click',async()=>{
   userChangedInputs=false;
-  const teamId=$('teamSelect').value;
-  const year=Number($('currentSeasonSelect').value);
-  const cg=await loadSchedule(teamId,year);
+  dismissSinceCard();
+  const cg=await loadSchedule($('teamSelect').value,Number($('currentSeasonSelect').value));
   const gp=cg.length;
   $('throughInput').value=gp;
   $('rangeStartInput').value=Math.max(1,gp-9);
@@ -1234,17 +1539,24 @@ $('resetBtn').addEventListener('click',async()=>{
   update();
 });
 
-/* Season change → re-render checks, recalculate defaults */
-$('currentSeasonSelect').addEventListener('change',()=>{renderSeasonChecks();});
-
-/* Team change → update URL param */
-$('teamSelect').addEventListener('change',()=>{
-  const url=new URL(window.location.href);
-  url.searchParams.set('team',$('teamSelect').value);
-  window.history.replaceState({}, '', url);
+$('sinceClose').addEventListener('click',()=>{
+  dismissSinceCard();
+  /* Redraw chart without since shading */
+  if(lastSeries.length){
+    const moments=getMomentsForTeam(currentTeamId,Number($('currentSeasonSelect').value),currentGames);
+    drawChart(lastSeries,lastRS,lastRE,chartMode,moments.filter(m=>m.game<=currentGames.length));
+  }
 });
 
-/* Chart toggles */
+$('currentSeasonSelect').addEventListener('change',renderSeasonChecks);
+
+$('teamSelect').addEventListener('change',()=>{
+  dismissSinceCard();
+  const url=new URL(window.location.href);
+  url.searchParams.set('team',$('teamSelect').value);
+  window.history.replaceState({},'',url);
+});
+
 document.querySelectorAll('.toggle-btn').forEach(btn=>{
   btn.addEventListener('click',()=>{
     document.querySelectorAll('.toggle-btn').forEach(b=>b.classList.remove('active'));
@@ -1252,16 +1564,17 @@ document.querySelectorAll('.toggle-btn').forEach(btn=>{
     chartMode=btn.dataset.mode;
     const titles={cumulative:'Cumulative wins by game',range:`Wins inside G${lastRS}–${lastRE}`,pct:'Win % by game'};
     $('chartTitle').textContent=titles[chartMode];
-    if(lastSeries.length) drawChart(lastSeries,lastRS,lastRE,chartMode);
+    if(lastSeries.length){
+      const moments=getMomentsForTeam(currentTeamId,Number($('currentSeasonSelect').value),currentGames);
+      drawChart(lastSeries,lastRS,lastRE,chartMode,moments.filter(m=>m.game<=currentGames.length));
+    }
   });
 });
 
-/* Preset buttons */
 document.querySelectorAll('.preset-btn').forEach(btn=>{
-  btn.addEventListener('click',()=>{applyPreset(btn.dataset.preset);});
+  btn.addEventListener('click',()=>applyPreset(btn.dataset.preset));
 });
 
-/* Range/through manual changes → clear preset active state */
 [$('rangeStartInput'),$('rangeEndInput'),$('throughInput')].forEach(inp=>{
   inp.addEventListener('input',()=>{
     userChangedInputs=true;
@@ -1269,12 +1582,10 @@ document.querySelectorAll('.preset-btn').forEach(btn=>{
     const rs=clamp($('rangeStartInput').value,1,162);
     const re=clamp($('rangeEndInput').value,1,162);
     const matched=detectPreset(Math.min(rs,re),Math.max(rs,re),through,through);
-    if(matched) setActivePreset(matched);
-    else clearActivePreset();
+    if(matched) setActivePreset(matched); else clearActivePreset();
   });
 });
 
-/* Boot */
 init();
 </script>
 </body>

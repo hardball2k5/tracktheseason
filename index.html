@@ -86,17 +86,7 @@ body{
   color:#e8edf8;letter-spacing:-.01em;white-space:nowrap;
 }
 .nav-wordmark .accent{color:var(--signal)}
-/* Sport tabs */
-.sport-tabs{display:flex;gap:2px;margin-left:16px}
-.sport-tab{
-  font-family:var(--mono);font-size:11px;font-weight:600;
-  letter-spacing:.04em;padding:5px 11px;
-  border-radius:var(--r-sm);color:var(--chalk);
-  border:none;background:none;cursor:pointer;
-  transition:background .12s,color .12s;
-}
-.sport-tab.active{background:var(--signal);color:var(--ink)}
-.sport-tab.soon{color:var(--ink3);cursor:default;pointer-events:none}
+
 .nav-right{display:flex;align-items:center;gap:10px;margin-left:auto}
 .live-pill{
   display:flex;align-items:center;gap:5px;
@@ -127,9 +117,83 @@ body{
 }
 .lp-dot{width:7px;height:7px;border-radius:50%}
 
+/* ── MOMENTUM FILTER BAR ─────────────── */
+.momentum-bar{
+  padding:10px 0 0;
+  display:flex;gap:6px;flex-wrap:wrap;align-items:center;
+}
+.momentum-bar-label{
+  font-family:var(--mono);font-size:10px;font-weight:700;
+  letter-spacing:.1em;text-transform:uppercase;
+  color:rgba(255,255,255,.25);white-space:nowrap;padding-right:4px;
+}
+.mom-btn{
+  display:inline-flex;align-items:center;gap:5px;
+  font-family:var(--mono);font-size:11px;font-weight:600;
+  padding:5px 11px;border-radius:var(--r-pill);
+  border:1px solid var(--rule);background:var(--ink2);
+  color:var(--chalk);cursor:pointer;transition:all .13s;white-space:nowrap;
+}
+.mom-btn:hover{border-color:rgba(255,255,255,.25);color:#e8edf8}
+.mom-btn.active-hot {background:var(--gain-bg); border-color:rgba(13,140,58,.35);  color:var(--gain-text);font-weight:700}
+.mom-btn.active-cold{background:var(--loss-bg); border-color:rgba(232,48,42,.35); color:var(--loss-text);font-weight:700}
+.mom-btn.active-neu {background:var(--caution-bg);border-color:rgba(245,200,66,.3);color:var(--caution-text);font-weight:700}
+.mom-btn.active-all {background:var(--signal);border-color:var(--signal);color:var(--ink);font-weight:700}
+.mom-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+
+/* What does this mean link */
+.explain-link{
+  font-family:var(--mono);font-size:10px;font-weight:600;
+  color:rgba(255,255,255,.2);cursor:pointer;
+  padding:5px 0;margin-left:auto;
+  text-decoration:none;transition:color .13s;white-space:nowrap;
+  background:none;border:none;letter-spacing:.04em;
+}
+.explain-link:hover{color:var(--signal)}
+
+/* Explainer panel */
+.explainer-panel{
+  overflow:hidden;max-height:0;
+  transition:max-height .3s cubic-bezier(.22,1,.36,1);
+  background:var(--ink2);border-radius:var(--r-md);
+  border:1px solid var(--rule);margin-bottom:2px;
+}
+.explainer-panel.open{max-height:600px}
+.explainer-inner{padding:16px}
+.explainer-title{
+  font-family:var(--mono);font-size:11px;font-weight:700;
+  letter-spacing:.1em;text-transform:uppercase;
+  color:rgba(255,255,255,.3);margin-bottom:14px;
+}
+.explainer-intro{
+  font-family:var(--sans);font-size:13px;color:rgba(255,255,255,.5);
+  line-height:1.55;margin-bottom:14px;
+}
+.explainer-grid{
+  display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));
+  gap:8px;
+}
+.explainer-row{
+  display:flex;align-items:flex-start;gap:10px;
+  background:var(--ink3);border-radius:var(--r-sm);
+  padding:10px 12px;
+}
+.explainer-chip{
+  flex-shrink:0;padding:3px 9px;border-radius:var(--r-pill);
+  font-family:var(--mono);font-size:10px;font-weight:600;white-space:nowrap;
+}
+.explainer-chip.hot  {background:var(--gain-bg);color:var(--gain-text);border:1px solid rgba(13,140,58,.2)}
+.explainer-chip.cold {background:var(--loss-bg);color:var(--loss-text);border:1px solid rgba(232,48,42,.2)}
+.explainer-chip.neu  {background:var(--ink2);color:var(--chalk);border:1px solid var(--rule)}
+.explainer-text{font-family:var(--sans);font-size:12px;color:rgba(255,255,255,.45);line-height:1.5}
+.explainer-footer{
+  margin-top:12px;padding-top:12px;border-top:1px solid var(--rule);
+  font-family:var(--sans);font-size:11px;color:rgba(255,255,255,.25);line-height:1.6;
+}
+
 /* ── CONTROLS BAR ────────────────────── */
 .ctrl-bar{
-  padding:12px 0;
+  padding:10px 0;
   display:flex;gap:8px;flex-wrap:wrap;align-items:center;
   border-bottom:1px solid var(--rule);
   position:sticky;top:53px;z-index:90;
@@ -406,7 +470,6 @@ body{
   .ctrl-bar{gap:6px}
   .search-wrap{max-width:100%}
   .sort-select{margin-left:0}
-  .sport-tabs{display:none}
 }
 @media(min-width:640px){
   .team-grid{grid-template-columns:repeat(auto-fill,minmax(290px,1fr))}
@@ -422,12 +485,7 @@ body{
       <div class="nav-monogram">TTS</div>
       <div class="nav-wordmark">TRACK THE <span class="accent">SEASON</span></div>
     </a>
-    <div class="sport-tabs" role="tablist" aria-label="Sport selector">
-      <button class="sport-tab active" role="tab" aria-selected="true">MLB</button>
-      <button class="sport-tab soon" role="tab" aria-selected="false" aria-disabled="true" title="Coming soon">NBA</button>
-      <button class="sport-tab soon" role="tab" aria-selected="false" aria-disabled="true" title="Coming soon">NFL</button>
-      <button class="sport-tab soon" role="tab" aria-selected="false" aria-disabled="true" title="Coming soon">NHL</button>
-    </div>
+
     <div class="nav-right">
       <div class="live-pill"><div class="live-dot"></div>LIVE</div>
       <div class="nav-date" id="headerDate"></div>
@@ -441,6 +499,70 @@ body{
     <div class="hero-hed">MLB PACE<br><span class="accent">BOARD.</span></div>
     <p class="hero-sub">Records through each team's completed games — compared to last year's pace, momentum, and projected finish.</p>
     <div class="league-pills" id="leaguePills"></div>
+  </div>
+
+  <!-- ══ MOMENTUM FILTER BAR ══════════ -->
+  <div class="momentum-bar" id="momentumBar">
+    <span class="momentum-bar-label">Momentum</span>
+    <button class="mom-btn active-all" data-mom="all">All teams</button>
+    <button class="mom-btn" data-mom="hot"  data-cls="chip-hot">🔥 Heating up</button>
+    <button class="mom-btn" data-mom="cold" data-cls="chip-cold">❄️ Struggling</button>
+    <button class="mom-btn" data-mom="neu"  data-cls="chip-neutral">➡️ Stable</button>
+    <button class="explain-link" id="explainBtn" aria-expanded="false" aria-controls="explainerPanel">
+      What does this mean? ↓
+    </button>
+  </div>
+
+  <!-- ══ EXPLAINER PANEL ══════════════ -->
+  <div class="explainer-panel" id="explainerPanel" role="region" aria-label="Momentum label explanations">
+    <div class="explainer-inner">
+      <div class="explainer-title">How momentum labels work</div>
+      <p class="explainer-intro">
+        Every label compares a team's <strong style="color:rgba(255,255,255,.7)">last-20 game win%</strong>
+        to their <strong style="color:rgba(255,255,255,.7)">full-season win%</strong>.
+        The gap between those two numbers shows which direction they're moving —
+        regardless of where they sit in the standings.
+      </p>
+      <div class="explainer-grid">
+        <div class="explainer-row">
+          <span class="explainer-chip hot">🔥 Elite pace</span>
+          <span class="explainer-text">Last 20 win% ≥ .650. Historically dominant recent stretch.</span>
+        </div>
+        <div class="explainer-row">
+          <span class="explainer-chip hot">📈 Heating up</span>
+          <span class="explainer-text">Last 20 ≥ .600 and meaningfully better than season average.</span>
+        </div>
+        <div class="explainer-row">
+          <span class="explainer-chip hot">✅ Strong stretch</span>
+          <span class="explainer-text">Last 20 ≥ .575. Playing above a 93-win pace recently.</span>
+        </div>
+        <div class="explainer-row">
+          <span class="explainer-chip hot">⬆️ Trending up</span>
+          <span class="explainer-text">Last 20 noticeably better than their season average.</span>
+        </div>
+        <div class="explainer-row">
+          <span class="explainer-chip neu">➡️ Stable</span>
+          <span class="explainer-text">Recent form roughly matches their overall season pace.</span>
+        </div>
+        <div class="explainer-row">
+          <span class="explainer-chip cold">⬇️ Trending down</span>
+          <span class="explainer-text">Last 20 noticeably worse than their season average.</span>
+        </div>
+        <div class="explainer-row">
+          <span class="explainer-chip cold">📉 Cooling off</span>
+          <span class="explainer-text">Last 20 ≤ .420 and significantly below season average.</span>
+        </div>
+        <div class="explainer-row">
+          <span class="explainer-chip cold">❄️ Struggling</span>
+          <span class="explainer-text">Last 20 win% ≤ .350. Recent stretch is historically bad.</span>
+        </div>
+      </div>
+      <p class="explainer-footer">
+        Example: A team sitting 40–31 (.563) but 7–13 in their last 20 (.350) is <strong style="color:rgba(255,255,255,.4)">📉 Cooling off</strong> —
+        the standings look fine but they're clearly fading. That's what these labels surface.
+        Needs at least 10 completed games to calculate.
+      </p>
+    </div>
   </div>
 
   <!-- ══ CONTROLS ══════════════════════ -->
@@ -486,7 +608,6 @@ body{
     <a href="index.html" class="footer-logo">TRACK THE <span class="accent">SEASON</span></a>
     <div class="footer-links">
       <a href="https://x.com/tracktheseason" target="_blank" rel="noopener">@tracktheseason</a>
-      <a href="style-guide.html">Style guide</a>
     </div>
     <p class="footer-note">
       Data: MLB Stats API schedule endpoint. Final regular-season games only.
@@ -722,6 +843,7 @@ function buildCard(team, curGames, prevGames){
     data-proj="${proj||0}"
     data-delta="${deltaNum!==null?deltaNum:-999}"
     data-momentum="${MOMENTUM_RANK[momentum.label]??2}"
+    data-momentum-label="${momentum.label}"
     data-name="${team.name}"
     data-gp="${gp}"
     aria-label="View ${team.name} pace details">
@@ -888,15 +1010,27 @@ function closeModal(){
 }
 
 /* ── Filter / sort ──────────────────────────────── */
-let activeFilter='all', activeSort='winpct', searchQuery='';
+let activeFilter='all', activeSort='winpct', searchQuery='', activeMomentum='all';
+
+/* Map momentum labels to their chip class for filtering */
+const MOMENTUM_HOT  = new Set(['Elite pace','Heating up','Strong stretch','Trending up']);
+const MOMENTUM_COLD = new Set(['Struggling','Cooling off','Trending down']);
+const MOMENTUM_NEU  = new Set(['Stable']);
 
 function applyFiltersAndSort(){
   const grid=document.getElementById('teamGrid');
   const cards=[...grid.querySelectorAll('.team-card')];
   cards.forEach(c=>{
-    const matchFilter=activeFilter==='all'||activeFilter===c.dataset.league||activeFilter===c.dataset.div;
-    const matchSearch=!searchQuery||(c.dataset.name||'').toLowerCase().includes(searchQuery.toLowerCase());
-    c.classList.toggle('hidden-card',!matchFilter||!matchSearch);
+    const matchFilter  = activeFilter==='all'||activeFilter===c.dataset.league||activeFilter===c.dataset.div;
+    const matchSearch  = !searchQuery||(c.dataset.name||'').toLowerCase().includes(searchQuery.toLowerCase());
+    /* Momentum filter uses the data-momentum-label attribute set on each card */
+    const label = c.dataset.momentumLabel||'';
+    const matchMomentum =
+      activeMomentum==='all' ||
+      (activeMomentum==='hot'  && MOMENTUM_HOT.has(label)) ||
+      (activeMomentum==='cold' && MOMENTUM_COLD.has(label)) ||
+      (activeMomentum==='neu'  && MOMENTUM_NEU.has(label));
+    c.classList.toggle('hidden-card',!matchFilter||!matchSearch||!matchMomentum);
   });
   const visible=cards.filter(c=>!c.classList.contains('hidden-card'));
   visible.sort((a,b)=>{
@@ -968,6 +1102,28 @@ async function loadAllTeams(){
     activeFilter=btn.dataset.filter;
     applyFiltersAndSort();
   });
+});
+
+/* Momentum filter buttons */
+document.getElementById('momentumBar').addEventListener('click',e=>{
+  const btn=e.target.closest('.mom-btn');
+  if(!btn) return;
+  activeMomentum=btn.dataset.mom;
+  document.querySelectorAll('.mom-btn').forEach(b=>{
+    b.classList.remove('active-all','active-hot','active-cold','active-neu');
+  });
+  const clsMap={all:'active-all',hot:'active-hot',cold:'active-cold',neu:'active-neu'};
+  btn.classList.add(clsMap[activeMomentum]||'active-all');
+  applyFiltersAndSort();
+});
+
+/* Explainer toggle */
+document.getElementById('explainBtn').addEventListener('click',()=>{
+  const panel=document.getElementById('explainerPanel');
+  const btn=document.getElementById('explainBtn');
+  const isOpen=panel.classList.toggle('open');
+  btn.textContent=isOpen?'What does this mean? ↑':'What does this mean? ↓';
+  btn.setAttribute('aria-expanded',isOpen);
 });
 document.getElementById('sortSelect').addEventListener('change',e=>{activeSort=e.target.value;applyFiltersAndSort();});
 document.getElementById('searchInput').addEventListener('input',e=>{searchQuery=e.target.value.trim();applyFiltersAndSort();});
