@@ -4,7 +4,21 @@
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 <title>Team Tracker — Track The Season</title>
-<meta name="description" content="Deep-dive MLB pace tracker. Date ranges, historical comparisons, and key moments for any team."/>
+<meta name="description" content="Live records, win pace, and historical comparisons for every MLB team."/>
+<!-- Open Graph — updated dynamically after team data loads -->
+<meta property="og:type"        content="website"/>
+<meta property="og:site_name"   content="Track The Season"/>
+<meta property="og:title"       content="Track The Season — MLB Pace Tracker"/>
+<meta property="og:description" content="Live records, win pace, and momentum for every MLB team."/>
+<meta property="og:url"         content="https://tracktheseason.com/"/>
+<meta property="og:image"       content="https://tracktheseason.com/api/card/phillies"/>
+<meta property="og:image:width" content="1200"/>
+<meta property="og:image:height"content="630"/>
+<meta name="twitter:card"       content="summary_large_image"/>
+<meta name="twitter:site"       content="@TrackTheSeason"/>
+<meta name="twitter:title"      content="Track The Season — MLB Pace Tracker"/>
+<meta name="twitter:description"content="Live records, win pace, and momentum for every MLB team."/>
+<meta name="twitter:image"      content="https://tracktheseason.com/api/card/phillies"/>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet"/>
 <style>
@@ -808,22 +822,53 @@ function buildCleanUrl(teamId, season, rs, re, since){
 
 /* Update dynamic OG / meta tags after team data loads */
 function updateMetaTags(teamName, w, l, gp, proj, l10w, l10l, delta, compareYear){
-  const club = teamName.split(' ').pop();
-  const record = `${w}–${l}`;
-  const desc = `${record} through ${gp} games · ${proj?proj+'W pace · ':''}${l10w}–${l10l} last 10 · ${delta>0?'+':''}${delta}W vs ${compareYear}`;
-  document.title = `${teamName} — Track The Season`;
-  const setMeta = (prop, val) => {
-    let el = document.querySelector(`meta[property="${prop}"]`) || document.querySelector(`meta[name="${prop}"]`);
-    if(!el){el=document.createElement('meta');el.setAttribute(prop.startsWith('og:')?'property':'name',prop);document.head.appendChild(el);}
+  const club    = teamName.split(' ').pop();
+  const slug    = teamSlugById(currentTeamId) || 'team';
+  const record  = `${w}–${l}`;
+  const desc    = [
+    `${record} through ${gp} games`,
+    proj ? `${proj}W pace` : null,
+    gp >= 10 ? `${l10w}–${l10l} L10` : null,
+    delta !== 0 ? `${delta > 0 ? '+' : ''}${delta}W vs ${compareYear}` : null,
+  ].filter(Boolean).join(' • ');
+
+  const cardUrl = `https://tracktheseason.com/api/card/${slug}`;
+  const pageUrl = buildCleanUrl(currentTeamId, CURRENT_YEAR, $('gameFrom')?.value, $('gameTo')?.value, null);
+
+  document.title = `${teamName} Tracker | Track The Season`;
+
+  const setMeta = (key, val) => {
+    const sel = key.startsWith('og:') ? `meta[property="${key}"]` : `meta[name="${key}"]`;
+    let el = document.querySelector(sel);
+    if(!el){
+      el = document.createElement('meta');
+      el.setAttribute(key.startsWith('og:') ? 'property' : 'name', key);
+      document.head.appendChild(el);
+    }
     el.setAttribute('content', val);
   };
-  setMeta('og:title',       `${teamName} — Track The Season`);
-  setMeta('og:description', desc);
-  setMeta('og:url',         buildCleanUrl(currentTeamId, CURRENT_YEAR, $('gameFrom')?.value, $('gameTo')?.value, null));
-  setMeta('description',    desc);
-  setMeta('twitter:card',   'summary');
-  setMeta('twitter:title',  `${teamName} — Track The Season`);
+
+  setMeta('og:title',         `${teamName} Tracker | Track The Season`);
+  setMeta('og:description',   desc);
+  setMeta('og:url',           pageUrl);
+  setMeta('og:image',         cardUrl);
+  setMeta('og:image:width',   '1200');
+  setMeta('og:image:height',  '630');
+  setMeta('og:type',          'website');
+  setMeta('twitter:card',     'summary_large_image');
+  setMeta('twitter:title',    `${teamName} Tracker | Track The Season`);
   setMeta('twitter:description', desc);
+  setMeta('twitter:image',    cardUrl);
+  setMeta('description',      desc);
+
+  /* Canonical link */
+  let canonical = document.querySelector('link[rel="canonical"]');
+  if(!canonical){
+    canonical = document.createElement('link');
+    canonical.rel = 'canonical';
+    document.head.appendChild(canonical);
+  }
+  canonical.href = pageUrl;
 }
 
 const $ = id => document.getElementById(id);
