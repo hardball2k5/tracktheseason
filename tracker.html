@@ -858,27 +858,16 @@ function getUrlParams(){
 }
 
 function setUrlParams(teamId, season, rs, re, since){
-  /* Use clean slug URL if available, otherwise fall back to ?team= */
-  const slug = teamSlugById(teamId);
+  /* Always keep ?team= in the actual page URL for reliability.
+     Clean slug URLs (/phillies) are used only in share links via buildCleanUrl(). */
   const url = new URL(window.location.href);
-  if(slug){
-    /* Update path to /phillies and use query params for filters only */
-    const newPath = `/${slug}`;
-    const params = new URLSearchParams();
-    params.set('season', season);
-    params.set('rs', rs);
-    params.set('re', re);
-    if(since) params.set('since', since);
-    window.history.replaceState({}, '', `${newPath}?${params.toString()}`);
-  } else {
-    url.searchParams.set('team',   teamId);
-    url.searchParams.set('season', season);
-    url.searchParams.set('rs',     rs);
-    url.searchParams.set('re',     re);
-    if(since) url.searchParams.set('since', since);
-    else url.searchParams.delete('since');
-    window.history.replaceState({}, '', url);
-  }
+  url.searchParams.set('team',   teamId);
+  url.searchParams.set('season', season);
+  url.searchParams.set('rs',     rs);
+  url.searchParams.set('re',     re);
+  if(since) url.searchParams.set('since', since);
+  else url.searchParams.delete('since');
+  window.history.replaceState({}, '', url);
 }
 
 /* ═══════════════════════════════════════════════════════
@@ -2208,9 +2197,9 @@ $('currentSeasonSelect').addEventListener('change', renderSeasonChecks);
 
 $('teamSelect').addEventListener('change', ()=>{
   dismissSince();
-  const url=new URL(window.location.href);
-  url.searchParams.set('team',$('teamSelect').value);
-  window.history.replaceState({},'',$url);
+  const url = new URL(window.location.href);
+  url.searchParams.set('team', $('teamSelect').value);
+  window.history.replaceState({}, '', url);
 });
 
 /* Game input manual change → detect preset or clear */
