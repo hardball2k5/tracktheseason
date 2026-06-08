@@ -2133,6 +2133,21 @@ async function init(){
 const ctrlToggleBarHero = $('ctrlToggleBarHero');
 const ctrlCard          = $('ctrlCard');
 
+/* On desktop: move ctrl-card into the sidebar so it shows as a fixed panel.
+   On mobile: it stays inline below the hero toggle.                         */
+function placeCtrlCard(){
+  if(window.innerWidth >= 861){
+    const sidebar = $('controlsColDesktop');
+    if(sidebar && !sidebar.contains(ctrlCard)){
+      sidebar.appendChild(ctrlCard);
+      /* Remove mobile-collapsed state so it's always visible on desktop */
+      ctrlCard.classList.remove('ctrl-card-inline','open');
+    }
+  }
+}
+placeCtrlCard();
+window.addEventListener('resize', placeCtrlCard);
+
 function setAccordionState(open){
   ctrlCard.classList.toggle('open', open);
   ctrlToggleBarHero.classList.toggle('open', open);
