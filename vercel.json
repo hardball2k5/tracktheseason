@@ -1,0 +1,41 @@
+{
+  "crons": [
+    {
+      "path": "/api/weekly-post",
+      "schedule": "0 13 * * 1"
+    }
+  ],
+  "rewrites": [
+    { "source": "/angels",        "destination": "/tracker.html?team=108" },
+    { "source": "/diamondbacks",  "destination": "/tracker.html?team=109" },
+    { "source": "/dbacks",        "destination": "/tracker.html?team=109" },
+    { "source": "/orioles",       "destination": "/tracker.html?team=110" },
+    { "source": "/red-sox",       "destination": "/tracker.html?team=111" },
+    { "source": "/cubs",          "destination": "/tracker.html?team=112" },
+    { "source": "/reds",          "destination": "/tracker.html?team=113" },
+    { "source": "/guardians",     "destination": "/tracker.html?team=114" },
+    { "source": "/rockies",       "destination": "/tracker.html?team=115" },
+    { "source": "/tigers",        "destination": "/tracker.html?team=116" },
+    { "source": "/astros",        "destination": "/tracker.html?team=117" },
+    { "source": "/royals",        "destination": "/tracker.html?team=118" },
+    { "source": "/dodgers",       "destination": "/tracker.html?team=119" },
+    { "source": "/nationals",     "destination": "/tracker.html?team=120" },
+    { "source": "/mets",          "destination": "/tracker.html?team=121" },
+    { "source": "/athletics",     "destination": "/tracker.html?team=133" },
+    { "source": "/pirates",       "destination": "/tracker.html?team=134" },
+    { "source": "/padres",        "destination": "/tracker.html?team=135" },
+    { "source": "/mariners",      "destination": "/tracker.html?team=136" },
+    { "source": "/giants",        "destination": "/tracker.html?team=137" },
+    { "source": "/cardinals",     "destination": "/tracker.html?team=138" },
+    { "source": "/rays",          "destination": "/tracker.html?team=139" },
+    { "source": "/rangers",       "destination": "/tracker.html?team=140" },
+    { "source": "/blue-jays",     "destination": "/tracker.html?team=141" },
+    { "source": "/twins",         "destination": "/tracker.html?team=142" },
+    { "source": "/phillies",      "destination": "/tracker.html?team=143" },
+    { "source": "/braves",        "destination": "/tracker.html?team=144" },
+    { "source": "/white-sox",     "destination": "/tracker.html?team=145" },
+    { "source": "/marlins",       "destination": "/tracker.html?team=146" },
+    { "source": "/yankees",       "destination": "/tracker.html?team=147" },
+    { "source": "/brewers",       "destination": "/tracker.html?team=158" }
+  ]
+}

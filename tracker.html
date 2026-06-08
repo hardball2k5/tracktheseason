@@ -92,16 +92,15 @@ body{
 
 /* ── MOBILE CONTROLS ACCORDION ──────────── */
 
-/* The pill button that toggles controls open/closed on mobile */
-.ctrl-toggle-bar{
-  display:none; /* hidden on desktop */
-}
+/* Hero toggle button — mobile only */
+.ctrl-toggle-bar{ display:none; }
+.ctrl-toggle-summary{flex:1;min-width:0}
+.ctrl-toggle-label{font-family:var(--mono);font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.28);margin-bottom:3px}
+.ctrl-toggle-value{font-family:var(--mono);font-size:13px;font-weight:700;color:#e8edf8;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ctrl-toggle-arrow{font-size:16px;color:var(--chalk);transition:transform .2s cubic-bezier(.22,1,.36,1);flex-shrink:0}
+.ctrl-toggle-bar.open .ctrl-toggle-arrow{transform:rotate(180deg)}
+
 @media(max-width:860px){
-  /* The one inside controls-col: hidden on mobile */
-  .controls-col .ctrl-toggle-bar{
-    display:none !important;
-  }
-  /* The hero-positioned one: visible on mobile only */
   .ctrl-toggle-hero{
     display:flex;align-items:center;gap:10px;
     background:var(--ink2);border:1px solid var(--rule);
@@ -113,47 +112,38 @@ body{
   .ctrl-toggle-hero:hover{border-color:rgba(255,255,255,.2)}
   .ctrl-toggle-hero.open{border-color:var(--signal)}
 }
-.ctrl-toggle-summary{
-  flex:1;min-width:0;
-}
-.ctrl-toggle-label{
-  font-family:var(--mono);font-size:9px;font-weight:700;
-  letter-spacing:.12em;text-transform:uppercase;
-  color:rgba(255,255,255,.28);margin-bottom:3px;
-}
-.ctrl-toggle-value{
-  font-family:var(--mono);font-size:13px;font-weight:700;
-  color:#e8edf8;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
-}
-.ctrl-toggle-arrow{
-  font-size:16px;color:var(--chalk);
-  transition:transform .2s cubic-bezier(.22,1,.36,1);flex-shrink:0;
-}
-.ctrl-toggle-bar.open .ctrl-toggle-arrow{transform:rotate(180deg)}
 
-/* The collapsible controls body */
+/* ctrl-card: collapsed inline on mobile, always visible in sidebar on desktop */
 .ctrl-card{
   background:var(--ink2);border:1px solid var(--rule);
   border-radius:var(--r-lg);padding:16px;margin-bottom:12px;
 }
+
+/* Mobile: the inline ctrl-card collapses/expands right below the toggle */
 @media(max-width:860px){
-  .ctrl-card{
+  .ctrl-card-inline{
     overflow:hidden;
     max-height:0;
     padding:0 16px;
     margin-bottom:0;
     border-color:transparent;
     transition:max-height .35s cubic-bezier(.22,1,.36,1),
-               padding .2s,
-               border-color .2s,
-               margin-bottom .2s;
+               padding .2s,border-color .2s,margin-bottom .2s;
   }
-  .ctrl-card.open{
-    max-height:900px; /* tall enough for all content */
+  .ctrl-card-inline.open{
+    max-height:900px;
     padding:16px;
     border-color:var(--rule);
     margin-bottom:12px;
   }
+  /* Hide hero toggle and inline card on desktop */
+  .ctrl-toggle-hero{ /* shown above */ }
+}
+
+/* Desktop: inline card hidden, sidebar card shown */
+@media(min-width:861px){
+  .ctrl-card-inline{ display:none !important; }
+  .ctrl-toggle-hero{ display:none !important; }
 }
 
 /* ── CONTROLS INTERNALS ──────────────────── */
@@ -406,6 +396,84 @@ tr.cur-row td{background:rgba(26,255,107,.05)}
 .source-note code{font-family:var(--mono);font-size:10px;color:rgba(26,255,107,.4)}
 
 /* ── FOOTER ──────────────────────────────── */
+
+/* ── TREND HORIZON ───────────────────────── */
+.trend-horizon-card{
+  background:var(--ink3);border:1px solid var(--rule);
+  border-radius:var(--r-md);padding:14px;
+  margin:12px 0;
+}
+.trend-horizon-header{
+  display:flex;align-items:center;justify-content:space-between;
+  margin-bottom:10px;
+}
+.trend-horizon-title{
+  font-family:var(--mono);font-size:11px;font-weight:700;
+  letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.35);
+}
+.trend-horizon-label{
+  font-family:var(--mono);font-size:12px;font-weight:700;
+  letter-spacing:.02em;
+}
+.trend-horizon-rows{display:flex;gap:8px;flex-wrap:wrap}
+.trend-row{
+  display:flex;align-items:center;gap:8px;
+  background:var(--ink2);border:1px solid var(--rule);
+  border-radius:var(--r-sm);padding:8px 12px;
+  flex:1;min-width:0;
+}
+.trend-n{font-family:var(--mono);font-size:10px;color:var(--chalk);white-space:nowrap}
+.trend-rec{font-family:var(--mono);font-size:15px;font-weight:700;color:#e8edf8;margin-left:auto}
+.trend-emoji{font-size:14px;flex-shrink:0}
+
+/* ── COMPARISON SUMMARY ──────────────────── */
+.comp-summary{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.comp-pill{
+  display:flex;align-items:baseline;gap:7px;flex-wrap:wrap;
+  padding:8px 12px;border-radius:var(--r-md);
+  font-family:var(--mono);font-size:11px;
+}
+.comp-ahead{background:var(--gain-bg);color:var(--gain-text);border:1px solid rgba(13,140,58,.15)}
+.comp-behind{background:var(--loss-bg);color:var(--loss-text);border:1px solid rgba(232,48,42,.15)}
+.comp-pill-label{font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;opacity:.6;margin-right:3px}
+
+/* ── MOBILE STICKY FILTER — no jump, no scroll ── */
+@media(max-width:860px){
+  /* Sticky toggle bar below nav — stays visible while scrolling */
+  .ctrl-toggle-hero{
+    position:sticky;
+    top:53px; /* height of site-nav */
+    z-index:80;
+    /* Blur background so content scrolling behind it looks clean */
+    background:rgba(15,16,20,.96);
+    backdrop-filter:blur(12px);
+    -webkit-backdrop-filter:blur(12px);
+    border-radius:0; /* full-width when sticky */
+    border-left:none;border-right:none;
+    border-top:none;
+    border-bottom:1px solid var(--rule);
+    /* Remove the rounded corners from the margin-top version */
+    margin:0;
+    padding:11px 16px;
+  }
+  /* Restore rounded corners when the page is at top (not sticky yet) */
+  .ctrl-toggle-hero:not(.is-sticky){
+    border-radius:var(--r-lg);
+    border:1px solid var(--rule);
+    margin:10px 0 0;
+    padding:11px 14px;
+    background:var(--ink2);
+    backdrop-filter:none;
+  }
+  /* Expand inline without jumping — use margin-top on ctrl-card to push content down */
+  .ctrl-card-inline{
+    /* Don't interfere with sticky bar */
+    position:relative;
+    z-index:79;
+  }
+}
+
+/* ── FOOTER ──────────────────────────────── */
 .site-footer{border-top:1px solid var(--rule);padding:16px 0 32px;display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between}
 .footer-logo{font-family:var(--mono);font-weight:700;font-size:13px;color:var(--chalk);text-decoration:none}
 .footer-logo .accent{color:var(--signal)}
@@ -471,8 +539,7 @@ tr.cur-row td{background:rgba(26,255,107,.05)}
     <span id="heroBadge" class="hero-badge badge-neu"></span>
   </div>
 
-  <!-- Mobile-only control bar — sits between hero and stats.
-       The one inside controls-col is hidden on mobile via CSS. -->
+  <!-- Mobile-only control bar — sits between hero and stats. -->
   <button class="ctrl-toggle-bar ctrl-toggle-hero" id="ctrlToggleBarHero" aria-expanded="false">
     <div class="ctrl-toggle-summary">
       <div class="ctrl-toggle-label">Change team / season / range</div>
@@ -481,63 +548,53 @@ tr.cur-row td{background:rgba(26,255,107,.05)}
     <span class="ctrl-toggle-arrow">⌄</span>
   </button>
 
-  <div class="page-grid">
-    <!-- ── Controls ──────────────────────── -->
-    <aside class="controls-col">
-
-      <!-- Mobile accordion toggle — hidden on desktop via CSS -->
-      <button class="ctrl-toggle-bar" id="ctrlToggleBar" aria-expanded="false" aria-controls="ctrlCard">
-        <div class="ctrl-toggle-summary">
-          <div class="ctrl-toggle-label">Change team / season / range</div>
-          <div class="ctrl-toggle-value" id="ctrlToggleValue">Loading…</div>
-        </div>
-        <span class="ctrl-toggle-arrow">⌄</span>
-      </button>
-
-      <div class="ctrl-card" id="ctrlCard">
-        <div style="margin-bottom:13px">
-          <label class="ctrl-label" for="teamSelect">Team</label>
-          <select id="teamSelect" class="ctrl-input"></select>
+  <!-- Controls panel — inline on mobile (expands here), sidebar on desktop -->
+  <div class="ctrl-card ctrl-card-inline" id="ctrlCard">
+    <div style="margin-bottom:13px">
+      <label class="ctrl-label" for="teamSelect">Team</label>
+      <select id="teamSelect" class="ctrl-input"></select>
+    </div>
+    <div>
+      <label class="ctrl-label" for="currentSeasonSelect">Season</label>
+      <select id="currentSeasonSelect" class="ctrl-input"></select>
+    </div>
+    <div class="ctrl-divider"></div>
+    <div>
+      <div class="ctrl-label">Compare seasons</div>
+      <div id="seasonChecks" class="checks"></div>
+    </div>
+    <div class="ctrl-divider"></div>
+    <div>
+      <div class="ctrl-label">Game range</div>
+      <div class="game-range-row">
+        <div>
+          <span class="ctrl-sub-label">From game</span>
+          <input id="gameFrom" type="number" min="1" max="162" class="ctrl-input" placeholder="1"/>
         </div>
         <div>
-          <label class="ctrl-label" for="currentSeasonSelect">Season</label>
-          <select id="currentSeasonSelect" class="ctrl-input"></select>
+          <span class="ctrl-sub-label">To game</span>
+          <input id="gameTo" type="number" min="1" max="162" class="ctrl-input" placeholder="10"/>
         </div>
-        <div class="ctrl-divider"></div>
-        <div>
-          <div class="ctrl-label">Compare seasons</div>
-          <div id="seasonChecks" class="checks"></div>
-        </div>
-        <div class="ctrl-divider"></div>
-
-        <!-- Game range -->
-        <div>
-          <div class="ctrl-label">Game range</div>
-          <div class="game-range-row">
-            <div>
-              <span class="ctrl-sub-label">From game</span>
-              <input id="gameFrom" type="number" min="1" max="162" class="ctrl-input" placeholder="1"/>
-            </div>
-            <div>
-              <span class="ctrl-sub-label">To game</span>
-              <input id="gameTo" type="number" min="1" max="162" class="ctrl-input" placeholder="10"/>
-            </div>
-          </div>
-          <p class="ctrl-helper">Game numbers align across all seasons for true YoY comparison.</p>
-          <div class="preset-row" id="presetRow">
-            <button class="preset-btn" data-preset="last10">Last 10</button>
-            <button class="preset-btn" data-preset="last20">Last 20</button>
-            <button class="preset-btn" data-preset="first27">G 1–27</button>
-            <button class="preset-btn" data-preset="first63">G 28–63</button>
-            <button class="preset-btn" data-preset="firsthalf">1st half</button>
-            <button class="preset-btn" data-preset="secondhalf">2nd half</button>
-            <button class="preset-btn" data-preset="fullseason">Full season</button>
-          </div>
-        </div>
-
-        <button class="run-btn" id="runBtn">Update Tracker</button>
-        <button class="reset-btn" id="resetBtn">↺ Reset to last 10</button>
       </div>
+      <p class="ctrl-helper">Game numbers align across all seasons for true YoY comparison.</p>
+      <div class="preset-row" id="presetRow">
+        <button class="preset-btn" data-preset="last10">Last 10</button>
+        <button class="preset-btn" data-preset="last20">Last 20</button>
+        <button class="preset-btn" data-preset="first27">G 1–27</button>
+        <button class="preset-btn" data-preset="first63">G 28–63</button>
+        <button class="preset-btn" data-preset="firsthalf">1st half</button>
+        <button class="preset-btn" data-preset="secondhalf">2nd half</button>
+        <button class="preset-btn" data-preset="fullseason">Full season</button>
+      </div>
+    </div>
+    <button class="run-btn" id="runBtn">Update Tracker</button>
+    <button class="reset-btn" id="resetBtn">↺ Reset to last 10</button>
+  </div>
+
+  <div class="page-grid">
+    <!-- ── Controls sidebar (desktop only — empty placeholder) ── -->
+    <aside class="controls-col" id="controlsColDesktop">
+      <!-- ctrl-card is moved here by JS on desktop -->
     </aside>
 
     <!-- ── Results ───────────────────────── -->
@@ -708,6 +765,67 @@ const SEASON_COLORS= ['#1aff6b','#4a9eff','#f5c842','#f47570','#c792ea','#5dd8d8
 const DEFAULT_TEAM = 143;
 const CURRENT_YEAR = new Date().getFullYear();
 
+/* ── Team slug map — clean URLs ─────────────────────
+   /phillies → team 143, /dodgers → team 119, etc.
+   Vercel rewrites: /phillies → /tracker.html?team=143
+   Slug routing here handles the reverse too.          */
+const TEAM_SLUGS = {
+  'angels':108,'diamondbacks':109,'dbacks':109,'orioles':110,'red-sox':111,'redsox':111,
+  'cubs':112,'reds':113,'guardians':114,'rockies':115,'tigers':116,'astros':117,
+  'royals':118,'dodgers':119,'nationals':120,'nats':120,'mets':121,'athletics':133,
+  'as':133,'pirates':134,'padres':135,'mariners':136,'giants':137,'cardinals':138,
+  'rays':139,'rangers':140,'blue-jays':141,'bluejays':141,'twins':142,'phillies':143,
+  'braves':144,'white-sox':145,'whitesox':145,'marlins':146,'yankees':147,'brewers':158,
+};
+const SLUG_BY_TEAM_ID = Object.fromEntries(
+  Object.entries(TEAM_SLUGS).filter(([s])=>!s.includes('redsox')&&!s.includes('whitesox')&&!s.includes('as')&&!s.includes('nats')&&!s.includes('dbacks')&&!s.includes('bluejays'))
+);
+
+/* Resolve a URL path slug to a team ID */
+function resolveSlugFromPath(){
+  const path = window.location.pathname.replace(/^\//, '').replace(/\/$/, '').toLowerCase();
+  return TEAM_SLUGS[path] || null;
+}
+
+/* Get the canonical slug for a team ID */
+function teamSlugById(teamId){
+  return SLUG_BY_TEAM_ID[String(teamId)] || null;
+}
+
+/* Build a clean shareable URL: /phillies or /phillies?season=2026&rs=56&re=65 */
+function buildCleanUrl(teamId, season, rs, re, since){
+  const slug = teamSlugById(teamId);
+  const base = slug
+    ? `https://tracktheseason.com/${slug}`
+    : `https://tracktheseason.com/tracker.html?team=${teamId}`;
+  const params = new URLSearchParams();
+  if(season && season !== CURRENT_YEAR) params.set('season', season);
+  if(rs && re){params.set('rs', rs);params.set('re', re);}
+  if(since) params.set('since', since);
+  const qs = params.toString();
+  return qs ? `${base}?${qs}` : base;
+}
+
+/* Update dynamic OG / meta tags after team data loads */
+function updateMetaTags(teamName, w, l, gp, proj, l10w, l10l, delta, compareYear){
+  const club = teamName.split(' ').pop();
+  const record = `${w}–${l}`;
+  const desc = `${record} through ${gp} games · ${proj?proj+'W pace · ':''}${l10w}–${l10l} last 10 · ${delta>0?'+':''}${delta}W vs ${compareYear}`;
+  document.title = `${teamName} — Track The Season`;
+  const setMeta = (prop, val) => {
+    let el = document.querySelector(`meta[property="${prop}"]`) || document.querySelector(`meta[name="${prop}"]`);
+    if(!el){el=document.createElement('meta');el.setAttribute(prop.startsWith('og:')?'property':'name',prop);document.head.appendChild(el);}
+    el.setAttribute('content', val);
+  };
+  setMeta('og:title',       `${teamName} — Track The Season`);
+  setMeta('og:description', desc);
+  setMeta('og:url',         buildCleanUrl(currentTeamId, CURRENT_YEAR, $('gameFrom')?.value, $('gameTo')?.value, null));
+  setMeta('description',    desc);
+  setMeta('twitter:card',   'summary');
+  setMeta('twitter:title',  `${teamName} — Track The Season`);
+  setMeta('twitter:description', desc);
+}
+
 const $ = id => document.getElementById(id);
 const el= (t,a={})=>{const e=document.createElementNS('http://www.w3.org/2000/svg',t);for(const[k,v]of Object.entries(a))e.setAttribute(k,v);return e};
 
@@ -728,8 +846,10 @@ let allMoments      = [];     /* loaded from Google Sheets */
 ═══════════════════════════════════════════════════════ */
 function getUrlParams(){
   const p = new URLSearchParams(window.location.search);
+  /* Check path slug first: /phillies → team 143 */
+  const slugTeam = resolveSlugFromPath();
   return{
-    team:   p.get('team')   ? Number(p.get('team'))   : null,
+    team:   slugTeam || (p.get('team') ? Number(p.get('team')) : null),
     season: p.get('season') ? Number(p.get('season')) : null,
     rs:     p.get('rs')     ? Number(p.get('rs'))     : null,
     re:     p.get('re')     ? Number(p.get('re'))     : null,
@@ -738,14 +858,27 @@ function getUrlParams(){
 }
 
 function setUrlParams(teamId, season, rs, re, since){
+  /* Use clean slug URL if available, otherwise fall back to ?team= */
+  const slug = teamSlugById(teamId);
   const url = new URL(window.location.href);
-  url.searchParams.set('team',   teamId);
-  url.searchParams.set('season', season);
-  url.searchParams.set('rs',     rs);
-  url.searchParams.set('re',     re);
-  if(since) url.searchParams.set('since', since);
-  else url.searchParams.delete('since');
-  window.history.replaceState({}, '', url);
+  if(slug){
+    /* Update path to /phillies and use query params for filters only */
+    const newPath = `/${slug}`;
+    const params = new URLSearchParams();
+    params.set('season', season);
+    params.set('rs', rs);
+    params.set('re', re);
+    if(since) params.set('since', since);
+    window.history.replaceState({}, '', `${newPath}?${params.toString()}`);
+  } else {
+    url.searchParams.set('team',   teamId);
+    url.searchParams.set('season', season);
+    url.searchParams.set('rs',     rs);
+    url.searchParams.set('re',     re);
+    if(since) url.searchParams.set('since', since);
+    else url.searchParams.delete('since');
+    window.history.replaceState({}, '', url);
+  }
 }
 
 /* ═══════════════════════════════════════════════════════
@@ -1292,17 +1425,109 @@ function buildInsights({teamName, year, rs, re, curGames, allData, rangeGames}){
   if(!projText) projText='Insufficient games to project.';
   projText+=` <em style="color:var(--chalk);font-size:12px">Pace-based — not a predictive model.</em>`;
 
-  /* Pace story */
-  let story=`Through ${curRec.g} games, the ${year} ${teamName} are <strong>${curRec.w}–${curRec.l}</strong>`;
-  if(tcomps.length){const r=tcomps[0];story+=r.delta>0?`, ${r.delta}W ahead of ${r.year}`:r.delta<0?`, ${Math.abs(r.delta)}W behind ${r.year}`:', matching last year\'s pace';}
-  story+=rangeRec.g>0?`. G${rs}–${re}: <strong>${rangeRec.w}–${rangeRec.l}</strong>.`+(seasProj?` Pace: <strong>${seasProj} wins</strong>.`:'.'):'.';
+  /* ── Conversational Pace Story ──────────────────────
+     Varies tone by situation: momentum, delta, projection.
+     Feels written, not templated.                       */
+  const l10        = curGames.slice(-10);
+  const l10w       = l10.filter(g=>g.win).length;
+  const l10l       = l10.length - l10w;
+  const l10str     = curGames.length>=10 ? `${l10w}–${l10l}` : '—';
+  const club       = teamName.split(' ').pop();
+  const seasPct    = winPct(curRec.w, curRec.l);
+  const bestComp   = tcomps.length ? tcomps.reduce((b,c)=>c.delta<b.delta?c:b) : null;
+  const worstComp  = tcomps.length ? tcomps.reduce((b,c)=>c.delta>b.delta?c:b) : null;
 
-  /* Last 10 */
-  const l10 = curGames.slice(-10);
-  const l10w = l10.filter(g=>g.win).length;
-  const l10str = curGames.length>=10 ? `${l10w}–${l10.length-l10w}` : '—';
+  let story;
+  const proj       = seasProj;
+  const mainDelta  = tcomps.length ? tcomps[0].delta : 0;
+  const isHot      = l10w >= 7;
+  const isCold     = l10w <= 3;
 
-  return{throughText,rangeText,compText,closestText,projText,story,l10str,seasProj,curRec};
+  if(isHot && mainDelta > 0){
+    story = `The ${club} have quietly won <strong>${l10w} of their last 10</strong>, building on a ${mainDelta}-win edge over last year's pace. At ${curRec.w}–${curRec.l}, they're playing their best baseball of the season${proj?` and tracking toward <strong>${proj} wins</strong>`:''}.`;
+  } else if(isHot && mainDelta <= 0){
+    story = `Despite trailing last year's pace by ${Math.abs(mainDelta)} wins, the ${club} are showing signs of life — winning <strong>${l10w} of their last 10</strong>. ${proj?`Their pace projects to <strong>${proj} wins</strong>. `:''}Recent form suggests momentum may be turning.`;
+  } else if(isCold && mainDelta < 0){
+    story = `The ${club} are struggling. <strong>${l10w}–${l10l} over their last 10</strong>, they're now ${Math.abs(mainDelta)} wins behind last year's pace through ${curRec.g} games${proj?` and tracking toward just <strong>${proj} wins</strong>`:''}.`;
+  } else if(isCold && mainDelta > 0){
+    story = `The ${club} have cooled off recently, going <strong>${l10w}–${l10l} in their last 10</strong>. They still hold a ${mainDelta}-win edge over last year's pace at ${curRec.w}–${curRec.l}, but the gap is narrowing${proj?`. Pace projects to <strong>${proj} wins</strong>`:''}. `;
+  } else if(mainDelta > 3){
+    story = `The ${club} are <strong>${mainDelta} wins ahead of last year's pace</strong> through ${curRec.g} games${proj?`, tracking toward <strong>${proj} wins</strong>`:''} — one of the most improved stories in baseball this season.`;
+  } else if(mainDelta < -3){
+    story = `The ${club} are <strong>${Math.abs(mainDelta)} wins behind last year's pace</strong> through ${curRec.g} games. At ${curRec.w}–${curRec.l}${proj?` and trending toward ${proj} wins`:''}, they need to find a way to reverse this stretch.`;
+  } else if(proj && proj >= 95){
+    story = `At ${curRec.w}–${curRec.l} through ${curRec.g} games, the ${club} are playing at a <strong>${proj}-win pace</strong> — genuine playoff contender territory${curRec.g>=10?` with a ${l10w}–${l10l} last-10 record`:''}. `;
+  } else {
+    story = `Through ${curRec.g} games, the ${club} are <strong>${curRec.w}–${curRec.l}</strong>${mainDelta!==0?`, ${mainDelta>0?mainDelta+' wins ahead of':Math.abs(mainDelta)+' wins behind'} last year's pace`:''}${proj?`. Pace: <strong>${proj} wins</strong>`:''}.`;
+  }
+
+  /* ── Trend Horizon ──────────────────────────────────
+     Last 10 / Last 20 / Last 30 with narrative label.  */
+  function trendRow(n){
+    if(curGames.length < n) return null;
+    const slice  = curGames.slice(-n);
+    const w      = slice.filter(g=>g.win).length;
+    const l      = slice.length - w;
+    const pct    = winPct(w, l);
+    let emoji;
+    if(pct >= .700) emoji = '🔥';
+    else if(pct >= .600) emoji = '📈';
+    else if(pct >= .500) emoji = '↗';
+    else if(pct >= .400) emoji = '→';
+    else if(pct >= .300) emoji = '↘';
+    else emoji = '❄️';
+    return {n, w, l, pct, emoji};
+  }
+  const t10 = trendRow(10), t20 = trendRow(20), t30 = trendRow(30);
+
+  function trendNarrative(){
+    if(!t10) return 'Insufficient data';
+    const p10=t10.pct, p20=t20?.pct??p10, p30=t30?.pct??p10;
+    if(p10>=.700 && p20>=.600) return 'Sustained Surge';
+    if(p10>=.700) return 'Heating Up';
+    if(p10>=.600 && p20>=.550) return 'Momentum Building';
+    if(p10>=.600) return 'Hot Streak';
+    if(p10>=.500 && p20>=.500 && p30>=.500) return 'Steady';
+    if(p10>=.500 && p20>=.500) return 'Stable';
+    if(p10<=.300 && p20<=.400) return 'Slumping';
+    if(p10<=.300) return 'Cold Stretch';
+    if(p10<=.400 && p20<=.450) return 'Cooling Off';
+    if(p10<=.400) return 'Slipping';
+    if(p10>p20 && p20>p30) return 'Heating Up';
+    if(p10<p20 && p20<p30) return 'Cooling Off';
+    return 'Steady';
+  }
+  const trendLabel = trendNarrative();
+  const trendColor = ['Sustained Surge','Hot Streak','Momentum Building','Heating Up'].includes(trendLabel)?'var(--gain-text)':['Slumping','Cooling Off','Cold Stretch','Slipping'].includes(trendLabel)?'var(--loss-text)':'var(--chalk)';
+
+  const trendHorizonHtml = (t10||t20||t30) ? `
+    <div class="trend-horizon-card" id="trendHorizonCard">
+      <div class="trend-horizon-header">
+        <div class="trend-horizon-title">📊 Trend Horizon</div>
+        <div class="trend-horizon-label" style="color:${trendColor}">${trendLabel}</div>
+      </div>
+      <div class="trend-horizon-rows">
+        ${t10?`<div class="trend-row"><span class="trend-n">Last 10</span><span class="trend-rec">${t10.w}–${t10.l}</span><span class="trend-emoji">${t10.emoji}</span></div>`:''}
+        ${t20?`<div class="trend-row"><span class="trend-n">Last 20</span><span class="trend-rec">${t20.w}–${t20.l}</span><span class="trend-emoji">${t20.emoji}</span></div>`:''}
+        ${t30?`<div class="trend-row"><span class="trend-n">Last 30</span><span class="trend-rec">${t30.w}–${t30.l}</span><span class="trend-emoji">${t30.emoji}</span></div>`:''}
+      </div>
+    </div>` : '';
+
+  /* ── Historical comparison summary ──────────────── */
+  let compSummaryHtml = '';
+  if(tcomps.length){
+    const sortedDelta = [...tcomps].sort((a,b)=>a.delta-b.delta);
+    const aheadOf  = tcomps.filter(c=>c.delta>0).sort((a,b)=>a.delta-b.delta).map(c=>`${c.year} (+${c.delta})`);
+    const behindOf = tcomps.filter(c=>c.delta<0).sort((a,b)=>b.delta-a.delta).map(c=>`${c.year} (${c.delta})`);
+    if(aheadOf.length||behindOf.length){
+      compSummaryHtml=`<div class="comp-summary">
+        ${aheadOf.length?`<div class="comp-pill comp-ahead"><span class="comp-pill-label">Ahead of</span>${aheadOf.join(' · ')}</div>`:''}
+        ${behindOf.length?`<div class="comp-pill comp-behind"><span class="comp-pill-label">Behind</span>${behindOf.join(' · ')}</div>`:''}
+      </div>`;
+    }
+  }
+
+  return{throughText,rangeText,compText,closestText,projText,story,trendHorizonHtml,compSummaryHtml,l10str,seasProj:proj,curRec};
 }
 
 function renderInsights(params){
@@ -1316,6 +1541,22 @@ function renderInsights(params){
   $('heroBadge').textContent     = momentum.label;
   $('heroBadge').className       = `hero-badge ${momentum.chipCls}`;
   $('paceStoryText').innerHTML   = ins.story;
+
+  /* Inject Trend Horizon card after pace story */
+  let trendEl = $('trendHorizonCard');
+  if(trendEl) trendEl.remove();
+  if(ins.trendHorizonHtml){
+    $('insightShare').insertAdjacentHTML('beforebegin', ins.trendHorizonHtml);
+  }
+
+  /* Comparison summary pills */
+  let compSumEl = document.getElementById('compSummaryEl');
+  if(compSumEl) compSumEl.remove();
+  if(ins.compSummaryHtml){
+    const div=document.createElement('div');div.id='compSummaryEl';
+    div.innerHTML=ins.compSummaryHtml;
+    $('insightsGrid').after(div);
+  }
 
   /* Clean URL for share text — no UTM params visible to user */
   const urlStr  = buildTrackerUrl();
@@ -1400,10 +1641,10 @@ function getCurrentTrackerParams(){
   };
 }
 
-/* Build the canonical tracker URL from live params */
+/* Build the canonical share URL — clean slug if available */
 function buildTrackerUrl(){
   const {team,season,rs,re} = getCurrentTrackerParams();
-  return `https://tracktheseason.com/tracker.html?team=${team}&season=${season}&rs=${rs}&re=${re}`;
+  return buildCleanUrl(Number(team), Number(season), rs, re, activeSinceDate);
 }
 
 /* Append UTM params to any URL that already has query params.
@@ -1762,6 +2003,16 @@ async function update(){
     $('navTeamWrap').classList.add('visible');
     document.title=`${teamName} — Track The Season`;
 
+    /* Dynamic OG/meta tags — update after data loads so shares get team-specific previews */
+    const l10data  = curGames.slice(-10);
+    const l10w     = l10data.filter(g=>g.win).length;
+    const l10l     = l10data.length - l10w;
+    const prevGp0  = allData.filter(d=>d.year!==year)[0]?.games.slice(0,curRec.g) || [];
+    const prevW0   = prevGp0.filter(g=>g.win).length;
+    const deltaOg  = curRec.g > 0 && prevGp0.length ? curRec.w - prevW0 : 0;
+    const cmpYrOg  = allData.filter(d=>d.year!==year)[0]?.year ?? year-1;
+    updateMetaTags(teamName, curRec.w, curRec.l, curRec.g, proj, l10w, l10l, deltaOg, cmpYrOg);
+
     /* Metrics */
     $('mTeam').textContent      = teamName;
     $('mSeason').textContent    = `${year} regular season`;
@@ -1906,12 +2157,22 @@ ctrlToggleBar.addEventListener('click', ()=>{
   setAccordionState(!ctrlCard.classList.contains('open'));
 });
 ctrlToggleBarHero.addEventListener('click', ()=>{
+  /* Toggle open/close — NO scrollIntoView, expand in place */
   setAccordionState(!ctrlCard.classList.contains('open'));
-  /* Scroll the open accordion into view so user sees the controls */
-  if(ctrlCard.classList.contains('open')){
-    setTimeout(()=> ctrlCard.scrollIntoView({behavior:'smooth', block:'nearest'}), 50);
-  }
 });
+
+/* Sticky detection — adds .is-sticky class when toggle bar is pinned */
+if('IntersectionObserver' in window){
+  /* Sentinel placed just above the toggle bar */
+  const sentinel = document.createElement('div');
+  sentinel.style.cssText='position:absolute;height:1px;width:1px;top:0;left:0;pointer-events:none';
+  ctrlToggleBarHero.parentElement.insertBefore(sentinel, ctrlToggleBarHero);
+  const stickyObs = new IntersectionObserver(
+    ([e])=> ctrlToggleBarHero.classList.toggle('is-sticky', !e.isIntersecting),
+    {threshold:[1], rootMargin:`-${53}px 0px 0px 0px`}
+  );
+  stickyObs.observe(sentinel);
+}
 
 /* Update the summary line shown on the collapsed toggle */
 function updateCtrlSummary(){
