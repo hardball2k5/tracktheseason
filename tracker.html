@@ -813,8 +813,16 @@ function buildCleanUrl(teamId, season, rs, re, since){
     ? `https://tracktheseason.com/${slug}`
     : `https://tracktheseason.com/tracker.html?team=${teamId}`;
   const params = new URLSearchParams();
-  if(season && season !== CURRENT_YEAR) params.set('season', season);
-  if(rs && re){params.set('rs', rs);params.set('re', re);}
+
+  /* Only include season if not current */
+  if(season && Number(season) !== CURRENT_YEAR) params.set('season', season);
+
+  /* Only include rs/re if they're set and NOT the default last-10 pattern
+     (default: rs = max(1, gp-9), re = gp — no need to encode that in the URL) */
+  const rsNum = Number(rs), reNum = Number(re);
+  const isDefaultRange = rsNum > 0 && reNum > 0 && (reNum - rsNum === 9) && rsNum === Math.max(1, reNum - 9);
+  if(rs && re && !isDefaultRange){ params.set('rs', rs); params.set('re', re); }
+
   if(since) params.set('since', since);
   const qs = params.toString();
   return qs ? `${base}?${qs}` : base;
