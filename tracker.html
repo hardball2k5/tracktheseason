@@ -2130,21 +2130,15 @@ async function init(){
    EVENT LISTENERS
 ═══════════════════════════════════════════════════════ */
 /* ── Mobile controls accordion ───────────────────── */
-const ctrlToggleBar     = $('ctrlToggleBar');
 const ctrlToggleBarHero = $('ctrlToggleBarHero');
 const ctrlCard          = $('ctrlCard');
 
 function setAccordionState(open){
   ctrlCard.classList.toggle('open', open);
-  ctrlToggleBar.classList.toggle('open', open);
   ctrlToggleBarHero.classList.toggle('open', open);
-  ctrlToggleBar.setAttribute('aria-expanded', open);
   ctrlToggleBarHero.setAttribute('aria-expanded', open);
 }
 
-ctrlToggleBar.addEventListener('click', ()=>{
-  setAccordionState(!ctrlCard.classList.contains('open'));
-});
 ctrlToggleBarHero.addEventListener('click', ()=>{
   /* Toggle open/close — NO scrollIntoView, expand in place */
   setAccordionState(!ctrlCard.classList.contains('open'));
@@ -2171,7 +2165,6 @@ function updateCtrlSummary(){
   const re        = $('gameTo').value   || '—';
   const clubName  = teamName.split(' ').slice(-1)[0]; /* "Phillies" */
   const summary   = `${clubName} · ${season} · Games ${rs}–${re}`;
-  $('ctrlToggleValue').textContent     = summary;
   $('ctrlToggleValueHero').textContent = summary;
 }
 
