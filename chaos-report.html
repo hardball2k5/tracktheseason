@@ -199,24 +199,22 @@ function copyUrl(){
   });
 }
 
-/* Auto-detect variant from URL path:
-   /chaos-report  → chaos
-   /hot-cold      → hot-cold
-   /pace-leaders  → pace-leaders */
+/* Auto-detect variant from URL path */
 const PATH_VARIANTS = {
   '/hot-cold':     'hot-cold',
   '/pace-leaders': 'pace-leaders',
   '/chaos-report': 'chaos',
 };
 const pathVariant = PATH_VARIANTS[window.location.pathname] || 'chaos';
+currentVariant = pathVariant;
 
-/* Set active button to match URL */
+/* Set active button */
 document.querySelectorAll('.variant-btn').forEach(btn => {
   btn.classList.toggle('active', btn.dataset.variant === pathVariant);
 });
 
-/* Load default on page open */
-loadCard(pathVariant);
+/* Load correct graphic — small delay ensures DOM is ready */
+setTimeout(() => loadCard(pathVariant), 50);
 </script>
 </body>
 </html>
