@@ -129,6 +129,14 @@
     {
       "source": "/chaos-report",
       "destination": "/chaos-report.html"
+    },
+    {
+      "source": "/hot-cold",
+      "destination": "/chaos-report.html"
+    },
+    {
+      "source": "/pace-leaders",
+      "destination": "/chaos-report.html"
     }
   ]
 }

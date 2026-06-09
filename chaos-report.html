@@ -151,7 +151,7 @@ function cardUrl(variant){ return variant === 'chaos' ? BASE : `${BASE}?variant=
 
 function updateShareLinks(variant) {
   const text = encodeURIComponent(VARIANT_COPY[variant] || VARIANT_COPY['chaos']);
-  const pageUrl = encodeURIComponent('https://tracktheseason.com/chaos-report');
+  const pageUrl = encodeURIComponent(`https://tracktheseason.com${VARIANT_PATHS[variant] || '/chaos-report'}`);
   document.getElementById('shareX').href       = `https://x.com/intent/tweet?text=${text}`;
   document.getElementById('shareThreads').href = `https://www.threads.net/intent/post?text=${text}`;
   document.getElementById('shareFB').href      = `https://www.facebook.com/sharer/sharer.php?u=${pageUrl}`;
@@ -175,11 +175,19 @@ function onImgError(){
   document.getElementById('loadingOverlay').innerHTML = '<div style="text-align:center;padding:40px"><div style="font-size:14px;color:#f47570;margin-bottom:8px">Could not load graphic</div><div style="font-size:12px;color:rgba(255,255,255,.3)">Check Vercel deployment</div></div>';
 }
 
+const VARIANT_PATHS = {
+  'chaos':        '/chaos-report',
+  'hot-cold':     '/hot-cold',
+  'pace-leaders': '/pace-leaders',
+};
+
 document.querySelectorAll('.variant-btn').forEach(btn => {
   btn.addEventListener('click', () => {
     document.querySelectorAll('.variant-btn').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
     currentVariant = btn.dataset.variant;
+    /* Update browser URL to match variant */
+    window.history.replaceState({}, '', VARIANT_PATHS[currentVariant] || '/chaos-report');
     loadCard(currentVariant);
   });
 });
@@ -200,8 +208,24 @@ function copyUrl(){
   });
 }
 
+/* Auto-detect variant from URL path:
+   /chaos-report  → chaos
+   /hot-cold      → hot-cold
+   /pace-leaders  → pace-leaders */
+const PATH_VARIANTS = {
+  '/hot-cold':     'hot-cold',
+  '/pace-leaders': 'pace-leaders',
+  '/chaos-report': 'chaos',
+};
+const pathVariant = PATH_VARIANTS[window.location.pathname] || 'chaos';
+
+/* Set active button to match URL */
+document.querySelectorAll('.variant-btn').forEach(btn => {
+  btn.classList.toggle('active', btn.dataset.variant === pathVariant);
+});
+
 /* Load default on page open */
-loadCard('chaos');
+loadCard(pathVariant);
 </script>
 </body>
 </html>
