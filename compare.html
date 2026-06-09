@@ -1,0 +1,746 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Compare Teams — Track The Season</title>
+<meta name="description" content="Compare any two MLB teams head-to-head by win pace, record, and momentum."/>
+<meta property="og:title" content="Team Comparison — Track The Season"/>
+<meta property="og:description" content="Compare any two MLB teams head-to-head."/>
+<meta property="og:image" content="https://tracktheseason.com/api/card/phillies"/>
+<meta name="twitter:card" content="summary_large_image"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600;700&family=IBM+Plex+Sans:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --ink:#0f1014;--ink2:#1a1d24;--ink3:#252830;
+  --chalk:#8a8a82;--rule:rgba(255,255,255,.07);--rule2:rgba(255,255,255,.04);
+  --signal:#1aff6b;--gain-bg:rgba(13,140,58,.14);--gain-text:#4ecb77;
+  --loss-bg:rgba(232,48,42,.14);--loss-text:#f47570;
+  --caution-bg:rgba(245,200,66,.14);--caution-text:#f9d96e;
+  --logo-bg:#fff;--logo-border:rgba(0,0,0,.1);--logo-shadow:0 2px 8px rgba(0,0,0,.18);
+  --r-sm:6px;--r-md:10px;--r-lg:14px;--r-pill:999px;
+  --mono:'IBM Plex Mono',monospace;--sans:'IBM Plex Sans',sans-serif;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{width:100%;overflow-x:hidden}
+html{scroll-behavior:smooth;-webkit-tap-highlight-color:transparent}
+body{font-family:var(--sans);background:var(--ink);color:#e8edf8;min-height:100vh;
+  background-image:radial-gradient(ellipse 120% 40% at 50% -5%,rgba(26,255,107,.06) 0%,transparent 60%)}
+.wrap{max-width:1100px;margin:0 auto;padding:0 16px}
+
+/* NAV */
+.site-nav{padding:11px 0;border-bottom:1px solid var(--rule);position:sticky;top:0;z-index:100;background:rgba(15,16,20,.95);backdrop-filter:blur(16px)}
+.nav-inner{display:flex;align-items:center;gap:10px}
+.back-btn{display:flex;align-items:center;gap:5px;font-family:var(--mono);font-size:12px;font-weight:600;color:var(--chalk);text-decoration:none;border:1px solid var(--rule);border-radius:var(--r-sm);padding:6px 12px;transition:all .13s;white-space:nowrap}
+.back-btn:hover{border-color:rgba(255,255,255,.2);color:#e8edf8}
+.nav-logo{display:flex;align-items:center;gap:9px;text-decoration:none}
+.nav-monogram{width:30px;height:30px;background:var(--signal);border-radius:6px;display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:11px;font-weight:700;color:var(--ink)}
+.nav-wordmark{font-family:var(--mono);font-size:14px;font-weight:700;color:#e8edf8;white-space:nowrap}
+.nav-wordmark .accent{color:var(--signal)}
+
+/* PAGE HEADER */
+.page-header{padding:24px 0 0;text-align:center}
+.page-eyebrow{font-family:var(--mono);font-size:10px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--signal);margin-bottom:8px}
+.page-title{font-family:var(--mono);font-size:clamp(22px,5vw,38px);font-weight:700;letter-spacing:-.03em;color:#e8edf8;line-height:1}
+
+/* TEAM SELECTOR */
+.selector-bar{
+  display:flex;align-items:center;gap:10px;
+  margin:20px 0 0;flex-wrap:wrap;
+}
+.team-picker{
+  flex:1;min-width:140px;
+  background:var(--ink2);border:1px solid rgba(255,255,255,.12);
+  border-radius:var(--r-lg);padding:10px 14px;
+  display:flex;align-items:center;gap:10px;
+  transition:border-color .15s;cursor:text;
+}
+.team-picker:focus-within{border-color:var(--signal)}
+.picker-logo{width:34px;height:34px;flex-shrink:0;background:var(--logo-bg);border:1px solid var(--logo-border);border-radius:6px;box-shadow:var(--logo-shadow);display:flex;align-items:center;justify-content:center;overflow:hidden}
+.picker-logo img{width:26px;height:26px;object-fit:contain}
+.picker-input{flex:1;background:none;border:none;outline:none;font-family:var(--mono);font-size:14px;font-weight:600;color:#e8edf8;caret-color:var(--signal);min-width:0}
+.picker-input::placeholder{color:rgba(255,255,255,.3);font-weight:400}
+.picker-dropdown{position:absolute;top:calc(100% + 4px);left:0;right:0;background:var(--ink2);border:1px solid rgba(255,255,255,.15);border-radius:var(--r-md);max-height:260px;overflow-y:auto;z-index:50;box-shadow:0 16px 40px rgba(0,0,0,.6);display:none}
+.picker-dropdown.open{display:block}
+.picker-option{display:flex;align-items:center;gap:10px;padding:9px 12px;cursor:pointer;transition:background .1s}
+.picker-option:hover{background:var(--ink3)}
+.picker-option img{width:24px;height:24px;object-fit:contain}
+.picker-option-name{font-family:var(--mono);font-size:13px;font-weight:600;color:#e8edf8}
+.picker-option-city{font-family:var(--mono);font-size:10px;color:var(--chalk)}
+.picker-wrap{flex:1;min-width:140px;position:relative}
+.vs-label{font-family:var(--mono);font-size:18px;font-weight:700;color:rgba(255,255,255,.25);flex-shrink:0;padding:0 4px}
+.compare-btn{
+  padding:12px 20px;background:var(--signal);border:none;border-radius:var(--r-sm);
+  color:var(--ink);font-family:var(--mono);font-size:13px;font-weight:700;
+  cursor:pointer;transition:filter .13s;white-space:nowrap;flex-shrink:0;
+}
+.compare-btn:hover{filter:brightness(1.08)}
+.compare-btn:disabled{opacity:.4;cursor:not-allowed}
+
+/* COMPARISON RESULTS */
+.compare-section{margin-top:24px;display:none}
+.compare-section.visible{display:block}
+
+/* Team headers */
+.team-headers{
+  display:grid;grid-template-columns:1fr auto 1fr;
+  gap:12px;align-items:center;margin-bottom:16px;
+}
+.team-header{
+  background:var(--ink2);border:1px solid var(--rule);
+  border-radius:var(--r-lg);padding:16px;
+  display:flex;flex-direction:column;align-items:center;gap:8px;text-align:center;
+}
+.team-header.winner{border-color:rgba(26,255,107,.3);background:rgba(26,255,107,.04)}
+.team-header.loser{border-color:rgba(232,48,42,.15)}
+.th-logo{width:56px;height:56px;background:var(--logo-bg);border:1px solid var(--logo-border);border-radius:var(--r-md);box-shadow:var(--logo-shadow);display:flex;align-items:center;justify-content:center;overflow:hidden}
+.th-logo img{width:44px;height:44px;object-fit:contain}
+.th-name{font-family:var(--mono);font-size:18px;font-weight:700;color:#e8edf8;letter-spacing:-.01em}
+.th-record{font-family:var(--mono);font-size:24px;font-weight:700;color:var(--signal);letter-spacing:-.02em}
+.th-sub{font-family:var(--mono);font-size:11px;color:var(--chalk)}
+.vs-center{text-align:center}
+.vs-big{font-family:var(--mono);font-size:22px;font-weight:700;color:rgba(255,255,255,.2)}
+.vs-gp{font-family:var(--mono);font-size:10px;color:rgba(255,255,255,.2);margin-top:4px;letter-spacing:.08em}
+
+/* Comparison table */
+.comp-table-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;border-radius:var(--r-lg);border:1px solid var(--rule)}
+.comp-table{width:100%;border-collapse:collapse;min-width:340px}
+.comp-table th{font-family:var(--mono);font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--chalk);background:var(--ink2);padding:10px 16px;text-align:center;border-bottom:1px solid var(--rule)}
+.comp-table th:first-child{text-align:left}
+.comp-table td{padding:12px 16px;font-family:var(--mono);font-size:14px;border-bottom:1px solid var(--rule2);text-align:center}
+.comp-table tr:last-child td{border-bottom:none}
+.comp-table td:first-child{font-size:11px;font-weight:700;color:var(--chalk);text-align:left;letter-spacing:.06em;text-transform:uppercase}
+.comp-table tr:hover td{background:rgba(255,255,255,.02)}
+.metric-win{color:var(--signal);font-weight:700}
+.metric-lose{color:var(--loss-text)}
+.metric-tie{color:rgba(255,255,255,.6)}
+.pill-val{display:inline-block;padding:3px 10px;border-radius:var(--r-sm);font-weight:700;font-size:13px}
+.pill-green{background:var(--gain-bg);color:var(--gain-text)}
+.pill-red{background:var(--loss-bg);color:var(--loss-text)}
+.pill-amber{background:var(--caution-bg);color:var(--caution-text)}
+.pill-neutral{background:var(--ink3);color:var(--chalk)}
+
+/* Mobile stacked cards */
+@media(max-width:600px){
+  .comp-table-wrap{display:none}
+  .mobile-comp{display:flex;flex-direction:column;gap:8px}
+}
+@media(min-width:601px){.mobile-comp{display:none}}
+.mobile-metric{
+  background:var(--ink2);border:1px solid var(--rule);
+  border-radius:var(--r-md);padding:12px 14px;
+}
+.mm-label{font-family:var(--mono);font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--chalk);margin-bottom:8px}
+.mm-row{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.mm-val{font-family:var(--mono);font-size:18px;font-weight:700}
+.mm-bar-wrap{flex:1;height:4px;background:rgba(255,255,255,.06);border-radius:2px;overflow:hidden}
+.mm-bar{height:100%;border-radius:2px;transition:width .6s ease}
+
+/* Talking points */
+.talking-points{margin-top:20px}
+.tp-header{font-family:var(--mono);font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.3);margin-bottom:12px;display:flex;align-items:center;gap:10px}
+.tp-header::after{content:'';flex:1;height:1px;background:var(--rule)}
+.tp-card{
+  background:var(--ink2);border:1px solid var(--rule);
+  border-left:3px solid var(--signal);border-radius:var(--r-md);
+  padding:14px 16px;margin-bottom:8px;
+  display:flex;align-items:flex-start;justify-content:space-between;gap:12px;
+}
+.tp-card.rivalry{border-left-color:var(--caution-text)}
+.tp-card.panic{border-left-color:var(--loss-text)}
+.tp-text{font-family:var(--sans);font-size:15px;color:#e8edf8;line-height:1.5;flex:1}
+.tp-share-icon{
+  flex-shrink:0;width:32px;height:32px;border-radius:50%;
+  background:rgba(255,255,255,.05);border:1px solid var(--rule);
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;transition:all .13s;font-size:13px;color:var(--chalk);
+}
+.tp-share-icon:hover{background:rgba(26,255,107,.1);border-color:var(--signal);color:var(--signal)}
+
+/* Share card section */
+.share-section{
+  margin-top:20px;
+  background:var(--ink2);border:1px solid var(--rule);
+  border-radius:var(--r-lg);padding:16px;
+}
+.share-section-title{font-family:var(--mono);font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.3);margin-bottom:12px}
+.share-actions{display:flex;gap:8px;flex-wrap:wrap}
+.share-btn{display:inline-flex;align-items:center;gap:6px;font-family:var(--mono);font-size:12px;font-weight:700;padding:10px 16px;border-radius:var(--r-sm);cursor:pointer;transition:all .13s;text-decoration:none;letter-spacing:.02em;min-height:38px;border:none}
+.share-btn.primary{background:var(--signal);color:var(--ink)}
+.share-btn.primary:hover{filter:brightness(1.08)}
+.share-btn.secondary{background:transparent;color:var(--chalk);border:1px solid var(--rule)}
+.share-btn.secondary:hover{border-color:var(--signal);color:var(--signal)}
+
+/* Loading / error */
+.loading-state{text-align:center;padding:48px 20px;color:var(--chalk)}
+.spinner{width:28px;height:28px;border-radius:50%;border:3px solid var(--rule);border-top-color:var(--signal);animation:spin .75s linear infinite;margin:0 auto 12px}
+@keyframes spin{to{transform:rotate(360deg)}}
+.state-text{font-family:var(--mono);font-size:13px;line-height:1.6}
+
+/* Share menu */
+.share-menu-backdrop{position:fixed;inset:0;z-index:299}
+.share-menu{position:fixed;z-index:300;background:var(--ink2);border:1px solid rgba(255,255,255,.18);border-radius:var(--r-lg);padding:6px;min-width:200px;box-shadow:0 16px 48px rgba(0,0,0,.6);animation:menuPop .16s cubic-bezier(.22,1,.36,1) both}
+@keyframes menuPop{from{opacity:0;transform:scale(.94) translateY(4px)}to{opacity:1;transform:scale(1) translateY(0)}}
+.share-menu-title{font-family:var(--mono);font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.25);padding:6px 10px 8px;border-bottom:1px solid var(--rule);margin-bottom:4px}
+.share-menu-item{display:flex;align-items:center;gap:10px;width:100%;padding:9px 10px;border-radius:6px;border:none;background:transparent;color:rgba(255,255,255,.8);font-family:var(--mono);font-size:12px;font-weight:600;cursor:pointer;text-decoration:none;transition:background .12s;white-space:nowrap}
+.share-menu-item:hover{background:var(--ink3);color:#e8edf8}
+.share-menu-item-icon{width:26px;height:26px;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0}
+.share-menu-item-icon.x-icon{background:#000;color:#fff}
+.share-menu-item-icon.fb-icon{background:#1877f2;color:#fff}
+.share-menu-item-icon.rd-icon{background:#ff4500;color:#fff}
+.share-menu-item-icon.th-icon{background:#000;color:#fff}
+.share-menu-item-icon.bs-icon{background:#0085ff;color:#fff}
+.share-menu-item-icon.cp-icon{background:var(--ink3);color:var(--chalk)}
+.share-menu-divider{height:1px;background:var(--rule);margin:4px 0}
+
+/* Footer */
+.site-footer{border-top:1px solid var(--rule);padding:16px 0 32px;margin-top:48px;font-family:var(--mono);font-size:12px;color:rgba(255,255,255,.2);display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between}
+.footer-logo{text-decoration:none;color:var(--chalk);font-weight:700}
+.footer-logo .accent{color:var(--signal)}
+
+@media(max-width:520px){
+  .team-headers{grid-template-columns:1fr;gap:8px}
+  .vs-center{display:none}
+  .selector-bar{flex-direction:column}
+  .compare-btn{width:100%}
+}
+</style>
+<!-- Google tag -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-DCSQPGSY1D"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-DCSQPGSY1D');</script>
+</head>
+<body>
+
+<nav class="site-nav">
+  <div class="wrap nav-inner">
+    <a href="index.html" class="back-btn">← All Teams</a>
+    <a href="index.html" class="nav-logo">
+      <div class="nav-monogram">TTS</div>
+      <div class="nav-wordmark">TRACK THE <span class="accent">SEASON</span></div>
+    </a>
+  </div>
+</nav>
+
+<div class="wrap">
+  <div class="page-header">
+    <div class="page-eyebrow">⚔️ Head-to-Head</div>
+    <div class="page-title" id="pageTitle">Compare Any Two Teams</div>
+  </div>
+
+  <!-- Team selector -->
+  <div class="selector-bar">
+    <div class="picker-wrap" id="picker1Wrap">
+      <div class="team-picker" id="picker1">
+        <div class="picker-logo" id="picker1Logo">
+          <img id="picker1LogoImg" src="" alt="" style="display:none"/>
+          <span id="picker1Emoji" style="font-size:16px">⚾</span>
+        </div>
+        <input class="picker-input" id="picker1Input" type="text" placeholder="Team 1…" autocomplete="off" autocorrect="off" spellcheck="false"/>
+      </div>
+      <div class="picker-dropdown" id="picker1Dropdown"></div>
+    </div>
+    <div class="vs-label">VS</div>
+    <div class="picker-wrap" id="picker2Wrap">
+      <div class="team-picker" id="picker2">
+        <div class="picker-logo" id="picker2Logo">
+          <img id="picker2LogoImg" src="" alt="" style="display:none"/>
+          <span id="picker2Emoji" style="font-size:16px">⚾</span>
+        </div>
+        <input class="picker-input" id="picker2Input" type="text" placeholder="Team 2…" autocomplete="off" autocorrect="off" spellcheck="false"/>
+      </div>
+      <div class="picker-dropdown" id="picker2Dropdown"></div>
+    </div>
+    <button class="compare-btn" id="compareBtn" disabled>Compare →</button>
+  </div>
+
+  <!-- Results -->
+  <div class="compare-section" id="compareSection">
+    <div id="compareLoading" class="loading-state">
+      <div class="spinner"></div>
+      <div class="state-text">Loading team data…</div>
+    </div>
+    <div id="compareResults" style="display:none">
+      <!-- Team headers -->
+      <div class="team-headers" id="teamHeaders"></div>
+      <!-- Desktop table -->
+      <div class="comp-table-wrap">
+        <table class="comp-table" id="compTable">
+          <thead><tr>
+            <th>Metric</th>
+            <th id="col1Head">Team 1</th>
+            <th id="col2Head">Team 2</th>
+          </tr></thead>
+          <tbody id="compTableBody"></tbody>
+        </table>
+      </div>
+      <!-- Mobile stacked -->
+      <div class="mobile-comp" id="mobileComp"></div>
+      <!-- Talking points -->
+      <div class="talking-points">
+        <div class="tp-header">Talking Points</div>
+        <div id="talkingPoints"></div>
+      </div>
+      <!-- Share section -->
+      <div class="share-section">
+        <div class="share-section-title">Share this comparison</div>
+        <div class="share-actions" id="shareActions">
+          <button class="share-btn primary" id="shareCompBtn">⬆ Share</button>
+          <button class="share-btn secondary" id="copyCompBtn">⧉ Copy link</button>
+          <a class="share-btn secondary" id="team1TrackerBtn" href="#" target="_blank" rel="noopener">↗ Team 1 Tracker</a>
+          <a class="share-btn secondary" id="team2TrackerBtn" href="#" target="_blank" rel="noopener">↗ Team 2 Tracker</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer class="site-footer">
+    <a href="index.html" class="footer-logo">TRACK THE <span class="accent">SEASON</span></a>
+    <span>tracktheseason.com · Not affiliated with MLB</span>
+  </footer>
+</div>
+
+<!-- Share menu -->
+<div id="shareMenuBackdrop" style="display:none"></div>
+
+<script>
+const API          = 'https://statsapi.mlb.com/api/v1';
+const CURRENT_YEAR = new Date().getFullYear();
+const COMPARE_YEAR = CURRENT_YEAR - 1;
+const SEASON_GAMES = 162;
+const TRACKER_PAGE = 'tracker.html';
+
+const ALL_TEAMS = [
+  {id:108,city:'Los Angeles',club:'Angels',    slug:'angels'},
+  {id:109,city:'Arizona',    club:'Diamondbacks',slug:'diamondbacks'},
+  {id:110,city:'Baltimore',  club:'Orioles',   slug:'orioles'},
+  {id:111,city:'Boston',     club:'Red Sox',   slug:'red-sox'},
+  {id:112,city:'Chicago',    club:'Cubs',      slug:'cubs'},
+  {id:113,city:'Cincinnati', club:'Reds',      slug:'reds'},
+  {id:114,city:'Cleveland',  club:'Guardians', slug:'guardians'},
+  {id:115,city:'Colorado',   club:'Rockies',   slug:'rockies'},
+  {id:116,city:'Detroit',    club:'Tigers',    slug:'tigers'},
+  {id:117,city:'Houston',    club:'Astros',    slug:'astros'},
+  {id:118,city:'Kansas City',club:'Royals',    slug:'royals'},
+  {id:119,city:'Los Angeles',club:'Dodgers',   slug:'dodgers'},
+  {id:120,city:'Washington', club:'Nationals', slug:'nationals'},
+  {id:121,city:'New York',   club:'Mets',      slug:'mets'},
+  {id:133,city:'Oakland',    club:'Athletics', slug:'athletics'},
+  {id:134,city:'Pittsburgh', club:'Pirates',   slug:'pirates'},
+  {id:135,city:'San Diego',  club:'Padres',    slug:'padres'},
+  {id:136,city:'Seattle',    club:'Mariners',  slug:'mariners'},
+  {id:137,city:'San Francisco',club:'Giants',  slug:'giants'},
+  {id:138,city:'St. Louis',  club:'Cardinals', slug:'cardinals'},
+  {id:139,city:'Tampa Bay',  club:'Rays',      slug:'rays'},
+  {id:140,city:'Texas',      club:'Rangers',   slug:'rangers'},
+  {id:141,city:'Toronto',    club:'Blue Jays', slug:'blue-jays'},
+  {id:142,city:'Minnesota',  club:'Twins',     slug:'twins'},
+  {id:143,city:'Philadelphia',club:'Phillies', slug:'phillies'},
+  {id:144,city:'Atlanta',    club:'Braves',    slug:'braves'},
+  {id:145,city:'Chicago',    club:'White Sox', slug:'white-sox'},
+  {id:146,city:'Miami',      club:'Marlins',   slug:'marlins'},
+  {id:147,city:'New York',   club:'Yankees',   slug:'yankees'},
+  {id:158,city:'Milwaukee',  club:'Brewers',   slug:'brewers'},
+];
+
+/* ── Rivals map ─────────────────────────────────── */
+const RIVALS = {
+  '143-121':'NL East rivals',   '121-143':'NL East rivals',
+  '147-111':'AL East rivals',   '111-147':'AL East rivals',
+  '112-138':'NL Central rivals','138-112':'NL Central rivals',
+  '119-137':'NL West rivals',   '137-119':'NL West rivals',
+  '116-142':'AL Central rivals','142-116':'AL Central rivals',
+  '143-144':'NL East rivals',   '144-143':'NL East rivals',
+  '147-110':'AL East rivals',   '110-147':'AL East rivals',
+};
+
+/* ── Data helpers ───────────────────────────────── */
+const cache = new Map();
+async function loadSchedule(teamId, year){
+  const key=`${teamId}:${year}`;
+  if(cache.has(key)) return cache.get(key);
+  const res  = await fetch(`${API}/schedule?sportId=1&teamId=${teamId}&season=${year}&gameTypes=R`);
+  const data = await res.json();
+  const games = [];
+  for(const d of data.dates||[])
+    for(const g of d.games||[]){
+      if(g.status?.abstractGameState!=='Final') continue;
+      const h=g.teams?.home,a=g.teams?.away;
+      if(h?.score==null||a?.score==null||h.score===a.score) continue;
+      const isHome=String(h.team.id)===String(teamId);
+      games.push({win:isHome?h.score>a.score:a.score>h.score});
+    }
+  cache.set(key,games);
+  return games;
+}
+const winPct=(w,l)=>(w+l)?w/(w+l):0;
+const fmtPct=p=>p.toFixed(3).replace(/^0/,'');
+function calcStats(games,prevGames){
+  const gp=games.length,w=games.filter(g=>g.win).length,l=gp-w;
+  const proj=gp?Math.round((w/gp)*SEASON_GAMES):null;
+  const l10=games.slice(-10);const l10w=l10.filter(g=>g.win).length;
+  const l20=games.slice(-20);const l20w=l20.filter(g=>g.win).length;
+  let delta=null;
+  if(gp>0&&prevGames.length>=gp) delta=w-prevGames.slice(0,gp).filter(g=>g.win).length;
+  return{gp,w,l,proj,l10w,l10l:l10.length-l10w,l20w,l20l:l20.length-l20w,pct:winPct(w,l),delta};
+}
+function mlbRank(teamId,allData){
+  const sorted=[...allData].filter(t=>t.stats.proj).sort((a,b)=>(b.stats.proj||0)-(a.stats.proj||0));
+  const idx=sorted.findIndex(t=>t.id===teamId);
+  return idx>=0?idx+1:null;
+}
+function ordinal(n){if(!n)return '—';const s=['th','st','nd','rd'],v=n%100;return n+(s[(v-20)%10]||s[v]||s[0]);}
+
+/* ── Talking point generator ────────────────────── */
+function generateTalkingPoints(t1,t2,s1,s2,rivalry){
+  const pts=[];
+  const n1=t1.club,n2=t2.club;
+  const pDiff=(s1.proj||80)-(s2.proj||80);
+  const dDiff=(s1.delta||0)-(s2.delta||0);
+  const l10Diff=s1.l10w-s2.l10w;
+
+  /* Bragging/roasting */
+  if(Math.abs(pDiff)>=10){
+    const better=pDiff>0?n1:n2,worse=pDiff>0?n2:n1,diff=Math.abs(pDiff);
+    pts.push({type:'brag',text:`The ${better} are tracking ${diff} wins better than the ${worse} over a full season. That's not a slump — that's a gap.`});
+  } else if(Math.abs(pDiff)>=4){
+    const better=pDiff>0?n1:n2,worse=pDiff>0?n2:n1;
+    pts.push({type:'brag',text:`The ${better} hold a ${Math.abs(pDiff)}-win pace advantage over the ${worse} right now.`});
+  }
+
+  /* vs last year */
+  if(s1.delta!==null&&s2.delta!==null){
+    if(s1.delta>0&&s2.delta<0)
+      pts.push({type:'momentum',text:`The ${n1} are ${s1.delta} wins ahead of last year's pace while the ${n2} are ${Math.abs(s2.delta)} wins behind. The trajectories couldn't be more different.`});
+    else if(s1.delta<0&&s2.delta>0)
+      pts.push({type:'momentum',text:`The ${n2} are ${s2.delta} wins ahead of last year's pace while the ${n1} are ${Math.abs(s1.delta)} wins behind. Momentum has shifted.`});
+    else if(s1.delta>5&&s2.delta>5)
+      pts.push({type:'brag',text:`Both teams are outpacing last season — the ${n1} by ${s1.delta}W, the ${n2} by ${s2.delta}W. This is a great division/rivalry right now.`});
+  }
+
+  /* Last 10 */
+  if(Math.abs(l10Diff)>=3){
+    const hotter=l10Diff>0?n1:n2,hW=l10Diff>0?s1.l10w:s2.l10w,hL=l10Diff>0?s1.l10l:s2.l10l;
+    const cooler=l10Diff>0?n2:n1;
+    pts.push({type:'momentum',text:`The ${hotter} are ${hW}–${hL} over their last 10 games. That's the kind of recent form that changes everything.`});
+  } else if(s1.l10w>=7){
+    pts.push({type:'momentum',text:`The ${n1} have quietly gone ${s1.l10w}–${s1.l10l} over their last 10. Don't sleep on this team.`});
+  } else if(s2.l10w>=7){
+    pts.push({type:'momentum',text:`The ${n2} have gone ${s2.l10w}–${s2.l10l} in their last 10. They're trending in the right direction.`});
+  }
+
+  /* Panic */
+  if(s1.delta!==null&&s1.delta<=-8)
+    pts.push({type:'panic',text:`${n1} fans should be concerned. They're ${Math.abs(s1.delta)} wins behind last year's pace. Something needs to change.`});
+  if(s2.delta!==null&&s2.delta<=-8)
+    pts.push({type:'panic',text:`The ${n2} are ${Math.abs(s2.delta)} wins behind last year's pace. That's not a blip — that's a problem.`});
+
+  /* Rivalry */
+  if(rivalry)
+    pts.push({type:'rivalry',text:`These are ${rivalry}. The pace gap between them right now: ${Math.abs(pDiff)} projected wins. Who's winning this rivalry in ${CURRENT_YEAR}?`});
+
+  /* Closer than it looks */
+  if(Math.abs(pDiff)<5&&Math.abs(l10Diff)<=1)
+    pts.push({type:'brag',text:`Closer than you think. The ${n1} and ${n2} are running nearly identical paces right now. This one could go either way.`});
+
+  /* Debate */
+  const betterRec=(s1.w/(s1.w+s1.l||1))>(s2.w/(s2.w+s2.l||1))?n1:n2;
+  const betterPace=(s1.proj||0)>(s2.proj||0)?n1:n2;
+  if(betterRec!==betterPace)
+    pts.push({type:'brag',text:`The ${betterRec} have the better record. The ${betterPace} have the better pace projection. Which number do you trust more?`});
+
+  return pts.slice(0,4);
+}
+
+/* ── Share helpers ──────────────────────────────── */
+async function copyToClipboard(text){
+  try{await navigator.clipboard.writeText(text);return true;}
+  catch{window.prompt('Copy:',text);return false;}
+}
+function hideShareMenu(){
+  document.getElementById('shareMenuBackdrop').style.display='none';
+  document.getElementById('shareMenuBackdrop').innerHTML='';
+  document.querySelector('.share-menu')?.remove();
+}
+function showShareMenu(btn, text, url){
+  hideShareMenu();
+  const bd=document.getElementById('shareMenuBackdrop');
+  bd.style.display='block';
+  bd.addEventListener('click',hideShareMenu,{once:true});
+  const t=encodeURIComponent(text),u=encodeURIComponent(url);
+  const menu=document.createElement('div');
+  menu.className='share-menu';
+  menu.innerHTML=`<div class="share-menu-title">Share via</div>
+    <button class="share-menu-item" id="smCopy"><span class="share-menu-item-icon cp-icon">⧉</span>Copy link</button>
+    <div class="share-menu-divider"></div>
+    <a class="share-menu-item" href="https://x.com/intent/tweet?text=${t}" target="_blank" rel="noopener"><span class="share-menu-item-icon x-icon">𝕏</span>X (Twitter)</a>
+    <a class="share-menu-item" href="https://www.threads.net/intent/post?text=${t}" target="_blank" rel="noopener"><span class="share-menu-item-icon th-icon">@</span>Threads</a>
+    <a class="share-menu-item" href="https://bsky.app/intent/compose?text=${t}" target="_blank" rel="noopener"><span class="share-menu-item-icon bs-icon">🦋</span>Bluesky</a>
+    <a class="share-menu-item" href="https://www.facebook.com/sharer/sharer.php?u=${u}" target="_blank" rel="noopener"><span class="share-menu-item-icon fb-icon">f</span>Facebook</a>
+    <a class="share-menu-item" href="https://www.reddit.com/submit?url=${u}&title=${t}" target="_blank" rel="noopener"><span class="share-menu-item-icon rd-icon">↑</span>Reddit</a>`;
+  document.body.appendChild(menu);
+  menu.querySelector('#smCopy').addEventListener('click',async()=>{
+    const ok=await copyToClipboard(url);
+    menu.querySelector('#smCopy .share-menu-item-icon').textContent=ok?'✓':'⧉';
+    menu.querySelector('#smCopy').childNodes[1].textContent=ok?'Copied!':'Copy link';
+    if(ok) setTimeout(hideShareMenu,800);
+  });
+  menu.querySelectorAll('a').forEach(a=>a.addEventListener('click',()=>setTimeout(hideShareMenu,300)));
+  const rect=btn.getBoundingClientRect();
+  const top=rect.top+window.scrollY-270;
+  const left=Math.min(Math.max(8,rect.left+window.scrollX),window.innerWidth-216);
+  menu.style.top=`${Math.max(80,top)}px`;menu.style.left=`${left}px`;
+}
+async function doShare(btn,text,url,title){
+  if(navigator.share){
+    try{await navigator.share({title,text,url});}
+    catch(e){if(e.name!=='AbortError')console.warn(e);}
+  } else showShareMenu(btn,text,url);
+}
+
+/* ── Team picker ──────────────────────────────── */
+let selected=[null,null];
+function filterTeams(q){
+  return ALL_TEAMS.filter(t=>
+    t.club.toLowerCase().includes(q.toLowerCase())||
+    t.city.toLowerCase().includes(q.toLowerCase())
+  );
+}
+function renderDropdown(n,teams){
+  const dd=document.getElementById(`picker${n}Dropdown`);
+  if(!teams.length){dd.classList.remove('open');return;}
+  dd.innerHTML=teams.map(t=>`
+    <div class="picker-option" data-id="${t.id}" data-n="${n}">
+      <img src="https://www.mlbstatic.com/team-logos/${t.id}.svg" width="24" height="24" onerror="this.style.display='none'"/>
+      <div>
+        <div class="picker-option-name">${t.club}</div>
+        <div class="picker-option-city">${t.city}</div>
+      </div>
+    </div>`).join('');
+  dd.classList.add('open');
+  dd.querySelectorAll('.picker-option').forEach(el=>{
+    el.addEventListener('click',()=>selectTeam(n,Number(el.dataset.id)));
+  });
+}
+function selectTeam(n,id){
+  const team=ALL_TEAMS.find(t=>t.id===id);
+  if(!team) return;
+  selected[n-1]=team;
+  document.getElementById(`picker${n}Input`).value=`${team.city} ${team.club}`;
+  const li=document.getElementById(`picker${n}LogoImg`);
+  const em=document.getElementById(`picker${n}Emoji`);
+  li.src=`https://www.mlbstatic.com/team-logos/${team.id}.svg`;
+  li.style.display='block';em.style.display='none';
+  document.getElementById(`picker${n}Dropdown`).classList.remove('open');
+  document.getElementById('compareBtn').disabled=!selected[0]||!selected[1];
+  updateUrl();
+}
+function updateUrl(){
+  const p=new URLSearchParams();
+  if(selected[0]) p.set('team1',selected[0].id);
+  if(selected[1]) p.set('team2',selected[1].id);
+  window.history.replaceState({},'',`/compare?${p.toString()}`);
+}
+
+[1,2].forEach(n=>{
+  const input=document.getElementById(`picker${n}Input`);
+  input.addEventListener('input',e=>{
+    const q=e.target.value.trim();
+    if(q.length<1){document.getElementById(`picker${n}Dropdown`).classList.remove('open');return;}
+    renderDropdown(n,filterTeams(q).slice(0,8));
+  });
+  input.addEventListener('focus',e=>{
+    if(e.target.value.length>0) renderDropdown(n,filterTeams(e.target.value).slice(0,8));
+  });
+  document.addEventListener('click',e=>{
+    if(!document.getElementById(`picker${n}Wrap`).contains(e.target))
+      document.getElementById(`picker${n}Dropdown`).classList.remove('open');
+  });
+});
+
+/* ── Main compare function ────────────────────── */
+let allData=[];
+
+async function runComparison(){
+  const t1=selected[0],t2=selected[1];
+  if(!t1||!t2) return;
+
+  document.getElementById('compareSection').classList.add('visible');
+  document.getElementById('compareLoading').style.display='block';
+  document.getElementById('compareResults').style.display='none';
+
+  /* Page title */
+  document.getElementById('pageTitle').textContent=`${t1.club} vs ${t2.club}`;
+  document.title=`${t1.club} vs ${t2.club} — Track The Season`;
+
+  try{
+    const [[cur1,prev1],[cur2,prev2]]=await Promise.all([
+      Promise.all([loadSchedule(t1.id,CURRENT_YEAR),loadSchedule(t1.id,COMPARE_YEAR)]),
+      Promise.all([loadSchedule(t2.id,CURRENT_YEAR),loadSchedule(t2.id,COMPARE_YEAR)]),
+    ]);
+
+    /* Load all teams for rank calculation */
+    if(!allData.length){
+      const teamRes=await fetch(`${API}/teams?sportId=1&activeStatus=Y`);
+      const td=await teamRes.json();
+      const tms=td.teams.filter(t=>t.sport?.id===1);
+      const results=await Promise.allSettled(tms.map(async t=>{
+        const g=await loadSchedule(t.id,CURRENT_YEAR);
+        const pg=await loadSchedule(t.id,COMPARE_YEAR);
+        const gp=g.length,w=g.filter(x=>x.win).length,l=gp-w;
+        const proj=gp?Math.round((w/gp)*SEASON_GAMES):null;
+        return{id:t.id,stats:{proj}};
+      }));
+      allData=results.filter(r=>r.status==='fulfilled').map(r=>r.value);
+    }
+
+    const s1=calcStats(cur1,prev1),s2=calcStats(cur2,prev2);
+    const gp=Math.min(s1.gp,s2.gp)||s1.gp||s2.gp;
+    const r1=mlbRank(t1.id,allData),r2=mlbRank(t2.id,allData);
+    const rivalry=RIVALS[`${t1.id}-${t2.id}`]||null;
+
+    /* Team headers */
+    const winner1=(s1.proj||0)>=(s2.proj||0);
+    document.getElementById('teamHeaders').innerHTML=`
+      <div class="team-header ${winner1?'winner':'loser'}">
+        <div class="th-logo"><img src="https://www.mlbstatic.com/team-logos/${t1.id}.svg" width="44" height="44" onerror="this.style.display='none'"/></div>
+        <div class="th-name">${t1.club}</div>
+        <div class="th-record">${s1.w}–${s1.l}</div>
+        <div class="th-sub">${t1.city}</div>
+      </div>
+      <div class="vs-center">
+        <div class="vs-big">VS</div>
+        <div class="vs-gp">THROUGH ${gp} GAMES</div>
+      </div>
+      <div class="team-header ${!winner1?'winner':'loser'}">
+        <div class="th-logo"><img src="https://www.mlbstatic.com/team-logos/${t2.id}.svg" width="44" height="44" onerror="this.style.display='none'"/></div>
+        <div class="th-name">${t2.club}</div>
+        <div class="th-record">${s2.w}–${s2.l}</div>
+        <div class="th-sub">${t2.city}</div>
+      </div>`;
+
+    document.getElementById('col1Head').textContent=t1.club;
+    document.getElementById('col2Head').textContent=t2.club;
+
+    /* Table rows */
+    const metrics=[
+      {label:'Record',         v1:`${s1.w}–${s1.l}`,   v2:`${s2.w}–${s2.l}`,   cmp:(a,b)=>s1.w/(s1.w+s1.l||1)-s2.w/(s2.w+s2.l||1), pill:false},
+      {label:'Win %',          v1:fmtPct(s1.pct),       v2:fmtPct(s2.pct),       cmp:()=>s1.pct-s2.pct, pill:false},
+      {label:'Win Pace',       v1:s1.proj?s1.proj+'W':'—', v2:s2.proj?s2.proj+'W':'—', cmp:()=>(s1.proj||0)-(s2.proj||0), pill:'pace'},
+      {label:`vs ${COMPARE_YEAR}`, v1:s1.delta!=null?(s1.delta>0?'+':'')+s1.delta+'W':'—', v2:s2.delta!=null?(s2.delta>0?'+':'')+s2.delta+'W':'—', cmp:()=>(s1.delta||0)-(s2.delta||0), pill:'delta'},
+      {label:'Last 10',        v1:`${s1.l10w}–${s1.l10l}`, v2:`${s2.l10w}–${s2.l10l}`, cmp:()=>s1.l10w-s2.l10w, pill:false},
+      {label:'Last 20',        v1:`${s1.l20w}–${s1.l20l}`, v2:`${s2.l20w}–${s2.l20l}`, cmp:()=>s1.l20w-s2.l20w, pill:false},
+      {label:'MLB Pace Rank',  v1:ordinal(r1),          v2:ordinal(r2),          cmp:()=>(r2||99)-(r1||99), pill:false},
+      {label:'Games Played',   v1:String(s1.gp),        v2:String(s2.gp),        cmp:()=>0, pill:false},
+    ];
+
+    function pillClass(metric,val,isT1){
+      if(metric.pill==='delta') return val.includes('+')&&val!=='—'?'pill-green':val.includes('-')&&val!=='—'?'pill-red':'pill-neutral';
+      if(metric.pill==='pace') return (isT1?(s1.proj||0):(s2.proj||0))>=95?'pill-green':(isT1?(s1.proj||0):(s2.proj||0))<=75?'pill-red':'pill-neutral';
+      return '';
+    }
+    function winCls(cmpVal){
+      if(Math.abs(cmpVal)<0.001) return 'metric-tie';
+      return cmpVal>0?'metric-win':'metric-lose';
+    }
+
+    document.getElementById('compTableBody').innerHTML=metrics.map(m=>{
+      const cv=m.cmp();
+      const c1=cv!==0?winCls(cv):'metric-tie',c2=cv!==0?winCls(-cv):'metric-tie';
+      const p1=pillClass(m,m.v1,true),p2=pillClass(m,m.v2,false);
+      const val1=p1?`<span class="pill-val ${p1}">${m.v1}</span>`:m.v1;
+      const val2=p2?`<span class="pill-val ${p2}">${m.v2}</span>`:m.v2;
+      return `<tr><td>${m.label}</td><td class="${c1}">${val1}</td><td class="${c2}">${val2}</td></tr>`;
+    }).join('');
+
+    /* Mobile stacked cards */
+    document.getElementById('mobileComp').innerHTML=metrics.map(m=>{
+      const cv=m.cmp();
+      const max=Math.max(parseFloat(m.v1)||1,parseFloat(m.v2)||1)||1;
+      const b1=Math.min(100,Math.max(5,(parseFloat(m.v1)||0)/max*100));
+      const b2=Math.min(100,Math.max(5,(parseFloat(m.v2)||0)/max*100));
+      const c1=cv>0?'#1aff6b':cv<0?'#f47570':'#8a8a82';
+      const c2=cv<0?'#1aff6b':cv>0?'#f47570':'#8a8a82';
+      return `<div class="mobile-metric">
+        <div class="mm-label">${m.label}</div>
+        <div class="mm-row">
+          <div class="mm-val" style="color:${c1}">${m.v1}</div>
+          <div class="mm-bar-wrap"><div class="mm-bar" style="width:${b1}%;background:${c1}"></div></div>
+        </div>
+        <div style="height:6px"></div>
+        <div class="mm-row">
+          <div class="mm-val" style="color:${c2}">${m.v2}</div>
+          <div class="mm-bar-wrap"><div class="mm-bar" style="width:${b2}%;background:${c2}"></div></div>
+        </div>
+        <div style="display:flex;justify-content:space-between;margin-top:4px;font-family:var(--mono);font-size:9px;color:var(--chalk)">
+          <span>${t1.club}</span><span>${t2.club}</span>
+        </div>
+      </div>`;
+    }).join('');
+
+    /* Talking points */
+    const tps=generateTalkingPoints(t1,t2,s1,s2,rivalry);
+    document.getElementById('talkingPoints').innerHTML=tps.map(tp=>`
+      <div class="tp-card ${tp.type==='panic'?'panic':tp.type==='rivalry'?'rivalry':''}">
+        <div class="tp-text">${tp.text}</div>
+        <button class="tp-share-icon" onclick="sharePoint(this,'${encodeURIComponent(tp.text)}')">⬆</button>
+      </div>`).join('');
+
+    /* Share wiring */
+    const compareUrl=`https://tracktheseason.com/compare?team1=${t1.id}&team2=${t2.id}`;
+    const shareText=`${t1.club} vs ${t2.club}: ${s1.w}–${s1.l} (${s1.proj||'—'}W pace) vs ${s2.w}–${s2.l} (${s2.proj||'—'}W pace).\n\nFull comparison: ${compareUrl}\n\n#TrackTheSeason #MLB`;
+
+    document.getElementById('shareCompBtn').onclick=function(){
+      doShare(this,shareText,compareUrl,`${t1.club} vs ${t2.club} — Track The Season`);
+    };
+    document.getElementById('copyCompBtn').onclick=async function(){
+      const ok=await copyToClipboard(compareUrl);
+      this.textContent=ok?'✓ Copied!':'Copy failed';
+      setTimeout(()=>this.textContent='⧉ Copy link',2000);
+    };
+    document.getElementById('team1TrackerBtn').href=`tracker.html?team=${t1.id}&season=${CURRENT_YEAR}`;
+    document.getElementById('team2TrackerBtn').href=`tracker.html?team=${t2.id}&season=${CURRENT_YEAR}`;
+    document.getElementById('team1TrackerBtn').textContent=`↗ ${t1.club}`;
+    document.getElementById('team2TrackerBtn').textContent=`↗ ${t2.club}`;
+
+    /* Update OG tags */
+    document.querySelector('meta[property="og:title"]').setAttribute('content',`${t1.club} vs ${t2.club} — Track The Season`);
+    document.querySelector('meta[property="og:description"]').setAttribute('content',shareText.split('\n')[0]);
+
+    document.getElementById('compareLoading').style.display='none';
+    document.getElementById('compareResults').style.display='block';
+    document.getElementById('compareSection').scrollIntoView({behavior:'smooth',block:'start'});
+
+  } catch(e){
+    document.getElementById('compareLoading').innerHTML=`<div style="color:#f47570;font-family:var(--mono);font-size:13px">Could not load data: ${e.message}</div>`;
+  }
+}
+
+window.sharePoint=function(btn,encodedText){
+  const text=decodeURIComponent(encodedText);
+  const url='https://tracktheseason.com';
+  const full=`${text}\n\ntracktheseason.com\n\n#TrackTheSeason #MLB`;
+  doShare(btn,full,url,'Track The Season');
+};
+
+document.getElementById('compareBtn').addEventListener('click',runComparison);
+
+/* ── Auto-load from URL params ──────────────────── */
+(function(){
+  const p=new URLSearchParams(window.location.search);
+  const id1=Number(p.get('team1')),id2=Number(p.get('team2'));
+  if(id1) selectTeam(1,id1);
+  if(id2) selectTeam(2,id2);
+  if(id1&&id2) setTimeout(runComparison,100);
+  // Set title for rivalry pages
+  if(id1&&id2){
+    const t1=ALL_TEAMS.find(t=>t.id===id1),t2=ALL_TEAMS.find(t=>t.id===id2);
+    if(t1&&t2) document.title=`${t1.club} vs ${t2.club} — Track The Season`;
+  }
+})();
+
+/* ── Keyboard shortcut ──────────────────────────── */
+document.addEventListener('keydown',e=>{if(e.key==='Enter'&&selected[0]&&selected[1])runComparison();});
+</script>
+</body>
+</html>

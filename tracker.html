@@ -411,7 +411,48 @@ tr.cur-row td{background:rgba(26,255,107,.05)}
 
 /* ── FOOTER ──────────────────────────────── */
 
-/* ── TREND HORIZON ───────────────────────── */
+/* ── COMPARE CTA ─────────────────────────── */
+.compare-my-team-btn{
+  display:inline-flex;align-items:center;gap:6px;
+  padding:7px 14px;border-radius:var(--r-pill);
+  background:rgba(26,255,107,0.1);border:1px solid rgba(26,255,107,0.25);
+  color:var(--signal);font-family:var(--mono);font-size:11px;font-weight:700;
+  text-decoration:none;letter-spacing:.04em;white-space:nowrap;
+  transition:all .13s;flex-shrink:0;align-self:flex-start;margin-top:2px;
+}
+.compare-my-team-btn:hover{background:rgba(26,255,107,.18);border-color:var(--signal)}
+
+/* ── TALKING POINTS ──────────────────────── */
+.talking-points-card{
+  background:var(--ink2);border:1px solid var(--rule);
+  border-radius:var(--r-lg);padding:16px;margin-top:14px;
+}
+.tp-card-header{
+  display:flex;align-items:center;justify-content:space-between;
+  font-family:var(--mono);font-size:10px;font-weight:700;
+  letter-spacing:.12em;text-transform:uppercase;
+  color:rgba(255,255,255,.3);margin-bottom:0;cursor:pointer;
+}
+.tp-card-header-left{display:flex;align-items:center;gap:8px}
+.tp-toggle{font-size:12px;color:var(--chalk);transition:transform .2s}
+.tp-toggle.open{transform:rotate(180deg)}
+.tp-list{display:none;flex-direction:column;gap:8px;margin-top:12px}
+.tp-list.open{display:flex}
+.tp-item{
+  background:var(--ink3);border-left:3px solid var(--signal);
+  border-radius:0 var(--r-sm) var(--r-sm) 0;padding:10px 12px;
+  display:flex;align-items:flex-start;justify-content:space-between;gap:10px;
+}
+.tp-item.panic{border-left-color:var(--loss-text)}
+.tp-item.momentum{border-left-color:var(--caution-text)}
+.tp-item-text{font-family:var(--sans);font-size:13px;color:#e8edf8;line-height:1.5;flex:1}
+.tp-item-share{
+  flex-shrink:0;width:28px;height:28px;border-radius:50%;
+  background:rgba(255,255,255,.05);border:1px solid var(--rule);
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;transition:all .13s;font-size:11px;color:var(--chalk);
+}
+.tp-item-share:hover{background:rgba(26,255,107,.1);border-color:var(--signal);color:var(--signal)}
 .trend-horizon-card{
   background:var(--ink3);border:1px solid var(--rule);
   border-radius:var(--r-md);padding:14px;
@@ -551,6 +592,7 @@ tr.cur-row td{background:rgba(26,255,107,.05)}
       <div class="hero-record" id="heroRecord"></div>
     </div>
     <span id="heroBadge" class="hero-badge badge-neu"></span>
+    <a id="compareTeamBtn" href="compare.html" class="compare-my-team-btn" style="display:none">⚔️ Compare My Team →</a>
   </div>
 
   <!-- Mobile-only control bar — sits between hero and stats. -->
@@ -1990,8 +2032,99 @@ async function doShare(triggerBtn, shareParams, nativeText, shareUrl, shareTitle
 }
 
 /* ═══════════════════════════════════════════════════════
-   MAIN UPDATE
+   TALKING POINTS
+   Auto-generated discussion starters from live data.
 ═══════════════════════════════════════════════════════ */
+function renderTalkingPoints(teamName, ins, teamId, year){
+  const club      = teamName.split(' ').pop();
+  const w         = ins.curRec.w, l=ins.curRec.l, gp=ins.curRec.g;
+  const proj      = ins.seasProj;
+  const delta     = ins.tcomps?.[0]?.delta ?? null;
+  const compareYear=year-1;
+  const l10       = ins.l10str;
+  const [l10w]    = l10.split('–').map(Number);
+
+  const pts=[];
+
+  /* Bragging */
+  if(delta!==null&&delta>=8)
+    pts.push({type:'brag',text:`The ${club} are ${delta} wins ahead of last year's pace. That's not a hot streak — that's a legitimately better team.`});
+  else if(proj&&proj>=98)
+    pts.push({type:'brag',text:`The ${club} are on pace for ${proj} wins. That's a historically great season. Can they maintain it?`});
+  else if(delta!==null&&delta>0)
+    pts.push({type:'brag',text:`The ${club} are ${delta} wins ahead of last year's pace through ${gp} games. The improvement is real.`});
+
+  /* Panic */
+  if(delta!==null&&delta<=-8)
+    pts.push({type:'panic',text:`The ${club} are ${Math.abs(delta)} wins behind last year's pace. Something isn't working — and the schedule isn't getting easier.`});
+  else if(proj&&proj<=72)
+    pts.push({type:'panic',text:`At a ${proj}-win pace, the ${club} are in historically bad territory. This season needs a reset.`});
+
+  /* Momentum */
+  if(l10w>=8)
+    pts.push({type:'momentum',text:`The ${club} have quietly gone ${l10} over their last 10 games. That's the kind of form that makes playoff races interesting.`});
+  else if(l10w<=2)
+    pts.push({type:'momentum',text:`${l10} over the last 10. The ${club} are in a rough stretch right now. Can they find a way out?`});
+
+  /* Debate */
+  if(delta!==null&&Math.abs(delta)>=5&&proj){
+    const dir=delta>0?'better':'worse';
+    pts.push({type:'brag',text:`The ${club} are tracking ${Math.abs(delta)} wins ${dir} than last season at this point. Is this the real ${club} — or will regression set in?`});
+  }
+
+  /* Compare CTA */
+  pts.push({type:'rivalry',text:`How does this compare to your rival? Use the compare tool to settle the debate.`,isCompare:true,teamId});
+
+  if(!pts.length) return;
+
+  /* Render or update */
+  let tpCard=document.getElementById('talkingPointsCard');
+  if(!tpCard){
+    const insightsCard=document.querySelector('.insights-card');
+    if(!insightsCard) return;
+    tpCard=document.createElement('div');
+    tpCard.id='talkingPointsCard';
+    tpCard.className='talking-points-card';
+    insightsCard.after(tpCard);
+  }
+  tpCard.innerHTML=`
+    <div class="tp-card-header" onclick="toggleTalkingPoints()">
+      <div class="tp-card-header-left">💬 Talking Points</div>
+      <span class="tp-toggle" id="tpToggle">⌄</span>
+    </div>
+    <div class="tp-list open" id="tpList">
+      ${pts.slice(0,4).map(p=>`
+        <div class="tp-item ${p.type==='panic'?'panic':p.type==='momentum'?'momentum':''}">
+          <div class="tp-item-text">${p.isCompare
+            ?`<a href="compare.html?team1=${p.teamId}" style="color:var(--signal);text-decoration:none;font-weight:600">${p.text}</a>`
+            :p.text
+          }</div>
+          ${!p.isCompare?`<button class="tp-item-share" onclick="shareTalkingPoint(this,'${encodeURIComponent(p.text+'\n\ntracktheseason.com\n\n#TrackTheSeason #MLB')}','https://tracktheseason.com/${p.teamId||teamId}')">⬆</button>`:''}
+        </div>`).join('')}
+    </div>`;
+}
+
+window.toggleTalkingPoints=function(){
+  const list=document.getElementById('tpList');
+  const arrow=document.getElementById('tpToggle');
+  if(!list) return;
+  const open=list.classList.toggle('open');
+  if(arrow) arrow.classList.toggle('open',open);
+};
+
+window.shareTalkingPoint=async function(btn,encodedText,url){
+  const text=decodeURIComponent(encodedText);
+  if(navigator.share){
+    try{await navigator.share({title:'Track The Season',text,url});}
+    catch(e){if(e.name!=='AbortError')console.warn(e);}
+  } else {
+    await navigator.clipboard.writeText(text+'\n'+url);
+    btn.textContent='✓';
+    setTimeout(()=>btn.textContent='⬆',2000);
+  }
+};
+
+/* ─── main update() ─────────────────────────────── */
 async function update(){
   try{
     $('statusCard').style.display='';
@@ -2089,8 +2222,15 @@ async function update(){
     $('statusCard').style.display='none';
     $('resultsWrap').classList.remove('hidden');
 
-    /* Update the collapsed controls summary line */
-    updateCtrlSummary();
+    /* Compare My Team button */
+    const compareBtn=document.getElementById('compareTeamBtn');
+    if(compareBtn){
+      compareBtn.href=`compare.html?team1=${teamId}`;
+      compareBtn.style.display='inline-flex';
+    }
+
+    /* Talking Points */
+    renderTalkingPoints(teamName, ins, currentTeamId, year);
 
     /* Auto-close the accordion on mobile after updating */
     if(window.innerWidth <= 860){

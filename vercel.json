@@ -137,6 +137,70 @@
     {
       "source": "/pace-leaders",
       "destination": "/chaos-report.html"
+    },
+    {
+      "source": "/compare",
+      "destination": "/compare.html"
+    },
+    {
+      "source": "/phillies-vs-mets",
+      "destination": "/compare.html?team1=143&team2=121"
+    },
+    {
+      "source": "/mets-vs-phillies",
+      "destination": "/compare.html?team1=121&team2=143"
+    },
+    {
+      "source": "/yankees-vs-red-sox",
+      "destination": "/compare.html?team1=147&team2=111"
+    },
+    {
+      "source": "/red-sox-vs-yankees",
+      "destination": "/compare.html?team1=111&team2=147"
+    },
+    {
+      "source": "/cubs-vs-cardinals",
+      "destination": "/compare.html?team1=112&team2=138"
+    },
+    {
+      "source": "/cardinals-vs-cubs",
+      "destination": "/compare.html?team1=138&team2=112"
+    },
+    {
+      "source": "/dodgers-vs-giants",
+      "destination": "/compare.html?team1=119&team2=137"
+    },
+    {
+      "source": "/giants-vs-dodgers",
+      "destination": "/compare.html?team1=137&team2=119"
+    },
+    {
+      "source": "/braves-vs-mets",
+      "destination": "/compare.html?team1=144&team2=121"
+    },
+    {
+      "source": "/mets-vs-braves",
+      "destination": "/compare.html?team1=121&team2=144"
+    },
+    {
+      "source": "/phillies-vs-braves",
+      "destination": "/compare.html?team1=143&team2=144"
+    },
+    {
+      "source": "/braves-vs-phillies",
+      "destination": "/compare.html?team1=144&team2=143"
+    },
+    {
+      "source": "/yankees-vs-mets",
+      "destination": "/compare.html?team1=147&team2=121"
+    },
+    {
+      "source": "/astros-vs-rangers",
+      "destination": "/compare.html?team1=117&team2=140"
+    },
+    {
+      "source": "/dodgers-vs-padres",
+      "destination": "/compare.html?team1=119&team2=135"
     }
   ]
 }
