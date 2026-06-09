@@ -421,6 +421,14 @@ tr.cur-row td{background:rgba(26,255,107,.05)}
   transition:all .13s;flex-shrink:0;align-self:flex-start;margin-top:2px;
 }
 .compare-my-team-btn:hover{background:rgba(26,255,107,.18);border-color:var(--signal)}
+.matchup-link{
+  display:inline-flex;align-items:center;gap:5px;
+  padding:4px 10px;border-radius:var(--r-pill);
+  background:rgba(255,255,255,.04);border:1px solid var(--rule);
+  color:var(--chalk);font-family:var(--mono);font-size:10px;font-weight:600;
+  text-decoration:none;transition:all .13s;white-space:nowrap;
+}
+.matchup-link:hover{border-color:rgba(26,255,107,.3);color:var(--signal)}
 
 /* ── TALKING POINTS ──────────────────────── */
 .talking-points-card{
@@ -593,6 +601,12 @@ tr.cur-row td{background:rgba(26,255,107,.05)}
     </div>
     <span id="heroBadge" class="hero-badge badge-neu"></span>
     <a id="compareTeamBtn" href="compare.html" class="compare-my-team-btn" style="display:none">⚔️ Compare My Team →</a>
+  </div>
+
+  <!-- Popular matchups — shown after team loads -->
+  <div id="popularMatchups" style="display:none;margin-top:8px;display:none">
+    <div style="font-family:var(--mono);font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.25);margin-bottom:6px">Popular matchups</div>
+    <div id="matchupLinks" style="display:flex;gap:6px;flex-wrap:wrap"></div>
   </div>
 
   <!-- Mobile-only control bar — sits between hero and stats. -->
@@ -2228,6 +2242,29 @@ async function update(){
       compareBtn.href=`compare.html?team1=${teamId}`;
       compareBtn.style.display='inline-flex';
     }
+
+    /* Popular matchups */
+    const POPULAR_MATCHUPS = {
+      147:[{slug:'yankees-vs-red-sox',label:'vs Red Sox'},{slug:'yankees-vs-mets',label:'vs Mets'}],
+      143:[{slug:'phillies-vs-mets',label:'vs Mets'},{slug:'phillies-vs-braves',label:'vs Braves'}],
+      119:[{slug:'dodgers-vs-giants',label:'vs Giants'},{slug:'dodgers-vs-padres',label:'vs Padres'}],
+      144:[{slug:'braves-vs-mets',label:'vs Mets'},{slug:'braves-vs-phillies',label:'vs Phillies'}],
+      117:[{slug:'astros-vs-rangers',label:'vs Rangers'}],
+      112:[{slug:'cubs-vs-cardinals',label:'vs Cardinals'}],
+      121:[{slug:'mets-vs-phillies',label:'vs Phillies'},{slug:'mets-vs-braves',label:'vs Braves'}],
+      111:[{slug:'red-sox-vs-yankees',label:'vs Yankees'}],
+      137:[{slug:'giants-vs-dodgers',label:'vs Dodgers'}],
+      138:[{slug:'cardinals-vs-cubs',label:'vs Cubs'}],
+      135:[{slug:'padres-vs-dodgers',label:'vs Dodgers'}],
+      140:[{slug:'rangers-vs-astros',label:'vs Astros'}],
+    };
+    const matchups=POPULAR_MATCHUPS[teamId];
+    const matchupWrap=document.getElementById('popularMatchups');
+    const matchupLinks=document.getElementById('matchupLinks');
+    if(matchups&&matchups.length&&matchupWrap&&matchupLinks){
+      matchupLinks.innerHTML=matchups.map(m=>`<a class="matchup-link" href="${m.slug}">⚔️ ${m.label}</a>`).join('');
+      matchupWrap.style.display='block';
+    } else if(matchupWrap) matchupWrap.style.display='none';
 
     /* Talking Points */
     renderTalkingPoints(teamName, ins, currentTeamId, year);

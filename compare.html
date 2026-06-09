@@ -39,10 +39,61 @@ body{font-family:var(--sans);background:var(--ink);color:#e8edf8;min-height:100v
 .nav-wordmark{font-family:var(--mono);font-size:14px;font-weight:700;color:#e8edf8;white-space:nowrap}
 .nav-wordmark .accent{color:var(--signal)}
 
-/* PAGE HEADER */
-.page-header{padding:24px 0 0;text-align:center}
-.page-eyebrow{font-family:var(--mono);font-size:10px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--signal);margin-bottom:8px}
-.page-title{font-family:var(--mono);font-size:clamp(22px,5vw,38px);font-weight:700;letter-spacing:-.03em;color:#e8edf8;line-height:1}
+/* RIVALRY PAGE OVERRIDES */
+.rivalry-header{text-align:left;padding:24px 0 0}
+.rivalry-badge{
+  display:inline-flex;align-items:center;gap:6px;
+  font-family:var(--mono);font-size:9px;font-weight:700;letter-spacing:.18em;
+  text-transform:uppercase;color:var(--signal);
+  background:rgba(26,255,107,.08);border:1px solid rgba(26,255,107,.2);
+  border-radius:var(--r-pill);padding:4px 12px;margin-bottom:10px;
+}
+.rivalry-title{
+  font-family:var(--mono);font-size:clamp(24px,5vw,42px);
+  font-weight:700;letter-spacing:-.03em;color:#e8edf8;line-height:1;
+}
+.rivalry-subtitle{
+  font-family:var(--sans);font-size:15px;color:rgba(255,255,255,.45);
+  margin-top:8px;line-height:1.5;max-width:560px;
+}
+.rivalry-tagline{
+  font-family:var(--mono);font-size:11px;font-weight:700;
+  color:var(--signal);letter-spacing:.08em;margin-top:6px;
+}
+/* Bragging rights card */
+.bragging-rights{
+  background:var(--ink2);border:1px solid var(--rule);
+  border-radius:var(--r-lg);margin-top:16px;overflow:hidden;
+}
+.br-header{
+  display:flex;align-items:center;gap:10px;
+  padding:12px 16px;border-bottom:1px solid var(--rule);
+  background:rgba(26,255,107,.04);
+}
+.br-title{
+  font-family:var(--mono);font-size:11px;font-weight:700;
+  letter-spacing:.1em;text-transform:uppercase;color:var(--signal);
+}
+.br-row{
+  display:grid;grid-template-columns:1fr 1fr 1fr;
+  align-items:center;padding:10px 16px;
+  border-bottom:1px solid var(--rule2);
+}
+.br-row:last-child{border-bottom:none}
+.br-metric{font-family:var(--mono);font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--chalk);text-align:center}
+.br-team{
+  font-family:var(--mono);font-size:13px;font-weight:700;
+  display:flex;align-items:center;gap:6px;
+}
+.br-team.left{justify-content:flex-start}
+.br-team.right{justify-content:flex-end}
+.br-team.winner{color:var(--signal)}
+.br-team.loser{color:rgba(255,255,255,.3)}
+.br-team.tie{color:var(--chalk)}
+.br-dot{width:6px;height:6px;border-radius:50%;background:var(--signal);flex-shrink:0}
+.br-dot.loser{background:rgba(255,255,255,.15)}
+/* Generic header (non-rivalry) */
+.generic-header{padding:24px 0 0;text-align:center}
 
 /* TEAM SELECTOR */
 .selector-bar{
@@ -223,10 +274,16 @@ body{font-family:var(--sans);background:var(--ink);color:#e8edf8;min-height:100v
 </nav>
 
 <div class="wrap">
-  <div class="page-header">
-    <div class="page-eyebrow">⚔️ Head-to-Head</div>
-    <div class="page-title" id="pageTitle">Compare Any Two Teams</div>
+  <div id="pageHeaderWrap">
+    <!-- populated by JS based on rivalry vs generic mode -->
+    <div class="generic-header">
+      <div class="page-eyebrow">⚔️ Head-to-Head</div>
+      <div class="page-title" id="pageTitle">Compare Any Two Teams</div>
+    </div>
   </div>
+
+  <!-- Bragging rights card — rivalry pages only -->
+  <div id="braggingRights" style="display:none"></div>
 
   <!-- Team selector -->
   <div class="selector-bar">
@@ -619,6 +676,9 @@ async function runComparison(){
         <div class="th-sub">${t2.city}</div>
       </div>`;
 
+    /* Bragging rights — rivalry pages only */
+    if(IS_RIVALRY) renderBraggingRights(t1, t2, s1, s2);
+
     document.getElementById('col1Head').textContent=t1.club;
     document.getElementById('col2Head').textContent=t2.club;
 
@@ -687,8 +747,13 @@ async function runComparison(){
       </div>`).join('');
 
     /* Share wiring */
-    const compareUrl=`https://tracktheseason.com/compare?team1=${t1.id}&team2=${t2.id}`;
-    const shareText=`${t1.club} vs ${t2.club}: ${s1.w}–${s1.l} (${s1.proj||'—'}W pace) vs ${s2.w}–${s2.l} (${s2.proj||'—'}W pace).\n\nFull comparison: ${compareUrl}\n\n#TrackTheSeason #MLB`;
+    const compareUrl = IS_RIVALRY
+      ? `https://tracktheseason.com/${PAGE_SLUG}`
+      : `https://tracktheseason.com/compare?team1=${t1.id}&team2=${t2.id}`;
+
+    const shareText = IS_RIVALRY
+      ? `${t1.club} vs ${t2.club} check-in ⚔️ Who's tracking better this season? Compare pace, momentum, and recent history on Track The Season:\n${compareUrl}\n\n#TrackTheSeason #MLB`
+      : `${t1.club} vs ${t2.club}: ${s1.w}–${s1.l} (${s1.proj||'—'}W pace) vs ${s2.w}–${s2.l} (${s2.proj||'—'}W pace).\n\nFull comparison: ${compareUrl}\n\n#TrackTheSeason #MLB`;
 
     document.getElementById('shareCompBtn').onclick=function(){
       doShare(this,shareText,compareUrl,`${t1.club} vs ${t2.club} — Track The Season`);
@@ -725,42 +790,103 @@ window.sharePoint=function(btn,encodedText){
 
 document.getElementById('compareBtn').addEventListener('click',runComparison);
 
-/* ── Auto-load from URL params or path slug ─────────
-   Handles:
-   /compare?team1=143&team2=121   → query params
-   /phillies-vs-mets              → path slug (Vercel rewrite)
-────────────────────────────────────────────────── */
-const RIVALRY_SLUGS = {
-  'phillies-vs-mets':      [143,121], 'mets-vs-phillies':      [121,143],
-  'yankees-vs-red-sox':    [147,111], 'red-sox-vs-yankees':    [111,147],
-  'cubs-vs-cardinals':     [112,138], 'cardinals-vs-cubs':     [138,112],
-  'dodgers-vs-giants':     [119,137], 'giants-vs-dodgers':     [137,119],
-  'braves-vs-mets':        [144,121], 'mets-vs-braves':        [121,144],
-  'phillies-vs-braves':    [143,144], 'braves-vs-phillies':    [144,143],
-  'yankees-vs-mets':       [147,121], 'mets-vs-yankees':       [121,147],
-  'astros-vs-rangers':     [117,140], 'rangers-vs-astros':     [140,117],
-  'dodgers-vs-padres':     [119,135], 'padres-vs-dodgers':     [135,119],
+/* ── Rivalry map ─────────────────────────────────── */
+const RIVALRY_MAP = {
+  'phillies-vs-mets':   {ids:[143,121],label:'NL East Rivals'},
+  'mets-vs-phillies':   {ids:[121,143],label:'NL East Rivals'},
+  'yankees-vs-red-sox': {ids:[147,111],label:'AL East Rivals'},
+  'red-sox-vs-yankees': {ids:[111,147],label:'AL East Rivals'},
+  'cubs-vs-cardinals':  {ids:[112,138],label:'NL Central Rivals'},
+  'cardinals-vs-cubs':  {ids:[138,112],label:'NL Central Rivals'},
+  'dodgers-vs-giants':  {ids:[119,137],label:'NL West Rivals'},
+  'giants-vs-dodgers':  {ids:[137,119],label:'NL West Rivals'},
+  'braves-vs-mets':     {ids:[144,121],label:'NL East Rivals'},
+  'mets-vs-braves':     {ids:[121,144],label:'NL East Rivals'},
+  'phillies-vs-braves': {ids:[143,144],label:'NL East Rivals'},
+  'braves-vs-phillies': {ids:[144,143],label:'NL East Rivals'},
+  'yankees-vs-mets':    {ids:[147,121],label:'NYC Rivalry'},
+  'mets-vs-yankees':    {ids:[121,147],label:'NYC Rivalry'},
+  'astros-vs-rangers':  {ids:[117,140],label:'AL West Rivals'},
+  'rangers-vs-astros':  {ids:[140,117],label:'AL West Rivals'},
+  'dodgers-vs-padres':  {ids:[119,135],label:'NL West Rivals'},
+  'padres-vs-dodgers':  {ids:[135,119],label:'NL West Rivals'},
 };
+const PAGE_SLUG   = window.location.pathname.replace(/^\//, '').toLowerCase();
+const RIVALRY_DEF = RIVALRY_MAP[PAGE_SLUG] || null;
+const IS_RIVALRY  = !!RIVALRY_DEF;
 
+/* ── Rivalry header ──────────────────────────────── */
+function renderRivalryHeader(t1, t2, label){
+  document.getElementById('pageHeaderWrap').innerHTML = `
+    <div class="rivalry-header">
+      <div class="rivalry-badge">⚔️ Rivalry Check-In · ${label}</div>
+      <div class="rivalry-title" id="pageTitle">${t1.club} vs ${t2.club} Season Tracker</div>
+      <div class="rivalry-subtitle">Who's tracking better this season? Compare record, pace, recent momentum, and recent-season history.</div>
+      <div class="rivalry-tagline">Bragging rights, updated after every game.</div>
+    </div>`;
+  document.title = `${t1.club} vs ${t2.club} — Track The Season`;
+  const og = (p,v)=>document.querySelector(`meta[property="${p}"]`)?.setAttribute('content',v);
+  og('og:title', `${t1.club} vs ${t2.club} — Track The Season`);
+  og('og:description', `${t1.club} vs ${t2.club} check-in ⚔️ Who's tracking better this season? Compare pace, momentum, and recent history.`);
+}
+
+/* ── Bragging rights card ────────────────────────── */
+function renderBraggingRights(t1, t2, s1, s2){
+  const wrap = document.getElementById('braggingRights');
+  if(!wrap) return;
+  function row(metric, cmp, left, right){
+    if(left==null||right==null) return '';
+    const cls1=cmp>0?'winner':cmp<0?'loser':'tie';
+    const cls2=cmp<0?'winner':cmp>0?'loser':'tie';
+    const dot1=`<div class="br-dot${cls1==='loser'?' loser':''}"></div>`;
+    const dot2=`<div class="br-dot${cls2==='loser'?' loser':''}" style="margin-left:6px"></div>`;
+    return `<div class="br-row">
+      <div class="br-team left ${cls1}">${dot1}${left}</div>
+      <div class="br-metric">${metric}</div>
+      <div class="br-team right ${cls2}">${right}${dot2}</div>
+    </div>`;
+  }
+  const rows=[
+    row('Record',    s1.w/(s1.w+s1.l||1)-s2.w/(s2.w+s2.l||1), `${s1.w}–${s1.l}`, `${s2.w}–${s2.l}`),
+    row('Last 10',   s1.l10w-s2.l10w,  `${s1.l10w}–${s1.l10l}`, `${s2.l10w}–${s2.l10l}`),
+    row('Win Pace',  (s1.proj||0)-(s2.proj||0), s1.proj?`${s1.proj}W`:null, s2.proj?`${s2.proj}W`:null),
+    row(`vs ${COMPARE_YEAR}`, (s1.delta||0)-(s2.delta||0),
+        s1.delta!=null?(s1.delta>=0?`+${s1.delta}W`:`${s1.delta}W`):null,
+        s2.delta!=null?(s2.delta>=0?`+${s2.delta}W`:`${s2.delta}W`):null),
+    row('Last 20',   s1.l20w-s2.l20w,  `${s1.l20w}–${s1.l20l}`, `${s2.l20w}–${s2.l20l}`),
+  ].filter(Boolean).join('');
+  if(!rows){wrap.style.display='none';return;}
+  wrap.style.display='block';
+  wrap.innerHTML=`<div class="bragging-rights">
+    <div class="br-header"><div class="br-title">🏆 Bragging Rights</div></div>
+    <div class="br-row" style="background:var(--ink3);padding:8px 16px">
+      <div style="font-family:var(--mono);font-size:12px;font-weight:700;color:rgba(255,255,255,.5)">${t1.club}</div>
+      <div></div>
+      <div style="font-family:var(--mono);font-size:12px;font-weight:700;color:rgba(255,255,255,.5);text-align:right">${t2.club}</div>
+    </div>${rows}
+  </div>`;
+}
+
+/* ── Page init ───────────────────────────────────── */
 (function(){
-  /* Try query params first */
-  const p   = new URLSearchParams(window.location.search);
-  let id1   = Number(p.get('team1')), id2 = Number(p.get('team2'));
+  const p  = new URLSearchParams(window.location.search);
+  let id1  = Number(p.get('team1')), id2 = Number(p.get('team2'));
 
-  /* Fall back to path slug */
-  if(!id1 || !id2){
-    const slug = window.location.pathname.replace(/^\//, '').toLowerCase();
-    const pair = RIVALRY_SLUGS[slug];
-    if(pair){ id1=pair[0]; id2=pair[1]; }
+  if(IS_RIVALRY){
+    [id1,id2] = RIVALRY_DEF.ids;
+    const t1=ALL_TEAMS.find(t=>t.id===id1), t2=ALL_TEAMS.find(t=>t.id===id2);
+    if(t1&&t2){
+      renderRivalryHeader(t1, t2, RIVALRY_DEF.label);
+      document.querySelector('.selector-bar').style.display='none';
+    }
   }
 
-  if(id1) selectTeam(1, id1);
-  if(id2) selectTeam(2, id2);
-  if(id1 && id2) setTimeout(runComparison, 100);
-
-  if(id1 && id2){
-    const t1=ALL_TEAMS.find(t=>t.id===id1), t2=ALL_TEAMS.find(t=>t.id===id2);
-    if(t1&&t2) document.title=`${t1.club} vs ${t2.club} — Track The Season`;
+  if(id1) selectTeam(1,id1);
+  if(id2) selectTeam(2,id2);
+  if(id1&&id2) setTimeout(runComparison,80);
+  else if(id1||id2){
+    const t=ALL_TEAMS.find(t=>t.id===(id1||id2));
+    if(t) document.getElementById('pageTitle').textContent=`Compare the ${t.club}`;
   }
 })();
 
