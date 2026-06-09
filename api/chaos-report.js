@@ -289,7 +289,7 @@ ${sharedHeader(today)}
   fill="#e8edf8" letter-spacing="-3">REPORT</text>
 <text x="${W/2}" y="428" text-anchor="middle" font-size="16"
   fill="rgba(255,255,255,0.35)" letter-spacing="4">
-  THE ${esc(String(year-1))} SEASON IS BARELY RECOGNIZABLE
+  THE ${esc(String(year))} SEASON IS BARELY RECOGNIZABLE
 </text>
 
 <!-- CHAOS INDEX CARD -->
