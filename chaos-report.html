@@ -90,14 +90,6 @@ body{background:#0f1014;color:#e8edf8;font-family:'IBM Plex Mono',monospace;min-
     <button class="variant-btn" data-variant="pace-leaders">🚀 Pace Leaders</button>
   </div>
 
-  <!-- Share actions -->
-  <div class="share-row">
-    <a class="share-btn primary" id="shareX" href="#" target="_blank" rel="noopener">𝕏 Share on X</a>
-    <a class="share-btn secondary" id="shareThreads" href="#" target="_blank" rel="noopener">@ Threads</a>
-    <a class="share-btn secondary" id="shareFB" href="#" target="_blank" rel="noopener">f Facebook</a>
-    <button class="share-btn secondary" id="downloadBtn">↓ Download</button>
-  </div>
-
   <!-- Format selector -->
   <div class="formats">
     <div class="format-card active" data-format="portrait">
@@ -129,33 +121,33 @@ body{background:#0f1014;color:#e8edf8;font-family:'IBM Plex Mono',monospace;min-
 </div>
 
 <script>
+const VARIANT_COPY = {
+  'chaos':        '⚾ MLB Chaos Report — which teams are surging and collapsing vs last year?\n\ntracktheseason.com\n\n#TrackTheSeason #MLB #BaseballTwitter',
+  'hot-cold':     '🔥❄️ MLB Hot vs Cold Report — who\'s on fire and who\'s slipping right now? Last 10 + Last 20 games.\n\ntracktheseason.com\n\n#TrackTheSeason #MLB #BaseballTwitter',
+  'pace-leaders': '🚀 MLB Pace Leaderboard — projected wins for all 30 teams right now.\n\ntracktheseason.com\n\n#TrackTheSeason #MLB #PaceCheck',
+};
+
 let currentVariant = 'chaos';
 const BASE = 'https://tracktheseason.com/api/chaos-report';
 
 function cardUrl(variant){ return variant === 'chaos' ? BASE : `${BASE}?variant=${variant}`; }
-function shareUrl(platform, variant){
-  const imgUrl = cardUrl(variant);
-  const text = encodeURIComponent('⚾ MLB Chaos Report — ' + new Date().toLocaleDateString('en-US',{month:'long',day:'numeric'}) + '\n\nWhat\'s happening in baseball right now:\n\ntracktheseason.com\n\n#TrackTheSeason #MLB #BaseballTwitter');
+
+function updateShareLinks(variant) {
+  const text = encodeURIComponent(VARIANT_COPY[variant] || VARIANT_COPY['chaos']);
   const pageUrl = encodeURIComponent('https://tracktheseason.com/chaos-report');
-  switch(platform){
-    case 'x':       return `https://x.com/intent/tweet?text=${text}`;
-    case 'threads': return `https://www.threads.net/intent/post?text=${text}`;
-    case 'fb':      return `https://www.facebook.com/sharer/sharer.php?u=${pageUrl}`;
-  }
+  document.getElementById('shareX').href       = `https://x.com/intent/tweet?text=${text}`;
+  document.getElementById('shareThreads').href = `https://www.threads.net/intent/post?text=${text}`;
+  document.getElementById('shareFB').href      = `https://www.facebook.com/sharer/sharer.php?u=${pageUrl}`;
+  document.getElementById('cardUrl').textContent = cardUrl(variant);
 }
 
 function loadCard(variant){
-  const img = document.getElementById('cardImg');
+  const img     = document.getElementById('cardImg');
   const overlay = document.getElementById('loadingOverlay');
-  const urlEl = document.getElementById('cardUrl');
-  const url = cardUrl(variant);
   overlay.style.display = 'flex';
   img.style.display = 'none';
-  img.src = url + '?cb=' + Date.now();
-  urlEl.textContent = url;
-  document.getElementById('shareX').href       = shareUrl('x', variant);
-  document.getElementById('shareThreads').href = shareUrl('threads', variant);
-  document.getElementById('shareFB').href      = shareUrl('fb', variant);
+  img.src = cardUrl(variant) + '?cb=' + Date.now();
+  updateShareLinks(variant);
 }
 
 function onImgLoad(){
