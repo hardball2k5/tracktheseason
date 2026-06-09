@@ -486,63 +486,6 @@ body{font-family:var(--sans);background:var(--ink);color:#e8edf8;min-height:100v
     <button class="chaos-share" id="chaosShareBtn">⬆ Share</button>
   </div>
 
-  <!-- REPORT CARDS — 3 expandable social graphics -->
-  <div class="report-cards" id="reportCards" style="display:none">
-
-    <div class="report-card" id="rc-chaos" data-variant="chaos"
-         data-url="https://tracktheseason.com/api/chaos-report"
-         data-page="https://tracktheseason.com/chaos-report">
-      <div class="rc-stat" id="rc-chaos-stat">—</div>
-      <div class="rc-sub">teams off last year's pace</div>
-      <div class="rc-cta">
-        <span class="rc-cta-label">Expand &amp; Share</span>
-        <span class="rc-arrow">›</span>
-      </div>
-    </div>
-
-    <div class="report-card" id="rc-hot-cold" data-variant="hot-cold"
-         data-url="https://tracktheseason.com/api/chaos-report?variant=hot-cold"
-         data-page="https://tracktheseason.com/hot-cold">
-      <div class="rc-stat" id="rc-hotcold-stat">—</div>
-      <div class="rc-sub" id="rc-hotcold-sub">best last-10 in MLB</div>
-      <div class="rc-cta">
-        <span class="rc-cta-label">Expand &amp; Share</span>
-        <span class="rc-arrow">›</span>
-      </div>
-    </div>
-
-    <div class="report-card" id="rc-pace" data-variant="pace-leaders"
-         data-url="https://tracktheseason.com/api/chaos-report?variant=pace-leaders"
-         data-page="https://tracktheseason.com/pace-leaders">
-      <div class="rc-stat" id="rc-pace-stat">—</div>
-      <div class="rc-sub" id="rc-pace-sub">projected wins · #1 in MLB</div>
-      <div class="rc-cta">
-        <span class="rc-cta-label">Expand &amp; Share</span>
-        <span class="rc-arrow">›</span>
-      </div>
-    </div>
-  </div>
-
-  <!-- Shared inline expand panel — one at a time -->
-  <div class="report-expand" id="reportExpand">
-    <div class="report-expand-inner">
-      <div class="report-img-wrap" id="reportImgWrap">
-        <div class="report-img-loading" id="reportImgLoading">
-          <div class="spinner"></div>
-          <div style="font-family:var(--mono);font-size:12px;color:var(--chalk)">Loading live graphic…</div>
-        </div>
-        <img id="reportImg" src="" alt="TTS Report" style="display:none"
-          onload="onReportImgLoad()" onerror="onReportImgError()"/>
-      </div>
-      <div class="report-actions" id="reportActions">
-        <button class="report-share-btn" id="reportShareBtn">⬆ Share</button>
-        <button class="report-copy-btn" id="reportCopyBtn">⧉ Copy link</button>
-        <a class="report-full-link" id="reportFullLink" href="#" target="_blank" rel="noopener">↗ Full page</a>
-        <button class="report-close-btn" id="reportCloseBtn">✕ Close</button>
-      </div>
-    </div>
-  </div>
-
   <!-- TODAY'S STORY -->
   <div id="todaysStorySection" style="display:none">
     <div class="sec-header">
@@ -898,32 +841,6 @@ function buildChaosIndex(allData){
   document.getElementById('chaosNum').textContent=chaotic.length;
   document.getElementById('chaosDesc').textContent=desc;
   document.getElementById('chaosBar').style.display='flex';
-
-  /* Populate card stats from live data */
-  const chaosStatEl=document.getElementById('rc-chaos-stat');
-  if(chaosStatEl) chaosStatEl.textContent=`${chaotic.length} teams`;
-
-  const byL10=[...valid].sort((a,b)=>last10(b.curGames).w-last10(a.curGames).w);
-  const hotTeam=byL10[0];
-  if(hotTeam){
-    const l10=last10(hotTeam.curGames);
-    const el=document.getElementById('rc-hotcold-stat');
-    const sub=document.getElementById('rc-hotcold-sub');
-    if(el) el.textContent=`${l10.w}–${l10.l} L10`;
-    if(sub) sub.textContent=`${hotTeam.team.clubName||hotTeam.team.name} · best in MLB`;
-  }
-
-  const byProj=[...valid].filter(t=>projWins(t.curGames)).sort((a,b)=>(projWins(b.curGames)||0)-(projWins(a.curGames)||0));
-  const topPace=byProj[0];
-  if(topPace){
-    const proj=projWins(topPace.curGames);
-    const el=document.getElementById('rc-pace-stat');
-    const sub=document.getElementById('rc-pace-sub');
-    if(el) el.textContent=`${proj}W`;
-    if(sub) sub.textContent=`${topPace.team.clubName||topPace.team.name} · #1 pace in MLB`;
-  }
-
-  document.getElementById('reportCards').style.display='grid';
 
   document.getElementById('chaosShareBtn').addEventListener('click',function(){
     const chaosUrl='https://tracktheseason.com/chaos-report';
@@ -1487,78 +1404,9 @@ document.getElementById('mobileExplainBtn').addEventListener('click',toggleExpla
 document.getElementById('sortSelect').addEventListener('change',e=>{activeSort=e.target.value;applyFiltersAndSort();});
 document.getElementById('modalClose').addEventListener('click',closeModal);
 document.getElementById('modalOverlay').addEventListener('click',e=>{if(e.target===document.getElementById('modalOverlay'))closeModal();});
-document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeModal();closeReport();}});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeModal();}});
 const headerDateEl=document.getElementById('headerDate');
 if(headerDateEl) headerDateEl.textContent=new Date().toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'});
-
-/* ═══════════════════════════════════════════════════
-   REPORT CARDS — inline expand + share
-═══════════════════════════════════════════════════ */
-let activeReportVariant=null;
-
-function openReport(card){
-  const variant =card.dataset.variant;
-  const imgUrl  =card.dataset.url;
-  const pageUrl =card.dataset.page;
-  const expand  =document.getElementById('reportExpand');
-  const img     =document.getElementById('reportImg');
-  const loading =document.getElementById('reportImgLoading');
-  const shareBtn=document.getElementById('reportShareBtn');
-  const copyBtn =document.getElementById('reportCopyBtn');
-  const fullLink=document.getElementById('reportFullLink');
-
-  if(activeReportVariant===variant){closeReport();return;}
-
-  document.querySelectorAll('.report-card').forEach(c=>c.classList.remove('rc-active'));
-  card.classList.add('rc-active');
-  activeReportVariant=variant;
-
-  /* Reposition expand panel directly after cards */
-  document.getElementById('reportCards').after(expand);
-
-  img.style.display='none';
-  loading.style.display='flex';
-  loading.innerHTML='<div class="spinner"></div><div style="font-family:var(--mono);font-size:12px;color:var(--chalk);margin-top:8px">Loading live graphic…</div>';
-  expand.classList.add('open');
-  img.src=imgUrl+'?cb='+Date.now();
-  fullLink.href=pageUrl;
-
-  setTimeout(()=>card.scrollIntoView({behavior:'smooth',block:'nearest'}),60);
-
-  const SHARE_TEXT={
-    'chaos':       '⚾ MLB Chaos Report — which teams are surging and collapsing vs last year?\n\ntracktheseason.com\n\n#TrackTheSeason #MLB',
-    'hot-cold':    '🔥❄️ MLB Hot vs Cold — who\'s on fire and who\'s slipping right now? Last 10 + Last 20.\n\ntracktheseason.com\n\n#TrackTheSeason #MLB',
-    'pace-leaders':'🚀 MLB Pace Leaders — projected wins for every team right now.\n\ntracktheseason.com\n\n#TrackTheSeason #MLB',
-  };
-  shareBtn.onclick=function(){
-    doShare(this,SHARE_TEXT[variant]||'',SHARE_TEXT[variant]||'',pageUrl,'Track The Season');
-  };
-  copyBtn.onclick=async function(){
-    const ok=await copyToClipboard(pageUrl);
-    this.textContent=ok?'✓ Copied!':'Copy failed';
-    setTimeout(()=>this.textContent='⧉ Copy link',2000);
-  };
-}
-
-function closeReport(){
-  document.getElementById('reportExpand').classList.remove('open');
-  document.querySelectorAll('.report-card').forEach(c=>c.classList.remove('rc-active'));
-  activeReportVariant=null;
-}
-
-function onReportImgLoad(){
-  document.getElementById('reportImgLoading').style.display='none';
-  document.getElementById('reportImg').style.display='block';
-}
-function onReportImgError(){
-  document.getElementById('reportImgLoading').innerHTML=
-    '<div style="font-family:var(--mono);font-size:12px;color:#f47570;padding:20px;text-align:center">Could not load graphic</div>';
-}
-
-document.querySelectorAll('.report-card').forEach(card=>{
-  card.addEventListener('click',()=>openReport(card));
-});
-document.getElementById('reportCloseBtn').addEventListener('click',closeReport);
 
 loadAllTeams().catch(err=>{
   document.getElementById('teamGrid').innerHTML=`<div class="state-wrap"><div class="error-box"><strong>Could not load MLB data.</strong><br>${err.message}</div></div>`;
