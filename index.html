@@ -492,8 +492,7 @@ body{font-family:var(--sans);background:var(--ink);color:#e8edf8;min-height:100v
     <div class="report-card" id="rc-chaos" data-variant="chaos"
          data-url="https://tracktheseason.com/api/chaos-report"
          data-page="https://tracktheseason.com/chaos-report">
-      <div class="rc-eyebrow">⚾ Daily Report</div>
-      <div class="rc-title">Chaos Report</div>
+      <div class="rc-title">⚾ Chaos Report</div>
       <div class="rc-stat" id="rc-chaos-stat">—</div>
       <div class="rc-sub">teams off last year's pace</div>
       <div class="rc-cta">
@@ -505,8 +504,7 @@ body{font-family:var(--sans);background:var(--ink);color:#e8edf8;min-height:100v
     <div class="report-card" id="rc-hot-cold" data-variant="hot-cold"
          data-url="https://tracktheseason.com/api/chaos-report?variant=hot-cold"
          data-page="https://tracktheseason.com/hot-cold">
-      <div class="rc-eyebrow">🔥❄️ Streaks</div>
-      <div class="rc-title">Hot vs Cold</div>
+      <div class="rc-title">🔥❄️ Hot vs Cold</div>
       <div class="rc-stat" id="rc-hotcold-stat">—</div>
       <div class="rc-sub" id="rc-hotcold-sub">best last-10 in MLB</div>
       <div class="rc-cta">
@@ -518,8 +516,7 @@ body{font-family:var(--sans);background:var(--ink);color:#e8edf8;min-height:100v
     <div class="report-card" id="rc-pace" data-variant="pace-leaders"
          data-url="https://tracktheseason.com/api/chaos-report?variant=pace-leaders"
          data-page="https://tracktheseason.com/pace-leaders">
-      <div class="rc-eyebrow">🚀 Leaderboard</div>
-      <div class="rc-title">Pace Leaders</div>
+      <div class="rc-title">🚀 Pace Leaders</div>
       <div class="rc-stat" id="rc-pace-stat">—</div>
       <div class="rc-sub" id="rc-pace-sub">projected wins · #1 in MLB</div>
       <div class="rc-cta">
@@ -932,8 +929,9 @@ function buildChaosIndex(allData){
   document.getElementById('reportCards').style.display='grid';
 
   document.getElementById('chaosShareBtn').addEventListener('click',function(){
-    const text=`${desc}\n\ntracktheseason.com\n\n#TrackTheSeason #MLB`;
-    doShare(this,text,text,'https://tracktheseason.com','Track The Season — Chaos Index');
+    const chaosUrl='https://tracktheseason.com/chaos-report';
+    const text='⚾ MLB Chaos Index: '+desc+'\n\nSee the full report:\n'+chaosUrl+'\n\n#TrackTheSeason #MLB';
+    doShare(this,text,text,chaosUrl,'MLB Chaos Report — Track The Season');
   });
 }
 
