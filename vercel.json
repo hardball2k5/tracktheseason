@@ -144,63 +144,63 @@
     },
     {
       "source": "/phillies-vs-mets",
-      "destination": "/compare.html?team1=143&team2=121"
+      "destination": "/compare.html"
     },
     {
       "source": "/mets-vs-phillies",
-      "destination": "/compare.html?team1=121&team2=143"
+      "destination": "/compare.html"
     },
     {
       "source": "/yankees-vs-red-sox",
-      "destination": "/compare.html?team1=147&team2=111"
+      "destination": "/compare.html"
     },
     {
       "source": "/red-sox-vs-yankees",
-      "destination": "/compare.html?team1=111&team2=147"
+      "destination": "/compare.html"
     },
     {
       "source": "/cubs-vs-cardinals",
-      "destination": "/compare.html?team1=112&team2=138"
+      "destination": "/compare.html"
     },
     {
       "source": "/cardinals-vs-cubs",
-      "destination": "/compare.html?team1=138&team2=112"
+      "destination": "/compare.html"
     },
     {
       "source": "/dodgers-vs-giants",
-      "destination": "/compare.html?team1=119&team2=137"
+      "destination": "/compare.html"
     },
     {
       "source": "/giants-vs-dodgers",
-      "destination": "/compare.html?team1=137&team2=119"
+      "destination": "/compare.html"
     },
     {
       "source": "/braves-vs-mets",
-      "destination": "/compare.html?team1=144&team2=121"
+      "destination": "/compare.html"
     },
     {
       "source": "/mets-vs-braves",
-      "destination": "/compare.html?team1=121&team2=144"
+      "destination": "/compare.html"
     },
     {
       "source": "/phillies-vs-braves",
-      "destination": "/compare.html?team1=143&team2=144"
+      "destination": "/compare.html"
     },
     {
       "source": "/braves-vs-phillies",
-      "destination": "/compare.html?team1=144&team2=143"
+      "destination": "/compare.html"
     },
     {
       "source": "/yankees-vs-mets",
-      "destination": "/compare.html?team1=147&team2=121"
+      "destination": "/compare.html"
     },
     {
       "source": "/astros-vs-rangers",
-      "destination": "/compare.html?team1=117&team2=140"
+      "destination": "/compare.html"
     },
     {
       "source": "/dodgers-vs-padres",
-      "destination": "/compare.html?team1=119&team2=135"
+      "destination": "/compare.html"
     }
   ]
 }

@@ -725,16 +725,41 @@ window.sharePoint=function(btn,encodedText){
 
 document.getElementById('compareBtn').addEventListener('click',runComparison);
 
-/* ── Auto-load from URL params ──────────────────── */
+/* ── Auto-load from URL params or path slug ─────────
+   Handles:
+   /compare?team1=143&team2=121   → query params
+   /phillies-vs-mets              → path slug (Vercel rewrite)
+────────────────────────────────────────────────── */
+const RIVALRY_SLUGS = {
+  'phillies-vs-mets':      [143,121], 'mets-vs-phillies':      [121,143],
+  'yankees-vs-red-sox':    [147,111], 'red-sox-vs-yankees':    [111,147],
+  'cubs-vs-cardinals':     [112,138], 'cardinals-vs-cubs':     [138,112],
+  'dodgers-vs-giants':     [119,137], 'giants-vs-dodgers':     [137,119],
+  'braves-vs-mets':        [144,121], 'mets-vs-braves':        [121,144],
+  'phillies-vs-braves':    [143,144], 'braves-vs-phillies':    [144,143],
+  'yankees-vs-mets':       [147,121], 'mets-vs-yankees':       [121,147],
+  'astros-vs-rangers':     [117,140], 'rangers-vs-astros':     [140,117],
+  'dodgers-vs-padres':     [119,135], 'padres-vs-dodgers':     [135,119],
+};
+
 (function(){
-  const p=new URLSearchParams(window.location.search);
-  const id1=Number(p.get('team1')),id2=Number(p.get('team2'));
-  if(id1) selectTeam(1,id1);
-  if(id2) selectTeam(2,id2);
-  if(id1&&id2) setTimeout(runComparison,100);
-  // Set title for rivalry pages
-  if(id1&&id2){
-    const t1=ALL_TEAMS.find(t=>t.id===id1),t2=ALL_TEAMS.find(t=>t.id===id2);
+  /* Try query params first */
+  const p   = new URLSearchParams(window.location.search);
+  let id1   = Number(p.get('team1')), id2 = Number(p.get('team2'));
+
+  /* Fall back to path slug */
+  if(!id1 || !id2){
+    const slug = window.location.pathname.replace(/^\//, '').toLowerCase();
+    const pair = RIVALRY_SLUGS[slug];
+    if(pair){ id1=pair[0]; id2=pair[1]; }
+  }
+
+  if(id1) selectTeam(1, id1);
+  if(id2) selectTeam(2, id2);
+  if(id1 && id2) setTimeout(runComparison, 100);
+
+  if(id1 && id2){
+    const t1=ALL_TEAMS.find(t=>t.id===id1), t2=ALL_TEAMS.find(t=>t.id===id2);
     if(t1&&t2) document.title=`${t1.club} vs ${t2.club} — Track The Season`;
   }
 })();
