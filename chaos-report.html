@@ -107,15 +107,6 @@ body{background:#0f1014;color:#e8edf8;font-family:'IBM Plex Mono',monospace;min-
     <button class="share-btn secondary" id="downloadBtn">↓ Download</button>
   </div>
 
-  <!-- Format info -->
-  <div class="formats">
-    <div class="format-card active">
-      <div class="format-name">Portrait</div>
-      <div class="format-size">1200 × 1500</div>
-      <div class="format-badge">Facebook · Instagram</div>
-    </div>
-  </div>
-
   <!-- Live card preview -->
   <div class="card-preview" id="cardPreview">
     <div class="loading-overlay" id="loadingOverlay">
@@ -142,6 +133,12 @@ const VARIANT_COPY = {
   'chaos':        '⚾ MLB Chaos Report — which teams are surging and collapsing vs last year?\n\ntracktheseason.com\n\n#TrackTheSeason #MLB #BaseballTwitter',
   'hot-cold':     '🔥❄️ MLB Hot vs Cold Report — who\'s on fire and who\'s slipping right now? Last 10 + Last 20 games.\n\ntracktheseason.com\n\n#TrackTheSeason #MLB #BaseballTwitter',
   'pace-leaders': '🚀 MLB Pace Leaderboard — projected wins for all 30 teams right now.\n\ntracktheseason.com\n\n#TrackTheSeason #MLB #PaceCheck',
+};
+
+const VARIANT_PATHS = {
+  'chaos':        '/chaos-report',
+  'hot-cold':     '/hot-cold',
+  'pace-leaders': '/pace-leaders',
 };
 
 let currentVariant = 'chaos';
@@ -174,12 +171,6 @@ function onImgLoad(){
 function onImgError(){
   document.getElementById('loadingOverlay').innerHTML = '<div style="text-align:center;padding:40px"><div style="font-size:14px;color:#f47570;margin-bottom:8px">Could not load graphic</div><div style="font-size:12px;color:rgba(255,255,255,.3)">Check Vercel deployment</div></div>';
 }
-
-const VARIANT_PATHS = {
-  'chaos':        '/chaos-report',
-  'hot-cold':     '/hot-cold',
-  'pace-leaders': '/pace-leaders',
-};
 
 document.querySelectorAll('.variant-btn').forEach(btn => {
   btn.addEventListener('click', () => {
