@@ -344,6 +344,69 @@ body{font-family:var(--sans);background:var(--ink);color:#e8edf8;min-height:100v
 .share-menu-item-icon.cp-icon{background:var(--ink3);color:var(--chalk)}
 .share-menu-divider{height:1px;background:var(--rule);margin:4px 0}
 
+/* ── REPORT CARDS ────────────────────────────────── */
+.report-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:14px 0 0}
+@media(max-width:560px){.report-cards{grid-template-columns:1fr}}
+.report-card{
+  background:var(--ink2);border:1px solid rgba(26,255,107,0.12);
+  border-radius:var(--r-lg);padding:14px 16px;cursor:pointer;
+  transition:border-color .15s,transform .15s;
+  -webkit-tap-highlight-color:transparent;
+  display:flex;flex-direction:column;gap:5px;user-select:none;
+}
+.report-card:hover{border-color:rgba(26,255,107,0.35);transform:translateY(-1px)}
+.report-card:active{transform:scale(.98)}
+.report-card.rc-active{border-color:var(--signal);background:rgba(26,255,107,0.06)}
+.rc-eyebrow{font-family:var(--mono);font-size:9px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--signal)}
+.rc-title{font-family:var(--mono);font-size:13px;font-weight:700;color:#e8edf8;letter-spacing:.01em}
+.rc-stat{font-family:var(--mono);font-size:24px;font-weight:700;color:var(--signal);letter-spacing:-.02em;line-height:1}
+.rc-sub{font-family:var(--sans);font-size:11px;color:rgba(255,255,255,.4);line-height:1.4;margin-top:2px}
+.rc-cta{display:flex;align-items:center;justify-content:space-between;margin-top:6px}
+.rc-cta-label{font-family:var(--mono);font-size:10px;font-weight:700;color:var(--signal);letter-spacing:.06em}
+.rc-arrow{font-size:13px;color:var(--signal);transition:transform .25s cubic-bezier(.22,1,.36,1)}
+.report-card.rc-active .rc-arrow{transform:rotate(90deg)}
+/* Expand panel */
+.report-expand{overflow:hidden;max-height:0;transition:max-height .45s cubic-bezier(.22,1,.36,1)}
+.report-expand.open{max-height:2400px}
+.report-expand-inner{padding:14px 0 6px}
+.report-img-wrap{
+  width:100%;border-radius:var(--r-lg);overflow:hidden;
+  border:1px solid rgba(26,255,107,0.15);background:var(--ink2);
+  position:relative;min-height:180px;
+  display:flex;align-items:center;justify-content:center;
+}
+.report-img-wrap img{width:100%;display:block}
+.report-img-loading{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px}
+.report-actions{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap;align-items:center}
+.report-share-btn{
+  padding:10px 16px;border-radius:var(--r-sm);
+  background:var(--signal);border:none;
+  color:var(--ink);font-family:var(--mono);font-size:12px;font-weight:700;
+  cursor:pointer;transition:filter .13s;
+}
+.report-share-btn:hover{filter:brightness(1.08)}
+.report-copy-btn{
+  padding:10px 16px;border-radius:var(--r-sm);
+  background:transparent;border:1px solid var(--rule);
+  color:var(--chalk);font-family:var(--mono);font-size:12px;font-weight:600;
+  cursor:pointer;transition:all .13s;
+}
+.report-copy-btn:hover{border-color:var(--signal);color:var(--signal)}
+.report-close-btn{
+  padding:10px 14px;border-radius:var(--r-sm);
+  background:transparent;border:1px solid var(--rule);
+  color:var(--chalk);font-family:var(--mono);font-size:12px;font-weight:600;
+  cursor:pointer;transition:all .13s;margin-left:auto;
+}
+.report-close-btn:hover{border-color:var(--loss-text);color:var(--loss-text)}
+.report-full-link{
+  padding:10px 14px;border-radius:var(--r-sm);
+  background:transparent;border:1px solid rgba(26,255,107,0.2);
+  color:var(--signal);font-family:var(--mono);font-size:11px;font-weight:600;
+  cursor:pointer;transition:all .13s;text-decoration:none;white-space:nowrap;
+}
+.report-full-link:hover{background:rgba(26,255,107,0.08)}
+
 /* ── FOOTER ──────────────────────────── */
 .site-footer{border-top:1px solid var(--rule);padding:18px 0 32px;display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between}
 .footer-logo{font-family:var(--mono);font-weight:700;font-size:14px;color:var(--chalk);text-decoration:none}
@@ -421,6 +484,69 @@ body{font-family:var(--sans);background:var(--ink);color:#e8edf8;min-height:100v
       <div class="chaos-desc" id="chaosDesc">—</div>
     </div>
     <button class="chaos-share" id="chaosShareBtn">⬆ Share</button>
+  </div>
+
+  <!-- REPORT CARDS — 3 expandable social graphics -->
+  <div class="report-cards" id="reportCards" style="display:none">
+
+    <div class="report-card" id="rc-chaos" data-variant="chaos"
+         data-url="https://tracktheseason.com/api/chaos-report"
+         data-page="https://tracktheseason.com/chaos-report">
+      <div class="rc-eyebrow">⚾ Daily Report</div>
+      <div class="rc-title">Chaos Report</div>
+      <div class="rc-stat" id="rc-chaos-stat">—</div>
+      <div class="rc-sub">teams off last year's pace</div>
+      <div class="rc-cta">
+        <span class="rc-cta-label">Expand &amp; Share</span>
+        <span class="rc-arrow">›</span>
+      </div>
+    </div>
+
+    <div class="report-card" id="rc-hot-cold" data-variant="hot-cold"
+         data-url="https://tracktheseason.com/api/chaos-report?variant=hot-cold"
+         data-page="https://tracktheseason.com/hot-cold">
+      <div class="rc-eyebrow">🔥❄️ Streaks</div>
+      <div class="rc-title">Hot vs Cold</div>
+      <div class="rc-stat" id="rc-hotcold-stat">—</div>
+      <div class="rc-sub" id="rc-hotcold-sub">best last-10 in MLB</div>
+      <div class="rc-cta">
+        <span class="rc-cta-label">Expand &amp; Share</span>
+        <span class="rc-arrow">›</span>
+      </div>
+    </div>
+
+    <div class="report-card" id="rc-pace" data-variant="pace-leaders"
+         data-url="https://tracktheseason.com/api/chaos-report?variant=pace-leaders"
+         data-page="https://tracktheseason.com/pace-leaders">
+      <div class="rc-eyebrow">🚀 Leaderboard</div>
+      <div class="rc-title">Pace Leaders</div>
+      <div class="rc-stat" id="rc-pace-stat">—</div>
+      <div class="rc-sub" id="rc-pace-sub">projected wins · #1 in MLB</div>
+      <div class="rc-cta">
+        <span class="rc-cta-label">Expand &amp; Share</span>
+        <span class="rc-arrow">›</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Shared inline expand panel — one at a time -->
+  <div class="report-expand" id="reportExpand">
+    <div class="report-expand-inner">
+      <div class="report-img-wrap" id="reportImgWrap">
+        <div class="report-img-loading" id="reportImgLoading">
+          <div class="spinner"></div>
+          <div style="font-family:var(--mono);font-size:12px;color:var(--chalk)">Loading live graphic…</div>
+        </div>
+        <img id="reportImg" src="" alt="TTS Report" style="display:none"
+          onload="onReportImgLoad()" onerror="onReportImgError()"/>
+      </div>
+      <div class="report-actions" id="reportActions">
+        <button class="report-share-btn" id="reportShareBtn">⬆ Share</button>
+        <button class="report-copy-btn" id="reportCopyBtn">⧉ Copy link</button>
+        <a class="report-full-link" id="reportFullLink" href="#" target="_blank" rel="noopener">↗ Full page</a>
+        <button class="report-close-btn" id="reportCloseBtn">✕ Close</button>
+      </div>
+    </div>
   </div>
 
   <!-- TODAY'S STORY -->
@@ -778,6 +904,32 @@ function buildChaosIndex(allData){
   document.getElementById('chaosNum').textContent=chaotic.length;
   document.getElementById('chaosDesc').textContent=desc;
   document.getElementById('chaosBar').style.display='flex';
+
+  /* Populate card stats from live data */
+  const chaosStatEl=document.getElementById('rc-chaos-stat');
+  if(chaosStatEl) chaosStatEl.textContent=`${chaotic.length} teams`;
+
+  const byL10=[...valid].sort((a,b)=>last10(b.curGames).w-last10(a.curGames).w);
+  const hotTeam=byL10[0];
+  if(hotTeam){
+    const l10=last10(hotTeam.curGames);
+    const el=document.getElementById('rc-hotcold-stat');
+    const sub=document.getElementById('rc-hotcold-sub');
+    if(el) el.textContent=`${l10.w}–${l10.l} L10`;
+    if(sub) sub.textContent=`${hotTeam.team.clubName||hotTeam.team.name} · best in MLB`;
+  }
+
+  const byProj=[...valid].filter(t=>projWins(t.curGames)).sort((a,b)=>(projWins(b.curGames)||0)-(projWins(a.curGames)||0));
+  const topPace=byProj[0];
+  if(topPace){
+    const proj=projWins(topPace.curGames);
+    const el=document.getElementById('rc-pace-stat');
+    const sub=document.getElementById('rc-pace-sub');
+    if(el) el.textContent=`${proj}W`;
+    if(sub) sub.textContent=`${topPace.team.clubName||topPace.team.name} · #1 pace in MLB`;
+  }
+
+  document.getElementById('reportCards').style.display='grid';
 
   document.getElementById('chaosShareBtn').addEventListener('click',function(){
     const text=`${desc}\n\ntracktheseason.com\n\n#TrackTheSeason #MLB`;
@@ -1340,9 +1492,78 @@ document.getElementById('mobileExplainBtn').addEventListener('click',toggleExpla
 document.getElementById('sortSelect').addEventListener('change',e=>{activeSort=e.target.value;applyFiltersAndSort();});
 document.getElementById('modalClose').addEventListener('click',closeModal);
 document.getElementById('modalOverlay').addEventListener('click',e=>{if(e.target===document.getElementById('modalOverlay'))closeModal();});
-document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal();});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeModal();closeReport();}});
 const headerDateEl=document.getElementById('headerDate');
 if(headerDateEl) headerDateEl.textContent=new Date().toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'});
+
+/* ═══════════════════════════════════════════════════
+   REPORT CARDS — inline expand + share
+═══════════════════════════════════════════════════ */
+let activeReportVariant=null;
+
+function openReport(card){
+  const variant =card.dataset.variant;
+  const imgUrl  =card.dataset.url;
+  const pageUrl =card.dataset.page;
+  const expand  =document.getElementById('reportExpand');
+  const img     =document.getElementById('reportImg');
+  const loading =document.getElementById('reportImgLoading');
+  const shareBtn=document.getElementById('reportShareBtn');
+  const copyBtn =document.getElementById('reportCopyBtn');
+  const fullLink=document.getElementById('reportFullLink');
+
+  if(activeReportVariant===variant){closeReport();return;}
+
+  document.querySelectorAll('.report-card').forEach(c=>c.classList.remove('rc-active'));
+  card.classList.add('rc-active');
+  activeReportVariant=variant;
+
+  /* Reposition expand panel directly after cards */
+  document.getElementById('reportCards').after(expand);
+
+  img.style.display='none';
+  loading.style.display='flex';
+  loading.innerHTML='<div class="spinner"></div><div style="font-family:var(--mono);font-size:12px;color:var(--chalk);margin-top:8px">Loading live graphic…</div>';
+  expand.classList.add('open');
+  img.src=imgUrl+'?cb='+Date.now();
+  fullLink.href=pageUrl;
+
+  setTimeout(()=>card.scrollIntoView({behavior:'smooth',block:'nearest'}),60);
+
+  const SHARE_TEXT={
+    'chaos':       '⚾ MLB Chaos Report — which teams are surging and collapsing vs last year?\n\ntracktheseason.com\n\n#TrackTheSeason #MLB',
+    'hot-cold':    '🔥❄️ MLB Hot vs Cold — who\'s on fire and who\'s slipping right now? Last 10 + Last 20.\n\ntracktheseason.com\n\n#TrackTheSeason #MLB',
+    'pace-leaders':'🚀 MLB Pace Leaders — projected wins for every team right now.\n\ntracktheseason.com\n\n#TrackTheSeason #MLB',
+  };
+  shareBtn.onclick=function(){
+    doShare(this,SHARE_TEXT[variant]||'',SHARE_TEXT[variant]||'',pageUrl,'Track The Season');
+  };
+  copyBtn.onclick=async function(){
+    const ok=await copyToClipboard(pageUrl);
+    this.textContent=ok?'✓ Copied!':'Copy failed';
+    setTimeout(()=>this.textContent='⧉ Copy link',2000);
+  };
+}
+
+function closeReport(){
+  document.getElementById('reportExpand').classList.remove('open');
+  document.querySelectorAll('.report-card').forEach(c=>c.classList.remove('rc-active'));
+  activeReportVariant=null;
+}
+
+function onReportImgLoad(){
+  document.getElementById('reportImgLoading').style.display='none';
+  document.getElementById('reportImg').style.display='block';
+}
+function onReportImgError(){
+  document.getElementById('reportImgLoading').innerHTML=
+    '<div style="font-family:var(--mono);font-size:12px;color:#f47570;padding:20px;text-align:center">Could not load graphic</div>';
+}
+
+document.querySelectorAll('.report-card').forEach(card=>{
+  card.addEventListener('click',()=>openReport(card));
+});
+document.getElementById('reportCloseBtn').addEventListener('click',closeReport);
 
 loadAllTeams().catch(err=>{
   document.getElementById('teamGrid').innerHTML=`<div class="state-wrap"><div class="error-box"><strong>Could not load MLB data.</strong><br>${err.message}</div></div>`;
