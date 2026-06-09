@@ -125,6 +125,10 @@
     {
       "source": "/brewers",
       "destination": "/teams/brewers.html"
+    },
+    {
+      "source": "/chaos-report",
+      "destination": "/chaos-report.html"
     }
   ]
 }

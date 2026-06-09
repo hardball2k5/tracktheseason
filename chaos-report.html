@@ -1,0 +1,198 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>MLB Chaos Report | Track The Season</title>
+<meta property="og:title"       content="MLB Chaos Report | Track The Season"/>
+<meta property="og:description" content="What's the craziest thing happening in MLB right now?"/>
+<meta property="og:image"       content="https://tracktheseason.com/api/chaos-report"/>
+<meta property="og:image:width" content="1200"/>
+<meta property="og:image:height"content="1500"/>
+<meta name="twitter:card"       content="summary_large_image"/>
+<meta name="twitter:title"      content="MLB Chaos Report | Track The Season"/>
+<meta name="twitter:description"content="What's the craziest thing happening in MLB right now?"/>
+<meta name="twitter:image"      content="https://tracktheseason.com/api/chaos-report"/>
+<link rel="canonical"           href="https://tracktheseason.com/chaos-report"/>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600;700&family=IBM+Plex+Sans:wght@400;600&display=swap" rel="stylesheet"/>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#0f1014;color:#e8edf8;font-family:'IBM Plex Mono',monospace;min-height:100vh}
+.site-nav{padding:12px 20px;border-bottom:1px solid rgba(255,255,255,.07);display:flex;align-items:center;gap:10px;position:sticky;top:0;background:rgba(15,16,20,.95);backdrop-filter:blur(16px);z-index:10}
+.nav-logo{display:flex;align-items:center;gap:8px;text-decoration:none}
+.nav-mono{width:30px;height:30px;background:#1aff6b;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#0f1014}
+.nav-word{font-size:14px;font-weight:700;color:#e8edf8}
+.nav-word .g{color:#1aff6b}
+.back{font-size:12px;color:rgba(255,255,255,.4);text-decoration:none;border:1px solid rgba(255,255,255,.1);padding:5px 12px;border-radius:6px;margin-right:auto}
+.back:hover{border-color:rgba(255,255,255,.25);color:#e8edf8}
+.wrap{max-width:900px;margin:0 auto;padding:32px 20px 60px}
+.page-title{font-size:13px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#1aff6b;margin-bottom:8px}
+.page-sub{font-size:28px;font-weight:700;color:#e8edf8;margin-bottom:6px;letter-spacing:-.01em}
+.page-desc{font-size:14px;color:rgba(255,255,255,.45);margin-bottom:28px;line-height:1.6;font-family:'IBM Plex Sans',sans-serif}
+
+/* Variant switcher */
+.variants{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:24px}
+.variant-btn{padding:8px 16px;border-radius:20px;border:1px solid rgba(255,255,255,.12);background:transparent;color:rgba(255,255,255,.5);font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:600;cursor:pointer;transition:all .15s}
+.variant-btn:hover{border-color:rgba(255,255,255,.3);color:#e8edf8}
+.variant-btn.active{background:#1aff6b;border-color:#1aff6b;color:#0f1014}
+
+/* Share actions */
+.share-row{display:flex;gap:10px;margin-bottom:28px;flex-wrap:wrap}
+.share-btn{display:inline-flex;align-items:center;gap:7px;padding:11px 18px;border-radius:8px;font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:700;cursor:pointer;text-decoration:none;transition:all .15s;letter-spacing:.04em}
+.share-btn.primary{background:#1aff6b;color:#0f1014;border:none}
+.share-btn.primary:hover{filter:brightness(1.08)}
+.share-btn.secondary{background:transparent;color:rgba(255,255,255,.7);border:1px solid rgba(255,255,255,.15)}
+.share-btn.secondary:hover{border-color:#1aff6b;color:#1aff6b}
+
+/* Card preview */
+.card-preview{border-radius:16px;overflow:hidden;border:1px solid rgba(255,255,255,.08);margin-bottom:24px;position:relative;background:#1a1d24}
+.card-preview img{width:100%;display:block}
+.loading-overlay{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:#1a1d24;border-radius:16px}
+.spinner{width:32px;height:32px;border-radius:50%;border:3px solid rgba(255,255,255,.1);border-top-color:#1aff6b;animation:spin .75s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.load-text{font-size:13px;color:rgba(255,255,255,.4);margin-top:12px}
+
+/* Formats */
+.formats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:28px}
+@media(max-width:600px){.formats{grid-template-columns:1fr 1fr}}
+.format-card{background:#1a1d24;border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:14px;cursor:pointer;transition:border-color .15s;text-decoration:none}
+.format-card:hover{border-color:#1aff6b}
+.format-card.active{border-color:rgba(26,255,107,.4);background:rgba(26,255,107,.05)}
+.format-name{font-size:12px;font-weight:700;color:#e8edf8;margin-bottom:4px}
+.format-size{font-size:11px;color:rgba(255,255,255,.35)}
+.format-badge{display:inline-block;margin-top:6px;padding:2px 8px;border-radius:4px;font-size:10px;font-weight:700;background:rgba(26,255,107,.12);color:#1aff6b}
+
+/* URL copy box */
+.url-box{background:#1a1d24;border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:14px 16px;display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.url-text{flex:1;font-size:12px;color:rgba(255,255,255,.4);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.copy-btn{flex-shrink:0;padding:6px 14px;background:rgba(26,255,107,.1);border:1px solid rgba(26,255,107,.2);border-radius:6px;color:#1aff6b;font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:700;cursor:pointer;transition:all .15s}
+.copy-btn:hover{background:rgba(26,255,107,.2)}
+</style>
+</head>
+<body>
+<nav class="site-nav">
+  <a href="index.html" class="back">← All Teams</a>
+  <a href="index.html" class="nav-logo">
+    <div class="nav-mono">TTS</div>
+    <div class="nav-word">TRACK THE <span class="g">SEASON</span></div>
+  </a>
+</nav>
+
+<div class="wrap">
+  <div class="page-title">⚾ Social Graphics</div>
+  <div class="page-sub">MLB Chaos Report</div>
+  <div class="page-desc">Live graphics generated from today's data. Share on X, Facebook, or Instagram — updated after every game.</div>
+
+  <!-- Variant switcher -->
+  <div class="variants">
+    <button class="variant-btn active" data-variant="chaos">⚾ Chaos Report</button>
+    <button class="variant-btn" data-variant="hot-cold">🔥❄️ Hot vs Cold</button>
+    <button class="variant-btn" data-variant="pace-leaders">🚀 Pace Leaders</button>
+  </div>
+
+  <!-- Share actions -->
+  <div class="share-row">
+    <a class="share-btn primary" id="shareX" href="#" target="_blank" rel="noopener">𝕏 Share on X</a>
+    <a class="share-btn secondary" id="shareThreads" href="#" target="_blank" rel="noopener">@ Threads</a>
+    <a class="share-btn secondary" id="shareFB" href="#" target="_blank" rel="noopener">f Facebook</a>
+    <button class="share-btn secondary" id="downloadBtn">↓ Download</button>
+  </div>
+
+  <!-- Format selector -->
+  <div class="formats">
+    <div class="format-card active" data-format="portrait">
+      <div class="format-name">Portrait</div>
+      <div class="format-size">1200 × 1500</div>
+      <div class="format-badge">Facebook · Instagram</div>
+    </div>
+  </div>
+
+  <!-- Live card preview -->
+  <div class="card-preview" id="cardPreview">
+    <div class="loading-overlay" id="loadingOverlay">
+      <div style="text-align:center">
+        <div class="spinner"></div>
+        <div class="load-text" style="margin-top:12px">Loading live MLB data…</div>
+      </div>
+    </div>
+    <img id="cardImg" src="" alt="MLB Chaos Report" style="display:none" onload="onImgLoad()" onerror="onImgError()"/>
+  </div>
+
+  <!-- Direct URL -->
+  <div class="url-box">
+    <div class="url-text" id="cardUrl">https://tracktheseason.com/api/chaos-report</div>
+    <button class="copy-btn" onclick="copyUrl()">Copy URL</button>
+  </div>
+  <div style="font-size:11px;color:rgba(255,255,255,.2);line-height:1.6">
+    Paste this URL directly into a Facebook or X post — the graphic will appear as the preview card automatically.
+  </div>
+</div>
+
+<script>
+let currentVariant = 'chaos';
+const BASE = 'https://tracktheseason.com/api/chaos-report';
+
+function cardUrl(variant){ return variant === 'chaos' ? BASE : `${BASE}?variant=${variant}`; }
+function shareUrl(platform, variant){
+  const imgUrl = cardUrl(variant);
+  const text = encodeURIComponent('⚾ MLB Chaos Report — ' + new Date().toLocaleDateString('en-US',{month:'long',day:'numeric'}) + '\n\nWhat\'s happening in baseball right now:\n\ntracktheseason.com\n\n#TrackTheSeason #MLB #BaseballTwitter');
+  const pageUrl = encodeURIComponent('https://tracktheseason.com/chaos-report');
+  switch(platform){
+    case 'x':       return `https://x.com/intent/tweet?text=${text}`;
+    case 'threads': return `https://www.threads.net/intent/post?text=${text}`;
+    case 'fb':      return `https://www.facebook.com/sharer/sharer.php?u=${pageUrl}`;
+  }
+}
+
+function loadCard(variant){
+  const img = document.getElementById('cardImg');
+  const overlay = document.getElementById('loadingOverlay');
+  const urlEl = document.getElementById('cardUrl');
+  const url = cardUrl(variant);
+  overlay.style.display = 'flex';
+  img.style.display = 'none';
+  img.src = url + '?cb=' + Date.now();
+  urlEl.textContent = url;
+  document.getElementById('shareX').href       = shareUrl('x', variant);
+  document.getElementById('shareThreads').href = shareUrl('threads', variant);
+  document.getElementById('shareFB').href      = shareUrl('fb', variant);
+}
+
+function onImgLoad(){
+  document.getElementById('loadingOverlay').style.display = 'none';
+  document.getElementById('cardImg').style.display = 'block';
+}
+function onImgError(){
+  document.getElementById('loadingOverlay').innerHTML = '<div style="text-align:center;padding:40px"><div style="font-size:14px;color:#f47570;margin-bottom:8px">Could not load graphic</div><div style="font-size:12px;color:rgba(255,255,255,.3)">Check Vercel deployment</div></div>';
+}
+
+document.querySelectorAll('.variant-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.variant-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    currentVariant = btn.dataset.variant;
+    loadCard(currentVariant);
+  });
+});
+
+document.getElementById('downloadBtn').addEventListener('click', () => {
+  const a = document.createElement('a');
+  a.href = cardUrl(currentVariant) + '?cb=' + Date.now();
+  a.download = `tts-chaos-report-${currentVariant}.svg`;
+  a.click();
+});
+
+function copyUrl(){
+  const url = cardUrl(currentVariant);
+  navigator.clipboard.writeText(url).then(() => {
+    const btn = document.querySelector('.copy-btn');
+    btn.textContent = '✓ Copied!';
+    setTimeout(() => btn.textContent = 'Copy URL', 2000);
+  });
+}
+
+/* Load default on page open */
+loadCard('chaos');
+</script>
+</body>
+</html>
