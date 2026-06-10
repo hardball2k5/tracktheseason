@@ -201,6 +201,10 @@
     {
       "source": "/dodgers-vs-padres",
       "destination": "/compare.html"
+    },
+    {
+      "source": "/chaos-index",
+      "destination": "/chaos-report.html"
     }
   ]
 }

@@ -91,14 +91,15 @@ body{background:#0f1014;color:#e8edf8;font-family:'IBM Plex Mono',monospace;min-
     <button class="variant-btn active" data-variant="chaos">⚾ Chaos Report</button>
     <button class="variant-btn" data-variant="hot-cold">🔥❄️ Hot vs Cold</button>
     <button class="variant-btn" data-variant="pace-leaders">🚀 Pace Leaders</button>
+    <button class="variant-btn" data-variant="chaos-index">📊 Chaos History</button>
   </div>
 
   <!-- Format selector -->
   <div class="formats">
-    <div class="format-card active" data-format="portrait">
-      <div class="format-name">Portrait</div>
-      <div class="format-size">1200 × 1500</div>
-      <div class="format-badge">Facebook · Instagram</div>
+    <div class="format-card active" data-format="portrait" id="formatCard">
+      <div class="format-name" id="formatName">Portrait</div>
+      <div class="format-size" id="formatSize">1200 × 1500</div>
+      <div class="format-badge" id="formatBadge">Facebook · Instagram</div>
     </div>
   </div>
 
@@ -136,18 +137,24 @@ const VARIANT_COPY = {
   'chaos':        '⚾ MLB Chaos Report — which teams are surging and collapsing vs last year?\n\ntracktheseason.com\n\n#TrackTheSeason #MLB #BaseballTwitter',
   'hot-cold':     '🔥❄️ MLB Hot vs Cold Report — who\'s on fire and who\'s slipping right now? Last 10 + Last 20 games.\n\ntracktheseason.com\n\n#TrackTheSeason #MLB #BaseballTwitter',
   'pace-leaders': '🚀 MLB Pace Leaderboard — projected wins for all 30 teams right now.\n\ntracktheseason.com\n\n#TrackTheSeason #MLB #PaceCheck',
+  'chaos-index':  '📊 MLB Chaos Index History — how does this season compare to the last 3 years?\n\ntracktheseason.com\n\n#TrackTheSeason #MLB #BaseballTwitter',
 };
 
 const VARIANT_PATHS = {
   'chaos':        '/chaos-report',
   'hot-cold':     '/hot-cold',
   'pace-leaders': '/pace-leaders',
+  'chaos-index':  '/chaos-index',
 };
 
 let currentVariant = 'chaos';
 const BASE = 'https://tracktheseason.com/api/chaos-report';
+const YEAR = new Date().getFullYear();
 
-function cardUrl(variant){ return variant === 'chaos' ? BASE : `${BASE}?variant=${variant}`; }
+function cardUrl(variant){
+  if(variant === 'chaos-index') return `https://tracktheseason.com/api/chaos-index/${YEAR}`;
+  return variant === 'chaos' ? BASE : `${BASE}?variant=${variant}`;
+}
 
 function updateShareLinks(variant) {
   const text = encodeURIComponent(VARIANT_COPY[variant] || VARIANT_COPY['chaos']);
@@ -163,6 +170,16 @@ function loadCard(variant){
   const overlay = document.getElementById('loadingOverlay');
   overlay.style.display = 'flex';
   img.style.display = 'none';
+
+  /* Update format info */
+  const isChaosIndex = variant === 'chaos-index';
+  const fn = document.getElementById('formatName');
+  const fs = document.getElementById('formatSize');
+  const fb = document.getElementById('formatBadge');
+  if(fn) fn.textContent = isChaosIndex ? 'Landscape' : 'Portrait';
+  if(fs) fs.textContent = isChaosIndex ? '1200 × 630' : '1200 × 1500';
+  if(fb) fb.textContent = isChaosIndex ? 'X · Facebook · Slack' : 'Facebook · Instagram';
+
   img.src = cardUrl(variant) + '?cb=' + Date.now();
   updateShareLinks(variant);
 }
@@ -207,6 +224,7 @@ const PATH_VARIANTS = {
   '/hot-cold':     'hot-cold',
   '/pace-leaders': 'pace-leaders',
   '/chaos-report': 'chaos',
+  '/chaos-index':  'chaos-index',
 };
 const pathVariant = PATH_VARIANTS[window.location.pathname] || 'chaos';
 currentVariant = pathVariant;
