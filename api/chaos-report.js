@@ -128,13 +128,13 @@ function sharedDefs() {
   </defs>`;
 }
 
-function sharedBackground() {
+function sharedBackground(h=H) {
   return `
-  <rect width="${W}" height="${H}" fill="#0f1014"/>
-  <rect width="${W}" height="${H}" fill="url(#grid)"/>
-  <rect width="${W}" height="${H}" fill="url(#topglow)"/>
-  <rect x="0"      y="0" width="3" height="${H}" fill="rgba(26,255,107,0.2)"/>
-  <rect x="${W-3}" y="0" width="3" height="${H}" fill="rgba(26,255,107,0.2)"/>
+  <rect width="${W}" height="${h}" fill="#0f1014"/>
+  <rect width="${W}" height="${h}" fill="url(#grid)"/>
+  <rect width="${W}" height="${h}" fill="url(#topglow)"/>
+  <rect x="0"      y="0" width="3" height="${h}" fill="rgba(26,255,107,0.2)"/>
+  <rect x="${W-3}" y="0" width="3" height="${h}" fill="rgba(26,255,107,0.2)"/>
   <rect width="${W}" height="5" fill="url(#topbar)"/>`;
 }
 
@@ -156,18 +156,18 @@ function sharedHeader(today) {
     fill="rgba(255,255,255,0.07)"/>`;
 }
 
-function sharedFooter(hashtags) {
+function sharedFooter(hashtags, footerY=1416) {
   return `
-  <rect x="${PAD}" y="1416" width="${W-PAD*2}" height="36" rx="6"
+  <rect x="${PAD}" y="${footerY}" width="${W-PAD*2}" height="36" rx="6"
     fill="rgba(26,255,107,0.08)" stroke="rgba(26,255,107,0.15)" stroke-width="1"/>
-  <text x="${W/2}" y="1440" text-anchor="middle" font-size="13" font-weight="700"
+  <text x="${W/2}" y="${footerY+24}" text-anchor="middle" font-size="13" font-weight="700"
     fill="rgba(26,255,107,0.7)" letter-spacing="3">
     TRACK EVERY TEAM → TRACKTHESEASON.COM
   </text>
-  <rect x="0" y="1468" width="${W}" height="32" fill="#1a1d24"/>
-  <line x1="0" y1="1468" x2="${W}" y2="1468"
+  <rect x="0" y="${footerY+52}" width="${W}" height="32" fill="#1a1d24"/>
+  <line x1="0" y1="${footerY+52}" x2="${W}" y2="${footerY+52}"
     stroke="rgba(255,255,255,0.05)" stroke-width="1"/>
-  <text x="${W/2}" y="1489" text-anchor="middle" font-size="10"
+  <text x="${W/2}" y="${footerY+71}" text-anchor="middle" font-size="10"
     fill="rgba(255,255,255,0.18)" letter-spacing="2">
     ${esc(hashtags)} · Pace-based. Not a predictive model.
   </text>`;
@@ -404,26 +404,48 @@ function buildHotColdSVG(data) {
   const coldPanelH = 52 + coldTeams.length * rowH;
   const hotPanelY  = 490;
   const coldPanelY = hotPanelY + hotPanelH + 20;
+  const convoY     = coldPanelY + coldPanelH + 24;
+  const convoH     = 120;
+  const footerY    = convoY + convoH + 24;
+  const dynamicH   = footerY + 80; /* total SVG height based on content */
 
   const question = hot1 && cold1
     ? `${hot1.club} ${hot1.l10w}–${hot1.l10l} L10 vs ${cold1.club} ${cold1.l10w}–${cold1.l10l} — what's the difference?`
     : `Which team's recent stretch surprised you most?`;
 
-  const convoY = coldPanelY + coldPanelH + 24;
-
   return `<?xml version="1.0" encoding="UTF-8"?>
 <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
-     width="${W}" height="${H}" viewBox="0 0 ${W} ${H}">
-${sharedDefs()}
-<!-- Extra red glow for cold side -->
+     width="${W}" height="${dynamicH}" viewBox="0 0 ${W} ${dynamicH}">
 <defs>
-  <radialGradient id="coldglow" cx="50%" cy="80%" r="50%">
-    <stop offset="0%" stop-color="#ff4d4d" stop-opacity="0.06"/>
+  <style>text{font-family:${MONO}}</style>
+  <radialGradient id="topglow" cx="50%" cy="0%" r="55%">
+    <stop offset="0%" stop-color="#1aff6b" stop-opacity="0.09"/>
     <stop offset="100%" stop-color="#0f1014" stop-opacity="0"/>
   </radialGradient>
+  <radialGradient id="heroglow" cx="50%" cy="50%" r="50%">
+    <stop offset="0%" stop-color="#1aff6b" stop-opacity="0.07"/>
+    <stop offset="100%" stop-color="#0f1014" stop-opacity="0"/>
+  </radialGradient>
+  <radialGradient id="coldglow" cx="50%" cy="80%" r="50%">
+    <stop offset="0%" stop-color="#ff4d4d" stop-opacity="0.05"/>
+    <stop offset="100%" stop-color="#0f1014" stop-opacity="0"/>
+  </radialGradient>
+  <linearGradient id="topbar" x1="0%" y1="0%" x2="100%" y2="0%">
+    <stop offset="0%"   stop-color="#1aff6b" stop-opacity="0"/>
+    <stop offset="15%"  stop-color="#1aff6b" stop-opacity="1"/>
+    <stop offset="85%"  stop-color="#1aff6b" stop-opacity="1"/>
+    <stop offset="100%" stop-color="#1aff6b" stop-opacity="0"/>
+  </linearGradient>
+  <pattern id="grid" x="0" y="0" width="48" height="48" patternUnits="userSpaceOnUse">
+    <circle cx="24" cy="24" r="1" fill="rgba(255,255,255,0.025)"/>
+  </pattern>
+  <filter id="numglow" x="-20%" y="-20%" width="140%" height="140%">
+    <feGaussianBlur stdDeviation="8" result="blur"/>
+    <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+  </filter>
 </defs>
-${sharedBackground()}
-<rect width="${W}" height="${H}" fill="url(#coldglow)"/>
+${sharedBackground(dynamicH)}
+<rect width="${W}" height="${dynamicH}" fill="url(#coldglow)"/>
 ${sharedHeader(today)}
 
 <!-- TITLE -->
@@ -453,7 +475,7 @@ ${sharedHeader(today)}
 <!-- HOT PANEL -->
 <rect x="${PAD}" y="${hotPanelY}" width="${W-PAD*2}" height="${hotPanelH}" rx="12"
   fill="rgba(0,0,0,0.4)" stroke="rgba(26,255,107,0.2)" stroke-width="1"/>
-<rect x="${PAD}" y="${hotPanelY}" width="${W-PAD*2}" height="52" rx="12 12 0 0"
+<rect x="${PAD}" y="${hotPanelY}" width="${W-PAD*2}" height="52" rx="8"
   fill="rgba(26,255,107,0.1)"/>
 <line x1="${PAD}" y1="${hotPanelY+52}" x2="${W-PAD}" y2="${hotPanelY+52}"
   stroke="rgba(26,255,107,0.15)" stroke-width="1"/>
@@ -469,7 +491,7 @@ ${hotTeams.map((t,i)=>hotColdRow(t, PAD, hotPanelY+52+i*rowH, W-PAD*2, i)).join(
 <!-- COLD PANEL -->
 <rect x="${PAD}" y="${coldPanelY}" width="${W-PAD*2}" height="${coldPanelH}" rx="12"
   fill="rgba(0,0,0,0.4)" stroke="rgba(255,77,77,0.2)" stroke-width="1"/>
-<rect x="${PAD}" y="${coldPanelY}" width="${W-PAD*2}" height="52" rx="12 12 0 0"
+<rect x="${PAD}" y="${coldPanelY}" width="${W-PAD*2}" height="52" rx="8"
   fill="rgba(255,77,77,0.08)"/>
 <line x1="${PAD}" y1="${coldPanelY+52}" x2="${W-PAD}" y2="${coldPanelY+52}"
   stroke="rgba(255,77,77,0.15)" stroke-width="1"/>
@@ -483,7 +505,7 @@ ${hotTeams.map((t,i)=>hotColdRow(t, PAD, hotPanelY+52+i*rowH, W-PAD*2, i)).join(
 ${coldTeams.map((t,i)=>hotColdRow(t, PAD, coldPanelY+52+i*rowH, W-PAD*2, i)).join('')}
 
 ${convoBox(question, convoY)}
-${sharedFooter('#TrackTheSeason · #MLB · #HotOrNot')}
+${sharedFooter('#TrackTheSeason · #MLB · #HotOrNot', footerY)}
 </svg>`;
 }
 
