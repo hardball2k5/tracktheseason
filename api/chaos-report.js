@@ -250,7 +250,7 @@ function chaosPanel(teams, x, y, w, isRiser, year) {
   return `
   <rect x="${x}" y="${y}" width="${w}" height="${totalH}" rx="10"
     fill="rgba(0,0,0,0.35)" stroke="${border}" stroke-width="1"/>
-  <rect x="${x}" y="${y}" width="${w}" height="${headerH}" rx="10 10 0 0"
+  <rect x="${x}" y="${y}" width="${w}" height="${headerH}" rx="8"
     fill="${headerBg}"/>
   <rect x="${x}" y="${y+headerH-1}" width="${w}" height="1"
     fill="${border}"/>
@@ -268,12 +268,14 @@ function buildChaosSVG(data) {
   const COL_W    = (W - PAD*2 - 16) / 2;
   const COL_Y    = 720;
   const question = chaosQuestion(risers, fallers, chaosCount);
+  const footerY  = 1416;
+  const dynamicH = footerY + 80;
 
   return `<?xml version="1.0" encoding="UTF-8"?>
 <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
-     width="${W}" height="${H}" viewBox="0 0 ${W} ${H}">
+     width="${W}" height="${dynamicH}" viewBox="0 0 ${W} ${dynamicH}">
 ${sharedDefs()}
-${sharedBackground()}
+${sharedBackground(dynamicH)}
 ${sharedHeader(today)}
 
 <!-- TITLE -->
@@ -567,6 +569,8 @@ function buildPaceLeadersSVG(data) {
   const cPanelY  = 500;
   const pPanelY  = cPanelY + cPanelH + 20;
   const convoY   = pPanelY + pPanelH + 24;
+  const footerY  = convoY + 144;
+  const dynamicH = footerY + 80;
 
   const question = top
     ? `Can the ${top.club} actually finish with ${top.proj}+ wins?`
@@ -574,9 +578,9 @@ function buildPaceLeadersSVG(data) {
 
   return `<?xml version="1.0" encoding="UTF-8"?>
 <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
-     width="${W}" height="${H}" viewBox="0 0 ${W} ${H}">
+     width="${W}" height="${dynamicH}" viewBox="0 0 ${W} ${dynamicH}">
 ${sharedDefs()}
-${sharedBackground()}
+${sharedBackground(dynamicH)}
 ${sharedHeader(today)}
 
 <!-- TITLE -->
@@ -606,7 +610,7 @@ ${logoCircle(top?.logo, PAD+64, 406, 32)}
 <!-- Contenders panel -->
 <rect x="${PAD}" y="${cPanelY}" width="${W-PAD*2}" height="${cPanelH}" rx="12"
   fill="rgba(0,0,0,0.4)" stroke="rgba(26,255,107,0.15)" stroke-width="1"/>
-<rect x="${PAD}" y="${cPanelY}" width="${W-PAD*2}" height="56" rx="12 12 0 0"
+<rect x="${PAD}" y="${cPanelY}" width="${W-PAD*2}" height="56" rx="8"
   fill="rgba(26,255,107,0.08)"/>
 <line x1="${PAD}" y1="${cPanelY+56}" x2="${W-PAD}" y2="${cPanelY+56}"
   stroke="rgba(26,255,107,0.12)" stroke-width="1"/>
@@ -620,7 +624,7 @@ ${contenders.map((t,i)=>paceRow(t, PAD, cPanelY+56+i*rowH, W-PAD*2, i, maxProj, 
 <!-- Pretenders panel -->
 <rect x="${PAD}" y="${pPanelY}" width="${W-PAD*2}" height="${pPanelH}" rx="12"
   fill="rgba(0,0,0,0.4)" stroke="rgba(255,77,77,0.15)" stroke-width="1"/>
-<rect x="${PAD}" y="${pPanelY}" width="${W-PAD*2}" height="56" rx="12 12 0 0"
+<rect x="${PAD}" y="${pPanelY}" width="${W-PAD*2}" height="56" rx="8"
   fill="rgba(255,77,77,0.06)"/>
 <line x1="${PAD}" y1="${pPanelY+56}" x2="${W-PAD}" y2="${pPanelY+56}"
   stroke="rgba(255,77,77,0.12)" stroke-width="1"/>
@@ -632,7 +636,7 @@ ${contenders.map((t,i)=>paceRow(t, PAD, cPanelY+56+i*rowH, W-PAD*2, i, maxProj, 
 ${pretenders.map((t,i)=>paceRow(t, PAD, pPanelY+56+i*rowH, W-PAD*2, i, 78, minProj)).join('')}
 
 ${convoBox(question, convoY)}
-${sharedFooter('#TrackTheSeason · #MLB · #PaceCheck')}
+${sharedFooter('#TrackTheSeason · #MLB · #PaceCheck', footerY)}
 </svg>`;
 }
 
