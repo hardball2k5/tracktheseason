@@ -163,6 +163,22 @@ function updateShareLinks(variant) {
   document.getElementById('shareThreads').href = `https://www.threads.net/intent/post?text=${text}`;
   document.getElementById('shareFB').href      = `https://www.facebook.com/sharer/sharer.php?u=${pageUrl}`;
   document.getElementById('cardUrl').textContent = cardUrl(variant);
+
+  /* Update OG tags so sharing the page URL shows the right card */
+  const imgUrl = cardUrl(variant);
+  const setMeta = (prop, val) => {
+    let el = document.querySelector(`meta[property="${prop}"]`) || document.querySelector(`meta[name="${prop}"]`);
+    if(el) el.setAttribute('content', val);
+  };
+  setMeta('og:image',          imgUrl);
+  setMeta('og:url',            decodeURIComponent(pageUrl));
+  setMeta('twitter:image',     imgUrl);
+  setMeta('og:title',          document.querySelector('.variant-btn.active')?.textContent?.trim() + ' | Track The Season');
+  setMeta('twitter:title',     document.querySelector('.variant-btn.active')?.textContent?.trim() + ' | Track The Season');
+
+  /* Update canonical */
+  let canonical = document.querySelector('link[rel="canonical"]');
+  if(canonical) canonical.href = decodeURIComponent(pageUrl);
 }
 
 function loadCard(variant){
