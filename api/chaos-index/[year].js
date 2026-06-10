@@ -57,9 +57,10 @@ async function chaosCount(year, gp) {
           loadWins(id, year),
           loadWins(id, prevYear),
         ]);
-        if (cur.length < gp || prev.length < gp) return null;
-        const curW  = cur.slice(0, gp).filter(Boolean).length;
-        const prevW = prev.slice(0, gp).filter(Boolean).length;
+        if (cur.length < 10 || prev.length < 10) return null; /* need at least 10 games */
+        const useGp = Math.min(gp, cur.length, prev.length);
+        const curW  = cur.slice(0, useGp).filter(Boolean).length;
+        const prevW = prev.slice(0, useGp).filter(Boolean).length;
         return Math.abs(curW - prevW);
       })
     );
@@ -70,7 +71,7 @@ async function chaosCount(year, gp) {
       }
     }
   }
-  return { chaotic, total, pct: total ? Math.round(chaotic / total * 100) : 0 };
+  return { chaotic, total, pct: Math.round(chaotic / 30 * 100) };
 }
 
 function buildSVG(year, rows, gpLabel) {
@@ -82,7 +83,7 @@ function buildSVG(year, rows, gpLabel) {
   const PAD_L = 100, PAD_R = 60, PAD_T = 140, BAR_AREA_W = W - PAD_L - PAD_R;
   const ROW_H = 88, ROW_GAP = 8;
   const BAR_MAX_W = BAR_AREA_W - 220; /* leave room for count label */
-  const maxCount = Math.max(...rows.map(r => r.chaotic), 15);
+  const maxCount = Math.max(...rows.map(r => r.chaotic), 1); /* no artificial floor */
 
   /* Color per row — current year is signal green, others fade */
   function rowColor(y) {
