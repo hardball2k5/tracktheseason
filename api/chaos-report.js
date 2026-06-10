@@ -705,9 +705,10 @@ export default async function handler(req) {
 
   let svg;
   if (variant === 'hot-cold') {
-    const valid    = teamStats.filter(t=>t.gp>=20);
-    const hotTeams = valid.sort((a,b)=>b.l10w-a.l10w).slice(0,5).map(attach);
-    const coldTeams= [...valid].sort((a,b)=>a.l10w-b.l10w).slice(0,5).map(attach);
+    const valid     = teamStats.filter(t=>t.gp>=20);
+    /* Use spread to avoid mutating `valid` when sorting */
+    const hotTeams  = [...valid].sort((a,b)=>b.l10w-a.l10w).slice(0,5).map(attach);
+    const coldTeams = [...valid].sort((a,b)=>a.l10w-b.l10w).slice(0,5).map(attach);
     svg = buildHotColdSVG({ hotTeams, coldTeams, avgGp, year });
 
   } else if (variant === 'pace-leaders') {
@@ -729,7 +730,8 @@ export default async function handler(req) {
   return new Response(svg, {
     headers: {
       'Content-Type':  'image/svg+xml',
-      'Cache-Control': 'public, max-age=1800, stale-while-revalidate=3600',
+      /* s-maxage controls Vercel's CDN cache — keyed by full URL including ?variant= */
+      'Cache-Control': 'public, s-maxage=1800, stale-while-revalidate=3600',
       'Access-Control-Allow-Origin': '*',
     },
   });
