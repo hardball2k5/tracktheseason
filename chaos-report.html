@@ -306,9 +306,9 @@ function applyVariant(v){
   const noticed = sessionStorage.getItem('tts-slow-noticed');
   document.getElementById('slowNotice').style.display = noticed ? 'none' : 'flex';
 
-  /* Load graphic — use variant in cache key so Vercel doesn't collapse variants */
-  const ts = Math.floor(Date.now() / 300000); /* changes every 5 min */
-  img.src = url + (url.includes('?') ? '&' : '?') + `_v=${ts}`;
+  /* Always force fresh fetch when switching tabs — never show stale cached image */
+  const freshTs = Date.now();
+  img.src = url + (url.includes('?') ? '&' : '?') + `_t=${freshTs}`;
 }
 
 function onLoad(){
