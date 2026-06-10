@@ -295,6 +295,7 @@ function applyVariant(v){
   const img = document.getElementById('cardImg');
   const overlay = document.getElementById('graphicOverlay');
   img.classList.remove('loaded');
+  img.src = ''; /* clear immediately so old image doesn't show */
   overlay.classList.remove('hidden');
   document.getElementById('loadLabel').textContent = 'Loading live MLB data…';
   document.getElementById('loadEta').textContent = v==='chaos-index'
@@ -305,7 +306,9 @@ function applyVariant(v){
   const noticed = sessionStorage.getItem('tts-slow-noticed');
   document.getElementById('slowNotice').style.display = noticed ? 'none' : 'flex';
 
-  img.src = url + '?cb=' + Date.now();
+  /* Load graphic — use variant in cache key so Vercel doesn't collapse variants */
+  const ts = Math.floor(Date.now() / 300000); /* changes every 5 min */
+  img.src = url + (url.includes('?') ? '&' : '?') + `_v=${ts}`;
 }
 
 function onLoad(){
@@ -331,7 +334,9 @@ document.querySelectorAll('.tab').forEach(btn=>{
 /* Download */
 document.getElementById('downloadBtn').addEventListener('click',()=>{
   const a = document.createElement('a');
-  a.href = cardUrl(currentVariant)+'?cb='+Date.now();
+  const url = cardUrl(currentVariant);
+  const ts  = Math.floor(Date.now() / 300000);
+  a.href = url + (url.includes('?') ? '&' : '?') + `_v=${ts}`;
   a.download = `tts-${currentVariant}-${YEAR}.svg`;
   a.click();
 });
