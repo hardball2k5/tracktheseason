@@ -14,244 +14,351 @@
 <meta name="twitter:description"content="What's the craziest thing happening in MLB right now?"/>
 <meta name="twitter:image"      content="https://tracktheseason.com/api/chaos-report"/>
 <link rel="canonical"           href="https://tracktheseason.com/chaos-report"/>
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600;700&family=IBM+Plex+Sans:wght@400;600&display=swap" rel="stylesheet"/>
-<style>
-*{box-sizing:border-box;margin:0;padding:0}
-body{background:#0f1014;color:#e8edf8;font-family:'IBM Plex Mono',monospace;min-height:100vh}
-.site-nav{padding:12px 20px;border-bottom:1px solid rgba(255,255,255,.07);display:flex;align-items:center;gap:10px;position:sticky;top:0;background:rgba(15,16,20,.95);backdrop-filter:blur(16px);z-index:10}
-.nav-logo{display:flex;align-items:center;gap:8px;text-decoration:none}
-.nav-mono{width:30px;height:30px;background:#1aff6b;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#0f1014}
-.nav-word{font-size:14px;font-weight:700;color:#e8edf8}
-.nav-word .g{color:#1aff6b}
-.back{font-size:12px;color:rgba(255,255,255,.4);text-decoration:none;border:1px solid rgba(255,255,255,.1);padding:5px 12px;border-radius:6px;margin-right:auto}
-.back:hover{border-color:rgba(255,255,255,.25);color:#e8edf8}
-.wrap{max-width:900px;margin:0 auto;padding:32px 20px 60px}
-.page-title{font-size:13px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#1aff6b;margin-bottom:8px}
-.page-sub{font-size:28px;font-weight:700;color:#e8edf8;margin-bottom:6px;letter-spacing:-.01em}
-.page-desc{font-size:14px;color:rgba(255,255,255,.45);margin-bottom:28px;line-height:1.6;font-family:'IBM Plex Sans',sans-serif}
-
-/* Variant switcher */
-.variants{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:24px}
-.variant-btn{padding:8px 16px;border-radius:20px;border:1px solid rgba(255,255,255,.12);background:transparent;color:rgba(255,255,255,.5);font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:600;cursor:pointer;transition:all .15s}
-.variant-btn:hover{border-color:rgba(255,255,255,.3);color:#e8edf8}
-.variant-btn.active{background:#1aff6b;border-color:#1aff6b;color:#0f1014}
-
-/* Share actions */
-.share-row{display:flex;gap:10px;margin-bottom:28px;flex-wrap:wrap}
-.share-btn{display:inline-flex;align-items:center;gap:7px;padding:11px 18px;border-radius:8px;font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:700;cursor:pointer;text-decoration:none;transition:all .15s;letter-spacing:.04em}
-.share-btn.primary{background:#1aff6b;color:#0f1014;border:none}
-.share-btn.primary:hover{filter:brightness(1.08)}
-.share-btn.secondary{background:transparent;color:rgba(255,255,255,.7);border:1px solid rgba(255,255,255,.15)}
-.share-btn.secondary:hover{border-color:#1aff6b;color:#1aff6b}
-
-/* Card preview */
-.card-preview{border-radius:16px;overflow:hidden;border:1px solid rgba(255,255,255,.08);margin-bottom:24px;position:relative;background:#1a1d24}
-.card-preview img{width:100%;display:block}
-.loading-overlay{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:#1a1d24;border-radius:16px}
-.spinner{width:32px;height:32px;border-radius:50%;border:3px solid rgba(255,255,255,.1);border-top-color:#1aff6b;animation:spin .75s linear infinite}
-@keyframes spin{to{transform:rotate(360deg)}}
-.load-text{font-size:13px;color:rgba(255,255,255,.4);margin-top:12px}
-
-/* Formats */
-.formats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:28px}
-@media(max-width:600px){.formats{grid-template-columns:1fr 1fr}}
-.format-card{background:#1a1d24;border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:14px;cursor:pointer;transition:border-color .15s;text-decoration:none}
-.format-card:hover{border-color:#1aff6b}
-.format-card.active{border-color:rgba(26,255,107,.4);background:rgba(26,255,107,.05)}
-.format-name{font-size:12px;font-weight:700;color:#e8edf8;margin-bottom:4px}
-.format-size{font-size:11px;color:rgba(255,255,255,.35)}
-.format-badge{display:inline-block;margin-top:6px;padding:2px 8px;border-radius:4px;font-size:10px;font-weight:700;background:rgba(26,255,107,.12);color:#1aff6b}
-
-/* URL copy box */
-.url-box{background:#1a1d24;border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:14px 16px;display:flex;align-items:center;gap:10px;margin-bottom:12px}
-.url-text{flex:1;font-size:12px;color:rgba(255,255,255,.4);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.copy-btn{flex-shrink:0;padding:6px 14px;background:rgba(26,255,107,.1);border:1px solid rgba(26,255,107,.2);border-radius:6px;color:#1aff6b;font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:700;cursor:pointer;transition:all .15s}
-.copy-btn:hover{background:rgba(26,255,107,.2)}
-</style>
-<!-- Google tag (gtag.js) -->
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet"/>
+<!-- Google tag -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-DCSQPGSY1D"></script>
 <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-DCSQPGSY1D');</script>
+<style>
+:root{
+  --ink:#0f1014;--ink2:#1a1d24;--ink3:#252830;
+  --signal:#1aff6b;--chalk:#8a8a82;
+  --rule:rgba(255,255,255,.07);
+  --mono:'IBM Plex Mono',monospace;
+  --sans:'IBM Plex Sans',sans-serif;
+  --r:10px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{width:100%;overflow-x:hidden}
+body{background:var(--ink);color:#e8edf8;font-family:var(--mono);min-height:100vh}
+
+/* NAV */
+.nav{
+  padding:11px 20px;border-bottom:1px solid var(--rule);
+  display:flex;align-items:center;gap:12px;
+  position:sticky;top:0;z-index:20;
+  background:rgba(15,16,20,.96);backdrop-filter:blur(16px);
+}
+.nav-back{
+  display:flex;align-items:center;gap:5px;
+  font-size:12px;font-weight:600;color:var(--chalk);
+  text-decoration:none;border:1px solid var(--rule);
+  border-radius:6px;padding:5px 11px;transition:all .13s;
+}
+.nav-back:hover{border-color:rgba(255,255,255,.2);color:#e8edf8}
+.nav-logo{display:flex;align-items:center;gap:8px;text-decoration:none;margin-left:auto}
+.nav-mono{width:28px;height:28px;background:var(--signal);border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:var(--ink)}
+.nav-word{font-size:13px;font-weight:700;color:#e8edf8}
+.nav-word span{color:var(--signal)}
+
+/* PAGE LAYOUT */
+.wrap{max-width:860px;margin:0 auto;padding:24px 16px 60px}
+
+/* HEADER */
+.page-header{margin-bottom:20px}
+.eyebrow{font-size:9px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--signal);margin-bottom:6px}
+.page-hed{font-size:clamp(22px,5vw,32px);font-weight:700;color:#e8edf8;letter-spacing:-.02em;line-height:1}
+.page-sub{font-size:13px;color:rgba(255,255,255,.4);margin-top:6px;line-height:1.55;font-family:var(--sans)}
+
+/* VARIANT TABS */
+.tabs{
+  display:flex;gap:6px;flex-wrap:nowrap;overflow-x:auto;
+  -webkit-overflow-scrolling:touch;scrollbar-width:none;
+  margin:0 -16px;padding:0 16px 2px;margin-bottom:16px;
+}
+.tabs::-webkit-scrollbar{display:none}
+.tab{
+  flex-shrink:0;
+  padding:7px 14px;border-radius:20px;
+  border:1px solid rgba(255,255,255,.1);
+  background:transparent;color:rgba(255,255,255,.5);
+  font-family:var(--mono);font-size:12px;font-weight:600;
+  cursor:pointer;transition:all .13s;white-space:nowrap;
+}
+.tab:hover{border-color:rgba(255,255,255,.25);color:#e8edf8}
+.tab.active{background:var(--signal);border-color:var(--signal);color:var(--ink);font-weight:700}
+
+/* GRAPHIC PREVIEW */
+.graphic-wrap{
+  position:relative;border-radius:14px;overflow:hidden;
+  border:1px solid rgba(255,255,255,.08);
+  background:var(--ink2);
+  min-height:300px;
+  margin-bottom:14px;
+}
+.graphic-wrap img{width:100%;display:block;opacity:0;transition:opacity .3s}
+.graphic-wrap img.loaded{opacity:1}
+.graphic-overlay{
+  position:absolute;inset:0;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:10px;background:var(--ink2);
+  transition:opacity .3s;
+}
+.graphic-overlay.hidden{opacity:0;pointer-events:none}
+.spinner{width:28px;height:28px;border-radius:50%;border:3px solid rgba(255,255,255,.08);border-top-color:var(--signal);animation:spin .75s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.load-label{font-size:12px;color:var(--chalk)}
+.load-eta{font-size:10px;color:rgba(255,255,255,.25);letter-spacing:.06em}
+.error-msg{font-size:13px;color:#f47570;text-align:center;padding:20px}
+
+/* SHARE ACTIONS */
+.share-bar{
+  display:flex;gap:8px;flex-wrap:wrap;
+  margin-bottom:14px;align-items:center;
+}
+.share-btn{
+  display:inline-flex;align-items:center;gap:6px;
+  padding:10px 16px;border-radius:8px;
+  font-family:var(--mono);font-size:12px;font-weight:700;
+  cursor:pointer;transition:all .13s;letter-spacing:.03em;
+  text-decoration:none;white-space:nowrap;border:none;
+}
+.share-btn.green{background:var(--signal);color:var(--ink)}
+.share-btn.green:hover{filter:brightness(1.08)}
+.share-btn.ghost{background:transparent;color:rgba(255,255,255,.65);border:1px solid rgba(255,255,255,.12)}
+.share-btn.ghost:hover{border-color:var(--signal);color:var(--signal)}
+
+/* URL COPY */
+.url-row{
+  display:flex;align-items:center;gap:8px;
+  background:var(--ink2);border:1px solid rgba(255,255,255,.06);
+  border-radius:8px;padding:10px 14px;margin-bottom:6px;
+}
+.url-text{
+  flex:1;font-size:11px;color:rgba(255,255,255,.35);
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+  font-family:var(--mono);
+}
+.copy-btn{
+  flex-shrink:0;padding:5px 12px;
+  background:rgba(26,255,107,.08);border:1px solid rgba(26,255,107,.18);
+  border-radius:5px;color:var(--signal);font-family:var(--mono);
+  font-size:11px;font-weight:700;cursor:pointer;transition:all .13s;
+}
+.copy-btn:hover{background:rgba(26,255,107,.15)}
+.url-hint{font-size:10px;color:rgba(255,255,255,.18);line-height:1.5;font-family:var(--sans)}
+
+/* SLOW-LOAD NOTICE */
+.slow-notice{
+  display:flex;align-items:flex-start;gap:8px;
+  background:rgba(245,200,66,.06);border:1px solid rgba(245,200,66,.15);
+  border-radius:8px;padding:10px 13px;margin-bottom:14px;
+}
+.slow-notice-icon{font-size:14px;flex-shrink:0;line-height:1.4}
+.slow-notice-text{font-size:11px;color:rgba(255,255,255,.45);line-height:1.55;font-family:var(--sans)}
+.slow-notice-text strong{color:rgba(245,200,66,.8);font-family:var(--mono);font-weight:700}
+
+@media(max-width:480px){
+  .share-bar{gap:6px}
+  .share-btn{padding:9px 12px;font-size:11px}
+}
+</style>
 </head>
 <body>
-<nav class="site-nav">
-  <a href="index.html" class="back">← All Teams</a>
+
+<nav class="nav">
+  <a href="index.html" class="nav-back">← All Teams</a>
   <a href="index.html" class="nav-logo">
     <div class="nav-mono">TTS</div>
-    <div class="nav-word">TRACK THE <span class="g">SEASON</span></div>
+    <div class="nav-word">TRACK THE <span>SEASON</span></div>
   </a>
 </nav>
 
 <div class="wrap">
-  <div class="page-title">⚾ Social Graphics</div>
-  <div class="page-sub">MLB Chaos Report</div>
-  <div class="page-desc">Live graphics generated from today's data. Share on X, Facebook, or Instagram — updated after every game.</div>
 
-  <!-- Variant switcher -->
-  <div class="variants">
-    <button class="variant-btn active" data-variant="chaos">⚾ Chaos Report</button>
-    <button class="variant-btn" data-variant="hot-cold">🔥❄️ Hot vs Cold</button>
-    <button class="variant-btn" data-variant="pace-leaders">🚀 Pace Leaders</button>
-    <button class="variant-btn" data-variant="chaos-index">📊 Chaos History</button>
+  <!-- Header -->
+  <div class="page-header">
+    <div class="eyebrow">⚾ Social Graphics</div>
+    <div class="page-hed" id="pageHed">MLB Chaos Report</div>
+    <div class="page-sub" id="pageSub">Live graphics from today's data — updated after every game. Pick a report, share it.</div>
   </div>
 
-  <!-- Format selector -->
-  <div class="formats">
-    <div class="format-card active" data-format="portrait" id="formatCard">
-      <div class="format-name" id="formatName">Portrait</div>
-      <div class="format-size" id="formatSize">1200 × 1500</div>
-      <div class="format-badge" id="formatBadge">Facebook · Instagram</div>
+  <!-- Variant tabs -->
+  <div class="tabs">
+    <button class="tab active" data-variant="chaos">⚾ Chaos Report</button>
+    <button class="tab" data-variant="hot-cold">🔥❄️ Hot vs Cold</button>
+    <button class="tab" data-variant="pace-leaders">🚀 Pace Leaders</button>
+    <button class="tab" data-variant="chaos-index">📊 Chaos History</button>
+  </div>
+
+  <!-- Slow load notice -->
+  <div class="slow-notice" id="slowNotice">
+    <div class="slow-notice-icon">⏳</div>
+    <div class="slow-notice-text">
+      <strong>First load takes 10–30 seconds</strong> — this graphic fetches live data for all 30 teams. Subsequent loads are cached and instant.
     </div>
   </div>
 
-  <!-- Share actions -->
-  <div class="share-row">
-    <a class="share-btn primary" id="shareX" href="#" target="_blank" rel="noopener">𝕏 Share on X</a>
-    <a class="share-btn secondary" id="shareThreads" href="#" target="_blank" rel="noopener">@ Threads</a>
-    <a class="share-btn secondary" id="shareFB" href="#" target="_blank" rel="noopener">f Facebook</a>
-    <button class="share-btn secondary" id="downloadBtn">↓ Download</button>
-  </div>
-
-  <!-- Live card preview -->
-  <div class="card-preview" id="cardPreview">
-    <div class="loading-overlay" id="loadingOverlay">
-      <div style="text-align:center">
-        <div class="spinner"></div>
-        <div class="load-text" style="margin-top:12px">Loading live MLB data…</div>
-      </div>
+  <!-- Graphic preview -->
+  <div class="graphic-wrap" id="graphicWrap">
+    <div class="graphic-overlay" id="graphicOverlay">
+      <div class="spinner"></div>
+      <div class="load-label" id="loadLabel">Loading live MLB data…</div>
+      <div class="load-eta" id="loadEta">THIS MAY TAKE UP TO 30 SECONDS</div>
     </div>
-    <img id="cardImg" src="" alt="MLB Chaos Report" style="display:none" onload="onImgLoad()" onerror="onImgError()"/>
+    <img id="cardImg" src="" alt="MLB Chaos Report" onload="onLoad()" onerror="onError()"/>
   </div>
 
-  <!-- Direct URL -->
-  <div class="url-box">
+  <!-- Share bar -->
+  <div class="share-bar">
+    <a class="share-btn green" id="shareX" href="#" target="_blank" rel="noopener">𝕏 Share on X</a>
+    <a class="share-btn ghost" id="shareThreads" href="#" target="_blank" rel="noopener">Threads</a>
+    <a class="share-btn ghost" id="shareFB" href="#" target="_blank" rel="noopener">Facebook</a>
+    <button class="share-btn ghost" id="downloadBtn">↓ Download SVG</button>
+  </div>
+
+  <!-- URL copy -->
+  <div class="url-row">
     <div class="url-text" id="cardUrl">https://tracktheseason.com/api/chaos-report</div>
-    <button class="copy-btn" onclick="copyUrl()">Copy URL</button>
+    <button class="copy-btn" id="copyBtn">Copy URL</button>
   </div>
-  <div style="font-size:11px;color:rgba(255,255,255,.2);line-height:1.6">
-    Paste this URL directly into a Facebook or X post — the graphic will appear as the preview card automatically.
-  </div>
+  <div class="url-hint">Paste this URL into a Facebook or X post — the graphic preview appears automatically.</div>
+
 </div>
 
 <script>
 const VARIANT_COPY = {
-  'chaos':        '⚾ MLB Chaos Report — which teams are surging and collapsing vs last year?\n\ntracktheseason.com\n\n#TrackTheSeason #MLB #BaseballTwitter',
-  'hot-cold':     '🔥❄️ MLB Hot vs Cold Report — who\'s on fire and who\'s slipping right now? Last 10 + Last 20 games.\n\ntracktheseason.com\n\n#TrackTheSeason #MLB #BaseballTwitter',
-  'pace-leaders': '🚀 MLB Pace Leaderboard — projected wins for all 30 teams right now.\n\ntracktheseason.com\n\n#TrackTheSeason #MLB #PaceCheck',
-  'chaos-index':  '📊 MLB Chaos Index History — how does this season compare to the last 3 years?\n\ntracktheseason.com\n\n#TrackTheSeason #MLB #BaseballTwitter',
+  'chaos':       '⚾ MLB Chaos Report — which teams are surging and collapsing vs last year?\n\ntracktheseason.com\n\n#TrackTheSeason #MLB #BaseballTwitter',
+  'hot-cold':    '🔥❄️ MLB Hot vs Cold — who\'s on fire and who\'s slipping right now? Last 10 + Last 20.\n\ntracktheseason.com\n\n#TrackTheSeason #MLB #BaseballTwitter',
+  'pace-leaders':'🚀 MLB Pace Leaderboard — projected wins for all 30 teams right now.\n\ntracktheseason.com\n\n#TrackTheSeason #MLB #PaceCheck',
+  'chaos-index': '📊 MLB Chaos Index History — how does this season compare to the last 3 years?\n\ntracktheseason.com\n\n#TrackTheSeason #MLB #BaseballTwitter',
 };
-
+const VARIANT_LABELS = {
+  'chaos':       'MLB Chaos Report',
+  'hot-cold':    'MLB Hot vs Cold',
+  'pace-leaders':'MLB Pace Leaders',
+  'chaos-index': 'MLB Chaos History',
+};
+const VARIANT_SUBS = {
+  'chaos':       'Which teams are surging, collapsing, and off last year\'s pace.',
+  'hot-cold':    'Who\'s on fire right now — and is it a real trend or just a hot streak?',
+  'pace-leaders':'Projected wins for every team. Contenders vs pretenders.',
+  'chaos-index': 'How chaotic is this season vs the last 3 years?',
+};
 const VARIANT_PATHS = {
-  'chaos':        '/chaos-report',
-  'hot-cold':     '/hot-cold',
-  'pace-leaders': '/pace-leaders',
-  'chaos-index':  '/chaos-index',
+  'chaos':       '/chaos-report',
+  'hot-cold':    '/hot-cold',
+  'pace-leaders':'/pace-leaders',
+  'chaos-index': '/chaos-index',
+};
+const PATH_VARIANTS = {
+  '/chaos-report': 'chaos',
+  '/hot-cold':     'hot-cold',
+  '/pace-leaders': 'pace-leaders',
+  '/chaos-index':  'chaos-index',
 };
 
-let currentVariant = 'chaos';
 const BASE = 'https://tracktheseason.com/api/chaos-report';
 const YEAR = new Date().getFullYear();
+let currentVariant = 'chaos';
 
-function cardUrl(variant){
-  if(variant === 'chaos-index') return `https://tracktheseason.com/api/chaos-index/${YEAR}`;
-  return variant === 'chaos' ? BASE : `${BASE}?variant=${variant}`;
+function cardUrl(v){
+  if(v==='chaos-index') return `https://tracktheseason.com/api/chaos-index/${YEAR}`;
+  return v==='chaos' ? BASE : `${BASE}?variant=${v}`;
 }
 
-function updateShareLinks(variant) {
-  const text = encodeURIComponent(VARIANT_COPY[variant] || VARIANT_COPY['chaos']);
-  const pageUrl = encodeURIComponent(`https://tracktheseason.com${VARIANT_PATHS[variant] || '/chaos-report'}`);
+function setMeta(prop, val){
+  const sel = prop.startsWith('og:')||prop.startsWith('twitter:') ? `meta[property="${prop}"]` : `meta[name="${prop}"]`;
+  const el = document.querySelector(sel) || document.querySelector(`meta[name="${prop}"]`);
+  if(el) el.setAttribute('content', val);
+}
+
+function applyVariant(v){
+  currentVariant = v;
+  const url   = cardUrl(v);
+  const page  = `https://tracktheseason.com${VARIANT_PATHS[v]||'/chaos-report'}`;
+  const text  = encodeURIComponent(VARIANT_COPY[v]||VARIANT_COPY['chaos']);
+  const pageE = encodeURIComponent(page);
+
+  /* Header text */
+  document.getElementById('pageHed').textContent  = VARIANT_LABELS[v];
+  document.getElementById('pageSub').textContent  = VARIANT_SUBS[v];
+
+  /* Share links */
   document.getElementById('shareX').href       = `https://x.com/intent/tweet?text=${text}`;
   document.getElementById('shareThreads').href = `https://www.threads.net/intent/post?text=${text}`;
-  document.getElementById('shareFB').href      = `https://www.facebook.com/sharer/sharer.php?u=${pageUrl}`;
-  document.getElementById('cardUrl').textContent = cardUrl(variant);
+  document.getElementById('shareFB').href      = `https://www.facebook.com/sharer/sharer.php?u=${pageE}`;
+  document.getElementById('cardUrl').textContent = url;
 
-  /* Update OG tags so sharing the page URL shows the right card */
-  const imgUrl = cardUrl(variant);
-  const setMeta = (prop, val) => {
-    let el = document.querySelector(`meta[property="${prop}"]`) || document.querySelector(`meta[name="${prop}"]`);
-    if(el) el.setAttribute('content', val);
-  };
-  setMeta('og:image',          imgUrl);
-  setMeta('og:url',            decodeURIComponent(pageUrl));
-  setMeta('twitter:image',     imgUrl);
-  setMeta('og:title',          document.querySelector('.variant-btn.active')?.textContent?.trim() + ' | Track The Season');
-  setMeta('twitter:title',     document.querySelector('.variant-btn.active')?.textContent?.trim() + ' | Track The Season');
+  /* OG tags */
+  setMeta('og:image',         url);
+  setMeta('og:url',           page);
+  setMeta('og:title',         VARIANT_LABELS[v]+' | Track The Season');
+  setMeta('twitter:image',    url);
+  setMeta('twitter:title',    VARIANT_LABELS[v]+' | Track The Season');
+  const canonical = document.querySelector('link[rel="canonical"]');
+  if(canonical) canonical.href = page;
 
-  /* Update canonical */
-  let canonical = document.querySelector('link[rel="canonical"]');
-  if(canonical) canonical.href = decodeURIComponent(pageUrl);
+  /* URL bar */
+  window.history.replaceState({}, '', VARIANT_PATHS[v]||'/chaos-report');
+
+  /* Load graphic */
+  const img = document.getElementById('cardImg');
+  const overlay = document.getElementById('graphicOverlay');
+  img.classList.remove('loaded');
+  overlay.classList.remove('hidden');
+  document.getElementById('loadLabel').textContent = 'Loading live MLB data…';
+  document.getElementById('loadEta').textContent = v==='chaos-index'
+    ? 'FETCHING 4 YEARS OF DATA — MAY TAKE 30+ SECONDS'
+    : 'THIS MAY TAKE UP TO 30 SECONDS';
+
+  /* Show slow notice only on first load per session */
+  const noticed = sessionStorage.getItem('tts-slow-noticed');
+  document.getElementById('slowNotice').style.display = noticed ? 'none' : 'flex';
+
+  img.src = url + '?cb=' + Date.now();
 }
 
-function loadCard(variant){
-  const img     = document.getElementById('cardImg');
-  const overlay = document.getElementById('loadingOverlay');
-  overlay.style.display = 'flex';
-  img.style.display = 'none';
-
-  /* Update format info */
-  const isChaosIndex = variant === 'chaos-index';
-  const fn = document.getElementById('formatName');
-  const fs = document.getElementById('formatSize');
-  const fb = document.getElementById('formatBadge');
-  if(fn) fn.textContent = isChaosIndex ? 'Landscape' : 'Portrait';
-  if(fs) fs.textContent = isChaosIndex ? '1200 × 630' : '1200 × 1500';
-  if(fb) fb.textContent = isChaosIndex ? 'X · Facebook · Slack' : 'Facebook · Instagram';
-
-  img.src = cardUrl(variant) + '?cb=' + Date.now();
-  updateShareLinks(variant);
+function onLoad(){
+  document.getElementById('graphicOverlay').classList.add('hidden');
+  document.getElementById('cardImg').classList.add('loaded');
+  sessionStorage.setItem('tts-slow-noticed','1');
+  document.getElementById('slowNotice').style.display = 'none';
+}
+function onError(){
+  document.getElementById('graphicOverlay').innerHTML =
+    '<div class="error-msg">Could not load graphic.<br><span style="font-size:11px;color:rgba(255,255,255,.3)">Check that api/chaos-report.js is deployed.</span></div>';
 }
 
-function onImgLoad(){
-  document.getElementById('loadingOverlay').style.display = 'none';
-  document.getElementById('cardImg').style.display = 'block';
-}
-function onImgError(){
-  document.getElementById('loadingOverlay').innerHTML = '<div style="text-align:center;padding:40px"><div style="font-size:14px;color:#f47570;margin-bottom:8px">Could not load graphic</div><div style="font-size:12px;color:rgba(255,255,255,.3)">Check Vercel deployment</div></div>';
-}
-
-document.querySelectorAll('.variant-btn').forEach(btn => {
-  btn.addEventListener('click', () => {
-    document.querySelectorAll('.variant-btn').forEach(b => b.classList.remove('active'));
+/* Tab clicks */
+document.querySelectorAll('.tab').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    document.querySelectorAll('.tab').forEach(b=>b.classList.remove('active'));
     btn.classList.add('active');
-    currentVariant = btn.dataset.variant;
-    /* Update browser URL to match variant */
-    window.history.replaceState({}, '', VARIANT_PATHS[currentVariant] || '/chaos-report');
-    loadCard(currentVariant);
+    applyVariant(btn.dataset.variant);
   });
 });
 
-document.getElementById('downloadBtn').addEventListener('click', () => {
+/* Download */
+document.getElementById('downloadBtn').addEventListener('click',()=>{
   const a = document.createElement('a');
-  a.href = cardUrl(currentVariant) + '?cb=' + Date.now();
-  a.download = `tts-chaos-report-${currentVariant}.svg`;
+  a.href = cardUrl(currentVariant)+'?cb='+Date.now();
+  a.download = `tts-${currentVariant}-${YEAR}.svg`;
   a.click();
 });
 
-function copyUrl(){
+/* Copy URL */
+document.getElementById('copyBtn').addEventListener('click',async()=>{
   const url = cardUrl(currentVariant);
-  navigator.clipboard.writeText(url).then(() => {
-    const btn = document.querySelector('.copy-btn');
+  try{
+    await navigator.clipboard.writeText(url);
+    const btn = document.getElementById('copyBtn');
     btn.textContent = '✓ Copied!';
-    setTimeout(() => btn.textContent = 'Copy URL', 2000);
-  });
-}
-
-/* Auto-detect variant from URL path */
-const PATH_VARIANTS = {
-  '/hot-cold':     'hot-cold',
-  '/pace-leaders': 'pace-leaders',
-  '/chaos-report': 'chaos',
-  '/chaos-index':  'chaos-index',
-};
-const pathVariant = PATH_VARIANTS[window.location.pathname] || 'chaos';
-currentVariant = pathVariant;
-
-/* Set active button */
-document.querySelectorAll('.variant-btn').forEach(btn => {
-  btn.classList.toggle('active', btn.dataset.variant === pathVariant);
+    setTimeout(()=>btn.textContent='Copy URL', 2000);
+  } catch{
+    window.prompt('Copy this URL:', url);
+  }
 });
 
-/* Load correct graphic — small delay ensures DOM is ready */
-setTimeout(() => loadCard(pathVariant), 50);
+/* Auto-detect variant from path on load */
+(function(){
+  const v = PATH_VARIANTS[window.location.pathname] || 'chaos';
+  if(v !== 'chaos'){
+    document.querySelectorAll('.tab').forEach(b=>{
+      b.classList.toggle('active', b.dataset.variant===v);
+    });
+  }
+  applyVariant(v);
+})();
 </script>
 </body>
 </html>
