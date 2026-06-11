@@ -407,6 +407,102 @@ body{font-family:var(--sans);background:var(--ink);color:#e8edf8;min-height:100v
 }
 .report-full-link:hover{background:rgba(26,255,107,0.08)}
 
+/* ── RIVALRY WATCH ───────────────────── */
+.rivalry-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:10px}
+.rivalry-card{
+  background:var(--ink2);border:1px solid var(--rule);border-radius:var(--r-lg);
+  padding:14px 16px;text-decoration:none;color:inherit;
+  display:flex;flex-direction:column;gap:8px;transition:border-color .15s;
+}
+.rivalry-card:hover{border-color:rgba(26,255,107,.3)}
+.rivalry-card-top{display:flex;align-items:center;gap:6px}
+.rivalry-logos{display:flex;align-items:center}
+.rivalry-logo{width:32px;height:32px;background:var(--logo-bg);border:1px solid var(--logo-border);border-radius:var(--r-sm);box-shadow:var(--logo-shadow);display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0}
+.rivalry-logo img{width:24px;height:24px;object-fit:contain}
+.rivalry-logo:not(:first-child){margin-left:-8px}
+.rivalry-label{font-family:var(--mono);font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--chalk);margin-left:8px}
+.rivalry-headline{font-family:var(--sans);font-size:14px;font-weight:600;color:#e8edf8;line-height:1.4}
+.rivalry-headline strong{color:var(--signal)}
+.rivalry-stat-row{display:flex;gap:8px}
+.rivalry-stat{font-family:var(--mono);font-size:11px;color:var(--chalk)}
+.rivalry-stat span{color:#e8edf8;font-weight:700}
+.rivalry-cta{font-family:var(--mono);font-size:10px;font-weight:700;color:var(--signal);letter-spacing:.06em;margin-top:2px}
+
+/* ── QUIETLY TRENDING ────────────────── */
+.trending-list{display:flex;flex-direction:column;gap:8px}
+.trending-card{
+  background:var(--ink2);border:1px solid var(--rule);border-radius:var(--r-lg);
+  padding:13px 16px;display:flex;align-items:center;gap:12px;
+  text-decoration:none;color:inherit;transition:border-color .15s;
+}
+.trending-card:hover{border-color:rgba(26,255,107,.3)}
+.trending-logo{width:38px;height:38px;flex-shrink:0;background:var(--logo-bg);border:1px solid var(--logo-border);border-radius:var(--r-sm);box-shadow:var(--logo-shadow);display:flex;align-items:center;justify-content:center;overflow:hidden}
+.trending-logo img{width:28px;height:28px;object-fit:contain}
+.trending-text{flex:1;min-width:0}
+.trending-team{font-family:var(--mono);font-size:12px;font-weight:700;color:rgba(255,255,255,.45);margin-bottom:2px}
+.trending-insight{font-family:var(--sans);font-size:14px;color:#e8edf8;line-height:1.4}
+.trending-insight strong{color:var(--signal)}
+.trending-badge{flex-shrink:0;padding:3px 9px;border-radius:var(--r-pill);font-family:var(--mono);font-size:9px;font-weight:700;letter-spacing:.06em;background:rgba(26,255,107,.1);border:1px solid rgba(26,255,107,.2);color:var(--signal)}
+
+/* ── LOOKING AHEAD ───────────────────── */
+.looking-ahead-card{
+  background:var(--ink2);border:1px solid var(--rule);
+  border-radius:var(--r-lg);padding:20px;margin-top:4px;
+}
+.la-no-fav{text-align:center;padding:24px 16px}
+.la-no-fav-text{font-family:var(--sans);font-size:14px;color:rgba(255,255,255,.4);margin-bottom:12px;line-height:1.5}
+.la-team-picker{
+  display:flex;flex-wrap:wrap;gap:6px;
+  max-height:160px;overflow-y:auto;margin-top:12px;
+}
+.la-team-btn{
+  display:flex;align-items:center;gap:6px;padding:5px 10px;
+  background:var(--ink3);border:1px solid var(--rule);border-radius:var(--r-pill);
+  cursor:pointer;transition:all .13s;font-family:var(--mono);font-size:11px;
+  font-weight:600;color:var(--chalk);
+}
+.la-team-btn:hover{border-color:var(--signal);color:var(--signal)}
+.la-team-btn img{width:16px;height:16px;object-fit:contain}
+.la-content{display:none}
+.la-content.visible{display:block}
+.la-header{display:flex;align-items:center;gap:12px;margin-bottom:16px}
+.la-logo{width:44px;height:44px;background:var(--logo-bg);border:1px solid var(--logo-border);border-radius:var(--r-sm);box-shadow:var(--logo-shadow);display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0}
+.la-logo img{width:34px;height:34px;object-fit:contain}
+.la-team-name{font-family:var(--mono);font-size:18px;font-weight:700;color:#e8edf8}
+.la-record{font-family:var(--mono);font-size:12px;color:var(--chalk)}
+.la-change-team{font-family:var(--mono);font-size:10px;font-weight:700;color:var(--signal);letter-spacing:.06em;cursor:pointer;background:none;border:none;padding:0;margin-left:auto}
+.la-milestones{display:flex;flex-direction:column;gap:8px}
+.la-milestone{
+  background:var(--ink3);border-radius:var(--r-md);padding:12px 14px;
+  display:flex;align-items:center;justify-content:space-between;gap:12px;
+}
+.la-milestone-wins{font-family:var(--mono);font-size:20px;font-weight:700;color:#e8edf8;flex-shrink:0}
+.la-milestone-wins.achieved{color:var(--signal)}
+.la-milestone-desc{font-family:var(--sans);font-size:12px;color:rgba(255,255,255,.5);line-height:1.4;flex:1}
+.la-milestone-need{font-family:var(--mono);font-size:11px;font-weight:700;text-align:right;flex-shrink:0}
+.la-milestone-need.green{color:var(--gain-text)}
+.la-milestone-need.amber{color:var(--caution-text)}
+.la-milestone-need.red{color:var(--loss-text)}
+
+/* ── FAVORITES STAR ──────────────────── */
+.fav-star{
+  position:absolute;top:8px;right:8px;
+  font-size:14px;cursor:pointer;opacity:.4;
+  transition:opacity .15s,transform .15s;
+  background:none;border:none;padding:2px;
+  -webkit-tap-highlight-color:transparent;
+}
+.fav-star:hover{opacity:.8}
+.fav-star.active{opacity:1;color:#f9d96e}
+.team-card{position:relative}
+.fav-pinned-bar{
+  display:none;
+  background:rgba(249,217,110,.06);border:1px solid rgba(249,217,110,.15);
+  border-radius:var(--r-md);padding:8px 12px;margin:0 0 10px;
+  font-family:var(--mono);font-size:10px;font-weight:700;
+  color:rgba(249,217,110,.6);letter-spacing:.1em;
+}
+
 /* ── FOOTER ──────────────────────────── */
 .site-footer{border-top:1px solid var(--rule);padding:18px 0 32px;display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between}
 .footer-logo{font-family:var(--mono);font-weight:700;font-size:14px;color:var(--chalk);text-decoration:none}
@@ -523,9 +619,53 @@ body{font-family:var(--sans);background:var(--ink);color:#e8edf8;min-height:100v
     </div>
   </div>
 
+  <!-- RIVALRY WATCH -->
+  <div id="rivalryWatchSection" style="display:none;padding-top:24px">
+    <div class="sec-header" style="padding-top:0">
+      <div class="sec-title">⚔️ Rivalry Watch</div>
+      <div class="sec-sub">How do they compare right now?</div>
+    </div>
+    <div class="rivalry-grid" id="rivalryGrid"></div>
+  </div>
+
+  <!-- QUIETLY TRENDING -->
+  <div id="quietlyTrendingSection" style="display:none;padding-top:24px">
+    <div class="sec-header" style="padding-top:0">
+      <div class="sec-title">🔍 Quietly Trending</div>
+      <div class="sec-sub">Stories nobody's talking about yet</div>
+    </div>
+    <div class="trending-list" id="trendingList"></div>
+  </div>
+
+  <!-- LOOKING AHEAD -->
+  <div style="padding-top:24px">
+    <div class="sec-header" style="padding-top:0">
+      <div class="sec-title">🎯 Looking Ahead</div>
+      <div class="sec-sub">Can your team still get there?</div>
+    </div>
+    <div class="looking-ahead-card">
+      <div class="la-no-fav" id="laNoFav">
+        <div class="la-no-fav-text">Choose your team to see what it'll take to hit key win milestones this season.</div>
+        <div class="la-team-picker" id="laTeamPicker"></div>
+      </div>
+      <div class="la-content" id="laContent">
+        <div class="la-header">
+          <div class="la-logo"><img id="laLogoImg" src="" alt=""/></div>
+          <div>
+            <div class="la-team-name" id="laTeamName">—</div>
+            <div class="la-record" id="laRecord">—</div>
+          </div>
+          <button class="la-change-team" onclick="resetLookingAhead()">Change ↺</button>
+        </div>
+        <div class="la-milestones" id="laMilestones"></div>
+      </div>
+    </div>
+  </div>
+
   <!-- ALL TEAMS -->
   <div id="all-teams">
     <div class="section-label" style="padding-top:28px">All 30 Teams</div>
+    <div class="fav-pinned-bar" id="favPinnedBar">⭐ Your favorites are pinned to the top</div>
 
     <div class="momentum-bar" id="momentumBar">
       <button class="mom-btn active-all" data-mom="all">All</button>
@@ -1153,6 +1293,7 @@ function buildCard(team,curGames,prevGames){
     const prev=prevGames[gp-1];
     if(prev){deltaNum=w-prev.cumWins;deltaStr=deltaNum>0?`+${deltaNum}W`:deltaNum<0?`${deltaNum}W`:'Even';deltaCls=deltaNum>0?'delta-pos':deltaNum<0?'delta-neg':'delta-neu';}
   }
+  const isFav = getFavs().includes(team.id);
   return `<div class="team-card"
     role="listitem"
     data-team-id="${team.id}"
@@ -1175,6 +1316,7 @@ function buildCard(team,curGames,prevGames){
         <div class="team-name">${team.clubName||team.name}</div>
       </div>
       <div class="momentum-chip ${momentum.cls}">${momentum.emoji} ${momentum.label}</div>
+      <button class="fav-star ${isFav?'active':''}" data-team-id="${team.id}" onclick="toggleFav(event,${team.id})" title="${isFav?'Remove from favorites':'Add to favorites'}">${isFav?'⭐':'☆'}</button>
     </div>
     <div class="card-record">
       <span class="record-big" ${gp===0?'style="color:var(--chalk)"':''}>${gp>0?w+'–'+l:'—'}</span>
@@ -1348,15 +1490,22 @@ async function loadAllTeams(){
       buildSnapshot(allData);
       buildStoriesGrid(allData);
       buildChaosIndex(allData);
+      buildRivalryWatch(allData);
+      buildQuietlyTrending(allData);
+      if(!laTeamId) buildLookingAheadPicker(allData);
     }
   }
   /* Final rebuild with complete 30-team data */
+  window._allData = allData; /* expose for Looking Ahead */
   renderPills(allData);
   buildTodaysStory(allData);
   buildMovers(allData);
   buildSnapshot(allData);
   buildStoriesGrid(allData);
   buildChaosIndex(allData);
+  buildRivalryWatch(allData);
+  buildQuietlyTrending(allData);
+  buildLookingAheadPicker(allData);
 
   document.getElementById('teamGrid').addEventListener('click',e=>{
     const card=e.target.closest('.team-card');
@@ -1407,6 +1556,191 @@ document.getElementById('modalOverlay').addEventListener('click',e=>{if(e.target
 document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeModal();}});
 const headerDateEl=document.getElementById('headerDate');
 if(headerDateEl) headerDateEl.textContent=new Date().toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'});
+
+/* ════════════════════════════════════════════════════
+   FAVORITES — localStorage, no account needed
+════════════════════════════════════════════════════ */
+function getFavs(){ try{return JSON.parse(localStorage.getItem('tts-favs')||'[]');}catch{return[];} }
+function setFavs(ids){ try{localStorage.setItem('tts-favs',JSON.stringify(ids));}catch{} }
+window.toggleFav=function(e,teamId){
+  e.stopPropagation();
+  let favs=getFavs();
+  const idx=favs.indexOf(teamId);
+  if(idx>=0) favs.splice(idx,1); else favs.push(teamId);
+  setFavs(favs);
+  document.querySelectorAll(`.fav-star[data-team-id="${teamId}"]`).forEach(btn=>{
+    const active=favs.includes(teamId);
+    btn.classList.toggle('active',active);
+    btn.textContent=active?'⭐':'☆';
+  });
+  document.getElementById('favPinnedBar').style.display=favs.length?'block':'none';
+  applyFiltersAndSort();
+  if(favs.length>=1&&!laTeamId) showLookingAhead(favs[0],window._allData||[]);
+};
+/* Show pin bar if favs exist on load */
+if(getFavs().length) document.getElementById('favPinnedBar').style.display='block';
+
+/* Override applyFiltersAndSort to pin favorites */
+const _origSort = applyFiltersAndSort;
+applyFiltersAndSort = function(){
+  _origSort();
+  const favs=getFavs();
+  if(!favs.length) return;
+  const grid=document.getElementById('teamGrid');
+  const cards=[...grid.querySelectorAll('.team-card:not(.hidden-card)')];
+  cards.filter(c=>favs.includes(Number(c.dataset.teamId))).forEach(c=>grid.prepend(c));
+};
+
+/* ════════════════════════════════════════════════════
+   RIVALRY WATCH
+════════════════════════════════════════════════════ */
+const FEATURED_RIVALRIES=[
+  {t1:147,t2:111,label:'AL East'},{t1:143,t2:121,label:'NL East'},
+  {t1:112,t2:138,label:'NL Central'},{t1:119,t2:137,label:'NL West'},
+  {t1:144,t2:121,label:'NL East'},{t1:117,t2:140,label:'AL West'},
+];
+function getSlug(id){
+  const S={108:'angels',109:'diamondbacks',110:'orioles',111:'red-sox',112:'cubs',
+    113:'reds',114:'guardians',115:'rockies',116:'tigers',117:'astros',118:'royals',
+    119:'dodgers',120:'nationals',121:'mets',133:'athletics',134:'pirates',135:'padres',
+    136:'mariners',137:'giants',138:'cardinals',139:'rays',140:'rangers',141:'blue-jays',
+    142:'twins',143:'phillies',144:'braves',145:'white-sox',146:'marlins',147:'yankees',158:'brewers'};
+  return S[id]||null;
+}
+function buildRivalryWatch(allData){
+  const scored=FEATURED_RIVALRIES.map(r=>{
+    const td1=allData.find(d=>d.team.id===r.t1),td2=allData.find(d=>d.team.id===r.t2);
+    if(!td1||!td2||!td1.curGames.length||!td2.curGames.length) return null;
+    const p1=projWins(td1.curGames)||80,p2=projWins(td2.curGames)||80;
+    return{...r,td1,td2,p1,p2,gap:Math.abs(p1-p2)};
+  }).filter(Boolean).sort((a,b)=>b.gap-a.gap).slice(0,3);
+  if(!scored.length) return;
+  document.getElementById('rivalryGrid').innerHTML=scored.map(r=>{
+    const aName=(r.p1>=r.p2?r.td1:r.td2).team.clubName||(r.p1>=r.p2?r.td1:r.td2).team.name;
+    const n1=r.td1.team.clubName||r.td1.team.name,n2=r.td2.team.clubName||r.td2.team.name;
+    const g=r.gap;
+    const headline=g>=15?`<strong>${aName}</strong> are dominating — ${g}W ahead in projected pace.`
+      :g>=8?`<strong>${aName}</strong> hold a clear ${g}-win pace edge right now.`
+      :g>=3?`<strong>${aName}</strong> lead by ${g} projected wins.`
+      :`This rivalry is <strong>too close to call</strong> — within ${g} wins.`;
+    const s1=getSlug(r.t1),s2=getSlug(r.t2);
+    const url=s1&&s2?`/${s1}-vs-${s2}`:`compare.html?team1=${r.t1}&team2=${r.t2}`;
+    return`<a class="rivalry-card" href="${url}">
+      <div class="rivalry-card-top">
+        <div class="rivalry-logos">
+          <div class="rivalry-logo"><img src="https://www.mlbstatic.com/team-logos/${r.t1}.svg" width="24" height="24" onerror="this.style.display='none'"/></div>
+          <div class="rivalry-logo"><img src="https://www.mlbstatic.com/team-logos/${r.t2}.svg" width="24" height="24" onerror="this.style.display='none'"/></div>
+        </div>
+        <div class="rivalry-label">${r.label} · ${n1} vs ${n2}</div>
+      </div>
+      <div class="rivalry-headline">${headline}</div>
+      <div class="rivalry-stat-row">
+        <div class="rivalry-stat">${n1}: <span>${r.p1}W</span></div>
+        <div class="rivalry-stat">${n2}: <span>${r.p2}W</span></div>
+      </div>
+      <div class="rivalry-cta">See full comparison →</div>
+    </a>`;
+  }).join('');
+  document.getElementById('rivalryWatchSection').style.display='block';
+}
+
+/* ════════════════════════════════════════════════════
+   QUIETLY TRENDING
+════════════════════════════════════════════════════ */
+function buildQuietlyTrending(allData){
+  const valid=allData.filter(t=>t.curGames.length>=15);
+  const stories=[];
+  const bigMarket=new Set([147,119,143,144,112,117,111,121,138]);
+  valid.forEach(td=>{
+    const gp=td.curGames.length,delta=getDelta(td),proj=projWins(td.curGames);
+    const l10=last10(td.curGames),mom=getMomentum(td.curGames);
+    const club=td.team.clubName||td.team.name;
+    const url=trackerUrl(td.team.id,gp);
+    const id=td.team.id;
+    if(delta>=10&&!bigMarket.has(id))
+      stories.push({score:delta*2,badge:'🚀 Surprise',id,url,
+        text:`<strong>${club}</strong> are ${delta} wins ahead of last year's pace. Nobody's talking about this.`});
+    if(l10.w>=8&&['Sustained Surge','Heating Up','Hot Streak'].includes(mom.label))
+      stories.push({score:l10.w*3,badge:'🔥 On Fire',id,url,
+        text:`<strong>${club}</strong> have won ${l10.w} of their last 10 — and it's real. They've been doing this for weeks.`});
+    if(delta!==null&&Math.abs(delta)<=1&&gp>=30)
+      stories.push({score:14,badge:'🔁 Carbon Copy',id,url,
+        text:`The <strong>${club}</strong> are running almost the exact same pace as last season.`});
+    if(proj&&proj>=90&&proj<98&&!bigMarket.has(id)&&delta>=0)
+      stories.push({score:11,badge:'📈 Creeping Up',id,url,
+        text:`The <strong>${club}</strong> are quietly on pace for ${proj} wins. Steady, under the radar.`});
+    if(proj&&proj<=68&&delta<=-10)
+      stories.push({score:Math.abs(delta)*1.5,badge:'📉 Freefall',id,url,
+        text:`The <strong>${club}</strong> are on pace for just ${proj} wins — ${Math.abs(delta)} behind last year.`});
+  });
+  const seen=new Set();
+  const top=stories.sort((a,b)=>b.score-a.score)
+    .filter(s=>{if(seen.has(s.id))return false;seen.add(s.id);return true;})
+    .slice(0,4);
+  if(!top.length) return;
+  document.getElementById('trendingList').innerHTML=top.map(s=>`
+    <a class="trending-card" href="${s.url}">
+      <div class="trending-logo"><img src="https://www.mlbstatic.com/team-logos/${s.id}.svg" width="28" height="28" onerror="this.style.display='none'"/></div>
+      <div class="trending-text">
+        <div class="trending-insight">${s.text}</div>
+      </div>
+      <div class="trending-badge">${s.badge}</div>
+    </a>`).join('');
+  document.getElementById('quietlyTrendingSection').style.display='block';
+}
+
+/* ════════════════════════════════════════════════════
+   LOOKING AHEAD
+════════════════════════════════════════════════════ */
+let laTeamId=null;
+const MILESTONES=[
+  {wins:100,label:'Historic season territory'},
+  {wins:95,label:'Division title contender'},
+  {wins:90,label:'Wild card lock'},
+  {wins:85,label:'Competitive finish'},
+  {wins:80,label:'Above .500'},
+];
+function buildLookingAheadPicker(allData){
+  const favs=getFavs();
+  if(favs.length){showLookingAhead(favs[0],allData);return;}
+  const sorted=[...allData].sort((a,b)=>(a.team.name||'').localeCompare(b.team.name||''));
+  document.getElementById('laTeamPicker').innerHTML=sorted.map(td=>`
+    <button class="la-team-btn" onclick="showLookingAhead(${td.team.id},window._allData)">
+      <img src="https://www.mlbstatic.com/team-logos/${td.team.id}.svg" width="16" height="16" onerror="this.style.display='none'"/>
+      ${td.team.clubName||td.team.name}
+    </button>`).join('');
+}
+window.showLookingAhead=function(teamId,allData){
+  const ad=allData||window._allData||[];
+  const td=ad.find(d=>d.team.id===teamId);
+  if(!td||!td.curGames.length) return;
+  laTeamId=teamId;
+  const gp=td.curGames.length,last=td.curGames[gp-1];
+  const w=last.cumWins,l=last.cumLosses,rem=162-gp;
+  const pct=winPct(w,l);
+  const l20=td.curGames.slice(-20),l20w=l20.filter(g=>g.win).length;
+  const l20pct=winPct(l20w,20-l20w);
+  const club=td.team.clubName||td.team.name;
+  document.getElementById('laLogoImg').src=`https://www.mlbstatic.com/team-logos/${teamId}.svg`;
+  document.getElementById('laTeamName').textContent=club;
+  document.getElementById('laRecord').textContent=`${w}–${l} · ${gp} GP · ${rem} remaining`;
+  document.getElementById('laNoFav').style.display='none';
+  document.getElementById('laContent').classList.add('visible');
+  document.getElementById('laMilestones').innerHTML=MILESTONES.map(m=>{
+    const needed=m.wins-w;
+    if(needed<=0) return`<div class="la-milestone"><div class="la-milestone-wins achieved">${m.wins}W ✓</div><div class="la-milestone-desc">${m.label}</div><div class="la-milestone-need green">Already there!</div></div>`;
+    if(needed>rem) return`<div class="la-milestone" style="opacity:.35"><div class="la-milestone-wins">${m.wins}W</div><div class="la-milestone-desc">${m.label}</div><div class="la-milestone-need red">Out of reach</div></div>`;
+    const np=needed/rem;
+    const cls=np<=l20pct+.02?'green':np<=pct+.05?'amber':'red';
+    const ctx=np<=l20pct?'At current L20 pace ✓':np<=pct?'At season pace ✓':`Needs ${Math.round(np*1000)/10}% win rate`;
+    return`<div class="la-milestone"><div class="la-milestone-wins">${m.wins}W</div><div class="la-milestone-desc">${m.label}</div><div class="la-milestone-need ${cls}">${needed}–${rem-needed} needed<br><span style="font-size:9px;opacity:.7">${ctx}</span></div></div>`;
+  }).join('');
+};
+window.resetLookingAhead=function(){
+  laTeamId=null;
+  document.getElementById('laNoFav').style.display='block';
+  document.getElementById('laContent').classList.remove('visible');
+};
 
 loadAllTeams().catch(err=>{
   document.getElementById('teamGrid').innerHTML=`<div class="state-wrap"><div class="error-box"><strong>Could not load MLB data.</strong><br>${err.message}</div></div>`;
