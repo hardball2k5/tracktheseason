@@ -503,6 +503,79 @@ body{font-family:var(--sans);background:var(--ink);color:#e8edf8;min-height:100v
   color:rgba(249,217,110,.6);letter-spacing:.1em;
 }
 
+/* ── YOUR TEAM ────────────────────────── */
+.your-team-card{
+  background:var(--ink2);border:1px solid rgba(26,255,107,.18);
+  border-radius:var(--r-lg);padding:16px;margin-top:14px;
+  display:flex;align-items:center;gap:14px;flex-wrap:wrap;
+}
+.yt-logo{width:52px;height:52px;flex-shrink:0;background:var(--logo-bg);border:1px solid var(--logo-border);border-radius:var(--r-md);box-shadow:var(--logo-shadow);display:flex;align-items:center;justify-content:center;overflow:hidden}
+.yt-logo img{width:40px;height:40px;object-fit:contain}
+.yt-info{flex:1;min-width:0}
+.yt-name{font-family:var(--mono);font-size:18px;font-weight:700;color:#e8edf8;letter-spacing:-.01em}
+.yt-record{font-family:var(--mono);font-size:22px;font-weight:700;color:var(--signal);letter-spacing:-.02em;line-height:1;margin-top:2px}
+.yt-meta{font-family:var(--mono);font-size:11px;color:var(--chalk);margin-top:4px;display:flex;gap:10px;flex-wrap:wrap}
+.yt-actions{display:flex;gap:8px;flex-wrap:wrap;width:100%}
+.yt-btn{display:inline-flex;align-items:center;gap:6px;padding:9px 14px;border-radius:var(--r-sm);font-family:var(--mono);font-size:12px;font-weight:700;cursor:pointer;transition:all .13s;text-decoration:none;letter-spacing:.02em;white-space:nowrap}
+.yt-btn-primary{background:var(--signal);color:var(--ink);border:none}
+.yt-btn-primary:hover{filter:brightness(1.08)}
+.yt-btn-ghost{background:transparent;color:var(--chalk);border:1px solid var(--rule)}
+.yt-btn-ghost:hover{border-color:var(--signal);color:var(--signal)}
+.yt-no-fav{padding:16px;text-align:center}
+.yt-no-fav-text{font-family:var(--sans);font-size:13px;color:rgba(255,255,255,.4);line-height:1.5;margin-bottom:10px}
+.yt-pick-hint{font-family:var(--mono);font-size:10px;color:rgba(255,255,255,.25);letter-spacing:.08em;text-transform:uppercase}
+
+/* ── FAN CHALLENGE ───────────────────── */
+.fan-challenge-card{
+  background:var(--ink2);border:1px solid var(--rule);
+  border-radius:var(--r-lg);padding:16px;margin-top:4px;
+}
+.fc-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.fc-picker{
+  flex:1;min-width:120px;
+  background:var(--ink3);border:1px solid rgba(255,255,255,.1);
+  border-radius:var(--r-md);padding:8px 12px;
+  display:flex;align-items:center;gap:8px;cursor:pointer;
+  transition:border-color .15s;
+}
+.fc-picker:focus-within{border-color:var(--signal)}
+.fc-picker-logo{width:26px;height:26px;background:var(--logo-bg);border:1px solid var(--logo-border);border-radius:4px;display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0}
+.fc-picker-logo img{width:20px;height:20px;object-fit:contain}
+.fc-picker-input{flex:1;background:none;border:none;outline:none;font-family:var(--mono);font-size:13px;font-weight:600;color:#e8edf8;caret-color:var(--signal);min-width:0}
+.fc-picker-input::placeholder{color:rgba(255,255,255,.25);font-weight:400}
+.fc-picker-dd{position:absolute;top:calc(100% + 4px);left:0;right:0;background:var(--ink2);border:1px solid rgba(255,255,255,.15);border-radius:var(--r-md);max-height:220px;overflow-y:auto;z-index:50;box-shadow:0 16px 40px rgba(0,0,0,.6);display:none}
+.fc-picker-dd.open{display:block}
+.fc-picker-option{display:flex;align-items:center;gap:8px;padding:8px 12px;cursor:pointer;transition:background .1s;font-family:var(--mono);font-size:13px;font-weight:600;color:#e8edf8}
+.fc-picker-option:hover{background:var(--ink3)}
+.fc-picker-option img{width:20px;height:20px;object-fit:contain}
+.fc-vs{font-family:var(--mono);font-size:16px;font-weight:700;color:rgba(255,255,255,.2);flex-shrink:0}
+.fc-wrap{position:relative;flex:1;min-width:120px}
+.fc-result{background:var(--ink3);border-radius:var(--r-md);padding:12px 14px;margin-top:10px;display:none}
+.fc-result.visible{display:block}
+.fc-result-hed{font-family:var(--sans);font-size:15px;font-weight:600;color:#e8edf8;line-height:1.45;margin-bottom:10px}
+.fc-result-hed strong{color:var(--signal)}
+.fc-share-row{display:flex;gap:7px;flex-wrap:wrap}
+.fc-share-btn{display:inline-flex;align-items:center;gap:5px;padding:8px 13px;border-radius:var(--r-sm);font-family:var(--mono);font-size:11px;font-weight:700;cursor:pointer;transition:all .13s;letter-spacing:.02em;border:none}
+.fc-share-btn.green{background:var(--signal);color:var(--ink)}
+.fc-share-btn.ghost{background:transparent;color:var(--chalk);border:1px solid var(--rule)}
+.fc-share-btn.ghost:hover{border-color:var(--signal);color:var(--signal)}
+
+/* ── DAILY DEBATE ────────────────────── */
+.daily-debate{
+  background:rgba(26,255,107,.04);border:1px solid rgba(26,255,107,.12);
+  border-radius:var(--r-lg);padding:16px 18px;margin-top:4px;
+  display:flex;align-items:center;gap:14px;flex-wrap:wrap;
+}
+.dd-quote{font-size:24px;color:rgba(26,255,107,.2);flex-shrink:0;line-height:1;font-family:Georgia,serif}
+.dd-body{flex:1;min-width:0}
+.dd-question{font-family:var(--sans);font-size:clamp(15px,3.5vw,18px);font-weight:600;color:#e8edf8;line-height:1.4}
+.dd-sub{font-family:var(--mono);font-size:11px;color:rgba(255,255,255,.3);margin-top:5px;letter-spacing:.04em}
+.dd-actions{display:flex;gap:7px;flex-wrap:wrap;width:100%;margin-top:4px}
+.dd-btn{display:inline-flex;align-items:center;gap:5px;padding:8px 14px;border-radius:var(--r-sm);font-family:var(--mono);font-size:11px;font-weight:700;cursor:pointer;transition:all .13s;letter-spacing:.02em}
+.dd-btn-primary{background:var(--signal);color:var(--ink);border:none}
+.dd-btn-ghost{background:transparent;color:var(--chalk);border:1px solid var(--rule)}
+.dd-btn-ghost:hover{border-color:var(--signal);color:var(--signal)}
+
 /* ── FOOTER ──────────────────────────── */
 .site-footer{border-top:1px solid var(--rule);padding:18px 0 32px;display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between}
 .footer-logo{font-family:var(--mono);font-weight:700;font-size:14px;color:var(--chalk);text-decoration:none}
@@ -591,12 +664,52 @@ body{font-family:var(--sans);background:var(--ink);color:#e8edf8;min-height:100v
     <div class="todays-story-hero" id="todaysStoryHero"></div>
   </div>
 
+  <!-- YOUR TEAM -->
+  <div id="yourTeamSection" style="padding-top:20px">
+    <div class="sec-header" style="padding-top:0;padding-bottom:0">
+      <div class="sec-title">⭐ Your Team</div>
+      <div class="sec-sub" id="ytChangeBtn" style="cursor:pointer;color:var(--signal);display:none" onclick="resetYourTeam()">Change ↺</div>
+    </div>
+    <div id="ytNoFav" class="your-team-card" style="display:none">
+      <div class="yt-no-fav" style="width:100%">
+        <div class="yt-no-fav-text">Star any team below to pin it here and track it daily.</div>
+        <div class="yt-pick-hint">⭐ Tap the star on any team card</div>
+      </div>
+    </div>
+    <div id="ytCard" class="your-team-card" style="display:none">
+      <div class="yt-logo"><img id="ytLogo" src="" alt=""/></div>
+      <div class="yt-info">
+        <div class="yt-name" id="ytName">—</div>
+        <div class="yt-record" id="ytRecord">—</div>
+        <div class="yt-meta" id="ytMeta"></div>
+      </div>
+      <div class="yt-actions">
+        <a class="yt-btn yt-btn-primary" id="ytTrackerBtn" href="#">Open Tracker →</a>
+        <button class="yt-btn yt-btn-ghost" id="ytShareBtn">⬆ Share Pace</button>
+        <button class="yt-btn yt-btn-ghost" id="ytBragBtn">🏆 Brag with Receipts</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- CHAOS INDEX -->
+  <div class="chaos-bar" id="chaosBar" style="display:none">
+    <div class="chaos-number" id="chaosNum">—</div>
+    <div class="chaos-text-block">
+      <div class="chaos-label">MLB Chaos Index</div>
+      <div class="chaos-desc" id="chaosDesc">—</div>
+    </div>
+    <button class="chaos-share" id="chaosShareBtn">⬆ Share the Chaos</button>
+  </div>
+
   <!-- BIGGEST MOVERS -->
   <div class="sec-header" style="padding-top:24px">
     <div class="sec-title">📊 Biggest Movers</div>
     <div class="sec-sub">vs last season · same games played</div>
   </div>
   <div class="movers-list" id="moversList"></div>
+  <div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap" id="moversShareRow" style="display:none">
+    <button class="yt-btn yt-btn-ghost" id="moversShareBtn" style="font-size:11px;padding:7px 12px">⬆ Send to Group Chat</button>
+  </div>
 
   <!-- LEAGUE SNAPSHOT -->
   <div class="sec-header" style="padding-top:24px">
@@ -616,6 +729,59 @@ body{font-family:var(--sans);background:var(--ink);color:#e8edf8;min-height:100v
     <div class="stories-grid" id="storiesGrid">
       <div class="story-skeleton"></div><div class="story-skeleton"></div>
       <div class="story-skeleton"></div><div class="story-skeleton"></div>
+    </div>
+  </div>
+
+  <!-- DAILY DEBATE -->
+  <div id="dailyDebateSection" style="display:none;padding-top:24px">
+    <div class="sec-header" style="padding-top:0;padding-bottom:8px">
+      <div class="sec-title">💬 Daily Debate</div>
+    </div>
+    <div class="daily-debate">
+      <div class="dd-quote">"</div>
+      <div class="dd-body">
+        <div class="dd-question" id="ddQuestion">Loading…</div>
+        <div class="dd-sub">Start the conversation</div>
+      </div>
+      <div class="dd-actions">
+        <button class="dd-btn dd-btn-primary" id="ddShareBtn">⬆ Start the Debate</button>
+        <a class="dd-btn dd-btn-ghost" id="ddLink" href="#">See the Data →</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- FAN CHALLENGE -->
+  <div style="padding-top:24px">
+    <div class="sec-header" style="padding-top:0;padding-bottom:8px">
+      <div class="sec-title">⚔️ Fan Challenge</div>
+      <div class="sec-sub">Who's tracking better?</div>
+    </div>
+    <div class="fan-challenge-card">
+      <div class="fc-row">
+        <div class="fc-wrap" id="fcWrap1">
+          <div class="fc-picker" id="fcPicker1">
+            <div class="fc-picker-logo"><img id="fcLogo1" src="" alt="" style="display:none"/><span id="fcEmoji1" style="font-size:14px">⚾</span></div>
+            <input class="fc-picker-input" id="fcInput1" placeholder="Your team…" autocomplete="off" autocorrect="off" spellcheck="false"/>
+          </div>
+          <div class="fc-picker-dd" id="fcDd1"></div>
+        </div>
+        <div class="fc-vs">VS</div>
+        <div class="fc-wrap" id="fcWrap2">
+          <div class="fc-picker" id="fcPicker2">
+            <div class="fc-picker-logo"><img id="fcLogo2" src="" alt="" style="display:none"/><span id="fcEmoji2" style="font-size:14px">⚾</span></div>
+            <input class="fc-picker-input" id="fcInput2" placeholder="Their team…" autocomplete="off" autocorrect="off" spellcheck="false"/>
+          </div>
+          <div class="fc-picker-dd" id="fcDd2"></div>
+        </div>
+      </div>
+      <div class="fc-result" id="fcResult">
+        <div class="fc-result-hed" id="fcResultHed"></div>
+        <div class="fc-share-row">
+          <button class="fc-share-btn green" id="fcShareBtn">⬆ Brag with Receipts</button>
+          <button class="fc-share-btn ghost" id="fcCopyBtn">⧉ Copy Group Chat Text</button>
+          <a class="fc-share-btn ghost" id="fcCompareBtn" href="#" target="_blank">See Full Comparison →</a>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -1486,6 +1652,7 @@ async function loadAllTeams(){
     /* Build editorial sections progressively as data arrives */
     if(allData.length>=10){
       buildTodaysStory(allData);
+      buildYourTeam(allData);
       buildMovers(allData);
       buildSnapshot(allData);
       buildStoriesGrid(allData);
@@ -1493,19 +1660,24 @@ async function loadAllTeams(){
       buildRivalryWatch(allData);
       buildQuietlyTrending(allData);
       if(!laTeamId) buildLookingAheadPicker(allData);
+      _fcAllData=allData;
     }
   }
   /* Final rebuild with complete 30-team data */
-  window._allData = allData; /* expose for Looking Ahead */
+  window._allData = allData;
+  _fcAllData = allData;
   renderPills(allData);
   buildTodaysStory(allData);
+  buildYourTeam(allData);
+  buildChaosIndex(allData);
   buildMovers(allData);
   buildSnapshot(allData);
   buildStoriesGrid(allData);
-  buildChaosIndex(allData);
+  buildDailyDebate(allData);
   buildRivalryWatch(allData);
   buildQuietlyTrending(allData);
   buildLookingAheadPicker(allData);
+  document.getElementById('moversShareRow').style.display='flex';
 
   document.getElementById('teamGrid').addEventListener('click',e=>{
     const card=e.target.closest('.team-card');
@@ -1558,8 +1730,207 @@ const headerDateEl=document.getElementById('headerDate');
 if(headerDateEl) headerDateEl.textContent=new Date().toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'});
 
 /* ════════════════════════════════════════════════════
-   FAVORITES — localStorage, no account needed
+   YOUR TEAM — prominent favorited team card
 ════════════════════════════════════════════════════ */
+function buildYourTeam(allData){
+  const favs=getFavs();
+  const ytNoFav=document.getElementById('ytNoFav');
+  const ytCard=document.getElementById('ytCard');
+  if(!favs.length){
+    ytNoFav.style.display='flex';
+    ytCard.style.display='none';
+    return;
+  }
+  const td=allData.find(d=>d.team.id===favs[0]);
+  if(!td||!td.curGames.length){ytNoFav.style.display='flex';return;}
+  const gp=td.curGames.length,last=td.curGames[gp-1];
+  const w=last.cumWins,l=last.cumLosses,proj=projWins(td.curGames);
+  const delta=getDelta(td),mom=getMomentum(td.curGames);
+  const club=td.team.clubName||td.team.name;
+  const slug=getSlug(td.team.id);
+  const pageUrl=slug?`https://tracktheseason.com/${slug}`:`https://tracktheseason.com/tracker.html?team=${td.team.id}`;
+
+  document.getElementById('ytLogo').src=`https://www.mlbstatic.com/team-logos/${td.team.id}.svg`;
+  document.getElementById('ytName').textContent=club;
+  document.getElementById('ytRecord').textContent=`${w}–${l}`;
+  document.getElementById('ytMeta').innerHTML=`
+    <span>${proj?proj+'W pace':'—'}</span>
+    ${delta!==null?`<span style="color:${delta>=0?'var(--gain-text)':'var(--loss-text)'}">${delta>=0?'+':''}${delta}W vs ${COMPARE_YEAR}</span>`:''}
+    <span style="color:${momentumColor(mom.label)}">${mom.emoji} ${mom.label}</span>`;
+  document.getElementById('ytTrackerBtn').href=trackerUrl(td.team.id,gp);
+  document.getElementById('ytChangeBtn').style.display='block';
+
+  const shareText=`The ${club} are ${w}–${l} through ${gp} games${proj?`, on pace for ${proj} wins`:''}${delta!==null?`, ${delta>=0?'+':''}${delta}W vs last season`:''}.
+\nTrack The Season: ${pageUrl}\n\n#TrackTheSeason #MLB`;
+
+  document.getElementById('ytShareBtn').onclick=function(){
+    doShare(this,shareText,shareText,pageUrl,`${club} — Track The Season`);
+  };
+  const bragText=delta>=5
+    ?`The ${club} are ${delta} wins ahead of last year's pace. That's not a hot streak — that's a better team.\n\n${pageUrl}\n\n#TrackTheSeason`
+    :`The ${club} are tracking toward ${proj||'a competitive'} wins. Check the pace:\n\n${pageUrl}\n\n#TrackTheSeason`;
+  document.getElementById('ytBragBtn').onclick=function(){
+    doShare(this,bragText,bragText,pageUrl,`${club} — Track The Season`);
+  };
+  ytNoFav.style.display='none';
+  ytCard.style.display='flex';
+}
+window.resetYourTeam=function(){
+  document.getElementById('ytCard').style.display='none';
+  document.getElementById('ytNoFav').style.display='flex';
+  document.getElementById('ytChangeBtn').style.display='none';
+};
+
+/* ════════════════════════════════════════════════════
+   DAILY DEBATE — one question per day
+════════════════════════════════════════════════════ */
+function buildDailyDebate(allData){
+  const valid=allData.filter(t=>t.curGames.length>=15);
+  if(!valid.length) return;
+  const byDelta=[...valid].sort((a,b)=>getDelta(b)-getDelta(a));
+  const byFall=[...valid].sort((a,b)=>getDelta(a)-getDelta(b));
+  const byL10=[...valid].sort((a,b)=>last10(b.curGames).w-last10(a.curGames).w);
+  const top=byDelta[0],fader=byFall[0],hotTeam=byL10[0];
+  const topClub=top.team.clubName||top.team.name;
+  const faderClub=fader.team.clubName||fader.team.name;
+  const hotClub=hotTeam.team.clubName||hotTeam.team.name;
+  const chaotic=valid.filter(t=>Math.abs(getDelta(t))>=CHAOS_THRESHOLD);
+
+  const debates=[
+    {q:`Are the ${topClub} actually a contender this year?`,context:`They're ${getDelta(top)}W ahead of last year's pace.`,id:top.team.id,gp:top.curGames.length},
+    {q:`Can the ${faderClub} turn this season around?`,context:`They're ${Math.abs(getDelta(fader))}W behind last year's pace.`,id:fader.team.id,gp:fader.curGames.length},
+    {q:`Is ${hotClub} the most underrated team right now?`,context:`${last10(hotTeam.curGames).w}–${last10(hotTeam.curGames).l} in their last 10.`,id:hotTeam.team.id,gp:hotTeam.curGames.length},
+    chaotic.length>=15?{q:`With ${chaotic.length} teams off last year's pace — who do you actually trust?`,context:`This is one of the most chaotic MLB seasons in years.`,id:null,gp:0}:null,
+  ].filter(Boolean);
+
+  const d=debates[new Date().getDate()%debates.length];
+  document.getElementById('ddQuestion').textContent=d.q;
+  document.getElementById('ddLink').href=d.id?trackerUrl(d.id,d.gp):'chaos-report.html';
+  const shareText=`${d.q}\n\n${d.context}\n\ntracktheseason.com\n\n#TrackTheSeason #MLB`;
+  document.getElementById('ddShareBtn').onclick=function(){
+    doShare(this,shareText,shareText,'https://tracktheseason.com',`Daily Debate — Track The Season`);
+  };
+  document.getElementById('dailyDebateSection').style.display='block';
+}
+
+/* ════════════════════════════════════════════════════
+   FAN CHALLENGE — quick compare + share
+════════════════════════════════════════════════════ */
+let fcSelected=[null,null];
+let _fcAllData=[];
+
+function fcFilterTeams(q){
+  return ALL_TEAMS.filter(t=>
+    (t.club||'').toLowerCase().includes(q.toLowerCase())||
+    (t.city||'').toLowerCase().includes(q.toLowerCase())
+  );
+}
+
+// ALL_TEAMS array for fan challenge pickers
+const ALL_TEAMS=[
+  {id:108,city:'Los Angeles',club:'Angels'},{id:109,city:'Arizona',club:'Diamondbacks'},
+  {id:110,city:'Baltimore',club:'Orioles'},{id:111,city:'Boston',club:'Red Sox'},
+  {id:112,city:'Chicago',club:'Cubs'},{id:113,city:'Cincinnati',club:'Reds'},
+  {id:114,city:'Cleveland',club:'Guardians'},{id:115,city:'Colorado',club:'Rockies'},
+  {id:116,city:'Detroit',club:'Tigers'},{id:117,city:'Houston',club:'Astros'},
+  {id:118,city:'Kansas City',club:'Royals'},{id:119,city:'Los Angeles',club:'Dodgers'},
+  {id:120,city:'Washington',club:'Nationals'},{id:121,city:'New York',club:'Mets'},
+  {id:133,city:'Oakland',club:'Athletics'},{id:134,city:'Pittsburgh',club:'Pirates'},
+  {id:135,city:'San Diego',club:'Padres'},{id:136,city:'Seattle',club:'Mariners'},
+  {id:137,city:'San Francisco',club:'Giants'},{id:138,city:'St. Louis',club:'Cardinals'},
+  {id:139,city:'Tampa Bay',club:'Rays'},{id:140,city:'Texas',club:'Rangers'},
+  {id:141,city:'Toronto',club:'Blue Jays'},{id:142,city:'Minnesota',club:'Twins'},
+  {id:143,city:'Philadelphia',club:'Phillies'},{id:144,city:'Atlanta',club:'Braves'},
+  {id:145,city:'Chicago',club:'White Sox'},{id:146,city:'Miami',club:'Marlins'},
+  {id:147,city:'New York',club:'Yankees'},{id:158,city:'Milwaukee',club:'Brewers'},
+];
+
+function fcRenderDropdown(n,teams){
+  const dd=document.getElementById(`fcDd${n}`);
+  if(!teams.length){dd.classList.remove('open');return;}
+  dd.innerHTML=teams.slice(0,8).map(t=>`
+    <div class="fc-picker-option" data-id="${t.id}" data-n="${n}">
+      <img src="https://www.mlbstatic.com/team-logos/${t.id}.svg" width="20" height="20" onerror="this.style.display='none'"/>
+      ${t.club}
+    </div>`).join('');
+  dd.classList.add('open');
+  dd.querySelectorAll('.fc-picker-option').forEach(el=>{
+    el.addEventListener('click',()=>fcSelect(n,Number(el.dataset.id)));
+  });
+}
+
+function fcSelect(n,id){
+  const team=ALL_TEAMS.find(t=>t.id===id);
+  if(!team) return;
+  fcSelected[n-1]=team;
+  document.getElementById(`fcInput${n}`).value=`${team.club}`;
+  const li=document.getElementById(`fcLogo${n}`);
+  const em=document.getElementById(`fcEmoji${n}`);
+  li.src=`https://www.mlbstatic.com/team-logos/${team.id}.svg`;
+  li.style.display='block';em.style.display='none';
+  document.getElementById(`fcDd${n}`).classList.remove('open');
+  if(fcSelected[0]&&fcSelected[1]) fcCompare();
+}
+
+function fcCompare(){
+  const [t1,t2]=fcSelected;
+  if(!t1||!t2||!_fcAllData.length) return;
+  const td1=_fcAllData.find(d=>d.team.id===t1.id);
+  const td2=_fcAllData.find(d=>d.team.id===t2.id);
+  if(!td1||!td2) return;
+  const p1=projWins(td1.curGames)||80,p2=projWins(td2.curGames)||80;
+  const d1=getDelta(td1),d2=getDelta(td2);
+  const gap=Math.abs(p1-p2);
+  const n1=t1.club,n2=t2.club;
+  const ahead=p1>=p2?n1:n2,behind=p1>=p2?n2:n1;
+  const s1=td1.curGames[td1.curGames.length-1],s2=td2.curGames[td2.curGames.length-1];
+
+  let hed;
+  if(gap>=15) hed=`<strong>${ahead}</strong> aren't just ahead of ${behind} — they're tracking <strong>${gap} wins better</strong> over a full season.`;
+  else if(gap>=8) hed=`<strong>${ahead}</strong> hold a <strong>${gap}-win pace edge</strong> over the ${behind} right now.`;
+  else if(gap>=3) hed=`<strong>${ahead}</strong> are tracking ${gap} wins better than the ${behind}. Close but clear.`;
+  else hed=`The ${n1} and ${n2} are running almost identical paces. <strong>Too close to call.</strong>`;
+
+  document.getElementById('fcResultHed').innerHTML=hed;
+  document.getElementById('fcResult').classList.add('visible');
+
+  const slug1=getSlug(t1.id),slug2=getSlug(t2.id);
+  const compUrl=slug1&&slug2?`https://tracktheseason.com/${slug1}-vs-${slug2}`:`https://tracktheseason.com/compare?team1=${t1.id}&team2=${t2.id}`;
+  document.getElementById('fcCompareBtn').href=compUrl;
+
+  const bragText=gap>=8
+    ?`${n1} vs ${n2} check-in ⚔️\n\nThe ${ahead} are tracking ${gap} wins better over a full season. That's not a slump — that's a gap.\n\nReceipts: ${compUrl}\n\n#TrackTheSeason #MLB`
+    :`${n1} vs ${n2} pace check ⚔️\n\n${p1}W vs ${p2}W projected. ${ahead} lead by ${gap} wins at full-season pace.\n\n${compUrl}\n\n#TrackTheSeason #MLB`;
+
+  document.getElementById('fcShareBtn').onclick=function(){
+    doShare(this,bragText,bragText,compUrl,`${n1} vs ${n2} — Track The Season`);
+  };
+  document.getElementById('fcCopyBtn').onclick=async function(){
+    const ok=await copyToClipboard(bragText);
+    this.textContent=ok?'✓ Copied!':'Copy failed';
+    setTimeout(()=>this.textContent='⧉ Copy Group Chat Text',2000);
+  };
+}
+
+[1,2].forEach(n=>{
+  const inp=document.getElementById(`fcInput${n}`);
+  inp.addEventListener('input',e=>{
+    const q=e.target.value.trim();
+    if(q.length<1){document.getElementById(`fcDd${n}`).classList.remove('open');return;}
+    fcRenderDropdown(n,fcFilterTeams(q));
+  });
+  document.addEventListener('click',e=>{
+    if(!document.getElementById(`fcWrap${n}`).contains(e.target))
+      document.getElementById(`fcDd${n}`).classList.remove('open');
+  });
+});
+
+/* Enhanced movers share button */
+document.getElementById('moversShareBtn')?.addEventListener('click',function(){
+  doShare(this,'Check out who\'s surging and collapsing in MLB this season.\n\ntracktheseason.com\n\n#TrackTheSeason #MLB','','https://tracktheseason.com','MLB Biggest Movers — Track The Season');
+});
+
+
 function getFavs(){ try{return JSON.parse(localStorage.getItem('tts-favs')||'[]');}catch{return[];} }
 function setFavs(ids){ try{localStorage.setItem('tts-favs',JSON.stringify(ids));}catch{} }
 window.toggleFav=function(e,teamId){
