@@ -486,14 +486,20 @@ body{font-family:var(--sans);background:var(--ink);color:#e8edf8;min-height:100v
 
 /* ── FAVORITES STAR ──────────────────── */
 .fav-star{
-  position:absolute;top:8px;right:8px;
-  font-size:14px;cursor:pointer;opacity:.4;
-  transition:opacity .15s,transform .15s;
-  background:none;border:none;padding:2px;
+  position:absolute;top:6px;right:6px;
+  font-size:18px;cursor:pointer;
+  background:rgba(15,16,20,.7);
+  border:1px solid rgba(255,255,255,.1);
+  border-radius:50%;
+  width:28px;height:28px;
+  display:flex;align-items:center;justify-content:center;
+  transition:all .15s;
   -webkit-tap-highlight-color:transparent;
+  line-height:1;
+  color:rgba(255,255,255,.35);
 }
-.fav-star:hover{opacity:.8}
-.fav-star.active{opacity:1;color:#f9d96e}
+.fav-star:hover{background:rgba(249,217,110,.15);border-color:rgba(249,217,110,.4);color:#f9d96e}
+.fav-star.active{background:rgba(249,217,110,.12);border-color:rgba(249,217,110,.35);color:#f9d96e;opacity:1}
 .team-card{position:relative}
 .fav-pinned-bar{
   display:none;
@@ -1482,7 +1488,7 @@ function buildCard(team,curGames,prevGames){
         <div class="team-name">${team.clubName||team.name}</div>
       </div>
       <div class="momentum-chip ${momentum.cls}">${momentum.emoji} ${momentum.label}</div>
-      <button class="fav-star ${isFav?'active':''}" data-team-id="${team.id}" onclick="toggleFav(event,${team.id})" title="${isFav?'Remove from favorites':'Add to favorites'}">${isFav?'⭐':'☆'}</button>
+      <button class="fav-star ${isFav?'active':''}" data-team-id="${team.id}" onclick="toggleFav(event,${team.id})" title="${isFav?'Remove':'Favorite'}">${isFav?'★':'☆'}</button>
     </div>
     <div class="card-record">
       <span class="record-big" ${gp===0?'style="color:var(--chalk)"':''}>${gp>0?w+'–'+l:'—'}</span>
@@ -1942,7 +1948,7 @@ window.toggleFav=function(e,teamId){
   document.querySelectorAll(`.fav-star[data-team-id="${teamId}"]`).forEach(btn=>{
     const active=favs.includes(teamId);
     btn.classList.toggle('active',active);
-    btn.textContent=active?'⭐':'☆';
+    btn.textContent=active?'★':'☆';
   });
   document.getElementById('favPinnedBar').style.display=favs.length?'block':'none';
   applyFiltersAndSort();
