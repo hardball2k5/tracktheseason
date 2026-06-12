@@ -717,25 +717,13 @@ body{font-family:var(--sans);background:var(--ink);color:#e8edf8;min-height:100v
     <button class="yt-btn yt-btn-ghost" id="moversShareBtn" style="font-size:11px;padding:7px 12px">⬆ Send to Group Chat</button>
   </div>
 
-  <!-- LEAGUE SNAPSHOT -->
+  <!-- LEAGUE SNAPSHOT / MLB PULSE -->
   <div class="sec-header" style="padding-top:24px">
-    <div class="sec-title">League Snapshot</div>
-    <div class="sec-sub" id="snapshotDate"></div>
+    <div class="sec-title">📡 MLB Pulse</div>
+    <div class="sec-sub">The state of baseball right now</div>
   </div>
   <div class="snapshot-grid" id="snapshotGrid">
     <div class="snap-card"><div class="snap-label">Loading…</div></div>
-  </div>
-  <div class="snapshot-footnote" id="snapshotFootnote"></div>
-
-  <!-- ALSO TODAY (4 supporting cards) -->
-  <div id="moreStoriesSection" style="padding-top:24px">
-    <div class="sec-header" style="padding:0 0 12px">
-      <div class="sec-title" style="font-size:12px;color:var(--chalk)">Also today</div>
-    </div>
-    <div class="stories-grid" id="storiesGrid">
-      <div class="story-skeleton"></div><div class="story-skeleton"></div>
-      <div class="story-skeleton"></div><div class="story-skeleton"></div>
-    </div>
   </div>
 
   <!-- DAILY DEBATE -->
@@ -1294,59 +1282,100 @@ function buildMovers(allData){
 }
 
 /* ═══════════════════════════════════════════════════
-   LEAGUE SNAPSHOT — with deduplication
-   If today's story team dominates multiple categories,
-   show next-best alternative without distorting data.
+   MLB PULSE — 6-card league scoreboard
+   Chaos Index · Teams off pace · Best pace · Worst pace
+   Hottest team · Closest division race
 ═══════════════════════════════════════════════════ */
 function buildSnapshot(allData){
-  const valid=allData.filter(t=>t.curGames.length>=10);
+  const valid = allData.filter(t=>t.curGames.length>=10);
   if(!valid.length) return;
 
-  const byProj  =[...valid].sort((a,b)=>(projWins(b.curGames)||0)-(projWins(a.curGames)||0));
-  const byDelta =[...valid].filter(t=>getDelta(t)!==0).sort((a,b)=>getDelta(b)-getDelta(a));
-  const byFade  =[...valid].filter(t=>getDelta(t)<0).sort((a,b)=>getDelta(a)-getDelta(b));
-  const byL10   =[...valid].sort((a,b)=>last10(b.curGames).w-last10(a.curGames).w);
+  const withDelta  = valid.filter(t=>getDelta(t)!==null);
+  const chaotic    = withDelta.filter(t=>Math.abs(getDelta(t))>=CHAOS_THRESHOLD);
+  const byProj     = [...valid].filter(t=>projWins(t.curGames)).sort((a,b)=>(projWins(b.curGames)||0)-(projWins(a.curGames)||0));
+  const byL10      = [...valid].sort((a,b)=>last10(b.curGames).w - last10(a.curGames).w);
+  const best       = byProj[0];
+  const worst      = byProj[byProj.length-1];
+  const hottest    = byL10[0];
+  const l10hot     = last10(hottest?.curGames||[]);
+  const gp         = valid[0]?.curGames.length||0;
 
-  /* Helper: get first team that isn't the story team, fallback to first */
-  function pickDedup(arr,fallback=arr[0]){
-    if(!todaysStoryTeamId) return arr[0]||fallback;
-    return arr.find(t=>t.team.id!==todaysStoryTeamId)||arr[0]||fallback;
+  /* Closest division race — find division with smallest gap between 1st and 2nd */
+  let closestDiv = null, closestGap = 999;
+  for(const [key,div] of Object.entries(DIVISIONS)){
+    const divTeams = valid.filter(t=>div.teams.includes(t.team.id))
+      .sort((a,b)=>(projWins(b.curGames)||0)-(projWins(a.curGames)||0));
+    if(divTeams.length>=2){
+      const gap=Math.abs((projWins(divTeams[0].curGames)||0)-(projWins(divTeams[1].curGames)||0));
+      if(gap<closestGap){closestGap=gap;closestDiv={div,teams:divTeams,gap};}
+    }
   }
 
-  const best     =byProj[0];
-  const surprise =pickDedup(byDelta);
-  const disappoint=byFade[0];
-  const hottest  =pickDedup(byL10);
-  const coldest  =byL10[byL10.length-1];
+  const snaps = [
+    {
+      label:'Chaos Index',
+      val:`${chaotic.length}/30`,
+      cls: chaotic.length>=18?'green':chaotic.length>=12?'':'' ,
+      context:`${Math.round(chaotic.length/30*100)}% of MLB off prior-year pace`,
+      href:'chaos-report.html',
+      icon:'⚡'
+    },
+    {
+      label:'Best Pace',
+      team: best,
+      val: best?`${projWins(best.curGames)}W`:'—',
+      cls:'green',
+      context: best?`${best.curGames[best.curGames.length-1]?.cumWins}–${best.curGames[best.curGames.length-1]?.cumLosses}`:'',
+      href: best?trackerUrl(best.team.id, best.curGames.length):'#',
+      icon:'🏆'
+    },
+    {
+      label:'Worst Pace',
+      team: worst,
+      val: worst?`${projWins(worst.curGames)}W`:'—',
+      cls:'red',
+      context: worst?`${worst.curGames[worst.curGames.length-1]?.cumWins}–${worst.curGames[worst.curGames.length-1]?.cumLosses}`:'',
+      href: worst?trackerUrl(worst.team.id, worst.curGames.length):'#',
+      icon:'📉'
+    },
+    {
+      label:'Hottest Team',
+      team: hottest,
+      val: hottest?`${l10hot.w}–${l10hot.l} L10`:'—',
+      cls: l10hot.w>=7?'green':'',
+      context: hottest?`${projWins(hottest.curGames)||'—'}W pace`:'',
+      href: hottest?trackerUrl(hottest.team.id, hottest.curGames.length):'#',
+      icon:'🔥'
+    },
+    {
+      label:'Teams Surging',
+      val: `${withDelta.filter(t=>getDelta(t)>=5).length} teams`,
+      cls:'green',
+      context:`+5W or more vs last season`,
+      href:'#all-teams',
+      icon:'📈'
+    },
+    closestDiv ? {
+      label:'Closest Race',
+      val: closestDiv.gap===0?'Tied':`${closestDiv.gap}W gap`,
+      cls: closestDiv.gap<=3?'green':'',
+      context:`${closestDiv.div.name}`,
+      href: closestDiv.teams[0]?trackerUrl(closestDiv.teams[0].team.id, closestDiv.teams[0].curGames.length):'#',
+      icon:'⚔️'
+    } : null,
+  ].filter(Boolean);
 
-  /* Count teams tracked for snapshot context */
-  const gpList=valid.map(t=>t.curGames.length);
-  const minGp=Math.min(...gpList),maxGp=Math.max(...gpList);
-  const gpRange=minGp===maxGp?`${minGp} GP each`:`${minGp}–${maxGp} GP`;
-
-  const snaps=[
-    {label:'Best Pace',        team:best,       val:`${projWins(best.curGames)}W pace`,              cls:'green', context:`${best.curGames[best.curGames.length-1]?.cumWins}–${best.curGames[best.curGames.length-1]?.cumLosses}`},
-    {label:'Biggest Surprise', team:surprise,   val:`+${getDelta(surprise)}W vs ${COMPARE_YEAR}`,    cls:'green', context:`${surprise.curGames.length} games in`},
-    {label:'Biggest Drop',     team:disappoint, val:`${getDelta(disappoint)}W vs ${COMPARE_YEAR}`,   cls:'red',   context:`${disappoint.curGames.length} games in`},
-    {label:'Hottest L10',      team:hottest,    val:`${last10(hottest.curGames).w}–${last10(hottest.curGames).l} L10`, cls:'green', context:projWins(hottest.curGames)?`${projWins(hottest.curGames)}W pace`:''},
-    {label:'Coldest L10',      team:coldest,    val:`${last10(coldest.curGames).w}–${last10(coldest.curGames).l} L10`, cls:'red',   context:projWins(coldest.curGames)?`${projWins(coldest.curGames)}W pace`:''},
-  ];
-
-  document.getElementById('snapshotGrid').innerHTML=snaps.map(s=>`
-    <a class="snap-card" href="${trackerUrl(s.team.team.id,s.team.curGames.length)}">
-      <div class="snap-label">${s.label}</div>
+  document.getElementById('snapshotGrid').innerHTML = snaps.map(s=>`
+    <a class="snap-card" href="${s.href}">
+      <div class="snap-label">${s.icon} ${s.label}</div>
+      ${s.team ? `
       <div class="snap-team">
-        <div class="snap-logo">${logoImg(s.team.team.id,22)}</div>
+        <div class="snap-logo"><img src="https://www.mlbstatic.com/team-logos/${s.team.team.id}.svg" width="22" height="22" style="object-fit:contain" onerror="this.style.display='none'"/></div>
         <div class="snap-name">${s.team.team.clubName||s.team.team.name}</div>
-      </div>
+      </div>` : ''}
       <div class="snap-val ${s.cls}">${s.val}</div>
-      ${s.context?`<div class="snap-context">${s.context}</div>`:''}
+      <div class="snap-context">${s.context}</div>
     </a>`).join('');
-
-  document.getElementById('snapshotDate').textContent=
-    new Date().toLocaleDateString('en-US',{month:'short',day:'numeric'});
-  document.getElementById('snapshotFootnote').textContent=
-    `Compared to each team's pace at the same point last season. ${valid.length} teams tracked · ${gpRange}.`;
 }
 
 /* ═══════════════════════════════════════════════════
@@ -1661,7 +1690,6 @@ async function loadAllTeams(){
       buildYourTeam(allData);
       buildMovers(allData);
       buildSnapshot(allData);
-      buildStoriesGrid(allData);
       buildChaosIndex(allData);
       buildRivalryWatch(allData);
       buildQuietlyTrending(allData);
@@ -1678,7 +1706,6 @@ async function loadAllTeams(){
   buildChaosIndex(allData);
   buildMovers(allData);
   buildSnapshot(allData);
-  buildStoriesGrid(allData);
   buildDailyDebate(allData);
   buildRivalryWatch(allData);
   buildQuietlyTrending(allData);
@@ -2121,7 +2148,6 @@ window.resetLookingAhead=function(){
 
 loadAllTeams().catch(err=>{
   document.getElementById('teamGrid').innerHTML=`<div class="state-wrap"><div class="error-box"><strong>Could not load MLB data.</strong><br>${err.message}</div></div>`;
-  document.getElementById('storiesGrid').innerHTML='<div style="grid-column:1/-1;color:var(--chalk);font-size:13px;padding:8px 0">Unavailable — check connection.</div>';
 });
 </script>
 </body>
