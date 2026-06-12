@@ -1313,14 +1313,6 @@ function buildSnapshot(allData){
 
   const snaps = [
     {
-      label:'Chaos Index',
-      val:`${chaotic.length}/30`,
-      cls: chaotic.length>=18?'green':chaotic.length>=12?'':'' ,
-      context:`${Math.round(chaotic.length/30*100)}% of MLB off prior-year pace`,
-      href:'chaos-report.html',
-      icon:'⚡'
-    },
-    {
       label:'Best Pace',
       team: best,
       val: best?`${projWins(best.curGames)}W`:'—',
