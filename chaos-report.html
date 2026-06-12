@@ -178,6 +178,7 @@ body{background:var(--ink);color:#e8edf8;font-family:var(--mono);min-height:100v
     <button class="tab" data-variant="hot-cold">🔥❄️ Hot vs Cold</button>
     <button class="tab" data-variant="pace-leaders">🚀 Pace Leaders</button>
     <button class="tab" data-variant="chaos-index">📊 Chaos History</button>
+    <button class="tab" data-variant="payroll">💰 Payroll Efficiency</button>
   </div>
 
   <!-- Slow load notice -->
@@ -221,30 +222,35 @@ const VARIANT_COPY = {
   'hot-cold':    '🔥❄️ MLB Hot vs Cold — who\'s on fire and who\'s slipping right now? Last 10 + Last 20.\n\ntracktheseason.com\n\n#TrackTheSeason #MLB #BaseballTwitter',
   'pace-leaders':'🚀 MLB Pace Leaderboard — projected wins for all 30 teams right now.\n\ntracktheseason.com\n\n#TrackTheSeason #MLB #PaceCheck',
   'chaos-index': '📊 MLB Chaos Index History — how does this season compare to the last 3 years?\n\ntracktheseason.com\n\n#TrackTheSeason #MLB #BaseballTwitter',
+  'payroll':     '💰 MLB Payroll Efficiency Report — who\'s getting the most wins for the money?\n\ntracktheseason.com\n\n#TrackTheSeason #MLB #BaseballMoney',
 };
 const VARIANT_LABELS = {
   'chaos':       'MLB Chaos Report',
   'hot-cold':    'MLB Hot vs Cold',
   'pace-leaders':'MLB Pace Leaders',
   'chaos-index': 'MLB Chaos History',
+  'payroll':     'MLB Payroll Efficiency',
 };
 const VARIANT_SUBS = {
   'chaos':       'Which teams are surging, collapsing, and off last year\'s pace.',
   'hot-cold':    'Who\'s on fire right now — and is it a real trend or just a hot streak?',
   'pace-leaders':'Projected wins for every team. Contenders vs pretenders.',
   'chaos-index': 'How chaotic is this season vs the last 3 years?',
+  'payroll':     'Cost per projected win — who\'s getting the most and least from their payroll.',
 };
 const VARIANT_PATHS = {
   'chaos':       '/chaos-report',
   'hot-cold':    '/hot-cold',
   'pace-leaders':'/pace-leaders',
   'chaos-index': '/chaos-index',
+  'payroll':     '/payroll-efficiency',
 };
 const PATH_VARIANTS = {
   '/chaos-report': 'chaos',
   '/hot-cold':     'hot-cold',
   '/pace-leaders': 'pace-leaders',
-  '/chaos-index':  'chaos-index',
+  '/chaos-index':        'chaos-index',
+  '/payroll-efficiency': 'payroll',
 };
 
 const BASE = 'https://tracktheseason.com/api/chaos-report';
@@ -253,6 +259,7 @@ let currentVariant = 'chaos';
 
 function cardUrl(v){
   if(v==='chaos-index') return `https://tracktheseason.com/api/chaos-index/${YEAR}`;
+  if(v==='payroll')     return 'https://tracktheseason.com/api/payroll-efficiency-report';
   return v==='chaos' ? BASE : `${BASE}?variant=${v}`;
 }
 
@@ -298,7 +305,9 @@ function applyVariant(v){
   img.src = ''; /* clear immediately so old image doesn't show */
   overlay.classList.remove('hidden');
   document.getElementById('loadLabel').textContent = 'Loading live MLB data…';
-  document.getElementById('loadEta').textContent = v==='chaos-index'
+  document.getElementById('loadEta').textContent = v==='payroll'
+    ? 'FETCHING PAYROLL + PACE DATA FOR ALL 30 TEAMS — MAY TAKE 30+ SECONDS'
+    : v==='chaos-index'
     ? 'FETCHING 4 YEARS OF DATA — MAY TAKE 30+ SECONDS'
     : 'THIS MAY TAKE UP TO 30 SECONDS';
 

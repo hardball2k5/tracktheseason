@@ -205,6 +205,10 @@
     {
       "source": "/chaos-index",
       "destination": "/chaos-report.html"
+    },
+    {
+      "source": "/payroll-efficiency",
+      "destination": "/chaos-report.html"
     }
   ]
 }
