@@ -3,6 +3,10 @@
     {
       "path": "/api/weekly-post",
       "schedule": "0 13 * * 1"
+    },
+    {
+      "path": "/api/snapshot",
+      "schedule": "0 3 * * *"
     }
   ],
   "rewrites": [
@@ -209,6 +213,18 @@
     {
       "source": "/payroll-efficiency",
       "destination": "/chaos-report.html"
+    },
+    {
+      "source": "/pulse",
+      "destination": "/pulse.html"
+    },
+    {
+      "source": "/pulse/:date",
+      "destination": "/pulse.html"
+    },
+    {
+      "source": "/api/pulse-data",
+      "destination": "/api/pulse-data.js"
     }
   ]
 }
