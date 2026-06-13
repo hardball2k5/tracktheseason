@@ -921,16 +921,47 @@ function scaleStage(){
 window.addEventListener('resize',scaleStage);
 scaleStage();
 
+/* ══ Logo loading — fetch as blob URL ════════════════════ */
+const logoCache = new Map();
+async function loadLogo(id){
+  if(logoCache.has(id)) return logoCache.get(id);
+  try{
+    const res = await fetch(`https://www.mlbstatic.com/team-logos/${id}.svg`,{mode:'cors'});
+    if(!res.ok) throw new Error('no');
+    const blob = await res.blob();
+    const url  = URL.createObjectURL(blob);
+    logoCache.set(id,url); return url;
+  } catch {
+    const url = `https://www.mlbstatic.com/team-logos/${id}.svg`;
+    logoCache.set(id,url); return url;
+  }
+}
+async function applyLogos(logoMap){
+  await Promise.allSettled(Object.entries(logoMap).map(async([elId,teamId])=>{
+    if(!teamId) return;
+    const url = await loadLogo(teamId);
+    const el  = document.getElementById(elId);
+    if(el){ el.src=url; el.style.display='block'; }
+  }));
+}
+
 /* ══ BOOT ════════════════════════════════════════════════ */
 async function boot(){
-  /* Show slide 0 immediately while data loads */
-  document.getElementById('slide-0').classList.add('active');
+  /* Show loading overlay while data fetches */
+  const loader = document.createElement('div');
+  loader.style.cssText='position:absolute;inset:0;z-index:50;background:#0B0F19;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:24px;';
+  loader.innerHTML=`
+    <div style="width:48px;height:48px;border-radius:50%;border:4px solid rgba(34,255,119,.15);border-top-color:#22FF77;animation:spin .7s linear infinite"></div>
+    <div style="font-family:'IBM Plex Mono',monospace;font-size:18px;font-weight:700;color:rgba(34,255,119,.6);letter-spacing:.1em">LOADING LIVE DATA…</div>
+    <div style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:rgba(255,255,255,.2);letter-spacing:.06em">Fetching all 30 MLB teams</div>
+  `;
+  document.getElementById('stage').appendChild(loader);
 
   let allData=[];
-  try { allData = await loadAllData(); } catch(e){ console.error('loadAllData failed',e); }
+  try{ allData=await loadAllData(); } catch(e){ console.error('loadAllData failed:',e); }
+  loader.remove();
 
-  if(!allData.length){
-    /* Fallback: just show intro + CTA */
+  if(allData.length<5){
     ACTIVE_SLIDES=[
       {id:'slide-0',duration:3000,valid:true,setup:()=>{}},
       {id:'slide-5',duration:3000,valid:true,setup:()=>{
@@ -939,73 +970,45 @@ async function boot(){
       }},
       {id:'slide-6',duration:4000,valid:true,setup:()=>{}},
     ];
+    document.querySelectorAll('.slide').forEach(el=>el.classList.remove('active'));
     buildProgress(); goTo(0); return;
   }
 
-  /* Compute all data values */
-  const withDelta = allData.filter(t=>t.delta!==null);
-  const risers    = [...withDelta].sort((a,b)=>b.delta-a.delta);
-  const fallers   = [...withDelta].sort((a,b)=>a.delta-b.delta);
-  const top       = risers[0]||null;
-  const bot       = fallers[0]||null;
-  const chaotic   = withDelta.filter(t=>Math.abs(t.delta)>=CHAOS_THRESHOLD);
+  const withDelta=allData.filter(t=>t.delta!==null);
+  const risers=[...withDelta].sort((a,b)=>b.delta-a.delta);
+  const fallers=[...withDelta].sort((a,b)=>a.delta-b.delta);
+  const top=risers[0]||null, bot=fallers[0]||null;
+  const chaotic=withDelta.filter(t=>Math.abs(t.delta)>=CHAOS_THRESHOLD);
 
-  /* Best rivalry by gap */
-  const byId = new Map(allData.map(t=>[t.id,t]));
-  let rivalry=null, bigGap=0;
+  const byId=new Map(allData.map(t=>[t.id,t]));
+  let rivalry=null,bigGap=0;
   for(const r of RIVALRY_PAIRS){
-    const t1=byId.get(r.t1), t2=byId.get(r.t2);
+    const t1=byId.get(r.t1),t2=byId.get(r.t2);
     if(!t1||!t2||!t1.proj||!t2.proj) continue;
     const gap=Math.abs(t1.proj-t2.proj);
-    if(gap>bigGap){ bigGap=gap; rivalry={...r,t1,t2,gap}; }
+    if(gap>bigGap){bigGap=gap;rivalry={...r,t1,t2,gap};}
   }
 
-  /* Payroll efficiency */
   const withPayroll=allData.filter(t=>PAYROLLS[t.id]&&t.proj>0)
-    .map(t=>({...t,cpw:PAYROLLS[t.id]/t.proj}))
-    .sort((a,b)=>a.cpw-b.cpw);
+    .map(t=>({...t,cpw:PAYROLLS[t.id]/t.proj})).sort((a,b)=>a.cpw-b.cpw);
   const bestVal=withPayroll[0]||null;
   const worstVal=withPayroll[withPayroll.length-1]||null;
 
-  /* Preload all logos that will be used — set src before slides are visible
-     so browser fetches them in the background */
-  const logoIds = [
-    top?.id, bot?.id,
-    rivalry?.t1?.id, rivalry?.t2?.id,
-    bestVal?.id, worstVal?.id,
-  ].filter(Boolean);
-  logoIds.forEach(id => { const img = new Image(); img.src = logoUrl(id); });
+  const manifest=buildManifest(allData,chaotic,top,bot,rivalry,bestVal,worstVal);
+  ACTIVE_SLIDES=manifest.filter(s=>s.valid);
+  ACTIVE_SLIDES.forEach(s=>{try{s.setup();}catch(e){console.warn('setup',s.id,e);}});
 
-  /* Build manifest and filter to valid slides */
-  const manifest = buildManifest(allData, chaotic, top, bot, rivalry, bestVal, worstVal);
-  ACTIVE_SLIDES  = manifest.filter(s=>s.valid);
-
-  /* Run setup for all valid slides */
-  ACTIVE_SLIDES.forEach(s=>{ try{ s.setup(); }catch(e){ console.warn('setup failed',s.id,e); } });
-
-  /* Force-set all logo srcs now (not deferred) so browser fetches immediately */
-  const logoMap = {
-    'riser-logo':    top?.id,
-    'faller-logo':   bot?.id,
-    'rivalry-logo1': rivalry?.t1?.id,
-    'rivalry-logo2': rivalry?.t2?.id,
-    'best-logo':     bestVal?.id,
-    'worst-logo':    worstVal?.id,
+  /* Apply logos non-blocking after slides start */
+  const logoMap={
+    'riser-logo':top?.id,'faller-logo':bot?.id,
+    'rivalry-logo1':rivalry?.t1?.id,'rivalry-logo2':rivalry?.t2?.id,
+    'best-logo':bestVal?.id,'worst-logo':worstVal?.id,
   };
-  Object.entries(logoMap).forEach(([elId, teamId])=>{
-    if(!teamId) return;
-    const el = document.getElementById(elId);
-    if(el) el.src = logoUrl(teamId);
-  });
+  applyLogos(logoMap);
 
-  /* Hide all slides, reset */
   document.querySelectorAll('.slide').forEach(el=>el.classList.remove('active'));
-
-  /* Show first slide count in controls */
-  console.log(`Reel: ${ACTIVE_SLIDES.length} slides active of 7 possible`);
-
-  buildProgress();
-  goTo(0);
+  console.log(`Reel: ${ACTIVE_SLIDES.length}/7 slides active`);
+  buildProgress(); goTo(0);
 }
 
 boot();
