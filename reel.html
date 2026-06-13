@@ -342,6 +342,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000}
         <div class="team-info">
           <div class="team-record" id="riser-record">—</div>
           <div class="team-stats">
+            <div class="team-stat-pill pill-green" id="riser-proj">—</div>
             <div class="team-stat-pill pill-green" id="riser-l10">—</div>
             <div class="team-stat-pill pill-green" id="riser-delta">—</div>
           </div>
@@ -380,6 +381,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000}
         <div class="team-info">
           <div class="team-record" id="faller-record">—</div>
           <div class="team-stats">
+            <div class="team-stat-pill pill-red" id="faller-proj">—</div>
             <div class="team-stat-pill pill-red" id="faller-l10">—</div>
             <div class="team-stat-pill pill-red" id="faller-delta">—</div>
           </div>
@@ -572,203 +574,241 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000}
 
 <script>
 /* ══════════════════════════════════════════════════════
-   DATA + CONFIG
+   CONFIG
 ══════════════════════════════════════════════════════ */
 const API          = 'https://statsapi.mlb.com/api/v1';
 const CURRENT_YEAR = new Date().getFullYear();
 const COMPARE_YEAR = CURRENT_YEAR - 1;
 const SEASON_GAMES = 162;
 const CHAOS_THRESHOLD = 5;
+const SLIDE_DURATION_MS = 3500; /* per slide */
 
-/* Slide durations in ms */
-const SLIDE_DURATIONS = [3000, 3500, 3500, 3500, 3500, 3000, 4000];
-const TOTAL_SLIDES    = 7;
-
-/* Payrolls 2026 (update annually) */
 const PAYROLLS = {
   108:226,109:164,110:207,111:218,112:233,113:119,114:152,115:107,
   116:129,117:233,118:122,119:311,120:102,121:319,133:75,134:88,
   135:245,136:159,137:162,138:186,139:105,140:227,141:213,142:173,
   143:241,144:284,145:79,146:87,147:313,158:138,
 };
-
 const RIVALRY_PAIRS = [
-  {t1:147,t2:111,label:'Yankees vs Red Sox'},
-  {t1:143,t2:121,label:'Phillies vs Mets'},
-  {t1:119,t2:137,label:'Dodgers vs Giants'},
-  {t1:144,t2:121,label:'Braves vs Mets'},
+  {t1:147,t2:111,label:'Yankees vs Red Sox',slug:'yankees-vs-red-sox'},
+  {t1:143,t2:121,label:'Phillies vs Mets',  slug:'phillies-vs-mets'},
+  {t1:119,t2:137,label:'Dodgers vs Giants', slug:'dodgers-vs-giants'},
+  {t1:144,t2:121,label:'Braves vs Mets',    slug:'braves-vs-mets'},
 ];
+const TEAM_SLUGS = {
+  108:'angels',109:'diamondbacks',110:'orioles',111:'red-sox',112:'cubs',
+  113:'reds',114:'guardians',115:'rockies',116:'tigers',117:'astros',
+  118:'royals',119:'dodgers',120:'nationals',121:'mets',133:'athletics',
+  134:'pirates',135:'padres',136:'mariners',137:'giants',138:'cardinals',
+  139:'rays',140:'rangers',141:'blue-jays',142:'twins',143:'phillies',
+  144:'braves',145:'white-sox',146:'marlins',147:'yankees',158:'brewers',
+};
 
-/* ══ Helpers ══════════════════════════════════════════ */
-const winPct  = (w,l)=>(w+l)?w/(w+l):0;
-const projWins= (w,gp)=>gp?Math.round((w/gp)*SEASON_GAMES):null;
-const logoUrl = id=>`https://www.mlbstatic.com/team-logos/${id}.svg`;
+/* ── Helpers ─────────────────────────────────────────── */
+const winPct   = (w,l) => (w+l) ? w/(w+l) : 0;
+const projWins = (w,gp) => gp>=5 ? Math.round((w/gp)*SEASON_GAMES) : null;
+const logoUrl  = id => `https://www.mlbstatic.com/team-logos/${id}.svg`;
+const isReal   = v  => v !== null && v !== undefined && !Number.isNaN(v) && v !== '' && v !== '—';
+const fmtCPW   = v  => v>=1 ? `$${v.toFixed(2)}M` : `$${(v*1000).toFixed(0)}K`;
 
+/* ── Load schedule ───────────────────────────────────── */
 async function loadGames(teamId, year){
-  const res  = await fetch(`${API}/schedule?sportId=1&teamId=${teamId}&season=${year}&gameTypes=R`);
-  const data = await res.json();
-  const games=[];
-  for(const d of data.dates||[]) for(const g of d.games||[]){
-    if(g.status?.abstractGameState!=='Final') continue;
-    const h=g.teams?.home,a=g.teams?.away;
-    if(h?.score==null||a?.score==null||h.score===a.score) continue;
-    const isHome=String(h.team.id)===String(teamId);
-    games.push(isHome?h.score>a.score:a.score>h.score);
-  }
-  return games;
+  try {
+    const res  = await fetch(`${API}/schedule?sportId=1&teamId=${teamId}&season=${year}&gameTypes=R`);
+    const data = await res.json();
+    const games=[];
+    for(const d of data.dates||[]) for(const g of d.games||[]){
+      if(g.status?.abstractGameState!=='Final') continue;
+      const h=g.teams?.home, a=g.teams?.away;
+      if(h?.score==null||a?.score==null||h.score===a.score) continue;
+      const isHome=String(h.team.id)===String(teamId);
+      games.push(isHome ? h.score>a.score : a.score>h.score);
+    }
+    return games;
+  } catch { return []; }
 }
 
-/* ══ Populate slides with live data ══════════════════ */
-async function loadData(){
+/* ── Load all 30 teams ───────────────────────────────── */
+async function loadAllData(){
   const teamsRes  = await fetch(`${API}/teams?sportId=1&activeStatus=Y`);
   const teamsData = await teamsRes.json();
-  const teams     = teamsData.teams.filter(t=>t.sport?.id===1);
+  const teams     = teamsData.teams.filter(t=>t.sport?.id===1).slice(0,30);
 
-  const BATCH=6;
+  const BATCH=5;
   const allData=[];
   for(let i=0;i<teams.length;i+=BATCH){
     const batch=teams.slice(i,i+BATCH);
     const results=await Promise.allSettled(batch.map(async t=>{
-      const [cur,prev]=await Promise.all([loadGames(t.id,CURRENT_YEAR),loadGames(t.id,COMPARE_YEAR)]);
-      const gp=cur.length,w=cur.filter(Boolean).length,l=gp-w;
-      const l10=cur.slice(-10),l10w=l10.filter(Boolean).length;
+      const [cur,prev] = await Promise.all([
+        loadGames(t.id, CURRENT_YEAR),
+        loadGames(t.id, COMPARE_YEAR),
+      ]);
+      const gp=cur.length, w=cur.filter(Boolean).length, l=gp-w;
+      const l10=cur.slice(-10), l10w=l10.filter(Boolean).length;
       const proj=projWins(w,gp);
+      /* Delta: compare wins at same GP point — use min(gp, prev.length) */
       let delta=null;
-      if(prev.length>=gp&&gp>0) delta=w-prev.slice(0,gp).filter(Boolean).length;
-      return{id:t.id,name:t.clubName||t.name,w,l,gp,proj,l10w,l10l:l10.length-l10w,delta};
+      if(prev.length>0 && gp>0){
+        const useGp = Math.min(gp, prev.length);
+        const curW  = cur.slice(0,useGp).filter(Boolean).length;
+        const prevW = prev.slice(0,useGp).filter(Boolean).length;
+        delta = curW - prevW;
+      }
+      return {
+        id:t.id, name:t.clubName||t.name,
+        w, l, gp, proj, l10w, l10l:l10.length-l10w, delta,
+      };
     }));
-    for(const r of results) if(r.status==='fulfilled') allData.push(r.value);
+    for(const r of results) if(r.status==='fulfilled' && r.value) allData.push(r.value);
   }
-
-  const valid=allData.filter(t=>t.gp>=10);
-
-  /* SLIDE 2 — Biggest riser */
-  const risers=[...valid].filter(t=>t.delta!==null).sort((a,b)=>b.delta-a.delta);
-  const top=risers[0];
-  if(top){
-    document.getElementById('riser-name').textContent=top.name;
-    document.getElementById('riser-logo').src=logoUrl(top.id);
-    document.getElementById('riser-record').textContent=`${top.w}–${top.l}`;
-    document.getElementById('riser-l10').textContent=`${top.l10w}–${top.l10l} L10`;
-    document.getElementById('riser-delta').textContent=`+${top.delta}W vs ${COMPARE_YEAR}`;
-    document.getElementById('riser-tag').textContent=
-      top.delta>=10?'↑ Breaking Out':top.delta>=5?'↑ Quietly Surging':'↑ Moving Up';
-  }
-
-  /* SLIDE 3 — Biggest faller */
-  const fallers=[...valid].filter(t=>t.delta!==null).sort((a,b)=>a.delta-b.delta);
-  const bot=fallers[0];
-  if(bot){
-    document.getElementById('faller-name').textContent=bot.name;
-    document.getElementById('faller-logo').src=logoUrl(bot.id);
-    document.getElementById('faller-record').textContent=`${bot.w}–${bot.l}`;
-    document.getElementById('faller-l10').textContent=`${bot.l10w}–${bot.l10l} L10`;
-    document.getElementById('faller-delta').textContent=`${bot.delta}W vs ${COMPARE_YEAR}`;
-    document.getElementById('faller-tag').textContent=
-      bot.delta<=-10?'↓ In Freefall':bot.delta<=-5?'↓ Cooling Off':'↓ Trending Down';
-  }
-
-  /* SLIDE 4 — Best rivalry */
-  const rivalryMap=new Map(valid.map(t=>[t.id,t]));
-  let bestRivalry=null,biggestGap=0;
-  for(const r of RIVALRY_PAIRS){
-    const t1=rivalryMap.get(r.t1),t2=rivalryMap.get(r.t2);
-    if(!t1||!t2||!t1.proj||!t2.proj) continue;
-    const gap=Math.abs(t1.proj-t2.proj);
-    if(gap>biggestGap){biggestGap=gap;bestRivalry={...r,t1,t2,gap};}
-  }
-  if(bestRivalry){
-    const ahead=bestRivalry.t1.proj>=bestRivalry.t2.proj?bestRivalry.t1:bestRivalry.t2;
-    const behind=ahead===bestRivalry.t1?bestRivalry.t2:bestRivalry.t1;
-    document.getElementById('rivalry-label').textContent=bestRivalry.label;
-    document.getElementById('rivalry-logo1').src=logoUrl(bestRivalry.t1.id);
-    document.getElementById('rivalry-logo2').src=logoUrl(bestRivalry.t2.id);
-    document.getElementById('rivalry-name1').textContent=bestRivalry.t1.name;
-    document.getElementById('rivalry-name2').textContent=bestRivalry.t2.name;
-    document.getElementById('rivalry-pace1').textContent=`${bestRivalry.t1.proj}W`;
-    document.getElementById('rivalry-pace2').textContent=`${bestRivalry.t2.proj}W`;
-    document.getElementById('rivalry-gap').textContent=`${bestRivalry.gap}W\napart`;
-    const narrative=bestRivalry.gap>=20?`${ahead.name} are running away with this rivalry.`
-      :bestRivalry.gap>=10?`${ahead.name} hold a commanding pace edge.`
-      :`The gap just widened. ${ahead.name} lead.`;
-    document.getElementById('rivalry-narrative').textContent=narrative;
-  }
-
-  /* SLIDE 5 — Payroll efficiency */
-  const withPayroll=valid.filter(t=>PAYROLLS[t.id]&&t.proj>0).map(t=>{
-    const cpw=PAYROLLS[t.id]/t.proj;
-    return{...t,payroll:PAYROLLS[t.id],cpw};
-  }).sort((a,b)=>a.cpw-b.cpw);
-  const bestVal=withPayroll[0],worstVal=withPayroll[withPayroll.length-1];
-  const fmtCPW=v=>v>=1?`$${v.toFixed(2)}M`:`$${(v*1000).toFixed(0)}K`;
-  if(bestVal){
-    document.getElementById('best-logo').src=logoUrl(bestVal.id);
-    document.getElementById('best-name').textContent=bestVal.name;
-    document.getElementById('best-cpw').textContent=fmtCPW(bestVal.cpw)+'/W';
-  }
-  if(worstVal){
-    document.getElementById('worst-logo').src=logoUrl(worstVal.id);
-    document.getElementById('worst-name').textContent=worstVal.name;
-    document.getElementById('worst-cpw').textContent=fmtCPW(worstVal.cpw)+'/W';
-  }
-
-  /* SLIDE 6 — Chaos Index */
-  const chaotic=valid.filter(t=>t.delta!==null&&Math.abs(t.delta)>=CHAOS_THRESHOLD);
-  const pct=Math.round(chaotic.length/30*100);
-  document.getElementById('chaos-num').textContent=chaotic.length;
-  document.getElementById('chaos-pct-line').textContent=`${pct}% of MLB`;
-  /* animate bar after slide becomes active */
-  window._chaosPct=(chaotic.length/30)*100;
+  return allData.filter(t=>t.gp>=10);
 }
 
-/* ══ Slide engine ══════════════════════════════════════ */
-let current=0, playing=true, timer=null, progressTimer=null;
+/* ════════════════════════════════════════════════════════
+   SLIDE MANIFEST — built dynamically from live data
+   Each entry: { id, duration, setup(), valid }
+   setup() populates the DOM for that slide
+   valid = boolean — if false the slide is skipped
+════════════════════════════════════════════════════════ */
+let ACTIVE_SLIDES = []; /* ordered list of slide ids to show */
+let currentIdx    = 0;
+let playing       = true;
+let timer         = null;
+
+function buildManifest(valid, chaotic, top, bot, rivalry, bestVal, worstVal){
+  const manifest = [];
+
+  /* Slide 0: Intro — always show */
+  manifest.push({ id:'slide-0', duration:3000, valid:true, setup:()=>{} });
+
+  /* Slide 1: Biggest Riser */
+  const riserOk = top &&
+    isReal(top.name) && isReal(top.w) && isReal(top.proj) && isReal(top.delta);
+  manifest.push({ id:'slide-1', duration:3500, valid:riserOk, setup:()=>{
+    document.getElementById('riser-name').textContent   = top.name;
+    document.getElementById('riser-logo').src           = logoUrl(top.id);
+    document.getElementById('riser-record').textContent = `${top.w}–${top.l}`;
+    document.getElementById('riser-proj').textContent   = `${top.proj}W pace`;
+    document.getElementById('riser-l10').textContent    = `${top.l10w}–${top.l10l} L10`;
+    document.getElementById('riser-delta').textContent  = `+${top.delta}W vs ${COMPARE_YEAR}`;
+    document.getElementById('riser-tag').textContent    =
+      top.delta>=12?'↑ Breaking Out':top.delta>=6?'↑ Quietly Surging':'↑ Moving Up';
+  }});
+
+  /* Slide 2: Biggest Faller */
+  const fallerOk = bot &&
+    isReal(bot.name) && isReal(bot.w) && isReal(bot.proj) && isReal(bot.delta);
+  manifest.push({ id:'slide-2', duration:3500, valid:fallerOk, setup:()=>{
+    document.getElementById('faller-name').textContent   = bot.name;
+    document.getElementById('faller-logo').src           = logoUrl(bot.id);
+    document.getElementById('faller-record').textContent = `${bot.w}–${bot.l}`;
+    document.getElementById('faller-proj').textContent   = `${bot.proj}W pace`;
+    document.getElementById('faller-l10').textContent    = `${bot.l10w}–${bot.l10l} L10`;
+    document.getElementById('faller-delta').textContent  = `${bot.delta}W vs ${COMPARE_YEAR}`;
+    document.getElementById('faller-tag').textContent    =
+      bot.delta<=-12?'↓ In Freefall':bot.delta<=-6?'↓ Cooling Off':'↓ Trending Down';
+  }});
+
+  /* Slide 3: Rivalry Watch */
+  const rivalryOk = rivalry &&
+    isReal(rivalry.t1.name) && isReal(rivalry.t2.name) &&
+    isReal(rivalry.t1.proj) && isReal(rivalry.t2.proj) && rivalry.gap > 0;
+  manifest.push({ id:'slide-3', duration:3500, valid:rivalryOk, setup:()=>{
+    const r=rivalry, ahead=r.t1.proj>=r.t2.proj?r.t1:r.t2;
+    document.getElementById('rivalry-label').textContent  = r.label;
+    document.getElementById('rivalry-logo1').src          = logoUrl(r.t1.id);
+    document.getElementById('rivalry-logo2').src          = logoUrl(r.t2.id);
+    document.getElementById('rivalry-name1').textContent  = r.t1.name;
+    document.getElementById('rivalry-name2').textContent  = r.t2.name;
+    document.getElementById('rivalry-pace1').textContent  = `${r.t1.proj}W`;
+    document.getElementById('rivalry-pace2').textContent  = `${r.t2.proj}W`;
+    document.getElementById('rivalry-gap').innerHTML      =
+      `<span style="font-size:56px;font-weight:700">${r.gap}W</span><br>apart`;
+    document.getElementById('rivalry-narrative').textContent =
+      r.gap>=20 ? `${ahead.name} are running away with this rivalry.`
+      : r.gap>=10 ? `${ahead.name} hold a commanding pace edge.`
+      : `${ahead.name} lead the rivalry right now.`;
+  }});
+
+  /* Slide 4: Payroll Efficiency */
+  const payrollOk = bestVal && worstVal &&
+    isReal(bestVal.name) && isReal(worstVal.name) &&
+    isReal(bestVal.cpw)  && isReal(worstVal.cpw);
+  manifest.push({ id:'slide-4', duration:3500, valid:payrollOk, setup:()=>{
+    document.getElementById('best-logo').src  = logoUrl(bestVal.id);
+    document.getElementById('best-name').textContent = bestVal.name;
+    document.getElementById('best-cpw').textContent  = fmtCPW(bestVal.cpw)+'/W';
+    document.getElementById('worst-logo').src = logoUrl(worstVal.id);
+    document.getElementById('worst-name').textContent = worstVal.name;
+    document.getElementById('worst-cpw').textContent  = fmtCPW(worstVal.cpw)+'/W';
+  }});
+
+  /* Slide 5: Chaos Index — always show if we have data */
+  const chaosOk = chaotic.length > 0;
+  manifest.push({ id:'slide-5', duration:3000, valid:chaosOk, setup:()=>{
+    const pct = Math.round(chaotic.length/30*100);
+    document.getElementById('chaos-num').textContent      = chaotic.length;
+    document.getElementById('chaos-pct-line').textContent = `${pct}% of MLB`;
+    window._chaosPct = (chaotic.length/30)*100;
+  }});
+
+  /* Slide 6: CTA — always show */
+  manifest.push({ id:'slide-6', duration:4000, valid:true, setup:()=>{} });
+
+  return manifest;
+}
+
+/* ══ Slide engine (index-based on ACTIVE_SLIDES) ════════ */
+function getSlide(idx){
+  return ACTIVE_SLIDES[(idx + ACTIVE_SLIDES.length) % ACTIVE_SLIDES.length];
+}
 
 function buildProgress(){
   const wrap=document.getElementById('progressWrap');
-  wrap.innerHTML=Array.from({length:TOTAL_SLIDES},(_,i)=>
-    `<div class="progress-seg ${i<current?'done':i===current?'active':''}" id="prog-${i}">
+  wrap.innerHTML=ACTIVE_SLIDES.map((_,i)=>
+    `<div class="progress-seg ${i<currentIdx?'done':i===currentIdx?'active':''}" id="prog-${i}">
       <div class="fill" id="progfill-${i}"></div>
     </div>`
   ).join('');
 }
 
-function startProgressBar(idx){
-  const fill=document.getElementById(`progfill-${idx}`);
+function startProgressBar(posIdx){
+  const fill=document.getElementById(`progfill-${posIdx}`);
   if(!fill) return;
-  fill.style.transition='none';
-  fill.style.width='0%';
+  const dur=ACTIVE_SLIDES[posIdx]?.duration||3500;
+  fill.style.transition='none'; fill.style.width='0%';
   requestAnimationFrame(()=>{
-    fill.style.transition=`width ${SLIDE_DURATIONS[idx]}ms linear`;
+    fill.style.transition=`width ${dur}ms linear`;
     fill.style.width='100%';
   });
 }
 
-function goTo(idx){
+function goTo(posIdx){
   /* Deactivate current */
-  document.getElementById(`slide-${current}`)?.classList.remove('active');
-  document.getElementById(`prog-${current}`)?.classList.remove('active');
-  document.getElementById(`prog-${current}`)?.classList.add('done');
+  const curSlide=ACTIVE_SLIDES[currentIdx];
+  if(curSlide){
+    document.getElementById(curSlide.id)?.classList.remove('active');
+    document.getElementById(`prog-${currentIdx}`)?.classList.remove('active');
+    document.getElementById(`prog-${currentIdx}`)?.classList.add('done');
+  }
 
-  current = (idx + TOTAL_SLIDES) % TOTAL_SLIDES;
+  currentIdx = ((posIdx % ACTIVE_SLIDES.length) + ACTIVE_SLIDES.length) % ACTIVE_SLIDES.length;
+  const nextSlideEntry = ACTIVE_SLIDES[currentIdx];
+  if(!nextSlideEntry) return;
 
-  /* Activate new */
-  const sl=document.getElementById(`slide-${current}`);
+  const sl=document.getElementById(nextSlideEntry.id);
+  if(!sl) return;
   sl.classList.add('active');
-  /* Restart animations by re-triggering */
   sl.querySelectorAll('[class*="slide-up"],[class*="fade-in"]').forEach(el=>{
-    el.style.animation='none';
-    void el.offsetWidth;
-    el.style.animation='';
+    el.style.animation='none'; void el.offsetWidth; el.style.animation='';
   });
 
-  /* Rebuild progress */
   buildProgress();
-  document.getElementById(`prog-${current}`).classList.add('active');
-  if(playing) startProgressBar(current);
+  document.getElementById(`prog-${currentIdx}`)?.classList.add('active');
+  if(playing) startProgressBar(currentIdx);
 
-  /* Animate chaos bar when on that slide */
-  if(current===5 && window._chaosPct){
+  /* Animate chaos bar */
+  if(nextSlideEntry.id==='slide-5' && window._chaosPct!=null){
     setTimeout(()=>{
       const fill=document.getElementById('chaos-fill');
       if(fill){fill.style.width='0%';requestAnimationFrame(()=>{fill.style.width=window._chaosPct+'%';});}
@@ -777,52 +817,116 @@ function goTo(idx){
 
   if(playing){
     clearTimeout(timer);
-    timer=setTimeout(()=>goTo(current+1), SLIDE_DURATIONS[current]);
+    timer=setTimeout(()=>goTo(currentIdx+1), nextSlideEntry.duration);
   }
 }
 
-function nextSlide(){ clearTimeout(timer); goTo(current+1); }
-function prevSlide(){ clearTimeout(timer); goTo(current-1); }
-function restartReel(){ clearTimeout(timer); current=-1; playing=true; document.getElementById('playBtn').textContent='⏸ Pause'; document.getElementById('playBtn').classList.add('playing'); goTo(0); }
+function nextSlide(){ clearTimeout(timer); goTo(currentIdx+1); }
+function prevSlide(){ clearTimeout(timer); goTo(currentIdx-1); }
 function togglePlay(){
   playing=!playing;
   const btn=document.getElementById('playBtn');
   if(playing){
     btn.textContent='⏸ Pause'; btn.classList.add('playing');
-    startProgressBar(current);
-    timer=setTimeout(()=>goTo(current+1), SLIDE_DURATIONS[current]);
+    startProgressBar(currentIdx);
+    timer=setTimeout(()=>goTo(currentIdx+1), ACTIVE_SLIDES[currentIdx]?.duration||3500);
   } else {
     btn.textContent='▶ Play'; btn.classList.remove('playing');
     clearTimeout(timer);
-    const fill=document.getElementById(`progfill-${current}`);
+    const fill=document.getElementById(`progfill-${currentIdx}`);
     if(fill){ const w=getComputedStyle(fill).width; fill.style.transition='none'; fill.style.width=w; }
   }
 }
+function restartReel(){
+  clearTimeout(timer); currentIdx=-1; playing=true;
+  document.getElementById('playBtn').textContent='⏸ Pause';
+  document.getElementById('playBtn').classList.add('playing');
+  goTo(0);
+}
 window.shareReel=function(){
-  if(navigator.share) navigator.share({title:'MLB Daily Pulse',url:'https://tracktheseason.com'});
-  else navigator.clipboard?.writeText('https://tracktheseason.com').then(()=>alert('Link copied!'));
+  if(navigator.share) navigator.share({title:'MLB Daily Pulse — Track The Season',url:'https://tracktheseason.com'});
+  else navigator.clipboard?.writeText('https://tracktheseason.com').then(()=>{
+    const btn=document.querySelector('.cta-btn-ghost');
+    if(btn){btn.textContent='✓ Copied!';setTimeout(()=>btn.textContent='⬆ Share',2000);}
+  });
 };
 
-/* ══ Scale stage to viewport ══════════════════════════ */
+/* ══ Scale stage ═════════════════════════════════════════ */
 function scaleStage(){
   const stage=document.getElementById('stage');
   const vw=window.innerWidth, vh=window.innerHeight;
-  const scaleX=vw/1080, scaleY=vh/1920;
-  const scale=Math.min(scaleX,scaleY);
+  const scale=Math.min(vw/1080, vh/1920);
   stage.style.transform=`scale(${scale})`;
   stage.style.marginTop=`${(vh-1920*scale)/2}px`;
 }
 window.addEventListener('resize',scaleStage);
 scaleStage();
 
-/* ══ BOOT ═════════════════════════════════════════════ */
-buildProgress();
-document.getElementById(`prog-0`).classList.add('active');
-if(playing){
-  startProgressBar(0);
-  timer=setTimeout(()=>goTo(1), SLIDE_DURATIONS[0]);
+/* ══ BOOT ════════════════════════════════════════════════ */
+async function boot(){
+  /* Show slide 0 immediately while data loads */
+  document.getElementById('slide-0').classList.add('active');
+
+  let allData=[];
+  try { allData = await loadAllData(); } catch(e){ console.error('loadAllData failed',e); }
+
+  if(!allData.length){
+    /* Fallback: just show intro + CTA */
+    ACTIVE_SLIDES=[
+      {id:'slide-0',duration:3000,valid:true,setup:()=>{}},
+      {id:'slide-5',duration:3000,valid:true,setup:()=>{
+        document.getElementById('chaos-num').textContent='—';
+        document.getElementById('chaos-pct-line').textContent='Data unavailable';
+      }},
+      {id:'slide-6',duration:4000,valid:true,setup:()=>{}},
+    ];
+    buildProgress(); goTo(0); return;
+  }
+
+  /* Compute all data values */
+  const withDelta = allData.filter(t=>t.delta!==null);
+  const risers    = [...withDelta].sort((a,b)=>b.delta-a.delta);
+  const fallers   = [...withDelta].sort((a,b)=>a.delta-b.delta);
+  const top       = risers[0]||null;
+  const bot       = fallers[0]||null;
+  const chaotic   = withDelta.filter(t=>Math.abs(t.delta)>=CHAOS_THRESHOLD);
+
+  /* Best rivalry by gap */
+  const byId = new Map(allData.map(t=>[t.id,t]));
+  let rivalry=null, bigGap=0;
+  for(const r of RIVALRY_PAIRS){
+    const t1=byId.get(r.t1), t2=byId.get(r.t2);
+    if(!t1||!t2||!t1.proj||!t2.proj) continue;
+    const gap=Math.abs(t1.proj-t2.proj);
+    if(gap>bigGap){ bigGap=gap; rivalry={...r,t1,t2,gap}; }
+  }
+
+  /* Payroll efficiency */
+  const withPayroll=allData.filter(t=>PAYROLLS[t.id]&&t.proj>0)
+    .map(t=>({...t,cpw:PAYROLLS[t.id]/t.proj}))
+    .sort((a,b)=>a.cpw-b.cpw);
+  const bestVal=withPayroll[0]||null;
+  const worstVal=withPayroll[withPayroll.length-1]||null;
+
+  /* Build manifest and filter to valid slides */
+  const manifest = buildManifest(allData, chaotic, top, bot, rivalry, bestVal, worstVal);
+  ACTIVE_SLIDES  = manifest.filter(s=>s.valid);
+
+  /* Run setup for all valid slides */
+  ACTIVE_SLIDES.forEach(s=>{ try{ s.setup(); }catch(e){ console.warn('setup failed',s.id,e); } });
+
+  /* Hide all slides, reset */
+  document.querySelectorAll('.slide').forEach(el=>el.classList.remove('active'));
+
+  /* Show first slide count in controls */
+  console.log(`Reel: ${ACTIVE_SLIDES.length} slides active of 7 possible`);
+
+  buildProgress();
+  goTo(0);
 }
-loadData().catch(console.error);
+
+boot();
+
 </script>
 </body>
 </html>
