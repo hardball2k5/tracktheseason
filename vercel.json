@@ -238,11 +238,6 @@
       "permanent": true
     },
     {
-      "source": "/tracker.html",
-      "destination": "/",
-      "permanent": true
-    },
-    {
       "source": "/compare.html",
       "destination": "/compare",
       "permanent": true
