@@ -1,0 +1,828 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>TTS Daily Reel</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600;700&family=IBM+Plex+Sans:wght@400;600;700&display=swap" rel="stylesheet"/>
+<style>
+/* ── RESET ─────────────────────────────────────────── */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{width:100%;height:100%;overflow:hidden;background:#000}
+
+/* ── STAGE — 1080×1920 scaled to viewport ─────────── */
+.stage-wrap{
+  width:100%;height:100%;
+  display:flex;align-items:center;justify-content:center;
+}
+.stage{
+  width:1080px;height:1920px;
+  position:relative;overflow:hidden;
+  background:#0B0F19;
+  /* Scale to fit viewport while preserving ratio */
+  transform-origin:top center;
+}
+
+/* ── SLIDE BASE ────────────────────────────────────── */
+.slide{
+  position:absolute;inset:0;
+  display:flex;flex-direction:column;
+  padding:80px 72px;
+  opacity:0;
+  transition:opacity .5s ease;
+  pointer-events:none;
+  z-index:1;
+}
+.slide.active{opacity:1;pointer-events:auto;z-index:2}
+.slide.exit{opacity:0}
+
+/* ── GLOBAL BG ELEMENTS ───────────────────────────── */
+.bg-grid{
+  position:absolute;inset:0;
+  background-image:
+    linear-gradient(rgba(34,255,119,.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(34,255,119,.04) 1px, transparent 1px);
+  background-size:80px 80px;
+  pointer-events:none;
+}
+.bg-glow-top{
+  position:absolute;top:-200px;left:50%;transform:translateX(-50%);
+  width:900px;height:700px;
+  background:radial-gradient(ellipse,rgba(34,255,119,.13) 0%,transparent 70%);
+  pointer-events:none;
+}
+.bg-glow-bottom{
+  position:absolute;bottom:-200px;left:50%;transform:translateX(-50%);
+  width:900px;height:600px;
+  background:radial-gradient(ellipse,rgba(34,255,119,.07) 0%,transparent 70%);
+  pointer-events:none;
+}
+.side-bar-l{position:absolute;left:0;top:0;width:5px;height:100%;
+  background:linear-gradient(180deg,transparent,#22FF77 20%,#22FF77 80%,transparent)}
+.side-bar-r{position:absolute;right:0;top:0;width:5px;height:100%;
+  background:linear-gradient(180deg,transparent,#22FF77 20%,#22FF77 80%,transparent)}
+
+/* ── TTS HEADER BAR ───────────────────────────────── */
+.tts-bar{
+  display:flex;align-items:center;justify-content:space-between;
+  margin-bottom:auto;flex-shrink:0;
+}
+.tts-logo-wrap{display:flex;align-items:center;gap:16px}
+.tts-monogram{
+  width:52px;height:52px;background:#22FF77;border-radius:10px;
+  display:flex;align-items:center;justify-content:center;
+  font-family:'IBM Plex Mono',monospace;font-size:16px;font-weight:700;color:#0B0F19;
+}
+.tts-wordmark{font-family:'IBM Plex Mono',monospace;font-size:20px;font-weight:700;color:#fff}
+.tts-wordmark span{color:#22FF77}
+.live-badge{
+  display:flex;align-items:center;gap:8px;
+  background:rgba(34,255,119,.08);border:1px solid rgba(34,255,119,.25);
+  border-radius:999px;padding:8px 18px;
+  font-family:'IBM Plex Mono',monospace;font-size:13px;font-weight:700;color:#22FF77;
+  letter-spacing:.08em;
+}
+.live-dot{width:8px;height:8px;border-radius:50%;background:#22FF77;
+  animation:pulseDot 1.5s ease-in-out infinite}
+@keyframes pulseDot{0%,100%{opacity:1}50%{opacity:.3}}
+
+/* ── FOOTER BAR ───────────────────────────────────── */
+.slide-footer{
+  display:flex;align-items:center;justify-content:space-between;
+  margin-top:auto;padding-top:40px;flex-shrink:0;
+}
+.footer-url{font-family:'IBM Plex Mono',monospace;font-size:18px;
+  font-weight:700;color:rgba(255,255,255,.3);letter-spacing:.06em}
+.footer-slide-num{font-family:'IBM Plex Mono',monospace;font-size:14px;
+  color:rgba(255,255,255,.2);letter-spacing:.1em}
+
+/* ── PROGRESS BAR ─────────────────────────────────── */
+.progress-wrap{
+  position:absolute;bottom:0;left:0;right:0;
+  display:flex;gap:6px;padding:24px 72px;z-index:10;
+}
+.progress-seg{
+  flex:1;height:4px;background:rgba(255,255,255,.15);border-radius:2px;overflow:hidden;
+}
+.progress-seg .fill{height:100%;width:0%;background:#22FF77;border-radius:2px;
+  transition:width linear}
+.progress-seg.done .fill{width:100%}
+.progress-seg.active .fill{width:100%}
+
+/* ── TYPOGRAPHY SYSTEM ────────────────────────────── */
+.eyebrow{font-family:'IBM Plex Mono',monospace;font-size:22px;font-weight:700;
+  letter-spacing:.22em;text-transform:uppercase;color:rgba(34,255,119,.7);margin-bottom:20px}
+.hed{font-family:'IBM Plex Mono',monospace;font-weight:700;color:#fff;line-height:1.05;
+  letter-spacing:-.03em}
+.hed.xl{font-size:108px}
+.hed.lg{font-size:80px}
+.hed.md{font-size:60px}
+.hed.sm{font-size:44px}
+.subhed{font-family:'IBM Plex Sans',sans-serif;font-size:36px;font-weight:400;
+  color:rgba(255,255,255,.55);line-height:1.4;margin-top:16px}
+.accent{color:#22FF77}
+.red{color:#FF4D4D}
+.chalk{color:rgba(255,255,255,.4)}
+
+/* ── DIVIDER ──────────────────────────────────────── */
+.divider{width:100%;height:2px;background:rgba(34,255,119,.15);margin:48px 0}
+.divider-short{width:80px;height:4px;background:#22FF77;border-radius:2px;margin:24px 0}
+
+/* ── TEAM BLOCK ───────────────────────────────────── */
+.team-block{
+  display:flex;align-items:center;gap:40px;
+  background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);
+  border-radius:24px;padding:40px 48px;margin:32px 0;
+}
+.team-block.up{border-left:6px solid #22FF77}
+.team-block.down{border-left:6px solid #FF4D4D}
+.team-logo-circle{
+  width:120px;height:120px;flex-shrink:0;
+  background:#fff;border-radius:20px;
+  box-shadow:0 4px 24px rgba(0,0,0,.4);
+  display:flex;align-items:center;justify-content:center;overflow:hidden;
+}
+.team-logo-circle img{width:90px;height:90px;object-fit:contain}
+.team-info{flex:1}
+.team-name-lg{font-family:'IBM Plex Mono',monospace;font-size:52px;font-weight:700;
+  color:#fff;letter-spacing:-.02em;line-height:1}
+.team-record{font-family:'IBM Plex Mono',monospace;font-size:34px;font-weight:600;
+  color:rgba(255,255,255,.5);margin-top:8px}
+.team-stats{display:flex;gap:20px;margin-top:20px;flex-wrap:wrap}
+.team-stat-pill{
+  padding:10px 20px;border-radius:999px;
+  font-family:'IBM Plex Mono',monospace;font-size:22px;font-weight:700;
+}
+.pill-green{background:rgba(34,255,119,.12);color:#22FF77;border:1px solid rgba(34,255,119,.25)}
+.pill-red{background:rgba(255,77,77,.12);color:#FF4D4D;border:1px solid rgba(255,77,77,.25)}
+.pill-amber{background:rgba(255,200,60,.1);color:#FFD43B;border:1px solid rgba(255,200,60,.2)}
+.pill-ghost{background:rgba(255,255,255,.05);color:rgba(255,255,255,.5);border:1px solid rgba(255,255,255,.1)}
+.tag-badge{
+  display:inline-flex;align-items:center;gap:8px;
+  padding:10px 24px;border-radius:999px;
+  font-family:'IBM Plex Mono',monospace;font-size:20px;font-weight:700;
+  letter-spacing:.06em;text-transform:uppercase;
+}
+.tag-surging{background:rgba(34,255,119,.1);color:#22FF77;border:1px solid rgba(34,255,119,.2)}
+.tag-cooling{background:rgba(255,77,77,.1);color:#FF4D4D;border:1px solid rgba(255,77,77,.2)}
+
+/* ── RIVALRY BLOCK ────────────────────────────────── */
+.rivalry-row{
+  display:flex;align-items:center;justify-content:space-between;
+  gap:32px;padding:48px 0;
+}
+.rivalry-team{display:flex;flex-direction:column;align-items:center;gap:20px;flex:1}
+.rivalry-logo-wrap{
+  width:160px;height:160px;background:#fff;border-radius:28px;
+  box-shadow:0 4px 32px rgba(0,0,0,.5);
+  display:flex;align-items:center;justify-content:center;overflow:hidden;
+}
+.rivalry-logo-wrap img{width:120px;height:120px;object-fit:contain}
+.rivalry-team-name{font-family:'IBM Plex Mono',monospace;font-size:36px;
+  font-weight:700;color:#fff;text-align:center}
+.rivalry-pace{font-family:'IBM Plex Mono',monospace;font-size:56px;
+  font-weight:700;letter-spacing:-.03em;text-align:center}
+.rivalry-vs-col{display:flex;flex-direction:column;align-items:center;gap:12px;flex-shrink:0}
+.vs-text{font-family:'IBM Plex Mono',monospace;font-size:40px;font-weight:700;
+  color:rgba(255,255,255,.2)}
+.gap-badge{
+  padding:12px 28px;border-radius:12px;
+  background:rgba(34,255,119,.08);border:1px solid rgba(34,255,119,.2);
+  font-family:'IBM Plex Mono',monospace;font-size:22px;font-weight:700;color:#22FF77;
+  text-align:center;line-height:1.3;
+}
+
+/* ── PAYROLL TABLE ────────────────────────────────── */
+.payroll-row{
+  display:flex;align-items:center;gap:32px;
+  padding:28px 36px;border-radius:16px;margin:16px 0;
+}
+.payroll-row.best{background:rgba(34,255,119,.06);border:1px solid rgba(34,255,119,.15)}
+.payroll-row.worst{background:rgba(255,77,77,.06);border:1px solid rgba(255,77,77,.15)}
+.payroll-logo{
+  width:80px;height:80px;background:#fff;border-radius:12px;
+  box-shadow:0 2px 12px rgba(0,0,0,.3);
+  display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0;
+}
+.payroll-logo img{width:60px;height:60px;object-fit:contain}
+.payroll-name{font-family:'IBM Plex Mono',monospace;font-size:36px;font-weight:700;
+  color:#fff;flex:1}
+.payroll-val{font-family:'IBM Plex Mono',monospace;font-size:40px;font-weight:700;
+  letter-spacing:-.02em;text-align:right;flex-shrink:0}
+
+/* ── CHAOS METER ──────────────────────────────────── */
+.chaos-num-wrap{text-align:center;margin:40px 0}
+.chaos-big-num{
+  font-family:'IBM Plex Mono',monospace;font-size:260px;font-weight:700;
+  color:#22FF77;letter-spacing:-.08em;line-height:.85;
+  text-shadow:0 0 80px rgba(34,255,119,.5),0 0 160px rgba(34,255,119,.2);
+}
+.chaos-denom{font-family:'IBM Plex Mono',monospace;font-size:60px;font-weight:400;
+  color:rgba(255,255,255,.25);letter-spacing:-.02em}
+.chaos-bar-wrap{margin:32px 0}
+.chaos-track{
+  width:100%;height:20px;background:rgba(255,255,255,.08);
+  border-radius:10px;overflow:hidden;
+}
+.chaos-fill{
+  height:100%;background:linear-gradient(90deg,#22FF77,#00FF99);
+  border-radius:10px;transition:width 1.5s cubic-bezier(.22,1,.36,1);
+  width:0%;
+}
+
+/* ── CTA SLIDE ────────────────────────────────────── */
+.cta-url{
+  font-family:'IBM Plex Mono',monospace;font-size:72px;font-weight:700;
+  color:#22FF77;letter-spacing:-.04em;line-height:1;
+  text-shadow:0 0 60px rgba(34,255,119,.4);
+}
+.cta-sub{font-family:'IBM Plex Sans',sans-serif;font-size:34px;
+  color:rgba(255,255,255,.4);margin-top:24px;line-height:1.5}
+.cta-btn-row{display:flex;gap:24px;margin-top:56px;flex-wrap:wrap}
+.cta-btn{
+  padding:24px 48px;border-radius:16px;
+  font-family:'IBM Plex Mono',monospace;font-size:28px;font-weight:700;
+  cursor:pointer;letter-spacing:.04em;text-decoration:none;
+  display:inline-flex;align-items:center;gap:12px;
+}
+.cta-btn-primary{background:#22FF77;color:#0B0F19}
+.cta-btn-ghost{background:transparent;color:rgba(255,255,255,.6);
+  border:2px solid rgba(255,255,255,.2)}
+.glow-pulse{animation:glowPulse 2.5s ease-in-out infinite}
+@keyframes glowPulse{
+  0%,100%{text-shadow:0 0 60px rgba(34,255,119,.4)}
+  50%{text-shadow:0 0 120px rgba(34,255,119,.8),0 0 200px rgba(34,255,119,.3)}
+}
+
+/* ── SLIDE-IN ANIMATIONS ──────────────────────────── */
+.slide-up{animation:slideUp .6s cubic-bezier(.22,1,.36,1) both}
+.slide-up-d1{animation-delay:.1s}
+.slide-up-d2{animation-delay:.25s}
+.slide-up-d3{animation-delay:.4s}
+.slide-up-d4{animation-delay:.55s}
+@keyframes slideUp{
+  from{opacity:0;transform:translateY(48px)}
+  to{opacity:1;transform:translateY(0)}
+}
+.fade-in{animation:fadeIn .5s ease both}
+.fade-in-d1{animation-delay:.2s}
+.fade-in-d2{animation-delay:.5s}
+.fade-in-d3{animation-delay:.8s}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+
+/* ── CONTROLS ─────────────────────────────────────── */
+.controls{
+  position:fixed;bottom:24px;left:50%;transform:translateX(-50%);
+  display:flex;gap:12px;z-index:100;
+}
+.ctrl-btn{
+  padding:10px 20px;border-radius:8px;
+  background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);
+  color:#fff;font-family:monospace;font-size:13px;font-weight:600;
+  cursor:pointer;transition:all .13s;
+}
+.ctrl-btn:hover{background:rgba(255,255,255,.2)}
+.ctrl-btn.playing{background:rgba(34,255,119,.15);border-color:rgba(34,255,119,.4);color:#22FF77}
+</style>
+<link rel="canonical" href="https://tracktheseason.com/reel"/>
+</head>
+<body>
+
+<div class="stage-wrap">
+<div class="stage" id="stage">
+
+  <!-- SHARED BG (visible on all slides) -->
+  <div class="bg-grid"></div>
+  <div class="bg-glow-top"></div>
+  <div class="bg-glow-bottom"></div>
+  <div class="side-bar-l"></div>
+  <div class="side-bar-r"></div>
+
+  <!-- ══ SLIDE 1: HEADLINE ══════════════════════════ -->
+  <div class="slide active" id="slide-0">
+    <div class="tts-bar">
+      <div class="tts-logo-wrap">
+        <div class="tts-monogram">TTS</div>
+        <div class="tts-wordmark">TRACK THE <span>SEASON</span></div>
+      </div>
+      <div class="live-badge"><div class="live-dot"></div>LIVE</div>
+    </div>
+
+    <div style="flex:1;display:flex;flex-direction:column;justify-content:center;gap:0">
+      <div class="eyebrow slide-up">🔥 MLB DAILY PULSE</div>
+      <div class="hed xl slide-up slide-up-d1">WHAT<br>CHANGED<br><span class="accent">TODAY?</span></div>
+      <div class="divider-short fade-in fade-in-d2"></div>
+      <div class="subhed fade-in fade-in-d2">Pace · Movers · Rivalries · Chaos<br>Updated after every game.</div>
+    </div>
+
+    <div class="slide-footer fade-in fade-in-d3">
+      <div class="footer-url">TrackTheSeason.com</div>
+      <div class="footer-slide-num">01 / 07</div>
+    </div>
+  </div>
+
+  <!-- ══ SLIDE 2: BIGGEST RISER ════════════════════ -->
+  <div class="slide" id="slide-1">
+    <div class="tts-bar">
+      <div class="tts-logo-wrap">
+        <div class="tts-monogram">TTS</div>
+        <div class="tts-wordmark">TRACK THE <span>SEASON</span></div>
+      </div>
+      <div class="live-badge"><div class="live-dot"></div>LIVE</div>
+    </div>
+
+    <div style="flex:1;display:flex;flex-direction:column;justify-content:center;gap:24px">
+      <div class="eyebrow slide-up">📈 BIGGEST RISER</div>
+      <div class="hed md slide-up slide-up-d1" id="riser-name">—</div>
+
+      <div class="team-block up slide-up slide-up-d2">
+        <div class="team-logo-circle">
+          <img id="riser-logo" src="" alt="" onerror="this.style.display='none'"/>
+        </div>
+        <div class="team-info">
+          <div class="team-record" id="riser-record">—</div>
+          <div class="team-stats">
+            <div class="team-stat-pill pill-green" id="riser-l10">—</div>
+            <div class="team-stat-pill pill-green" id="riser-delta">—</div>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <div class="tag-badge tag-surging slide-up slide-up-d3" id="riser-tag">↑ Quietly Surging</div>
+      </div>
+    </div>
+
+    <div class="slide-footer fade-in fade-in-d3">
+      <div class="footer-url">TrackTheSeason.com</div>
+      <div class="footer-slide-num">02 / 07</div>
+    </div>
+  </div>
+
+  <!-- ══ SLIDE 3: BIGGEST FALLER ════════════════════ -->
+  <div class="slide" id="slide-2">
+    <div class="tts-bar">
+      <div class="tts-logo-wrap">
+        <div class="tts-monogram">TTS</div>
+        <div class="tts-wordmark">TRACK THE <span>SEASON</span></div>
+      </div>
+      <div class="live-badge"><div class="live-dot"></div>LIVE</div>
+    </div>
+
+    <div style="flex:1;display:flex;flex-direction:column;justify-content:center;gap:24px">
+      <div class="eyebrow slide-up" style="color:rgba(255,77,77,.8)">📉 BIGGEST FALLER</div>
+      <div class="hed md slide-up slide-up-d1 red" id="faller-name">—</div>
+
+      <div class="team-block down slide-up slide-up-d2">
+        <div class="team-logo-circle">
+          <img id="faller-logo" src="" alt="" onerror="this.style.display='none'"/>
+        </div>
+        <div class="team-info">
+          <div class="team-record" id="faller-record">—</div>
+          <div class="team-stats">
+            <div class="team-stat-pill pill-red" id="faller-l10">—</div>
+            <div class="team-stat-pill pill-red" id="faller-delta">—</div>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <div class="tag-badge tag-cooling slide-up slide-up-d3" id="faller-tag">↓ Cooling Off</div>
+      </div>
+    </div>
+
+    <div class="slide-footer fade-in fade-in-d3">
+      <div class="footer-url">TrackTheSeason.com</div>
+      <div class="footer-slide-num">03 / 07</div>
+    </div>
+  </div>
+
+  <!-- ══ SLIDE 4: RIVALRY WATCH ════════════════════ -->
+  <div class="slide" id="slide-3">
+    <div class="tts-bar">
+      <div class="tts-logo-wrap">
+        <div class="tts-monogram">TTS</div>
+        <div class="tts-wordmark">TRACK THE <span>SEASON</span></div>
+      </div>
+      <div class="live-badge"><div class="live-dot"></div>LIVE</div>
+    </div>
+
+    <div style="flex:1;display:flex;flex-direction:column;justify-content:center;gap:0">
+      <div class="eyebrow slide-up">⚔️ RIVALRY WATCH</div>
+      <div class="hed sm slide-up slide-up-d1" id="rivalry-label">Yankees vs Red Sox</div>
+
+      <div class="rivalry-row slide-up slide-up-d2">
+        <div class="rivalry-team">
+          <div class="rivalry-logo-wrap">
+            <img id="rivalry-logo1" src="" alt="" onerror="this.style.display='none'"/>
+          </div>
+          <div class="rivalry-team-name" id="rivalry-name1">—</div>
+          <div class="rivalry-pace accent" id="rivalry-pace1">—W</div>
+        </div>
+        <div class="rivalry-vs-col">
+          <div class="vs-text">VS</div>
+          <div class="gap-badge" id="rivalry-gap">—W<br>apart</div>
+        </div>
+        <div class="rivalry-team">
+          <div class="rivalry-logo-wrap">
+            <img id="rivalry-logo2" src="" alt="" onerror="this.style.display='none'"/>
+          </div>
+          <div class="rivalry-team-name" id="rivalry-name2">—</div>
+          <div class="rivalry-pace red" id="rivalry-pace2">—W</div>
+        </div>
+      </div>
+
+      <div class="divider"></div>
+      <div class="hed sm fade-in fade-in-d2" id="rivalry-narrative">The gap just widened.</div>
+    </div>
+
+    <div class="slide-footer fade-in fade-in-d3">
+      <div class="footer-url">TrackTheSeason.com</div>
+      <div class="footer-slide-num">04 / 07</div>
+    </div>
+  </div>
+
+  <!-- ══ SLIDE 5: PAYROLL EFFICIENCY ════════════════ -->
+  <div class="slide" id="slide-4">
+    <div class="tts-bar">
+      <div class="tts-logo-wrap">
+        <div class="tts-monogram">TTS</div>
+        <div class="tts-wordmark">TRACK THE <span>SEASON</span></div>
+      </div>
+      <div class="live-badge"><div class="live-dot"></div>LIVE</div>
+    </div>
+
+    <div style="flex:1;display:flex;flex-direction:column;justify-content:center;gap:0">
+      <div class="eyebrow slide-up">💰 PAYROLL EFFICIENCY</div>
+      <div class="hed sm slide-up slide-up-d1">Cost per projected win</div>
+      <div class="divider"></div>
+
+      <div class="slide-up slide-up-d2" style="margin-bottom:12px">
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:20px;font-weight:700;
+          letter-spacing:.12em;text-transform:uppercase;color:rgba(34,255,119,.6);margin-bottom:16px">
+          💚 Best Value
+        </div>
+        <div class="payroll-row best">
+          <div class="payroll-logo"><img id="best-logo" src="" alt="" onerror="this.style.display='none'"/></div>
+          <div class="payroll-name" id="best-name">—</div>
+          <div class="payroll-val accent" id="best-cpw">—</div>
+        </div>
+      </div>
+
+      <div class="slide-up slide-up-d3">
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:20px;font-weight:700;
+          letter-spacing:.12em;text-transform:uppercase;color:rgba(255,77,77,.6);margin-bottom:16px">
+          🔴 Most Expensive
+        </div>
+        <div class="payroll-row worst">
+          <div class="payroll-logo"><img id="worst-logo" src="" alt="" onerror="this.style.display='none'"/></div>
+          <div class="payroll-name" id="worst-name">—</div>
+          <div class="payroll-val red" id="worst-cpw">—</div>
+        </div>
+      </div>
+
+      <div class="divider"></div>
+      <div class="hed sm fade-in fade-in-d3">Same league.<br><span class="accent">Different receipts.</span></div>
+    </div>
+
+    <div class="slide-footer fade-in fade-in-d3">
+      <div class="footer-url">TrackTheSeason.com</div>
+      <div class="footer-slide-num">05 / 07</div>
+    </div>
+  </div>
+
+  <!-- ══ SLIDE 6: CHAOS INDEX ═══════════════════════ -->
+  <div class="slide" id="slide-5">
+    <div class="tts-bar">
+      <div class="tts-logo-wrap">
+        <div class="tts-monogram">TTS</div>
+        <div class="tts-wordmark">TRACK THE <span>SEASON</span></div>
+      </div>
+      <div class="live-badge"><div class="live-dot"></div>LIVE</div>
+    </div>
+
+    <div style="flex:1;display:flex;flex-direction:column;justify-content:center">
+      <div class="eyebrow slide-up">🌀 CHAOS INDEX</div>
+
+      <div class="chaos-num-wrap fade-in fade-in-d1">
+        <div class="chaos-big-num" id="chaos-num">16</div>
+        <div class="chaos-denom">of 30 teams</div>
+      </div>
+
+      <div class="chaos-bar-wrap slide-up slide-up-d2">
+        <div class="chaos-track"><div class="chaos-fill" id="chaos-fill"></div></div>
+        <div style="display:flex;justify-content:space-between;margin-top:12px;
+          font-family:'IBM Plex Mono',monospace;font-size:18px;color:rgba(255,255,255,.3)">
+          <span>0</span><span>15</span><span>30</span>
+        </div>
+      </div>
+
+      <div class="divider"></div>
+      <div class="hed sm fade-in fade-in-d2" id="chaos-pct-line">53% of MLB</div>
+      <div class="subhed fade-in fade-in-d3">Baseball isn't following<br>last year's script.</div>
+    </div>
+
+    <div class="slide-footer fade-in fade-in-d3">
+      <div class="footer-url">TrackTheSeason.com</div>
+      <div class="footer-slide-num">06 / 07</div>
+    </div>
+  </div>
+
+  <!-- ══ SLIDE 7: CTA ═══════════════════════════════ -->
+  <div class="slide" id="slide-6">
+    <div class="tts-bar">
+      <div class="tts-logo-wrap">
+        <div class="tts-monogram">TTS</div>
+        <div class="tts-wordmark">TRACK THE <span>SEASON</span></div>
+      </div>
+      <div class="live-badge"><div class="live-dot"></div>LIVE</div>
+    </div>
+
+    <div style="flex:1;display:flex;flex-direction:column;justify-content:center;gap:24px">
+      <div class="eyebrow slide-up">YOUR TEAM. YOUR SEASON.</div>
+      <div class="hed lg slide-up slide-up-d1">Track<br>your<br>team.</div>
+      <div class="divider-short fade-in fade-in-d2"></div>
+      <div class="cta-url glow-pulse fade-in fade-in-d2">TrackTheSeason<br>.com</div>
+      <div class="cta-sub fade-in fade-in-d3">Follow for daily MLB pace updates.<br>Where is your team headed?</div>
+      <div class="cta-btn-row fade-in fade-in-d3">
+        <a href="https://tracktheseason.com" class="cta-btn cta-btn-primary">↗ Track Now</a>
+        <button class="cta-btn cta-btn-ghost" onclick="shareReel()">⬆ Share</button>
+      </div>
+    </div>
+
+    <div class="slide-footer fade-in fade-in-d3">
+      <div class="footer-url">TrackTheSeason.com</div>
+      <div class="footer-slide-num">07 / 07</div>
+    </div>
+  </div>
+
+  <!-- PROGRESS DOTS -->
+  <div class="progress-wrap" id="progressWrap"></div>
+
+</div><!-- /stage -->
+</div><!-- /stage-wrap -->
+
+<!-- CONTROLS -->
+<div class="controls">
+  <button class="ctrl-btn" id="prevBtn" onclick="prevSlide()">← Prev</button>
+  <button class="ctrl-btn playing" id="playBtn" onclick="togglePlay()">⏸ Pause</button>
+  <button class="ctrl-btn" id="nextBtn" onclick="nextSlide()">Next →</button>
+  <button class="ctrl-btn" onclick="restartReel()">↺ Restart</button>
+</div>
+
+<script>
+/* ══════════════════════════════════════════════════════
+   DATA + CONFIG
+══════════════════════════════════════════════════════ */
+const API          = 'https://statsapi.mlb.com/api/v1';
+const CURRENT_YEAR = new Date().getFullYear();
+const COMPARE_YEAR = CURRENT_YEAR - 1;
+const SEASON_GAMES = 162;
+const CHAOS_THRESHOLD = 5;
+
+/* Slide durations in ms */
+const SLIDE_DURATIONS = [3000, 3500, 3500, 3500, 3500, 3000, 4000];
+const TOTAL_SLIDES    = 7;
+
+/* Payrolls 2026 (update annually) */
+const PAYROLLS = {
+  108:226,109:164,110:207,111:218,112:233,113:119,114:152,115:107,
+  116:129,117:233,118:122,119:311,120:102,121:319,133:75,134:88,
+  135:245,136:159,137:162,138:186,139:105,140:227,141:213,142:173,
+  143:241,144:284,145:79,146:87,147:313,158:138,
+};
+
+const RIVALRY_PAIRS = [
+  {t1:147,t2:111,label:'Yankees vs Red Sox'},
+  {t1:143,t2:121,label:'Phillies vs Mets'},
+  {t1:119,t2:137,label:'Dodgers vs Giants'},
+  {t1:144,t2:121,label:'Braves vs Mets'},
+];
+
+/* ══ Helpers ══════════════════════════════════════════ */
+const winPct  = (w,l)=>(w+l)?w/(w+l):0;
+const projWins= (w,gp)=>gp?Math.round((w/gp)*SEASON_GAMES):null;
+const logoUrl = id=>`https://www.mlbstatic.com/team-logos/${id}.svg`;
+
+async function loadGames(teamId, year){
+  const res  = await fetch(`${API}/schedule?sportId=1&teamId=${teamId}&season=${year}&gameTypes=R`);
+  const data = await res.json();
+  const games=[];
+  for(const d of data.dates||[]) for(const g of d.games||[]){
+    if(g.status?.abstractGameState!=='Final') continue;
+    const h=g.teams?.home,a=g.teams?.away;
+    if(h?.score==null||a?.score==null||h.score===a.score) continue;
+    const isHome=String(h.team.id)===String(teamId);
+    games.push(isHome?h.score>a.score:a.score>h.score);
+  }
+  return games;
+}
+
+/* ══ Populate slides with live data ══════════════════ */
+async function loadData(){
+  const teamsRes  = await fetch(`${API}/teams?sportId=1&activeStatus=Y`);
+  const teamsData = await teamsRes.json();
+  const teams     = teamsData.teams.filter(t=>t.sport?.id===1);
+
+  const BATCH=6;
+  const allData=[];
+  for(let i=0;i<teams.length;i+=BATCH){
+    const batch=teams.slice(i,i+BATCH);
+    const results=await Promise.allSettled(batch.map(async t=>{
+      const [cur,prev]=await Promise.all([loadGames(t.id,CURRENT_YEAR),loadGames(t.id,COMPARE_YEAR)]);
+      const gp=cur.length,w=cur.filter(Boolean).length,l=gp-w;
+      const l10=cur.slice(-10),l10w=l10.filter(Boolean).length;
+      const proj=projWins(w,gp);
+      let delta=null;
+      if(prev.length>=gp&&gp>0) delta=w-prev.slice(0,gp).filter(Boolean).length;
+      return{id:t.id,name:t.clubName||t.name,w,l,gp,proj,l10w,l10l:l10.length-l10w,delta};
+    }));
+    for(const r of results) if(r.status==='fulfilled') allData.push(r.value);
+  }
+
+  const valid=allData.filter(t=>t.gp>=10);
+
+  /* SLIDE 2 — Biggest riser */
+  const risers=[...valid].filter(t=>t.delta!==null).sort((a,b)=>b.delta-a.delta);
+  const top=risers[0];
+  if(top){
+    document.getElementById('riser-name').textContent=top.name;
+    document.getElementById('riser-logo').src=logoUrl(top.id);
+    document.getElementById('riser-record').textContent=`${top.w}–${top.l}`;
+    document.getElementById('riser-l10').textContent=`${top.l10w}–${top.l10l} L10`;
+    document.getElementById('riser-delta').textContent=`+${top.delta}W vs ${COMPARE_YEAR}`;
+    document.getElementById('riser-tag').textContent=
+      top.delta>=10?'↑ Breaking Out':top.delta>=5?'↑ Quietly Surging':'↑ Moving Up';
+  }
+
+  /* SLIDE 3 — Biggest faller */
+  const fallers=[...valid].filter(t=>t.delta!==null).sort((a,b)=>a.delta-b.delta);
+  const bot=fallers[0];
+  if(bot){
+    document.getElementById('faller-name').textContent=bot.name;
+    document.getElementById('faller-logo').src=logoUrl(bot.id);
+    document.getElementById('faller-record').textContent=`${bot.w}–${bot.l}`;
+    document.getElementById('faller-l10').textContent=`${bot.l10w}–${bot.l10l} L10`;
+    document.getElementById('faller-delta').textContent=`${bot.delta}W vs ${COMPARE_YEAR}`;
+    document.getElementById('faller-tag').textContent=
+      bot.delta<=-10?'↓ In Freefall':bot.delta<=-5?'↓ Cooling Off':'↓ Trending Down';
+  }
+
+  /* SLIDE 4 — Best rivalry */
+  const rivalryMap=new Map(valid.map(t=>[t.id,t]));
+  let bestRivalry=null,biggestGap=0;
+  for(const r of RIVALRY_PAIRS){
+    const t1=rivalryMap.get(r.t1),t2=rivalryMap.get(r.t2);
+    if(!t1||!t2||!t1.proj||!t2.proj) continue;
+    const gap=Math.abs(t1.proj-t2.proj);
+    if(gap>biggestGap){biggestGap=gap;bestRivalry={...r,t1,t2,gap};}
+  }
+  if(bestRivalry){
+    const ahead=bestRivalry.t1.proj>=bestRivalry.t2.proj?bestRivalry.t1:bestRivalry.t2;
+    const behind=ahead===bestRivalry.t1?bestRivalry.t2:bestRivalry.t1;
+    document.getElementById('rivalry-label').textContent=bestRivalry.label;
+    document.getElementById('rivalry-logo1').src=logoUrl(bestRivalry.t1.id);
+    document.getElementById('rivalry-logo2').src=logoUrl(bestRivalry.t2.id);
+    document.getElementById('rivalry-name1').textContent=bestRivalry.t1.name;
+    document.getElementById('rivalry-name2').textContent=bestRivalry.t2.name;
+    document.getElementById('rivalry-pace1').textContent=`${bestRivalry.t1.proj}W`;
+    document.getElementById('rivalry-pace2').textContent=`${bestRivalry.t2.proj}W`;
+    document.getElementById('rivalry-gap').textContent=`${bestRivalry.gap}W\napart`;
+    const narrative=bestRivalry.gap>=20?`${ahead.name} are running away with this rivalry.`
+      :bestRivalry.gap>=10?`${ahead.name} hold a commanding pace edge.`
+      :`The gap just widened. ${ahead.name} lead.`;
+    document.getElementById('rivalry-narrative').textContent=narrative;
+  }
+
+  /* SLIDE 5 — Payroll efficiency */
+  const withPayroll=valid.filter(t=>PAYROLLS[t.id]&&t.proj>0).map(t=>{
+    const cpw=PAYROLLS[t.id]/t.proj;
+    return{...t,payroll:PAYROLLS[t.id],cpw};
+  }).sort((a,b)=>a.cpw-b.cpw);
+  const bestVal=withPayroll[0],worstVal=withPayroll[withPayroll.length-1];
+  const fmtCPW=v=>v>=1?`$${v.toFixed(2)}M`:`$${(v*1000).toFixed(0)}K`;
+  if(bestVal){
+    document.getElementById('best-logo').src=logoUrl(bestVal.id);
+    document.getElementById('best-name').textContent=bestVal.name;
+    document.getElementById('best-cpw').textContent=fmtCPW(bestVal.cpw)+'/W';
+  }
+  if(worstVal){
+    document.getElementById('worst-logo').src=logoUrl(worstVal.id);
+    document.getElementById('worst-name').textContent=worstVal.name;
+    document.getElementById('worst-cpw').textContent=fmtCPW(worstVal.cpw)+'/W';
+  }
+
+  /* SLIDE 6 — Chaos Index */
+  const chaotic=valid.filter(t=>t.delta!==null&&Math.abs(t.delta)>=CHAOS_THRESHOLD);
+  const pct=Math.round(chaotic.length/30*100);
+  document.getElementById('chaos-num').textContent=chaotic.length;
+  document.getElementById('chaos-pct-line').textContent=`${pct}% of MLB`;
+  /* animate bar after slide becomes active */
+  window._chaosPct=(chaotic.length/30)*100;
+}
+
+/* ══ Slide engine ══════════════════════════════════════ */
+let current=0, playing=true, timer=null, progressTimer=null;
+
+function buildProgress(){
+  const wrap=document.getElementById('progressWrap');
+  wrap.innerHTML=Array.from({length:TOTAL_SLIDES},(_,i)=>
+    `<div class="progress-seg ${i<current?'done':i===current?'active':''}" id="prog-${i}">
+      <div class="fill" id="progfill-${i}"></div>
+    </div>`
+  ).join('');
+}
+
+function startProgressBar(idx){
+  const fill=document.getElementById(`progfill-${idx}`);
+  if(!fill) return;
+  fill.style.transition='none';
+  fill.style.width='0%';
+  requestAnimationFrame(()=>{
+    fill.style.transition=`width ${SLIDE_DURATIONS[idx]}ms linear`;
+    fill.style.width='100%';
+  });
+}
+
+function goTo(idx){
+  /* Deactivate current */
+  document.getElementById(`slide-${current}`)?.classList.remove('active');
+  document.getElementById(`prog-${current}`)?.classList.remove('active');
+  document.getElementById(`prog-${current}`)?.classList.add('done');
+
+  current = (idx + TOTAL_SLIDES) % TOTAL_SLIDES;
+
+  /* Activate new */
+  const sl=document.getElementById(`slide-${current}`);
+  sl.classList.add('active');
+  /* Restart animations by re-triggering */
+  sl.querySelectorAll('[class*="slide-up"],[class*="fade-in"]').forEach(el=>{
+    el.style.animation='none';
+    void el.offsetWidth;
+    el.style.animation='';
+  });
+
+  /* Rebuild progress */
+  buildProgress();
+  document.getElementById(`prog-${current}`).classList.add('active');
+  if(playing) startProgressBar(current);
+
+  /* Animate chaos bar when on that slide */
+  if(current===5 && window._chaosPct){
+    setTimeout(()=>{
+      const fill=document.getElementById('chaos-fill');
+      if(fill){fill.style.width='0%';requestAnimationFrame(()=>{fill.style.width=window._chaosPct+'%';});}
+    },400);
+  }
+
+  if(playing){
+    clearTimeout(timer);
+    timer=setTimeout(()=>goTo(current+1), SLIDE_DURATIONS[current]);
+  }
+}
+
+function nextSlide(){ clearTimeout(timer); goTo(current+1); }
+function prevSlide(){ clearTimeout(timer); goTo(current-1); }
+function restartReel(){ clearTimeout(timer); current=-1; playing=true; document.getElementById('playBtn').textContent='⏸ Pause'; document.getElementById('playBtn').classList.add('playing'); goTo(0); }
+function togglePlay(){
+  playing=!playing;
+  const btn=document.getElementById('playBtn');
+  if(playing){
+    btn.textContent='⏸ Pause'; btn.classList.add('playing');
+    startProgressBar(current);
+    timer=setTimeout(()=>goTo(current+1), SLIDE_DURATIONS[current]);
+  } else {
+    btn.textContent='▶ Play'; btn.classList.remove('playing');
+    clearTimeout(timer);
+    const fill=document.getElementById(`progfill-${current}`);
+    if(fill){ const w=getComputedStyle(fill).width; fill.style.transition='none'; fill.style.width=w; }
+  }
+}
+window.shareReel=function(){
+  if(navigator.share) navigator.share({title:'MLB Daily Pulse',url:'https://tracktheseason.com'});
+  else navigator.clipboard?.writeText('https://tracktheseason.com').then(()=>alert('Link copied!'));
+};
+
+/* ══ Scale stage to viewport ══════════════════════════ */
+function scaleStage(){
+  const stage=document.getElementById('stage');
+  const vw=window.innerWidth, vh=window.innerHeight;
+  const scaleX=vw/1080, scaleY=vh/1920;
+  const scale=Math.min(scaleX,scaleY);
+  stage.style.transform=`scale(${scale})`;
+  stage.style.marginTop=`${(vh-1920*scale)/2}px`;
+}
+window.addEventListener('resize',scaleStage);
+scaleStage();
+
+/* ══ BOOT ═════════════════════════════════════════════ */
+buildProgress();
+document.getElementById(`prog-0`).classList.add('active');
+if(playing){
+  startProgressBar(0);
+  timer=setTimeout(()=>goTo(1), SLIDE_DURATIONS[0]);
+}
+loadData().catch(console.error);
+</script>
+</body>
+</html>

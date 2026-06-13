@@ -306,13 +306,14 @@ body{font-family:var(--sans);background:var(--ink);color:#e8edf8;min-height:100v
 <!-- Google tag -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-DCSQPGSY1D"></script>
 <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-DCSQPGSY1D');</script>
+<link rel="canonical" href="https://tracktheseason.com/compare"/>
 </head>
 <body>
 
 <nav class="site-nav">
   <div class="wrap nav-inner">
-    <a href="index.html" class="back-btn">← All Teams</a>
-    <a href="index.html" class="nav-logo">
+    <a href="/" class="back-btn">← All Teams</a>
+    <a href="/" class="nav-logo">
       <div class="nav-monogram">TTS</div>
       <div class="nav-wordmark">TRACK THE <span class="accent">SEASON</span></div>
     </a>
@@ -399,7 +400,7 @@ body{font-family:var(--sans);background:var(--ink);color:#e8edf8;min-height:100v
   </div>
 
   <footer class="site-footer">
-    <a href="index.html" class="footer-logo">TRACK THE <span class="accent">SEASON</span></a>
+    <a href="/" class="footer-logo">TRACK THE <span class="accent">SEASON</span></a>
     <span>tracktheseason.com · Not affiliated with MLB</span>
   </footer>
 </div>
@@ -824,8 +825,8 @@ async function runComparison(){
       this.textContent=ok?'✓ Copied!':'Copy failed';
       setTimeout(()=>this.textContent='⧉ Copy link',2000);
     };
-    document.getElementById('team1TrackerBtn').href=`tracker.html?team=${t1.id}&season=${CURRENT_YEAR}`;
-    document.getElementById('team2TrackerBtn').href=`tracker.html?team=${t2.id}&season=${CURRENT_YEAR}`;
+    document.getElementById('team1TrackerBtn').href=`/tracker.html?team=${t1.id}&season=${CURRENT_YEAR}`;
+    document.getElementById('team2TrackerBtn').href=`/tracker.html?team=${t2.id}&season=${CURRENT_YEAR}`;
     document.getElementById('team1TrackerBtn').textContent=`↗ ${t1.club}`;
     document.getElementById('team2TrackerBtn').textContent=`↗ ${t2.club}`;
 

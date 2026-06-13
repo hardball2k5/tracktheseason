@@ -225,6 +225,42 @@
     {
       "source": "/api/pulse-data",
       "destination": "/api/pulse-data.js"
+    },
+    {
+      "source": "/reel",
+      "destination": "/reel.html"
+    }
+  ],
+  "redirects": [
+    {
+      "source": "/index.html",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/tracker.html",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/compare.html",
+      "destination": "/compare",
+      "permanent": true
+    },
+    {
+      "source": "/chaos-report.html",
+      "destination": "/chaos-report",
+      "permanent": true
+    },
+    {
+      "source": "/pulse.html",
+      "destination": "/pulse",
+      "permanent": true
+    },
+    {
+      "source": "/reel.html",
+      "destination": "/reel",
+      "permanent": true
     }
   ]
 }

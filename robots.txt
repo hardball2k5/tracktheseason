@@ -1,0 +1,13 @@
+User-agent: *
+Allow: /
+
+# Disallow raw .html file URLs — use clean routes instead
+Disallow: /index.html
+Disallow: /tracker.html
+Disallow: /compare.html
+Disallow: /chaos-report.html
+Disallow: /pulse.html
+Disallow: /reel.html
+Disallow: /admin.html
+
+Sitemap: https://tracktheseason.com/sitemap.xml

@@ -576,8 +576,8 @@ tr.cur-row td{background:rgba(26,255,107,.05)}
 
 <nav class="site-nav">
   <div class="wrap nav-inner">
-    <a href="index.html" class="back-btn">← All Teams</a>
-    <a href="index.html" class="nav-logo">
+    <a href="/" class="back-btn">← All Teams</a>
+    <a href="/" class="nav-logo">
       <div class="nav-monogram">TTS</div>
       <div class="nav-wordmark">TRACK THE <span class="accent">SEASON</span></div>
     </a>
@@ -600,7 +600,7 @@ tr.cur-row td{background:rgba(26,255,107,.05)}
       <div class="hero-record" id="heroRecord"></div>
     </div>
     <span id="heroBadge" class="hero-badge badge-neu"></span>
-    <a id="compareTeamBtn" href="compare.html" class="compare-my-team-btn" style="display:none">⚔️ Compare My Team →</a>
+    <a id="compareTeamBtn" href="/compare" class="compare-my-team-btn" style="display:none">⚔️ Compare My Team →</a>
   </div>
 
   <!-- Popular matchups — shown after team loads -->
@@ -811,7 +811,7 @@ tr.cur-row td{background:rgba(26,255,107,.05)}
   </div>
 
   <footer class="site-footer">
-    <a href="index.html" class="footer-logo">TRACK THE <span class="accent">SEASON</span></a>
+    <a href="/" class="footer-logo">TRACK THE <span class="accent">SEASON</span></a>
     <p class="footer-note">tracktheseason.com · Data: MLB Stats API · Not affiliated with MLB or its clubs</p>
   </footer>
 </div>
@@ -2110,7 +2110,7 @@ function renderTalkingPoints(teamName, ins, teamId, year){
       ${pts.slice(0,4).map(p=>`
         <div class="tp-item ${p.type==='panic'?'panic':p.type==='momentum'?'momentum':''}">
           <div class="tp-item-text">${p.isCompare
-            ?`<a href="compare.html?team1=${p.teamId}" style="color:var(--signal);text-decoration:none;font-weight:600">${p.text}</a>`
+            ?`<a href="/compare?team1=${p.teamId}" style="color:var(--signal);text-decoration:none;font-weight:600">${p.text}</a>`
             :p.text
           }</div>
           ${!p.isCompare?`<button class="tp-item-share" onclick="shareTalkingPoint(this,'${encodeURIComponent(p.text+'\n\ntracktheseason.com\n\n#TrackTheSeason #MLB')}','https://tracktheseason.com/${p.teamId||teamId}')">⬆</button>`:''}
@@ -2239,7 +2239,7 @@ async function update(){
     /* Compare My Team button */
     const compareBtn=document.getElementById('compareTeamBtn');
     if(compareBtn){
-      compareBtn.href=`compare.html?team1=${teamId}`;
+      compareBtn.href=`/compare?team1=${teamId}`;
       compareBtn.style.display='inline-flex';
     }
 
