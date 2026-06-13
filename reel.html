@@ -337,7 +337,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000}
 
       <div class="team-block up slide-up slide-up-d2">
         <div class="team-logo-circle">
-          <img id="riser-logo" src="" alt="" onerror="this.style.display='none'"/>
+          <img id="riser-logo" src="" alt="" loading="eager" onerror="this.style.display='none'"/>
         </div>
         <div class="team-info">
           <div class="team-record" id="riser-record">—</div>
@@ -376,7 +376,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000}
 
       <div class="team-block down slide-up slide-up-d2">
         <div class="team-logo-circle">
-          <img id="faller-logo" src="" alt="" onerror="this.style.display='none'"/>
+          <img id="faller-logo" src="" alt="" loading="eager" onerror="this.style.display='none'"/>
         </div>
         <div class="team-info">
           <div class="team-record" id="faller-record">—</div>
@@ -416,7 +416,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000}
       <div class="rivalry-row slide-up slide-up-d2">
         <div class="rivalry-team">
           <div class="rivalry-logo-wrap">
-            <img id="rivalry-logo1" src="" alt="" onerror="this.style.display='none'"/>
+            <img id="rivalry-logo1" src="" alt="" loading="eager" onerror="this.style.display='none'"/>
           </div>
           <div class="rivalry-team-name" id="rivalry-name1">—</div>
           <div class="rivalry-pace accent" id="rivalry-pace1">—W</div>
@@ -427,7 +427,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000}
         </div>
         <div class="rivalry-team">
           <div class="rivalry-logo-wrap">
-            <img id="rivalry-logo2" src="" alt="" onerror="this.style.display='none'"/>
+            <img id="rivalry-logo2" src="" alt="" loading="eager" onerror="this.style.display='none'"/>
           </div>
           <div class="rivalry-team-name" id="rivalry-name2">—</div>
           <div class="rivalry-pace red" id="rivalry-pace2">—W</div>
@@ -465,7 +465,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000}
           💚 Best Value
         </div>
         <div class="payroll-row best">
-          <div class="payroll-logo"><img id="best-logo" src="" alt="" onerror="this.style.display='none'"/></div>
+          <div class="payroll-logo"><img id="best-logo" src="" alt="" loading="eager" onerror="this.style.display='none'"/></div>
           <div class="payroll-name" id="best-name">—</div>
           <div class="payroll-val accent" id="best-cpw">—</div>
         </div>
@@ -477,7 +477,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000}
           🔴 Most Expensive
         </div>
         <div class="payroll-row worst">
-          <div class="payroll-logo"><img id="worst-logo" src="" alt="" onerror="this.style.display='none'"/></div>
+          <div class="payroll-logo"><img id="worst-logo" src="" alt="" loading="eager" onerror="this.style.display='none'"/></div>
           <div class="payroll-name" id="worst-name">—</div>
           <div class="payroll-val red" id="worst-cpw">—</div>
         </div>
@@ -908,12 +908,36 @@ async function boot(){
   const bestVal=withPayroll[0]||null;
   const worstVal=withPayroll[withPayroll.length-1]||null;
 
+  /* Preload all logos that will be used — set src before slides are visible
+     so browser fetches them in the background */
+  const logoIds = [
+    top?.id, bot?.id,
+    rivalry?.t1?.id, rivalry?.t2?.id,
+    bestVal?.id, worstVal?.id,
+  ].filter(Boolean);
+  logoIds.forEach(id => { const img = new Image(); img.src = logoUrl(id); });
+
   /* Build manifest and filter to valid slides */
   const manifest = buildManifest(allData, chaotic, top, bot, rivalry, bestVal, worstVal);
   ACTIVE_SLIDES  = manifest.filter(s=>s.valid);
 
   /* Run setup for all valid slides */
   ACTIVE_SLIDES.forEach(s=>{ try{ s.setup(); }catch(e){ console.warn('setup failed',s.id,e); } });
+
+  /* Force-set all logo srcs now (not deferred) so browser fetches immediately */
+  const logoMap = {
+    'riser-logo':    top?.id,
+    'faller-logo':   bot?.id,
+    'rivalry-logo1': rivalry?.t1?.id,
+    'rivalry-logo2': rivalry?.t2?.id,
+    'best-logo':     bestVal?.id,
+    'worst-logo':    worstVal?.id,
+  };
+  Object.entries(logoMap).forEach(([elId, teamId])=>{
+    if(!teamId) return;
+    const el = document.getElementById(elId);
+    if(el) el.src = logoUrl(teamId);
+  });
 
   /* Hide all slides, reset */
   document.querySelectorAll('.slide').forEach(el=>el.classList.remove('active'));
