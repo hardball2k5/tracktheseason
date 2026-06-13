@@ -611,57 +611,116 @@ const logoUrl  = id => `https://www.mlbstatic.com/team-logos/${id}.svg`;
 const isReal   = v  => v !== null && v !== undefined && !Number.isNaN(v) && v !== '' && v !== '—';
 const fmtCPW   = v  => v>=1 ? `$${v.toFixed(2)}M` : `$${(v*1000).toFixed(0)}K`;
 
-/* ── Load schedule ───────────────────────────────────── */
-async function loadGames(teamId, year){
-  try {
-    const res  = await fetch(`${API}/schedule?sportId=1&teamId=${teamId}&season=${year}&gameTypes=R`);
-    const data = await res.json();
-    const games=[];
-    for(const d of data.dates||[]) for(const g of d.games||[]){
-      if(g.status?.abstractGameState!=='Final') continue;
-      const h=g.teams?.home, a=g.teams?.away;
-      if(h?.score==null||a?.score==null||h.score===a.score) continue;
-      const isHome=String(h.team.id)===String(teamId);
-      games.push(isHome ? h.score>a.score : a.score>h.score);
+const SHEET_CSV = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTXMt3G9Q0ZroM_P5jUaetEBCqag8q8KTzlNIzH7LM7euuEQWH7LHa-VFbzpIkTrB911K70L39v5Zd3/pub?output=csv';
+
+const TEAM_NAMES_MAP = {
+  108:'Angels',109:'Diamondbacks',110:'Orioles',111:'Red Sox',112:'Cubs',
+  113:'Reds',114:'Guardians',115:'Rockies',116:'Tigers',117:'Astros',
+  118:'Royals',119:'Dodgers',120:'Nationals',121:'Mets',133:'Athletics',
+  134:'Pirates',135:'Padres',136:'Mariners',137:'Giants',138:'Cardinals',
+  139:'Rays',140:'Rangers',141:'Blue Jays',142:'Twins',143:'Phillies',
+  144:'Braves',145:'White Sox',146:'Marlins',147:'Yankees',158:'Brewers',
+};
+
+/* ── Parse the Google Sheet CSV ─────────────────────── */
+function parseCSV(text){
+  const lines = text.trim().split('\n');
+  const headers = lines[0].split(',').map(h=>h.replace(/"/g,'').trim().toLowerCase());
+  return lines.slice(1).map(line=>{
+    const cols = [];
+    let cur='', inQ=false;
+    for(const ch of line){
+      if(ch==='"'){inQ=!inQ;continue;}
+      if(ch===','&&!inQ){cols.push(cur.trim());cur='';continue;}
+      cur+=ch;
     }
-    return games;
-  } catch { return []; }
+    cols.push(cur.trim());
+    const row={};
+    headers.forEach((h,i)=>row[h]=cols[i]?.replace(/"/g,'')||'');
+    return row;
+  }).filter(r=>r.team||r.teamname||r.name);
 }
 
-/* ── Load all 30 teams ───────────────────────────────── */
+/* ── Load all 30 teams from Sheet CSV ───────────────── */
 async function loadAllData(){
+  let rows = [];
+  try {
+    const res  = await fetch(SHEET_CSV);
+    const text = await res.text();
+    rows = parseCSV(text);
+  } catch(e) {
+    console.warn('Sheet CSV failed, falling back to MLB API:', e.message);
+    return loadAllDataFromAPI();
+  }
+
+  const data = rows.map(r=>{
+    /* Try every possible column name variant */
+    const get = (...keys) => { for(const k of keys){ if(r[k]!==undefined&&r[k]!=='') return r[k]; } return null; };
+    const num = (...keys) => { const v=get(...keys); return v!==null ? Number(v) : null; };
+
+    const id   = num('teamid','id','team_id');
+    if(!id) return null;
+
+    const name = get('clubname','teamname','name','club','team') || TEAM_NAMES_MAP[id] || 'Unknown';
+    const w    = num('wins','w','curwins') || 0;
+    const l    = num('losses','l','curlosses') || 0;
+    const gp   = num('gp','g','gamesplayed') || (w+l);
+    const proj = num('projwins','proj','projectedwins','pace');
+    const delta= num('delta','deltawins','vsLastYear');
+    const l10w = num('l10w','lasttenwins','last10w') || 0;
+    const l10l = num('l10l','lasttenlosses','last10l') || 0;
+
+    if(gp < 10) return null;
+    return {id, name, w, l, gp, proj, delta, l10w, l10l};
+  }).filter(Boolean);
+
+  /* If sheet has data, use it; otherwise fall back to API */
+  if(data.length >= 20) return data;
+  console.warn('Sheet had insufficient data, falling back to MLB API');
+  return loadAllDataFromAPI();
+}
+
+/* ── MLB API fallback ────────────────────────────────── */
+async function loadAllDataFromAPI(){
   const teamsRes  = await fetch(`${API}/teams?sportId=1&activeStatus=Y`);
   const teamsData = await teamsRes.json();
   const teams     = teamsData.teams.filter(t=>t.sport?.id===1).slice(0,30);
-
-  const BATCH=5;
-  const allData=[];
+  const BATCH=5, allData=[];
   for(let i=0;i<teams.length;i+=BATCH){
     const batch=teams.slice(i,i+BATCH);
     const results=await Promise.allSettled(batch.map(async t=>{
-      const [cur,prev] = await Promise.all([
-        loadGames(t.id, CURRENT_YEAR),
-        loadGames(t.id, COMPARE_YEAR),
+      const [cur,prev]=await Promise.all([
+        fetchGames(t.id,CURRENT_YEAR), fetchGames(t.id,COMPARE_YEAR)
       ]);
-      const gp=cur.length, w=cur.filter(Boolean).length, l=gp-w;
-      const l10=cur.slice(-10), l10w=l10.filter(Boolean).length;
+      const gp=cur.length,w=cur.filter(Boolean).length,l=gp-w;
+      const l10=cur.slice(-10),l10w=l10.filter(Boolean).length;
       const proj=projWins(w,gp);
-      /* Delta: compare wins at same GP point — use min(gp, prev.length) */
       let delta=null;
-      if(prev.length>0 && gp>0){
-        const useGp = Math.min(gp, prev.length);
-        const curW  = cur.slice(0,useGp).filter(Boolean).length;
-        const prevW = prev.slice(0,useGp).filter(Boolean).length;
-        delta = curW - prevW;
+      if(prev.length>0&&gp>0){
+        const useGp=Math.min(gp,prev.length);
+        delta=cur.slice(0,useGp).filter(Boolean).length - prev.slice(0,useGp).filter(Boolean).length;
       }
-      return {
-        id:t.id, name:t.clubName||t.name,
-        w, l, gp, proj, l10w, l10l:l10.length-l10w, delta,
-      };
+      return{id:t.id,name:t.clubName||t.name,w,l,gp,proj,l10w,l10l:l10.length-l10w,delta};
     }));
-    for(const r of results) if(r.status==='fulfilled' && r.value) allData.push(r.value);
+    for(const r of results) if(r.status==='fulfilled'&&r.value) allData.push(r.value);
   }
   return allData.filter(t=>t.gp>=10);
+}
+
+async function fetchGames(teamId,year){
+  try{
+    const res=await fetch(`${API}/schedule?sportId=1&teamId=${teamId}&season=${year}&gameTypes=R`);
+    const data=await res.json();
+    const games=[];
+    for(const d of data.dates||[])for(const g of d.games||[]){
+      if(g.status?.abstractGameState!=='Final')continue;
+      const h=g.teams?.home,a=g.teams?.away;
+      if(h?.score==null||a?.score==null||h.score===a.score)continue;
+      const isHome=String(h.team.id)===String(teamId);
+      games.push(isHome?h.score>a.score:a.score>h.score);
+    }
+    return games;
+  }catch{return[];}
 }
 
 /* ════════════════════════════════════════════════════════
