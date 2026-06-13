@@ -76,7 +76,7 @@ async function chaosCount(year, gp) {
 
 function buildSVG(year, rows, gpLabel) {
   const W = 1200, H = 630;
-  const today = new Date().toLocaleDateString('en-US', {month:'long', day:'numeric', year:'numeric'});
+  const today = new Date().toLocaleDateString('en-US', {month:'long', day:'numeric', year:'numeric', timeZone:'America/New_York'});
   const currentYear = new Date().getFullYear();
 
   /* Layout */
