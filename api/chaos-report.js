@@ -264,7 +264,7 @@ function chaosPanel(teams, x, y, w, isRiser, year) {
 
 function buildChaosSVG(data) {
   const { risers, fallers, chaosCount, pct, year, avgGp } = data;
-  const today    = new Date().toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'});
+  const today    = new Date().toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric',timeZone:'America/New_York'});
   const COL_W    = (W - PAD*2 - 16) / 2;
   const COL_Y    = 720;
   const question = chaosQuestion(risers, fallers, chaosCount);
@@ -398,7 +398,7 @@ function hotColdRow(team, x, y, w, rank) {
 
 function buildHotColdSVG(data) {
   const { hotTeams, coldTeams, avgGp, year } = data;
-  const today    = new Date().toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'});
+  const today    = new Date().toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric',timeZone:'America/New_York'});
   const hot1     = hotTeams[0];
   const cold1    = coldTeams[0];
   const rowH     = 72;
@@ -557,7 +557,7 @@ function paceRow(team, x, y, w, rank, maxProj, minProj) {
 
 function buildPaceLeadersSVG(data) {
   const { rankedTeams, avgGp, year } = data;
-  const today    = new Date().toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'});
+  const today    = new Date().toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric',timeZone:'America/New_York'});
   const top      = rankedTeams[0];
   const contenders  = rankedTeams.filter(t=>t.proj>=88).slice(0,8);
   const pretenders  = rankedTeams.filter(t=>t.proj<78).slice(-5).reverse();

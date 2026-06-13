@@ -336,7 +336,7 @@ ${worst ? `
 /* ── Main handler ──────────────────────────────── */
 export default async function handler(req){
   const year    = new Date().getFullYear();
-  const today   = new Date().toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'});
+  const today   = new Date().toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric',timeZone:'America/New_York'});
   const BATCH   = 6;
   const teamIds = Object.keys(PAYROLLS_2026).map(Number);
   const records = {};
