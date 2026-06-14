@@ -50,14 +50,16 @@ function parseRow(row) {
   };
 }
 
-/* Fetch all rows from the Snapshots tab via public CSV export
-   (same pattern as the main Google Sheet used by the site)     */
+/* Published CSV URL for the Snapshots tab — no auth needed */
+const SNAPSHOTS_CSV = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTXMt3G9Q0ZroM_P5jUaetEBCqag8q8KTzlNIzH7LM7euuEQWH7LHa-VFbzpIkTrB911K70L39v5Zd3/pub?gid=624116471&single=true&output=csv';
+
 async function fetchAllRows(sheetId) {
-  /* Use the publish-to-web CSV URL — no auth needed if sheet is published */
-  const csvUrl = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:csv&sheet=Snapshots`;
-  const res = await fetch(csvUrl, { headers: { 'Accept': 'text/csv' } });
-  if (!res.ok) throw new Error(`Sheet fetch failed: ${res.status}`);
+  const res = await fetch(SNAPSHOTS_CSV, {
+    headers: { 'Accept': 'text/csv, text/plain, */*' }
+  });
+  if (!res.ok) throw new Error(`CSV fetch failed: HTTP ${res.status}`);
   const text = await res.text();
+  if (!text || text.trim().startsWith('<!')) throw new Error('Got HTML instead of CSV');
   return parseCSV(text);
 }
 
@@ -98,7 +100,11 @@ export default async function handler(req) {
   try {
     allRows = await fetchAllRows(sheetId);
   } catch (e) {
-    return json({ error: e.message }, 500);
+    return json({
+      error: e.message,
+      hint: 'Make sure the Google Sheet is shared as "Anyone with link can view" AND the Snapshots tab is published to web (File → Share → Publish to web → Snapshots tab → CSV)',
+      sheetId: sheetId ? sheetId.slice(0,8)+'...' : 'NOT SET',
+    }, 500);
   }
 
   /* Skip header row */
