@@ -1981,18 +1981,24 @@ function getFavs(){ try{return JSON.parse(localStorage.getItem('tts-favs')||'[]'
 function setFavs(ids){ try{localStorage.setItem('tts-favs',JSON.stringify(ids));}catch{} }
 window.toggleFav=function(e,teamId){
   e.stopPropagation();
-  let favs=getFavs();
-  const idx=favs.indexOf(teamId);
-  if(idx>=0) favs.splice(idx,1); else favs.push(teamId);
-  setFavs(favs);
-  document.querySelectorAll(`.fav-star[data-team-id="${teamId}"]`).forEach(btn=>{
-    const active=favs.includes(teamId);
+  const favs=getFavs();
+  const isAlreadyFav = favs.includes(teamId);
+
+  /* Single team only — selecting a new team replaces the old one */
+  const newFavs = isAlreadyFav ? [] : [teamId];
+  setFavs(newFavs);
+
+  /* Update all star buttons */
+  document.querySelectorAll('.fav-star').forEach(btn=>{
+    const id=Number(btn.dataset.teamId);
+    const active=newFavs.includes(id);
     btn.classList.toggle('active',active);
     btn.textContent=active?'★':'☆';
   });
-  document.getElementById('favPinnedBar').style.display=favs.length?'block':'none';
+
+  document.getElementById('favPinnedBar').style.display=newFavs.length?'block':'none';
   applyFiltersAndSort();
-  if(favs.length>=1&&!laTeamId) showLookingAhead(favs[0],window._allData||[]);
+  if(newFavs.length>=1) showLookingAhead(newFavs[0],window._allData||[]);
 };
 /* Show pin bar if favs exist on load */
 if(getFavs().length) document.getElementById('favPinnedBar').style.display='block';
