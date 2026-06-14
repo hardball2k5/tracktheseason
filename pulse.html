@@ -632,6 +632,16 @@ async function main(){
     const apiUrl = `/api/pulse-data${dateParam ? `?date=${dateParam}` : ''}`;
     const res = await fetch(apiUrl);
     data = await res.json();
+    /* Surface API errors clearly */
+    if(data.error){
+      setRoot(`<div class="state-box">
+        <div class="state-label" style="color:#f47570">Pulse data unavailable</div>
+        <div class="state-sub" style="margin-top:12px">${data.error}</div>
+        ${data.hint?`<div class="state-sub" style="margin-top:8px;color:rgba(245,200,66,.7)">${data.hint}</div>`:''}
+        <a href="/" style="display:inline-block;margin-top:20px;color:var(--signal);font-family:var(--mono);font-size:12px">← Back to Homepage</a>
+      </div>`);
+      return;
+    }
   } catch(e) {
     setRoot(`<div class="state-box"><div class="state-label" style="color:#f47570">Could not load Pulse data.</div>
       <div class="state-sub">${e.message}</div></div>`);
