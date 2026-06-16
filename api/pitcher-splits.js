@@ -110,28 +110,24 @@ function computeSplits(games, starterMap, teamId) {
     .sort((a, b) => b.winPct - a.winPct || b.starts - a.starts);
 }
 
-/* ── Compute "everyone else" complement ─────────────── */
 function computeRest(allSplits, topIds) {
   const rest = { starts:0, wins:0, losses:0, runsScored:0, runsAllowed:0 };
+
   for (const p of allSplits) {
     if (topIds.has(p.id)) continue;
-    rest.starts    += p.starts;
-    rest.wins      += p.wins;
-    rest.losses    += p.losses;
-    rest.runsScored  += p.runsScored  * p.starts; /* re-expand from avg */
-    rest.runsAllowed += p.runsAllowed * p.starts;
+    rest.starts      += p.starts;
+    rest.wins        += p.wins;
+    rest.losses      += p.losses;
+    rest.runsScored  += p.runsScored;
+    rest.runsAllowed += p.runsAllowed;
   }
-  /* Recalculate from raw totals */
-  for (const p of allSplits) {
-    if (topIds.has(p.id)) continue;
-    rest.runsScored  = p.runsScored  * p.starts;
-    rest.runsAllowed = p.runsAllowed * p.starts;
-  }
-  rest.winPct     = rest.starts ? Math.round(rest.wins/rest.starts*1000)/1000 : 0;
-  rest.pace       = rest.starts ? Math.round((rest.wins/rest.starts)*SEASON_GAMES) : 0;
-  rest.avgScored  = rest.starts ? Math.round(rest.runsScored /rest.starts*10)/10 : 0;
-  rest.avgAllowed = rest.starts ? Math.round(rest.runsAllowed/rest.starts*10)/10 : 0;
+
+  rest.winPct     = rest.starts ? Math.round(rest.wins / rest.starts * 1000) / 1000 : 0;
+  rest.pace       = rest.starts ? Math.round((rest.wins / rest.starts) * SEASON_GAMES) : 0;
+  rest.avgScored  = rest.starts ? Math.round(rest.runsScored / rest.starts * 10) / 10 : 0;
+  rest.avgAllowed = rest.starts ? Math.round(rest.runsAllowed / rest.starts * 10) / 10 : 0;
   rest.runDiff    = rest.runsScored - rest.runsAllowed;
+
   return rest;
 }
 
