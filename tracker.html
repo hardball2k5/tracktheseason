@@ -536,8 +536,59 @@ tr.cur-row td{background:rgba(26,255,107,.05)}
   }
 }
 
+/* ── STARTER SIGNAL ──────────────────────────── */
+.starter-signal-card{background:var(--ink2);border:1px solid var(--rule);border-radius:var(--r-lg);padding:0;margin-top:14px;overflow:hidden}
+.ss-header{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;cursor:pointer;border-bottom:1px solid var(--rule2);transition:background .13s}
+.ss-header:hover{background:rgba(255,255,255,.02)}
+.ss-header-left{display:flex;align-items:center;gap:10px}
+.ss-title{font-family:var(--mono);font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.5)}
+.ss-badge{padding:2px 8px;border-radius:var(--r-pill);font-family:var(--mono);font-size:9px;font-weight:700;background:rgba(26,255,107,.1);color:var(--signal);border:1px solid rgba(26,255,107,.2);letter-spacing:.06em}
+.ss-toggle{font-size:12px;color:var(--chalk);transition:transform .2s}
+.ss-toggle.open{transform:rotate(180deg)}
+.ss-body{display:none;padding:14px 16px}
+.ss-body.open{display:block}
+.ss-narrative{font-family:var(--sans);font-size:14px;color:#e8edf8;line-height:1.55;padding:12px 14px;border-radius:var(--r-md);background:rgba(26,255,107,.04);border-left:3px solid var(--signal);margin-bottom:14px}
+.ss-season-row{display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap}
+.ss-season-btn{padding:4px 12px;border-radius:var(--r-pill);font-family:var(--mono);font-size:10px;font-weight:700;border:1px solid var(--rule);background:transparent;color:var(--chalk);cursor:pointer;transition:all .13s;letter-spacing:.04em}
+.ss-season-btn.active{background:var(--signal);border-color:var(--signal);color:var(--ink)}
+.ss-season-btn:hover:not(.active){border-color:var(--signal);color:var(--signal)}
+.ss-table{width:100%;border-collapse:collapse;font-family:var(--mono)}
+.ss-table th{font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.3);padding:6px 8px;text-align:right;border-bottom:1px solid var(--rule);white-space:nowrap}
+.ss-table th:first-child{text-align:left}
+.ss-table td{padding:10px 8px;font-size:12px;border-bottom:1px solid var(--rule2);text-align:right;color:rgba(255,255,255,.7);vertical-align:middle}
+.ss-table td:first-child{text-align:left}
+.ss-table tr:last-child td{border-bottom:none}
+.ss-table tr:hover td{background:rgba(255,255,255,.02)}
+.ss-pitcher-name{font-family:var(--mono);font-size:13px;font-weight:700;color:#e8edf8;display:block;margin-bottom:1px}
+.ss-pitcher-starts{font-size:10px;color:var(--chalk)}
+.ss-record{font-weight:700;color:#e8edf8}
+.ss-pace-val{font-weight:700}
+.ss-pace-elite{color:var(--signal)}
+.ss-pace-good{color:var(--gain-text)}
+.ss-pace-avg{color:rgba(255,255,255,.5)}
+.ss-pace-bad{color:var(--loss-text)}
+.ss-diff-pos{color:var(--signal)}
+.ss-diff-neg{color:var(--loss-text)}
+.ss-contrast{margin-top:14px;display:grid;grid-template-columns:1fr 1fr;gap:8px}
+@media(max-width:440px){.ss-contrast{grid-template-columns:1fr}}
+.ss-contrast-card{background:var(--ink3);border-radius:var(--r-md);padding:12px 14px}
+.ss-contrast-card.ace{border-left:3px solid var(--signal)}
+.ss-contrast-card.rest{border-left:3px solid rgba(255,255,255,.15)}
+.ss-contrast-label{font-family:var(--mono);font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.3);margin-bottom:6px}
+.ss-contrast-pace{font-family:var(--mono);font-size:26px;font-weight:700;letter-spacing:-.02em;line-height:1}
+.ss-contrast-pace.ace{color:var(--signal)}
+.ss-contrast-pace.rest{color:rgba(255,255,255,.3)}
+.ss-contrast-rec{font-family:var(--mono);font-size:11px;color:var(--chalk);margin-top:4px}
+.ss-contrast-names{font-family:var(--sans);font-size:11px;color:rgba(255,255,255,.4);margin-top:6px;line-height:1.4}
+.ss-share-row{display:flex;gap:7px;margin-top:14px;flex-wrap:wrap}
+.ss-share-btn{display:inline-flex;align-items:center;gap:5px;padding:7px 13px;border-radius:var(--r-sm);font-family:var(--mono);font-size:11px;font-weight:700;cursor:pointer;transition:all .13s;letter-spacing:.02em}
+.ss-share-btn.primary{background:var(--signal);color:var(--ink);border:none}
+.ss-share-btn.ghost{background:transparent;color:var(--chalk);border:1px solid var(--rule)}
+.ss-share-btn.ghost:hover{border-color:var(--signal);color:var(--signal)}
+.ss-loading{text-align:center;padding:24px;font-family:var(--mono);font-size:12px;color:var(--chalk)}
+.ss-spinner{width:20px;height:20px;border-radius:50%;border:2px solid rgba(255,255,255,.1);border-top-color:var(--signal);animation:spin .75s linear infinite;margin:0 auto 8px}
+
 /* ── FOOTER ──────────────────────────────── */
-.site-footer{border-top:1px solid var(--rule);padding:16px 0 32px;display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between}
 .footer-logo{font-family:var(--mono);font-weight:700;font-size:13px;color:var(--chalk);text-decoration:none}
 .footer-logo .accent{color:var(--signal)}
 .footer-note{font-family:var(--sans);font-size:11px;color:rgba(255,255,255,.18);line-height:1.6;width:100%}
@@ -1034,6 +1085,137 @@ async function fetchJSON(url){
   if(!r.ok) throw new Error(`API error ${r.status}`);
   return r.json();
 }
+
+/* ════════════════════════════════════════════════════════
+   STARTER SIGNAL — lazy loaded, non-blocking
+════════════════════════════════════════════════════════ */
+let _ssData=null, _ssLoaded=false, _ssView='current';
+
+function paceClass(p){return p>=100?'ss-pace-elite':p>=90?'ss-pace-good':p>=75?'ss-pace-avg':'ss-pace-bad';}
+function fmtWinPct(w){return w.toFixed(3).replace(/^0/,'');}
+function fmtDiff(d){return (d>=0?'+':'')+d;}
+
+function renderSSTable(splits){
+  if(!splits||!splits.length)
+    return '<div style="font-family:var(--mono);font-size:12px;color:var(--chalk);padding:12px 0">Not enough data yet (need 3+ starts).</div>';
+  return `<div style="overflow-x:auto"><table class="ss-table">
+    <thead><tr>
+      <th>Pitcher</th><th>W–L</th><th>Win%</th><th>Pace</th><th>R/G</th><th>RA/G</th><th>Diff</th>
+    </tr></thead>
+    <tbody>${splits.map(p=>`
+      <tr>
+        <td><span class="ss-pitcher-name">${p.name}</span><span class="ss-pitcher-starts">${p.starts} GS</span></td>
+        <td class="ss-record">${p.wins}–${p.losses}</td>
+        <td>${fmtWinPct(p.winPct)}</td>
+        <td class="ss-pace-val ${paceClass(p.pace)}">${p.pace}W</td>
+        <td>${p.avgScored}</td>
+        <td>${p.avgAllowed}</td>
+        <td class="${p.runDiff>=0?'ss-diff-pos':'ss-diff-neg'}">${fmtDiff(p.runDiff)}</td>
+      </tr>`).join('')}
+    </tbody>
+  </table></div>`;
+}
+
+function renderSSContrast(data){
+  if(!data.duo||!data.rest||data.duo.pace===0) return '';
+  const gap=data.duo.pace-data.rest.pace;
+  if(gap<10) return '';
+  return `<div class="ss-contrast">
+    <div class="ss-contrast-card ace">
+      <div class="ss-contrast-label">Top 2 Starters</div>
+      <div class="ss-contrast-pace ace">${data.duo.pace}W</div>
+      <div class="ss-contrast-rec">${data.duo.wins}–${data.duo.losses}</div>
+      <div class="ss-contrast-names">${data.duo.names}</div>
+    </div>
+    <div class="ss-contrast-card rest">
+      <div class="ss-contrast-label">Everyone Else</div>
+      <div class="ss-contrast-pace rest">${data.rest.pace}W</div>
+      <div class="ss-contrast-rec">${data.rest.wins}–${data.rest.losses}</div>
+      <div class="ss-contrast-names">${gap>=20?`${gap}W gap`:`${gap}W difference`}</div>
+    </div>
+  </div>`;
+}
+
+function renderSSContent(data){
+  const splits=_ssView==='current'?data.splits:data.prevSplits;
+  return `
+    ${data.narrative?`<div class="ss-narrative">${data.narrative}</div>`:''}
+    <div class="ss-season-row">
+      <button class="ss-season-btn ${_ssView==='current'?'active':''}" onclick="ssSetView('current')">${data.season} Season</button>
+      <button class="ss-season-btn ${_ssView==='since'?'active':''}" onclick="ssSetView('since')">Since ${data.season-1} Opening Day</button>
+    </div>
+    ${renderSSTable(splits)}
+    ${_ssView==='current'?renderSSContrast(data):''}
+    <div class="ss-share-row">
+      <button class="ss-share-btn primary" onclick="ssShare()">⬆ Share Starter Signal</button>
+      <button class="ss-share-btn ghost" id="ssCopyBtn" onclick="ssCopyText()">⧉ Copy</button>
+    </div>`;
+}
+
+window.ssSetView=function(v){
+  _ssView=v;
+  if(_ssData){const b=document.getElementById('ssBody');if(b)b.innerHTML=renderSSContent(_ssData);}
+};
+window.ssShare=async function(){
+  if(!_ssData)return;
+  const slug=teamSlugById(currentTeamId);
+  const url=slug?`https://tracktheseason.com/${slug}`:`https://tracktheseason.com`;
+  const text=(_ssData.narrative||`${_ssData.teamName} Starter Signal`)+`\n\n${url}\n\n#TrackTheSeason #MLB #StarterSignal`;
+  if(navigator.share)try{await navigator.share({title:'Starter Signal',text,url});}catch(e){}
+  else await copyToClipboard(text);
+};
+window.ssCopyText=async function(){
+  if(!_ssData)return;
+  const slug=teamSlugById(currentTeamId);
+  const url=slug?`https://tracktheseason.com/${slug}`:`https://tracktheseason.com`;
+  const lines=(_ssData.splits||[]).slice(0,3).map(p=>`${p.name}: ${p.wins}–${p.losses} (${p.pace}W pace)`);
+  const text=(_ssData.narrative||`${_ssData.teamName} Starter Signal:\n${lines.join('\n')}`)+`\n\n${url}\n\n#TrackTheSeason #MLB`;
+  const ok=await copyToClipboard(text);
+  const btn=document.getElementById('ssCopyBtn');
+  if(btn){btn.textContent=ok?'✓ Copied!':'⧉ Copy';setTimeout(()=>btn.textContent='⧉ Copy',2000);}
+};
+
+function initStarterSignal(teamId,season,tName){
+  document.getElementById('starterSignalCard')?.remove();
+  const card=document.createElement('div');
+  card.id='starterSignalCard';card.className='starter-signal-card';
+  card.innerHTML=`
+    <div class="ss-header" onclick="toggleStarterSignal()">
+      <div class="ss-header-left">
+        <span class="ss-title">⚾ Starter Signal</span>
+        <span class="ss-badge">NEW</span>
+      </div>
+      <span class="ss-toggle" id="ssToggle">⌄</span>
+    </div>
+    <div class="ss-body" id="ssBody">
+      <div class="ss-loading"><div class="ss-spinner"></div>Tap to load starter data</div>
+    </div>`;
+  const tp=document.getElementById('talkingPointsCard');
+  const ins=document.querySelector('.insights-card');
+  if(tp) tp.after(card); else if(ins) ins.after(card);
+  _ssLoaded=false; _ssData=null;
+}
+
+window.toggleStarterSignal=async function(){
+  const body=document.getElementById('ssBody');
+  const toggle=document.getElementById('ssToggle');
+  if(!body||!toggle)return;
+  const isOpen=body.classList.contains('open');
+  if(isOpen){body.classList.remove('open');toggle.classList.remove('open');return;}
+  body.classList.add('open');toggle.classList.add('open');
+  if(_ssLoaded)return;
+  body.innerHTML=`<div class="ss-loading"><div class="ss-spinner"></div>Loading starter splits…<br><span style="font-size:10px;opacity:.5">First load: 20–30 seconds</span></div>`;
+  try{
+    const yr=typeof currentYear!=='undefined'?currentYear:new Date().getFullYear();
+    const res=await fetch(`/api/pitcher-splits?teamId=${currentTeamId}&season=${yr}`);
+    const data=await res.json();
+    if(data.error)throw new Error(data.error);
+    _ssData=data;_ssLoaded=true;
+    body.innerHTML=renderSSContent(data);
+  }catch(e){
+    body.innerHTML=`<div class="ss-loading" style="color:var(--loss-text)">Could not load starter data.<br><span style="font-size:10px">${e.message}</span></div>`;
+  }
+};
 
 async function loadTeams(){
   const d = await fetchJSON(`${API}/teams?sportId=1&activeStatus=Y`);
@@ -2268,6 +2450,9 @@ async function update(){
 
     /* Talking Points */
     renderTalkingPoints(teamName, ins, currentTeamId, year);
+
+    /* Starter Signal — lazy loaded, non-blocking */
+    initStarterSignal(currentTeamId, year, teamName);
 
     /* Auto-close the accordion on mobile after updating */
     if(window.innerWidth <= 860){

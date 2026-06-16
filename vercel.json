@@ -229,6 +229,10 @@
     {
       "source": "/reel",
       "destination": "/reel.html"
+    },
+    {
+      "source": "/api/pitcher-splits",
+      "destination": "/api/pitcher-splits.js"
     }
   ],
   "redirects": [
@@ -255,6 +259,21 @@
     {
       "source": "/reel.html",
       "destination": "/reel",
+      "permanent": true
+    },
+    {
+      "source": "/redsox",
+      "destination": "/red-sox",
+      "permanent": true
+    },
+    {
+      "source": "/whitesox",
+      "destination": "/white-sox",
+      "permanent": true
+    },
+    {
+      "source": "/bluejays",
+      "destination": "/blue-jays",
       "permanent": true
     }
   ]
