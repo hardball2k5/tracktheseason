@@ -19,14 +19,23 @@
 <meta name="twitter:description" content="Live records, win pace, and momentum for the Kansas City Royals."/>
 <meta name="twitter:image"       content="https://tracktheseason.com/api/card/royals"/>
 <link rel="canonical"            href="https://tracktheseason.com/royals"/>
+<!-- Google tag (gtag.js) — fires BEFORE redirect so slug URL is tracked -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-DCSQPGSY1D"></script>
 <script>
+  window.dataLayer=window.dataLayer||[];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js',new Date());
+  gtag('config','G-DCSQPGSY1D',{
+    page_location:'https://tracktheseason.com/royals',
+    page_title:'Kansas City Royals Tracker | Track The Season'
+  });
+</script>
+<script>
+  /* Redirect to tracker — preserve any extra query params */
   const p = new URLSearchParams(window.location.search);
-  p.set('team', '118');
+  p.set('team','118');
   window.location.replace('/tracker.html?' + p.toString());
 </script>
-<!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-DCSQPGSY1D"></script>
-<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-DCSQPGSY1D');</script>
 </head>
 <body><p>Loading Kansas City Royals tracker…</p></body>
 </html>

@@ -19,14 +19,23 @@
 <meta name="twitter:description" content="Live records, win pace, and momentum for the Chicago White Sox."/>
 <meta name="twitter:image"       content="https://tracktheseason.com/api/card/white-sox"/>
 <link rel="canonical"            href="https://tracktheseason.com/white-sox"/>
+<!-- Google tag (gtag.js) — fires BEFORE redirect so slug URL is tracked -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-DCSQPGSY1D"></script>
 <script>
+  window.dataLayer=window.dataLayer||[];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js',new Date());
+  gtag('config','G-DCSQPGSY1D',{
+    page_location:'https://tracktheseason.com/white-sox',
+    page_title:'Chicago White Sox Tracker | Track The Season'
+  });
+</script>
+<script>
+  /* Redirect to tracker — preserve any extra query params */
   const p = new URLSearchParams(window.location.search);
-  p.set('team', '145');
+  p.set('team','145');
   window.location.replace('/tracker.html?' + p.toString());
 </script>
-<!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-DCSQPGSY1D"></script>
-<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-DCSQPGSY1D');</script>
 </head>
 <body><p>Loading Chicago White Sox tracker…</p></body>
 </html>
