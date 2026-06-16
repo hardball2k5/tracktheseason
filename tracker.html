@@ -1212,9 +1212,12 @@ window.toggleStarterSignal=async function(){
   if(_ssLoaded)return;
   body.innerHTML=`<div class="ss-loading"><div class="ss-spinner"></div>Loading starter splits…<br><span style="font-size:10px;opacity:.5">First load: 20–30 seconds</span></div>`;
   try{
-    const yr=typeof currentYear!=='undefined'?currentYear:new Date().getFullYear();
-    const res=await fetch(`/api/pitcher-splits?teamId=${currentTeamId}&season=${yr}`);
-    const data=await res.json();
+    const yr = Number(document.getElementById('currentSeasonSelect').value) || new Date().getFullYear();
+    const res = await fetch(`/api/pitcher-splits?teamId=${currentTeamId}&season=${yr}`);
+    if(!res.ok) throw new Error(`Starter Signal API returned ${res.status}`);
+    const contentType = res.headers.get('content-type') || '';
+    if(!contentType.includes('application/json')) throw new Error('Starter Signal API did not return JSON');
+    const data = await res.json();
     if(data.error)throw new Error(data.error);
     _ssData=data;_ssLoaded=true;
     body.innerHTML=renderSSContent(data);
@@ -2454,8 +2457,8 @@ async function update(){
       matchupWrap.style.display='block';
     } else if(matchupWrap) matchupWrap.style.display='none';
 
-    /* Talking Points */
-    renderTalkingPoints(teamName, ins, currentTeamId, year);
+    /* Talking Points — guarded so undefined `ins` doesn't crash update() */
+    try { renderTalkingPoints(teamName, ins, currentTeamId, year); } catch(e) { console.warn('renderTalkingPoints:', e.message); }
 
     /* Starter Signal — lazy loaded, non-blocking, slight delay for DOM settle */
     setTimeout(()=>initStarterSignal(currentTeamId, year, teamName), 100);
