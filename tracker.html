@@ -851,6 +851,20 @@ tr.cur-row td{background:rgba(26,255,107,.05)}
           </div>
         </div>
 
+        <!-- STARTER SIGNAL — populated by JS after update() -->
+        <div id="starterSignalCard" class="starter-signal-card" style="display:none">
+          <div class="ss-header" onclick="toggleStarterSignal()">
+            <div class="ss-header-left">
+              <span class="ss-title">⚾ Starter Signal</span>
+              <span class="ss-badge">NEW</span>
+            </div>
+            <span class="ss-toggle" id="ssToggle">⌄</span>
+          </div>
+          <div class="ss-body" id="ssBody">
+            <div class="ss-loading"><div class="ss-spinner"></div>Tap to load starter data</div>
+          </div>
+        </div>
+
         <div class="source-note">
           <strong>Data:</strong> MLB Stats API —
           <code>statsapi.mlb.com/api/v1/schedule?sportId=1&amp;teamId={id}&amp;season={year}&amp;gameTypes=R</code><br>
@@ -1176,31 +1190,16 @@ window.ssCopyText=async function(){
 };
 
 function initStarterSignal(teamId,season,tName){
-  document.getElementById('starterSignalCard')?.remove();
-  const card=document.createElement('div');
-  card.id='starterSignalCard';card.className='starter-signal-card';
-  card.innerHTML=`
-    <div class="ss-header" onclick="toggleStarterSignal()">
-      <div class="ss-header-left">
-        <span class="ss-title">⚾ Starter Signal</span>
-        <span class="ss-badge">NEW</span>
-      </div>
-      <span class="ss-toggle" id="ssToggle">⌄</span>
-    </div>
-    <div class="ss-body" id="ssBody">
-      <div class="ss-loading"><div class="ss-spinner"></div>Tap to load starter data</div>
-    </div>`;
-
-  /* Inject at end of resultsWrap — where all visible tracker content lives */
-  const resultsWrap = document.getElementById('resultsWrap');
-  const anchor =
-    document.getElementById('talkingPointsCard') ||
-    document.querySelector('.trend-horizon-card');
-
-  if(anchor) anchor.after(card);
-  else if(resultsWrap) resultsWrap.appendChild(card);
-  else document.querySelector('.results-col')?.appendChild(card);
+  /* Card is already in the HTML — just show it and reset state */
+  const card = document.getElementById('starterSignalCard');
+  if(!card) return;
+  card.style.display = 'block';
+  /* Reset so tapping re-fetches for new team */
   _ssLoaded=false; _ssData=null;
+  const body = document.getElementById('ssBody');
+  const toggle = document.getElementById('ssToggle');
+  if(body){ body.classList.remove('open'); body.innerHTML='<div class="ss-loading"><div class="ss-spinner"></div>Tap to load starter data</div>'; }
+  if(toggle) toggle.classList.remove('open');
 }
 
 window.toggleStarterSignal=async function(){
