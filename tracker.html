@@ -1191,20 +1191,15 @@ function initStarterSignal(teamId,season,tName){
       <div class="ss-loading"><div class="ss-spinner"></div>Tap to load starter data</div>
     </div>`;
 
-  /* Inject into results column — always exists after update() runs */
-  const resultsCol = document.querySelector('.results-col');
-  if(!resultsCol) return;
-
+  /* Inject at end of resultsWrap — where all visible tracker content lives */
+  const resultsWrap = document.getElementById('resultsWrap');
   const anchor =
     document.getElementById('talkingPointsCard') ||
-    document.querySelector('.trend-horizon-card') ||
-    document.querySelector('.source-note');
+    document.querySelector('.trend-horizon-card');
 
-  if(anchor && anchor.closest('.results-col')) {
-    anchor.after(card);
-  } else {
-    resultsCol.appendChild(card);
-  }
+  if(anchor) anchor.after(card);
+  else if(resultsWrap) resultsWrap.appendChild(card);
+  else document.querySelector('.results-col')?.appendChild(card);
   _ssLoaded=false; _ssData=null;
 }
 
