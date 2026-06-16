@@ -1190,9 +1190,17 @@ function initStarterSignal(teamId,season,tName){
     <div class="ss-body" id="ssBody">
       <div class="ss-loading"><div class="ss-spinner"></div>Tap to load starter data</div>
     </div>`;
-  const tp=document.getElementById('talkingPointsCard');
-  const ins=document.querySelector('.insights-card');
-  if(tp) tp.after(card); else if(ins) ins.after(card);
+
+  /* Try multiple injection points in order of preference */
+  const anchor =
+    document.getElementById('talkingPointsCard') ||
+    document.querySelector('.insights-card') ||
+    document.querySelector('.trend-horizon-card') ||
+    document.querySelector('.source-note') ||
+    document.querySelector('.chart-wrap');
+
+  if(anchor) anchor.after(card);
+  else document.querySelector('.results-col')?.appendChild(card);
   _ssLoaded=false; _ssData=null;
 }
 
