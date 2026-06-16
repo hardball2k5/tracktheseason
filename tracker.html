@@ -1190,9 +1190,21 @@ function initStarterSignal(teamId,season,tName){
     <div class="ss-body" id="ssBody">
       <div class="ss-loading"><div class="ss-spinner"></div>Tap to load starter data</div>
     </div>`;
-  const tp=document.getElementById('talkingPointsCard');
-  const ins=document.querySelector('.insights-card');
-  if(tp) tp.after(card); else if(ins) ins.after(card);
+
+  /* Inject into results column — always exists after update() runs */
+  const resultsCol = document.querySelector('.results-col');
+  if(!resultsCol) return;
+
+  const anchor =
+    document.getElementById('talkingPointsCard') ||
+    document.querySelector('.trend-horizon-card') ||
+    document.querySelector('.source-note');
+
+  if(anchor && anchor.closest('.results-col')) {
+    anchor.after(card);
+  } else {
+    resultsCol.appendChild(card);
+  }
   _ssLoaded=false; _ssData=null;
 }
 
@@ -2451,8 +2463,8 @@ async function update(){
     /* Talking Points */
     renderTalkingPoints(teamName, ins, currentTeamId, year);
 
-    /* Starter Signal — lazy loaded, non-blocking */
-    initStarterSignal(currentTeamId, year, teamName);
+    /* Starter Signal — lazy loaded, non-blocking, slight delay for DOM settle */
+    setTimeout(()=>initStarterSignal(currentTeamId, year, teamName), 100);
 
     /* Auto-close the accordion on mobile after updating */
     if(window.innerWidth <= 860){
