@@ -1386,7 +1386,12 @@ function buildSnapshot(allData){
       val: closestDiv.gap===0?'Tied':`${closestDiv.gap}W gap`,
       cls: closestDiv.gap<=3?'green':'',
       context:`${closestDiv.div.name}`,
-      href: closestDiv.teams[0]?trackerUrl(closestDiv.teams[0].team.id, closestDiv.teams[0].curGames.length):'#',
+      href: (()=>{
+        const t1=closestDiv.teams[0], t2=closestDiv.teams[1];
+        if(!t1||!t2) return '#';
+        const s1=getSlug(t1.team.id), s2=getSlug(t2.team.id);
+        return s1&&s2 ? `/${s1}-vs-${s2}` : `/compare?team1=${t1.team.id}&team2=${t2.team.id}`;
+      })(),
       icon:'⚔️'
     } : null,
   ].filter(Boolean);
