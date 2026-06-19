@@ -232,7 +232,7 @@ body{font-family:var(--sans);background:var(--ink);color:#e8edf8;min-height:100v
   <div class="breadcrumb">
     <a href="/">Home</a><span>›</span>
     <a href="/pulse">Daily Pulse</a><span>›</span>
-    <span id="bcDate">Loading…</span>
+    <span id="bcDate">Today's MLB Movement</span>
   </div>
   <div id="appRoot"></div>
   <footer class="pulse-footer">
@@ -284,6 +284,7 @@ async function copyToClipboard(t){try{await navigator.clipboard.writeText(t);ret
 function setRoot(html){ document.getElementById('appRoot').innerHTML=html; }
 
 function renderLoading(){
+  /* bcDate already set in main() before this call */
   setRoot(`<div class="state-box"><div class="spinner"></div><div class="state-label">Building today's Pulse…</div></div>`);
 }
 
@@ -344,7 +345,8 @@ function buildInsights(teams, date, hasPrev){
         type:'story_of_day',
         kicker:'Story of the Day',
         title:`${top.teamName} Rise While ${bot.teamName} Slip`,
-        take:`The biggest overnight swing in the league. <strong>${top.teamName}</strong> gained ${topD} projected wins while <strong>${bot.teamName}</strong> dropped ${botD}. In a pace race, that's a ${topD+botD}-win swing that changes the conversation.`,
+        take:`The biggest overnight swing in the league. <strong>${top.teamName}</strong> gained ${topD} projected wins while <strong>${bot.teamName}</strong> dropped ${botD}. That's a ${topD+botD}-win gap that opened between two MLB teams in a single night.`,
+        tts_take:`One game rarely changes a season — but these are the cumulative shifts that reshape what's possible over the next month.`,
         stats:[
           {label:`${top.teamName} pace`,val:`${top.projWins}W`},
           {label:`${bot.teamName} pace`,val:`${bot.projWins}W`},
@@ -359,7 +361,8 @@ function buildInsights(teams, date, hasPrev){
         type:'story_of_day',
         kicker:'Story of the Day',
         title:`${top.teamName} Made the Biggest Move Last Night`,
-        take:`A ${topD}-win jump in projected pace overnight. <strong>${top.teamName}</strong> are now on pace for ${top.projWins} wins — ${top.delta>=0?`${sign(top.delta)}W`:'below'} last year's pace. Small sample, real signal.`,
+        take:`A ${topD}-win jump in projected pace overnight. <strong>${top.teamName}</strong> are now on pace for ${top.projWins} wins — ${sign(top.delta||0)}W vs last year at this same point in the season.`,
+        tts_take:`This isn't just a good game. The season pace moved enough overnight that the full-year projection shifted. That's the signal Track The Season tracks.`,
         stats:[{label:'New pace',val:`${top.projWins}W`},{label:'Change',val:sign(topD)+'W'},{label:'vs Last Year',val:sign(top.delta||0)+'W'}],
         t1:top.teamId, url:teamUrl(top.teamId), confidence:'high',
       };
@@ -368,7 +371,8 @@ function buildInsights(teams, date, hasPrev){
         type:'story_of_day',
         kicker:'Story of the Day',
         title:`${bot.teamName} Had the Sharpest Drop Overnight`,
-        take:`<strong>${bot.teamName}</strong> fell ${botD} projected wins overnight — down to a ${bot.projWins}W pace. That's ${Math.abs(bot.delta)||0} wins ${bot.delta<0?'behind':'ahead of'} last year at this point.`,
+        take:`<strong>${bot.teamName}</strong> fell ${botD} projected wins overnight — now tracking toward ${bot.projWins} wins. They're ${sign(bot.delta||0)}W vs last season's pace at this same point.`,
+        tts_take:`A single loss can move the pace needle this sharply when the margin is thin. The question is whether this is a one-night blip or the start of a real slide.`,
         stats:[{label:'New pace',val:`${bot.projWins}W`},{label:'Change',val:sign(bot.projDelta)+'W'},{label:'vs Last Year',val:sign(bot.delta||0)+'W'}],
         t1:bot.teamId, url:teamUrl(bot.teamId), confidence:'high',
       };
@@ -380,8 +384,9 @@ function buildInsights(teams, date, hasPrev){
     story = {
       type:'story_of_day',
       kicker:'Today\'s Biggest Story',
-      title:`${interesting.teamName}: ${Math.abs(interesting.delta||0)}W ${(interesting.delta||0)>=0?'Ahead of':'Behind"'} Last Year's Pace`,
-      take:`Through ${interesting.gp} games, <strong>${interesting.teamName}</strong> are on a ${interesting.projWins}W pace — ${sign(interesting.delta||0)} wins vs last season. Their last 10: ${interesting.l10W}–${interesting.l10L}.`,
+      title:`${interesting.teamName}: ${Math.abs(interesting.delta||0)}W ${(interesting.delta||0)>=0?'Ahead of':'Behind'} Last Year's Pace`,
+      take:`Through ${interesting.gp} games, <strong>${interesting.teamName}</strong> are on a ${interesting.projWins}W pace — ${sign(interesting.delta||0)} wins vs last season's pace at this point. Recent form: ${interesting.l10W}–${interesting.l10L} over the last 10.`,
+      tts_take:`The standings show the record. Track The Season shows the trajectory — and this ${Math.abs(interesting.delta||0)}-win gap ${(interesting.delta||0)>=5?'is too large to ignore.':'is worth watching.'}` ,
       stats:[{label:'Pace',val:`${interesting.projWins}W`},{label:'vs Last Year',val:sign(interesting.delta||0)+'W'},{label:'L10',val:`${interesting.l10W}–${interesting.l10L}`}],
       t1:interesting.teamId, url:teamUrl(interesting.teamId), confidence:'medium',
     };
@@ -396,6 +401,7 @@ function buildInsights(teams, date, hasPrev){
       kicker:'Biggest Pace Shift',
       title:`${top.teamName}: From ${top.prev?.projWins||'?'}W to ${top.projWins}W Overnight`,
       take:`${top.projDelta>=3?`That's not noise — that's ${top.projDelta} projected wins in a single day.`:'Every game moves the needle.'} <strong>${top.teamName}</strong> are now ${sign(top.delta||0)}W vs last season's pace at this point.`,
+      tts_take:`Projected pace moves this much when the gap between runs scored and allowed shifts meaningfully. Worth watching whether this holds over the next 5 games.`,
       stats:[{label:'Yesterday',val:`${top.prev?.projWins||'?'}W`},{label:'Today',val:`${top.projWins}W`},{label:'Change',val:sign(top.projDelta)+'W'}],
       t1:top.teamId, url:teamUrl(top.teamId), confidence:'high',
     }});
@@ -416,8 +422,9 @@ function buildInsights(teams, date, hasPrev){
       kicker:'Most Misleading Record',
       title:`${mislead.teamName}'s Record Doesn't Tell the Full Story`,
       take:isHotCold
-        ? `<strong>${mislead.teamName}</strong> are ${mislead.wins}–${mislead.losses} on the season, but they're ${mislead.l10W}–${mislead.l10L} over their last 10. The season record is a lag indicator — the trend is what matters right now.`
-        : `<strong>${mislead.teamName}</strong> look like a ${mislead.projWins}W team on pace, but they're only ${mislead.l10W}–${mislead.l10L} over the last 10. Something may be slipping.`,
+        ? `<strong>${mislead.teamName}</strong> are ${mislead.wins}–${mislead.losses} on the season, but they're ${mislead.l10W}–${mislead.l10L} over their last 10. The season record is a lag indicator — the recent trend is a leading one.`
+        : `<strong>${mislead.teamName}</strong> look like a ${mislead.projWins}W team on pace, but only ${mislead.l10W}–${mislead.l10L} over the last 10. The season record is masking a cooling trend.`,
+      tts_take:isHotCold?`Pace and record are diverging. If this L10 form continues another two weeks, the season projection climbs significantly.`:`This is how contenders quietly slip into sellers. The record looks fine until the trend doesn't.`,
       stats:[{label:'Season pace',val:`${mislead.projWins}W`},{label:'L10',val:`${mislead.l10W}–${mislead.l10L}`},{label:'vs Last Year',val:sign(mislead.delta||0)+'W'}],
       t1:mislead.teamId, url:teamUrl(mislead.teamId), confidence:'medium',
     }});
@@ -523,19 +530,20 @@ function buildSocialComments(teams, insights, date){
 
   const comments=[];
 
-  /* Insightful */
+  /* Insightful — team pace story with context */
   if(top){
     const teamUrl2=`${url}${teamUrl(top.teamId)}`;
+    const vsLY=top.delta||0;
     comments.push({
       type:'💡 Insightful',
-      text:`The ${top.teamName} are ${sign(top.delta||0)}W vs last year's pace through ${top.gp} games. That's not a box score stat — it's a season trajectory signal. ${teamUrl2} #TrackTheSeason`,
+      text:`The ${top.teamName} are ${sign(vsLY)}W vs last year's pace through ${top.gp} games — that's not in the box score. Track The Season tracks where teams are headed, not just where they are. ${teamUrl2} #TrackTheSeason #MLB`,
     });
   }
 
-  /* Debate-driven */
+  /* Rivalry-focused */
   const rival=RIVALRY_DEFS.map(r=>{
     const t1=valid.find(t=>t.teamId===r.t1),t2=valid.find(t=>t.teamId===r.t2);
-    if(!t1||!t2) return null;
+    if(!t1||!t2||!t1.projWins||!t2.projWins) return null;
     return{...r,t1,t2,gap:Math.abs(t1.projWins-t2.projWins)};
   }).filter(Boolean).sort((a,b)=>b.gap-a.gap)[0];
   if(rival){
@@ -543,16 +551,26 @@ function buildSocialComments(teams, insights, date){
     const behind=ahead===rival.t1?rival.t2:rival.t1;
     const rivalUrl=`${url}/${rival.slug}`;
     comments.push({
-      type:'🔥 Debate-Driven',
-      text:`${ahead.teamName} are tracking ${rival.gap} wins better than ${behind.teamName} over a full season. That's not a slump — that's a gap. Receipts: ${rivalUrl} #TrackTheSeason`,
+      type:'⚔️ Rivalry-Focused',
+      text:`${ahead.teamName} aren't just ahead of ${behind.teamName} in the standings — they're tracking ${rival.gap} projected wins better over a full season. That gap is real. ${rivalUrl} #TrackTheSeason`,
     });
   }
 
-  /* Chaos */
-  comments.push({
-    type:'🌀 League-Wide',
-    text:`${chaosCount} of 30 MLB teams are tracking at least 5 wins differently than last season. The standings don't tell the full story. ${url} #TrackTheSeason #MLB`,
-  });
+  /* Debate-driven — something to argue about */
+  const sorted2=[...valid].filter(t=>t.delta!=null).sort((a,b)=>a.delta-b.delta);
+  const fader=sorted2[0];
+  const hot=[...valid].sort((a,b)=>b.l10W-a.l10W)[0];
+  if(fader&&hot&&fader.teamId!==hot.teamId){
+    comments.push({
+      type:'🔥 Debate-Driven',
+      text:`${hot.teamName} are ${hot.l10W}–${hot.l10L} over the last 10. ${fader.teamName} are on pace for just ${fader.projWins} wins. Same league, completely different trajectories. Which team's pace feels more real? ${url} #TrackTheSeason`,
+    });
+  } else {
+    comments.push({
+      type:'🌀 League-Wide',
+      text:`${chaosCount} of 30 MLB teams are tracking at least 5 wins differently than last season. The standings tell you who won. Track The Season shows what changed. ${url} #TrackTheSeason #MLB`,
+    });
+  }
 
   return comments;
 }
@@ -587,6 +605,7 @@ function renderInsightCard(ins, cls=''){
     <div class="insight-kicker">${ins.kicker}</div>
     <div class="insight-hed">${ins.title}</div>
     <div class="insight-take">${ins.take}</div>
+    ${ins.tts_take?`<div style="margin-top:8px;padding:8px 10px;border-radius:var(--r-sm);background:rgba(26,255,107,.05);border-left:2px solid rgba(26,255,107,.3);font-family:var(--sans);font-size:12px;color:rgba(255,255,255,.45);line-height:1.5"><strong style="color:rgba(26,255,107,.6);font-family:var(--mono);font-size:8px;letter-spacing:.12em;text-transform:uppercase;display:block;margin-bottom:3px">TTS Take</strong>${ins.tts_take}</div>`:''}
     <div class="insight-footer">
       <div class="insight-stats">${statHtml}</div>
       <div class="insight-cta">See full tracker →</div>
@@ -606,6 +625,7 @@ function renderStoryHero(ins){
       </div>
       <div class="story-hed">${ins.title}</div>
       <div class="story-take">${ins.take}</div>
+      ${ins.tts_take?`<div style="margin-top:10px;padding:10px 12px;border-radius:var(--r-md);background:rgba(26,255,107,.06);border-left:3px solid rgba(26,255,107,.4);font-family:var(--sans);font-size:13px;color:rgba(255,255,255,.55);line-height:1.55"><strong style="color:rgba(26,255,107,.7);font-family:var(--mono);font-size:9px;letter-spacing:.12em;text-transform:uppercase;display:block;margin-bottom:4px">TTS Take</strong>${ins.tts_take}</div>`:''}
     </div>
     <div class="story-hero-bottom">
       <div class="story-stats">${statHtml}</div>
@@ -781,9 +801,9 @@ function renderArticle(data){
       ${renderStoryHero(storyIns)}
     </div>`:''}
 
-    <!-- WHAT CHANGED -->
+    <!-- WHAT CHANGED — first data module after lead story -->
     <div class="pulse-section">
-      <div class="sec-eyebrow">Section 1</div>
+      <div class="sec-eyebrow">Section 1 · What Moved Overnight</div>
       <div class="sec-title">📊 What Changed Since Yesterday</div>
       ${renderChangeTable(teams,hasPrev)}
     </div>
@@ -861,9 +881,15 @@ function renderArticle(data){
 
 /* ══ MAIN ═══════════════════════════════════════════════════ */
 async function main(){
-  renderLoading();
+  /* Set breadcrumb to today's date immediately — no "Loading…" */
   const pathParts=window.location.pathname.split('/').filter(Boolean);
   const dateParam=pathParts[1]||null;
+  const bcEl=document.getElementById('bcDate');
+  if(bcEl){
+    if(dateParam) bcEl.textContent=fmtShort(dateParam);
+    else bcEl.textContent=new Date().toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'});
+  }
+  renderLoading();
 
   let data;
   try{
