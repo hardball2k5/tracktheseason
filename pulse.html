@@ -4,22 +4,15 @@
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
 <title>MLB Daily Pulse | Track The Season</title>
-<meta name="description" content="What changed in baseball since yesterday? Daily archived MLB pace change report."/>
+<meta name="description" content="Not yesterday's box scores. Yesterday's consequences. Daily MLB pace, momentum, and rivalry shifts."/>
 <meta property="og:site_name"   content="Track The Season"/>
 <meta property="og:type"        content="article"/>
 <meta property="og:title"       content="MLB Daily Pulse | Track The Season"/>
-<meta property="og:description" content="What changed in baseball since yesterday?"/>
+<meta property="og:description" content="Not yesterday's box scores. Yesterday's consequences."/>
 <meta property="og:image"       content="https://tracktheseason.com/api/chaos-report"/>
 <meta name="twitter:card"       content="summary_large_image"/>
 <link rel="canonical"           href="https://tracktheseason.com/pulse"/>
-<script type="application/ld+json" id="schemaScript">{
-  "@context":"https://schema.org",
-  "@type":"NewsArticle",
-  "headline":"MLB Daily Pulse",
-  "publisher":{"@type":"Organization","name":"Track The Season","url":"https://tracktheseason.com"},
-  "datePublished":"","dateModified":"",
-  "description":"Daily archived MLB pace change report — projected wins gained/lost overnight."
-}</script>
+<script type="application/ld+json" id="schemaScript">{"@context":"https://schema.org","@type":"NewsArticle","headline":"MLB Daily Pulse","publisher":{"@type":"Organization","name":"Track The Season","url":"https://tracktheseason.com"},"datePublished":"","dateModified":"","description":"Daily MLB pace, momentum, and rivalry shifts."}</script>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet"/>
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-DCSQPGSY1D"></script>
 <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-DCSQPGSY1D');</script>
@@ -36,186 +29,195 @@
 html,body{width:100%;overflow-x:hidden}
 body{font-family:var(--sans);background:var(--ink);color:#e8edf8;min-height:100vh;
   background-image:radial-gradient(ellipse 100% 35% at 50% -2%,rgba(26,255,107,.06) 0%,transparent 60%)}
-.nav{padding:11px 0;border-bottom:1px solid var(--rule);position:sticky;top:0;z-index:100;
-  background:rgba(15,16,20,.96);backdrop-filter:blur(16px)}
-.nav-inner{max-width:860px;margin:0 auto;padding:0 16px;display:flex;align-items:center;gap:10px}
-.back-btn{display:flex;align-items:center;gap:5px;font-family:var(--mono);font-size:12px;
-  font-weight:600;color:var(--chalk);text-decoration:none;border:1px solid var(--rule);
-  border-radius:var(--r-sm);padding:5px 11px;transition:all .13s}
+
+/* NAV */
+.nav{padding:11px 0;border-bottom:1px solid var(--rule);position:sticky;top:0;z-index:100;background:rgba(15,16,20,.96);backdrop-filter:blur(16px)}
+.nav-inner{max-width:900px;margin:0 auto;padding:0 16px;display:flex;align-items:center;gap:10px}
+.back-btn{display:flex;align-items:center;gap:5px;font-family:var(--mono);font-size:12px;font-weight:600;color:var(--chalk);text-decoration:none;border:1px solid var(--rule);border-radius:var(--r-sm);padding:5px 11px;transition:all .13s}
 .back-btn:hover{border-color:rgba(255,255,255,.2);color:#e8edf8}
 .nav-logo{display:flex;align-items:center;gap:8px;text-decoration:none;margin-left:auto}
-.nav-mono{width:28px;height:28px;background:var(--signal);border-radius:5px;
-  display:flex;align-items:center;justify-content:center;font-family:var(--mono);
-  font-size:10px;font-weight:700;color:var(--ink)}
+.nav-mono{width:28px;height:28px;background:var(--signal);border-radius:5px;display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:10px;font-weight:700;color:var(--ink)}
 .nav-word{font-family:var(--mono);font-size:13px;font-weight:700;color:#e8edf8}
 .nav-word span{color:var(--signal)}
-.wrap{max-width:860px;margin:0 auto;padding:0 16px 80px}
-.breadcrumb{display:flex;align-items:center;gap:6px;padding:12px 0 0;
-  font-family:var(--mono);font-size:10px;color:rgba(255,255,255,.25);letter-spacing:.06em;flex-wrap:wrap}
+
+/* LAYOUT */
+.wrap{max-width:900px;margin:0 auto;padding:0 16px 80px}
+.breadcrumb{display:flex;align-items:center;gap:6px;padding:12px 0 0;font-family:var(--mono);font-size:10px;color:rgba(255,255,255,.25);letter-spacing:.06em;flex-wrap:wrap}
 .breadcrumb a{color:rgba(255,255,255,.25);text-decoration:none}
 .breadcrumb a:hover{color:var(--signal)}
 
-/* ── STATES ── */
+/* LOADING */
 .state-box{text-align:center;padding:64px 20px}
-.spinner{width:32px;height:32px;border-radius:50%;border:3px solid var(--rule);
-  border-top-color:var(--signal);animation:spin .75s linear infinite;margin:0 auto 16px}
+.spinner{width:32px;height:32px;border-radius:50%;border:3px solid var(--rule);border-top-color:var(--signal);animation:spin .75s linear infinite;margin:0 auto 16px}
 @keyframes spin{to{transform:rotate(360deg)}}
 .state-label{font-family:var(--mono);font-size:13px;color:var(--chalk);margin-bottom:8px}
 .state-sub{font-family:var(--sans);font-size:13px;color:rgba(255,255,255,.3);line-height:1.55;max-width:440px;margin:0 auto}
 
-/* "Coming tomorrow" state */
-.coming-soon{
-  background:var(--ink2);border:1px solid rgba(26,255,107,.12);
-  border-radius:var(--r-lg);padding:32px;text-align:center;margin-top:24px;
-}
-.cs-icon{font-size:40px;margin-bottom:16px}
-.cs-title{font-family:var(--mono);font-size:22px;font-weight:700;color:#e8edf8;
-  letter-spacing:-.02em;margin-bottom:10px}
-.cs-body{font-family:var(--sans);font-size:15px;color:rgba(255,255,255,.5);
-  line-height:1.6;max-width:520px;margin:0 auto 20px}
-.cs-detail{font-family:var(--mono);font-size:11px;color:rgba(255,255,255,.25);
-  letter-spacing:.06em;line-height:1.8}
-.cs-btn{display:inline-flex;align-items:center;gap:6px;margin-top:18px;padding:10px 18px;
-  border-radius:var(--r-sm);background:var(--signal);color:var(--ink);
-  font-family:var(--mono);font-size:12px;font-weight:700;text-decoration:none;
-  transition:filter .13s}
-.cs-btn:hover{filter:brightness(1.08)}
+/* COMING SOON */
+.coming-soon{background:var(--ink2);border:1px solid rgba(26,255,107,.12);border-radius:var(--r-lg);padding:32px;text-align:center;margin-top:24px}
+.cs-title{font-family:var(--mono);font-size:22px;font-weight:700;color:#e8edf8;letter-spacing:-.02em;margin-bottom:10px}
+.cs-body{font-family:var(--sans);font-size:15px;color:rgba(255,255,255,.5);line-height:1.6;max-width:520px;margin:0 auto 20px}
+.cs-detail{font-family:var(--mono);font-size:11px;color:rgba(255,255,255,.25);letter-spacing:.06em;line-height:1.8}
+.cs-btn{display:inline-flex;align-items:center;gap:6px;margin-top:18px;padding:10px 18px;border-radius:var(--r-sm);background:var(--signal);color:var(--ink);font-family:var(--mono);font-size:12px;font-weight:700;text-decoration:none}
 
-/* ── PULSE ARTICLE ── */
-.pulse-header{padding:20px 0 24px;border-bottom:1px solid var(--rule)}
-.pulse-eyebrow{font-family:var(--mono);font-size:9px;font-weight:700;letter-spacing:.2em;
-  text-transform:uppercase;color:var(--signal);margin-bottom:8px;
-  display:flex;align-items:center;gap:8px}
-.pulse-dot{width:6px;height:6px;border-radius:50%;background:var(--signal)}
-.pulse-hed{font-family:var(--mono);font-size:clamp(22px,5vw,34px);font-weight:700;
-  letter-spacing:-.03em;color:#e8edf8;line-height:1.15;margin-bottom:10px}
-.pulse-summary{font-family:var(--sans);font-size:16px;color:rgba(255,255,255,.6);
-  line-height:1.6;max-width:640px;margin-bottom:14px}
-.pulse-meta{display:flex;align-items:center;gap:16px;flex-wrap:wrap;
-  font-family:var(--mono);font-size:11px;color:rgba(255,255,255,.3);margin-bottom:14px}
-.pulse-date-nav{display:flex;align-items:center;gap:8px;margin-top:12px;flex-wrap:wrap}
-.date-nav-btn{padding:5px 12px;border-radius:var(--r-pill);border:1px solid var(--rule);
-  background:transparent;color:var(--chalk);font-family:var(--mono);font-size:11px;
-  font-weight:600;cursor:pointer;transition:all .13s;text-decoration:none}
+/* HERO */
+.pulse-hero{padding:28px 0 20px;border-bottom:1px solid var(--rule)}
+.pulse-eyebrow{font-family:var(--mono);font-size:9px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--signal);margin-bottom:10px;display:flex;align-items:center;gap:8px}
+.pulse-dot{width:6px;height:6px;border-radius:50%;background:var(--signal);animation:pulseDot 2s ease-in-out infinite}
+@keyframes pulseDot{0%,100%{opacity:1}50%{opacity:.3}}
+.pulse-hed{font-family:var(--mono);font-size:clamp(26px,5vw,40px);font-weight:700;letter-spacing:-.03em;color:#e8edf8;line-height:1.1;margin-bottom:8px}
+.pulse-tagline{font-family:var(--sans);font-size:15px;color:rgba(255,255,255,.45);margin-bottom:12px;font-style:italic}
+.pulse-meta-row{display:flex;align-items:center;gap:16px;flex-wrap:wrap;margin-bottom:14px}
+.pulse-meta{font-family:var(--mono);font-size:11px;color:rgba(255,255,255,.3)}
+.pulse-cta-row{display:flex;gap:8px;flex-wrap:wrap}
+.pulse-cta{display:inline-flex;align-items:center;gap:5px;padding:8px 14px;border-radius:var(--r-sm);font-family:var(--mono);font-size:11px;font-weight:700;text-decoration:none;transition:all .13s;letter-spacing:.03em}
+.pulse-cta.primary{background:var(--signal);color:var(--ink)}
+.pulse-cta.ghost{background:transparent;color:var(--chalk);border:1px solid var(--rule)}
+.pulse-cta.ghost:hover{border-color:var(--signal);color:var(--signal)}
+
+/* DATE NAV */
+.date-nav{display:flex;align-items:center;gap:8px;margin-top:12px;flex-wrap:wrap}
+.date-nav-btn{padding:5px 12px;border-radius:var(--r-pill);border:1px solid var(--rule);background:transparent;color:var(--chalk);font-family:var(--mono);font-size:11px;font-weight:600;cursor:pointer;transition:all .13s;text-decoration:none}
 .date-nav-btn:hover{border-color:var(--signal);color:var(--signal)}
 .date-nav-btn.active{background:var(--signal);border-color:var(--signal);color:var(--ink)}
-.share-bar{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
-.share-btn{display:inline-flex;align-items:center;gap:5px;padding:8px 14px;
-  border-radius:var(--r-sm);font-family:var(--mono);font-size:11px;font-weight:700;
-  cursor:pointer;transition:all .13s;text-decoration:none;white-space:nowrap}
-.share-btn.primary{background:var(--signal);color:var(--ink);border:none}
-.share-btn.primary:hover{filter:brightness(1.08)}
-.share-btn.ghost{background:transparent;color:var(--chalk);border:1px solid var(--rule)}
-.share-btn.ghost:hover{border-color:var(--signal);color:var(--signal)}
 
-/* ── SECTIONS ── */
-.pulse-section{padding:28px 0 0}
-.sec-eyebrow{font-family:var(--mono);font-size:9px;font-weight:700;letter-spacing:.16em;
-  text-transform:uppercase;color:rgba(255,255,255,.3);margin-bottom:4px;
-  display:flex;align-items:center;gap:8px}
+/* SECTION */
+.pulse-section{padding:24px 0 0}
+.sec-eyebrow{font-family:var(--mono);font-size:9px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:rgba(255,255,255,.3);margin-bottom:4px;display:flex;align-items:center;gap:8px}
 .sec-eyebrow::after{content:'';flex:1;height:1px;background:var(--rule)}
-.sec-title{font-family:var(--mono);font-size:20px;font-weight:700;color:#e8edf8;
-  letter-spacing:-.02em;margin-bottom:14px}
+.sec-title{font-family:var(--mono);font-size:18px;font-weight:700;color:#e8edf8;letter-spacing:-.02em;margin-bottom:12px}
 
-/* ── MOVER CARDS ── */
-.mover-list{display:flex;flex-direction:column;gap:8px}
-.mover-card{background:var(--ink2);border:1px solid var(--rule);border-radius:var(--r-lg);
-  padding:14px 16px;display:flex;align-items:center;gap:14px;
-  text-decoration:none;color:inherit;transition:border-color .15s}
-.mover-card:hover{border-color:rgba(26,255,107,.3)}
-.mover-card.down:hover{border-color:rgba(244,117,112,.3)}
+/* STORY OF THE DAY */
+.story-hero{background:var(--ink2);border:1px solid rgba(26,255,107,.2);border-radius:var(--r-lg);overflow:hidden}
+.story-hero-top{padding:20px 20px 16px;border-bottom:1px solid var(--rule2)}
+.story-kicker{font-family:var(--mono);font-size:9px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--signal);margin-bottom:8px}
+.story-hed{font-family:var(--mono);font-size:clamp(18px,3.5vw,26px);font-weight:700;color:#e8edf8;letter-spacing:-.02em;line-height:1.2;margin-bottom:10px}
+.story-take{font-family:var(--sans);font-size:15px;color:rgba(255,255,255,.65);line-height:1.6}
+.story-take strong{color:#e8edf8}
+.story-hero-bottom{padding:14px 20px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.story-stats{display:flex;gap:16px;flex-wrap:wrap}
+.story-stat{font-family:var(--mono);font-size:11px;color:var(--chalk)}
+.story-stat span{color:#e8edf8;font-weight:700}
+.story-link{font-family:var(--mono);font-size:11px;font-weight:700;color:var(--signal);text-decoration:none;letter-spacing:.04em;white-space:nowrap}
+.story-link:hover{text-decoration:underline}
+.story-logos{display:flex;gap:4px;align-items:center}
+.story-logo{width:32px;height:32px;background:var(--logo-bg);border:1px solid var(--logo-border);border-radius:var(--r-sm);box-shadow:var(--logo-shadow);display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0}
+.story-logo img{width:24px;height:24px;object-fit:contain}
+
+/* CHANGE TABLE */
+.change-table-wrap{overflow-x:auto;margin-top:2px}
+.change-table{width:100%;border-collapse:collapse;font-family:var(--mono)}
+.change-table th{font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.3);padding:7px 10px;text-align:left;border-bottom:1px solid var(--rule);white-space:nowrap}
+.change-table th.r{text-align:right}
+.change-table td{padding:10px 10px;font-size:12px;border-bottom:1px solid var(--rule2);color:rgba(255,255,255,.7);vertical-align:middle}
+.change-table td.r{text-align:right}
+.change-table tr:last-child td{border-bottom:none}
+.change-table tr:hover td{background:rgba(255,255,255,.02)}
+.ct-team{display:flex;align-items:center;gap:8px}
+.ct-logo{width:26px;height:26px;background:var(--logo-bg);border:1px solid var(--logo-border);border-radius:4px;box-shadow:var(--logo-shadow);display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0}
+.ct-logo img{width:20px;height:20px;object-fit:contain}
+.ct-name{font-weight:700;color:#e8edf8}
+.ct-change-pos{color:var(--signal);font-weight:700}
+.ct-change-neg{color:var(--loss-text);font-weight:700}
+.ct-change-flat{color:var(--chalk)}
+.ct-why{font-family:var(--sans);font-size:11px;color:rgba(255,255,255,.4);line-height:1.35;max-width:220px}
+.ct-link{color:var(--signal);font-size:11px;font-weight:700;text-decoration:none;white-space:nowrap}
+.ct-link:hover{text-decoration:underline}
+
+/* INSIGHT CARDS */
+.insight-card{background:var(--ink2);border:1px solid var(--rule);border-radius:var(--r-lg);padding:16px 18px;text-decoration:none;color:inherit;display:block;transition:border-color .15s;margin-bottom:8px}
+.insight-card:hover{border-color:rgba(26,255,107,.3)}
+.insight-card.shift{border-left:3px solid var(--signal)}
+.insight-card.mislead{border-left:3px solid var(--caution-text)}
+.insight-card.rivalry{border-left:3px solid rgba(255,77,77,.5)}
+.insight-kicker{font-family:var(--mono);font-size:9px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.35);margin-bottom:6px;display:flex;align-items:center;gap:8px}
+.insight-hed{font-family:var(--mono);font-size:16px;font-weight:700;color:#e8edf8;letter-spacing:-.01em;line-height:1.25;margin-bottom:8px}
+.insight-take{font-family:var(--sans);font-size:14px;color:rgba(255,255,255,.6);line-height:1.55}
+.insight-take strong{color:#e8edf8}
+.insight-footer{display:flex;align-items:center;justify-content:space-between;margin-top:12px;flex-wrap:wrap;gap:8px}
+.insight-stats{display:flex;gap:12px;flex-wrap:wrap}
+.insight-stat{font-family:var(--mono);font-size:10px;color:var(--chalk)}
+.insight-stat span{color:#e8edf8;font-weight:700}
+.insight-cta{font-family:var(--mono);font-size:10px;font-weight:700;color:var(--signal);letter-spacing:.06em}
+
+/* RIVALRY CARD */
+.rivalry-duo{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.rivalry-logo{width:34px;height:34px;background:var(--logo-bg);border:1px solid var(--logo-border);border-radius:var(--r-sm);box-shadow:var(--logo-shadow);display:flex;align-items:center;justify-content:center;overflow:hidden}
+.rivalry-logo img{width:26px;height:26px;object-fit:contain}
+.rivalry-vs{font-family:var(--mono);font-size:12px;font-weight:700;color:rgba(255,255,255,.2)}
+
+/* WATCHLIST */
+.watchlist{display:flex;flex-direction:column;gap:8px}
+.watch-item{background:var(--ink2);border:1px solid var(--rule);border-radius:var(--r-md);padding:12px 14px;display:flex;align-items:flex-start;gap:12px;text-decoration:none;color:inherit;transition:border-color .15s}
+.watch-item:hover{border-color:rgba(26,255,107,.25)}
+.watch-num{font-family:var(--mono);font-size:18px;font-weight:700;color:rgba(26,255,107,.3);flex-shrink:0;line-height:1;margin-top:2px}
+.watch-body{}
+.watch-title{font-family:var(--mono);font-size:13px;font-weight:700;color:#e8edf8;margin-bottom:3px}
+.watch-why{font-family:var(--sans);font-size:13px;color:rgba(255,255,255,.45);line-height:1.4}
+
+/* SOCIAL COMMENTS */
+.social-grid{display:flex;flex-direction:column;gap:8px}
+.social-card{background:var(--ink2);border:1px solid var(--rule);border-radius:var(--r-lg);padding:14px 16px}
+.social-type{font-family:var(--mono);font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.3);margin-bottom:8px}
+.social-text{font-family:var(--sans);font-size:14px;color:rgba(255,255,255,.7);line-height:1.55;margin-bottom:10px}
+.social-copy-btn{display:inline-flex;align-items:center;gap:5px;padding:6px 12px;border-radius:var(--r-sm);font-family:var(--mono);font-size:10px;font-weight:700;background:transparent;border:1px solid var(--rule);color:var(--chalk);cursor:pointer;transition:all .13s}
+.social-copy-btn:hover{border-color:var(--signal);color:var(--signal)}
+
+/* DEBATE */
+.debate-card{background:rgba(26,255,107,.04);border:1px solid rgba(26,255,107,.12);border-radius:var(--r-lg);padding:20px}
+.debate-label{font-family:var(--mono);font-size:9px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:rgba(26,255,107,.6);margin-bottom:10px}
+.debate-q{font-family:var(--sans);font-size:clamp(16px,3vw,20px);font-weight:600;color:#e8edf8;line-height:1.4}
+.debate-share{display:inline-flex;align-items:center;gap:5px;margin-top:12px;padding:7px 14px;border-radius:var(--r-sm);background:var(--signal);color:var(--ink);font-family:var(--mono);font-size:11px;font-weight:700;cursor:pointer;border:none}
+
+/* CHAOS */
+.chaos-bar{background:rgba(26,255,107,.04);border:1px solid rgba(26,255,107,.12);border-radius:var(--r-lg);padding:16px;display:flex;gap:16px;align-items:center;flex-wrap:wrap}
+.chaos-num{font-family:var(--mono);font-size:52px;font-weight:700;color:var(--signal);letter-spacing:-.04em;line-height:1;flex-shrink:0}
+.chaos-txt{flex:1;min-width:0}
+.chaos-label{font-family:var(--mono);font-size:9px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--signal);margin-bottom:4px}
+.chaos-desc{font-family:var(--sans);font-size:14px;color:rgba(255,255,255,.6);line-height:1.5}
+.chaos-delta{display:inline-flex;align-items:center;gap:6px;margin-top:6px;padding:3px 10px;border-radius:var(--r-pill);font-family:var(--mono);font-size:11px;font-weight:700}
+.chaos-delta.up{background:rgba(26,255,107,.1);color:var(--signal)}
+.chaos-delta.down{background:rgba(244,117,112,.1);color:var(--loss-text)}
+.chaos-delta.flat{background:rgba(255,255,255,.05);color:var(--chalk)}
+
+/* MOVER CARDS */
+.mover-list{display:flex;flex-direction:column;gap:7px}
+.mover-card{background:var(--ink2);border:1px solid var(--rule);border-radius:var(--r-lg);padding:12px 14px;display:flex;align-items:center;gap:12px;text-decoration:none;color:inherit;transition:border-color .15s}
 .mover-card.up{border-left:3px solid var(--signal)}
 .mover-card.down{border-left:3px solid var(--loss-text)}
-.mover-logo{width:42px;height:42px;flex-shrink:0;background:var(--logo-bg);
-  border:1px solid var(--logo-border);border-radius:var(--r-sm);box-shadow:var(--logo-shadow);
-  display:flex;align-items:center;justify-content:center;overflow:hidden}
-.mover-logo img{width:32px;height:32px;object-fit:contain}
+.mover-card:hover{border-color:rgba(255,255,255,.15)}
+.mover-logo{width:38px;height:38px;flex-shrink:0;background:var(--logo-bg);border:1px solid var(--logo-border);border-radius:var(--r-sm);box-shadow:var(--logo-shadow);display:flex;align-items:center;justify-content:center;overflow:hidden}
+.mover-logo img{width:28px;height:28px;object-fit:contain}
 .mover-body{flex:1;min-width:0}
-.mover-name{font-family:var(--mono);font-size:16px;font-weight:700;color:#e8edf8;margin-bottom:2px}
-.mover-sub{font-family:var(--mono);font-size:11px;color:rgba(255,255,255,.35)}
-.mover-text{font-family:var(--sans);font-size:13px;color:rgba(255,255,255,.5);
-  line-height:1.45;margin-top:4px}
-.mover-delta{font-family:var(--mono);font-size:24px;font-weight:700;flex-shrink:0;
-  letter-spacing:-.02em}
+.mover-name{font-family:var(--mono);font-size:14px;font-weight:700;color:#e8edf8;margin-bottom:2px}
+.mover-sub{font-family:var(--mono);font-size:10px;color:rgba(255,255,255,.35)}
+.mover-delta{font-family:var(--mono);font-size:20px;font-weight:700;flex-shrink:0}
 .mover-delta.up{color:var(--signal)}
 .mover-delta.down{color:var(--loss-text)}
 
-/* ── CHAOS DELTA ── */
-.chaos-delta-card{
-  background:rgba(26,255,107,.04);border:1px solid rgba(26,255,107,.12);
-  border-radius:var(--r-lg);padding:20px;display:flex;gap:20px;
-  align-items:center;flex-wrap:wrap;
-}
-.chaos-big{font-family:var(--mono);font-size:56px;font-weight:700;color:var(--signal);
-  letter-spacing:-.04em;line-height:1;flex-shrink:0}
-.chaos-body-text{flex:1;min-width:0}
-.chaos-title-label{font-family:var(--mono);font-size:9px;font-weight:700;letter-spacing:.2em;
-  text-transform:uppercase;color:var(--signal);margin-bottom:6px}
-.chaos-desc{font-family:var(--sans);font-size:16px;color:rgba(255,255,255,.7);line-height:1.55}
-.chaos-change{font-family:var(--mono);font-size:12px;font-weight:700;
-  display:inline-flex;align-items:center;gap:6px;margin-top:8px;padding:4px 12px;
-  border-radius:var(--r-pill)}
-.chaos-change.up{background:rgba(26,255,107,.1);color:var(--signal)}
-.chaos-change.down{background:rgba(244,117,112,.1);color:var(--loss-text)}
-.chaos-change.flat{background:rgba(255,255,255,.05);color:var(--chalk)}
-
-/* ── RIVALRY DELTA ── */
-.rivalry-delta-list{display:flex;flex-direction:column;gap:8px}
-.rivalry-delta-card{background:var(--ink2);border:1px solid var(--rule);border-radius:var(--r-lg);
-  padding:14px 16px;text-decoration:none;color:inherit;display:block;transition:border-color .15s}
-.rivalry-delta-card:hover{border-color:rgba(26,255,107,.3)}
-.rd-teams{display:flex;align-items:center;gap:8px;margin-bottom:8px}
-.rd-logo{width:30px;height:30px;background:var(--logo-bg);border:1px solid var(--logo-border);
-  border-radius:var(--r-sm);box-shadow:var(--logo-shadow);display:flex;align-items:center;
-  justify-content:center;overflow:hidden}
-.rd-logo img{width:22px;height:22px;object-fit:contain}
-.rd-vs{font-family:var(--mono);font-size:11px;font-weight:700;color:rgba(255,255,255,.2)}
-.rd-label{font-family:var(--mono);font-size:9px;font-weight:700;letter-spacing:.1em;
-  text-transform:uppercase;color:rgba(255,255,255,.3)}
-.rd-narrative{font-family:var(--sans);font-size:14px;font-weight:600;color:#e8edf8;
-  line-height:1.4;margin-bottom:6px}
-.rd-narrative strong{color:var(--signal)}
-.rd-delta{font-family:var(--mono);font-size:11px;color:rgba(255,255,255,.35)}
-.rd-cta{font-family:var(--mono);font-size:10px;font-weight:700;color:var(--signal);
-  letter-spacing:.06em;margin-top:4px}
-
-/* ── NUMBER OF THE DAY ── */
-.notd{background:linear-gradient(135deg,rgba(26,255,107,.08) 0%,rgba(26,255,107,.02) 100%);
-  border:1px solid rgba(26,255,107,.15);border-radius:var(--r-lg);padding:24px;text-align:center}
-.notd-label{font-family:var(--mono);font-size:9px;font-weight:700;letter-spacing:.2em;
-  text-transform:uppercase;color:rgba(255,255,255,.3);margin-bottom:8px}
-.notd-num{font-family:var(--mono);font-size:clamp(40px,9vw,72px);font-weight:700;
-  color:var(--signal);letter-spacing:-.04em;line-height:1;margin-bottom:8px}
-.notd-context{font-family:var(--mono);font-size:11px;color:rgba(26,255,107,.5);
-  letter-spacing:.1em;text-transform:uppercase;margin-bottom:10px}
-.notd-text{font-family:var(--sans);font-size:15px;color:rgba(255,255,255,.6);line-height:1.55}
-
-/* ── ARCHIVE NAV ── */
-.archive-nav{background:var(--ink2);border:1px solid var(--rule);border-radius:var(--r-lg);
-  padding:16px;margin-top:28px}
-.archive-title{font-family:var(--mono);font-size:10px;font-weight:700;letter-spacing:.14em;
-  text-transform:uppercase;color:rgba(255,255,255,.3);margin-bottom:10px}
+/* ARCHIVE */
+.archive-nav{background:var(--ink2);border:1px solid var(--rule);border-radius:var(--r-lg);padding:14px;margin-top:20px}
+.archive-title{font-family:var(--mono);font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.3);margin-bottom:8px}
 .archive-dates{display:flex;flex-wrap:wrap;gap:6px}
-.archive-link{padding:5px 12px;border-radius:var(--r-pill);border:1px solid var(--rule);
-  background:transparent;color:var(--chalk);font-family:var(--mono);font-size:11px;
-  font-weight:600;text-decoration:none;transition:all .13s}
+.archive-link{padding:4px 11px;border-radius:var(--r-pill);border:1px solid var(--rule);background:transparent;color:var(--chalk);font-family:var(--mono);font-size:11px;font-weight:600;text-decoration:none;transition:all .13s}
 .archive-link:hover{border-color:var(--signal);color:var(--signal)}
 .archive-link.current{background:var(--signal);border-color:var(--signal);color:var(--ink)}
 
-.pulse-footer{border-top:1px solid var(--rule);padding:24px 0;margin-top:48px;
-  font-family:var(--mono);font-size:12px;color:rgba(255,255,255,.2);
-  display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between}
+/* SHARE BAR */
+.share-bar{display:flex;gap:7px;flex-wrap:wrap;margin-top:12px}
+.share-btn{display:inline-flex;align-items:center;gap:5px;padding:7px 13px;border-radius:var(--r-sm);font-family:var(--mono);font-size:11px;font-weight:700;cursor:pointer;transition:all .13s;text-decoration:none;letter-spacing:.02em}
+.share-btn.primary{background:var(--signal);color:var(--ink);border:none}
+.share-btn.ghost{background:transparent;color:var(--chalk);border:1px solid var(--rule)}
+.share-btn.ghost:hover{border-color:var(--signal);color:var(--signal)}
+
+.pulse-footer{border-top:1px solid var(--rule);padding:20px 0;margin-top:40px;font-family:var(--mono);font-size:12px;color:rgba(255,255,255,.2);display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between}
 .pulse-footer a{color:rgba(255,255,255,.3);text-decoration:none}
 .pulse-footer a:hover{color:var(--signal)}
 
-@media(max-width:560px){
-  .mover-card{flex-wrap:wrap}
-  .chaos-delta-card{flex-direction:column;align-items:flex-start}
-}
+@media(max-width:560px){.change-table th:nth-child(3),.change-table td:nth-child(3){display:none}}
 </style>
 </head>
 <body>
-
 <nav class="nav">
   <div class="nav-inner">
     <a href="/" class="back-btn">← Home</a>
@@ -228,29 +230,24 @@ body{font-family:var(--sans);background:var(--ink);color:#e8edf8;min-height:100v
 
 <div class="wrap">
   <div class="breadcrumb">
-    <a href="/">Home</a>
-    <span>›</span>
-    <a href="/pulse">Daily Pulse</a>
-    <span>›</span>
+    <a href="/">Home</a><span>›</span>
+    <a href="/pulse">Daily Pulse</a><span>›</span>
     <span id="bcDate">Loading…</span>
   </div>
-
-  <!-- All states rendered by JS -->
   <div id="appRoot"></div>
-
   <footer class="pulse-footer">
     <a href="/">TRACK THE <span style="color:var(--signal)">SEASON</span></a>
-    <span>Snapshot data updated nightly · <a href="/chaos-report">Social Graphics</a></span>
+    <span>Snapshot data updated nightly · <a href="/chaos-report">Social Graphics</a> · <a href="/">All Teams</a></span>
   </footer>
 </div>
 
 <script>
 /* ══════════════════════════════════════════════════════════
-   CONFIG
+   CONSTANTS
 ══════════════════════════════════════════════════════════ */
 const CURRENT_YEAR = new Date().getFullYear();
-const TRACKER_BASE = 'tracker.html';
 const SEASON_GAMES = 162;
+const CHAOS_THRESHOLD = 5;
 
 const RIVALRY_DEFS = [
   {t1:147,t2:111,label:'AL East',  slug:'yankees-vs-red-sox'},
@@ -264,403 +261,625 @@ const RIVALRY_DEFS = [
   {t1:117,t2:140,label:'AL West',  slug:'astros-vs-rangers'},
 ];
 
+const TEAM_SLUGS = {
+  108:'angels',109:'diamondbacks',110:'orioles',111:'red-sox',112:'cubs',
+  113:'reds',114:'guardians',115:'rockies',116:'tigers',117:'astros',
+  118:'royals',119:'dodgers',120:'nationals',121:'mets',133:'athletics',
+  134:'pirates',135:'padres',136:'mariners',137:'giants',138:'cardinals',
+  139:'rays',140:'rangers',141:'blue-jays',142:'twins',143:'phillies',
+  144:'braves',145:'white-sox',146:'marlins',147:'yankees',158:'brewers',
+};
+
 /* ══ Helpers ══════════════════════════════════════════════ */
-const logoImg  = (id,sz=32)=>
-  `<img src="https://www.mlbstatic.com/team-logos/${id}.svg" width="${sz}" height="${sz}"
-    style="object-fit:contain" onerror="this.style.display='none'"/>`;
-const trackerUrl = (id,gp)=>`${TRACKER_BASE}?team=${id}&season=${CURRENT_YEAR}&rs=${Math.max(1,gp-29)}&re=${gp}`;
-const fmt = d => new Date(d+'T12:00:00Z').toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric',year:'numeric'});
+const logoImg = (id,sz=28) =>
+  `<img src="https://www.mlbstatic.com/team-logos/${id}.svg" width="${sz}" height="${sz}" style="object-fit:contain" onerror="this.style.display='none'"/>`;
+const teamUrl  = id => { const s=TEAM_SLUGS[id]; return s?`/${s}`:`/tracker.html?team=${id}`; };
+const fmt      = d => new Date(d+'T12:00:00Z').toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric',year:'numeric'});
 const fmtShort = d => new Date(d+'T12:00:00Z').toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'});
+const sign     = n => n>0?`+${n}`:String(n);
 
 async function copyToClipboard(t){try{await navigator.clipboard.writeText(t);return true;}catch{window.prompt('Copy:',t);return false;}}
 
-/* ══ Render helpers ════════════════════════════════════════ */
+/* ══ States ════════════════════════════════════════════════ */
 function setRoot(html){ document.getElementById('appRoot').innerHTML=html; }
 
 function renderLoading(){
-  setRoot(`<div class="state-box"><div class="spinner"></div><div class="state-label">Loading…</div></div>`);
+  setRoot(`<div class="state-box"><div class="spinner"></div><div class="state-label">Building today's Pulse…</div></div>`);
 }
 
 function renderComingSoon(availableDates){
-  const hasAny = availableDates && availableDates.length > 0;
-  document.getElementById('bcDate').textContent = 'Coming Soon';
+  document.getElementById('bcDate').textContent='Coming Soon';
   setRoot(`<div class="coming-soon">
-    <div class="cs-icon">📅</div>
+    <div style="font-size:36px;margin-bottom:14px">📅</div>
     <div class="cs-title">Delta Tracking Starts Tomorrow</div>
-    <div class="cs-body">
-      The Daily Pulse shows <strong>what changed since yesterday</strong> — projected wins gained or lost,
-      overnight movers, rivalry shifts, and Chaos Index movement.<br><br>
-      The first snapshot runs tonight at 11pm ET. Check back tomorrow morning to see the first Pulse report.
-    </div>
-    <div class="cs-detail">
-      SNAPSHOT CADENCE: NIGHTLY AT 11PM ET<br>
-      FIRST PULSE: TOMORROW MORNING<br>
-      HOMEPAGE: CURRENT LIVE PACE DATA
-    </div>
+    <div class="cs-body">The Daily Pulse shows <strong>what changed since yesterday</strong> — projected wins gained or lost, overnight movers, rivalry shifts, and Chaos Index movement.<br><br>The first snapshot runs tonight at 11pm ET. Check back tomorrow morning.</div>
+    <div class="cs-detail">SNAPSHOT CADENCE: NIGHTLY AT 11PM ET<br>FIRST PULSE: TOMORROW MORNING</div>
     <a href="/" class="cs-btn">← See Live MLB Pace Dashboard</a>
   </div>
-  ${hasAny ? renderArchiveNavHtml(availableDates, null) : ''}`);
+  ${renderArchiveNav(availableDates||[], null)}`);
 }
 
-function renderNotFound(date, availableDates){
-  document.getElementById('bcDate').textContent = date;
-  setRoot(`<div class="state-box">
-    <div class="state-label">No Pulse found for ${date}</div>
-    <div class="state-sub">This date either hasn't been stored yet or predates the archive.</div>
-  </div>
-  ${renderArchiveNavHtml(availableDates, date)}`);
+function renderArchiveNav(dates, current){
+  if(!dates||!dates.length) return '';
+  const links=dates.slice(0,14).map(d=>`<a class="archive-link ${d===current?'current':''}" href="/pulse/${d}">${fmtShort(d)}</a>`).join('');
+  return `<div class="archive-nav"><div class="archive-title">📁 Archive</div><div class="archive-dates">${links}</div></div>`;
 }
 
-function renderArchiveNavHtml(dates, current){
-  if(!dates || !dates.length) return '';
-  const links = dates.slice(0,14).map(d=>`
-    <a class="archive-link ${d===current?'current':''}" href="/pulse/${d}">${fmtShort(d)}</a>
-  `).join('');
-  return `<div class="archive-nav">
-    <div class="archive-title">📁 Archive — past reports</div>
-    <div class="archive-dates">${links}</div>
-  </div>`;
-}
-
-/* ══ Delta computations ════════════════════════════════════ */
-function buildDeltas(snapshot, prevSnapshot){
-  if(!prevSnapshot || !prevSnapshot.length) return null;
-  const prevMap = new Map(prevSnapshot.map(t=>[t.teamId, t]));
+/* ══ Delta builder ══════════════════════════════════════════ */
+function buildDeltas(snapshot, prev){
+  if(!prev||!prev.length) return snapshot.map(t=>({...t,projDelta:null,chaosChange:null,l10Delta:null}));
+  const pm=new Map(prev.map(t=>[t.teamId,t]));
   return snapshot.map(t=>{
-    const prev = prevMap.get(t.teamId);
-    if(!prev) return {...t, projDelta:null, chaosChange:null};
-    const projDelta = (t.projWins != null && prev.projWins != null) ? t.projWins - prev.projWins : null;
-    const chaosChange = t.chaosFlag - (prev.chaosFlag||0); // 1=entered chaos, -1=left
-    return {...t, prev, projDelta, chaosChange};
+    const p=pm.get(t.teamId);
+    if(!p) return{...t,projDelta:null,chaosChange:null,l10Delta:null};
+    const projDelta=(t.projWins!=null&&p.projWins!=null)?t.projWins-p.projWins:null;
+    const l10Delta=(t.l10W!=null&&p.l10W!=null)?t.l10W-p.l10W:null;
+    const chaosChange=t.chaosFlag-(p.chaosFlag||0);
+    return{...t,prev:p,projDelta,chaosChange,l10Delta};
   });
 }
 
-function generateHeadline(teams, date, chaosCount, prevChaosCount){
-  const withDelta = teams.filter(t=>t.projDelta!=null).sort((a,b)=>b.projDelta-a.projDelta);
-  const top    = withDelta[0];
-  const bottom = withDelta[withDelta.length-1];
-  const chaosDiff = chaosCount - (prevChaosCount||chaosCount);
-  const topD   = top?.projDelta||0, botD = bottom?.projDelta||0;
-  const topName = top?.teamName||'', botName = bottom?.teamName||'';
+/* ══ INSIGHT ENGINE ══════════════════════════════════════════
+   Builds structured insight objects from snapshot data.
+   Each object: { type, title, kicker, take, stats, teamId?, t1?, t2?, url, slug?, confidence }
+══════════════════════════════════════════════════════════ */
+function buildInsights(teams, date, hasPrev){
+  const insights = [];
+  const valid    = teams.filter(t=>t.gp>=10&&t.projWins);
+  const withDelta= valid.filter(t=>t.projDelta!=null);
+  const sorted   = [...withDelta].sort((a,b)=>b.projDelta-a.projDelta);
+  const risers   = sorted.filter(t=>t.projDelta>0);
+  const fallers  = [...withDelta].sort((a,b)=>a.projDelta-b.projDelta).filter(t=>t.projDelta<0);
+  const byId     = new Map(valid.map(t=>[t.teamId,t]));
+  const chaosCount = valid.filter(t=>t.chaosFlag===1||t.chaosFlag==='1').length;
+  const prevChaosCount = hasPrev ? valid.filter(t=>t.prev?.chaosFlag===1||t.prev?.chaosFlag==='1').length : null;
 
-  if(Math.abs(chaosDiff)>=3)
-    return `Chaos Index ${chaosDiff>0?'Surges':'Drops'} — ${chaosCount} Teams Now Off Prior-Year Pace`;
-  if(topD>=3 && Math.abs(botD)>=3)
-    return `${topName} Rise While ${botName} Slip — MLB's Biggest Overnight Swing`;
-  if(topD>=3)
-    return `${topName} Make the Biggest Move — +${topD} Projected Wins Overnight`;
-  if(Math.abs(botD)>=3)
-    return `${botName} Drop ${Math.abs(botD)} Projected Wins — The Biggest Overnight Fall`;
-  if(topD>=2)
-    return `${topName} Lead the Way After Last Night's Games`;
-  return `MLB Daily Pulse — ${fmtShort(date)}`;
+  /* ── STORY OF THE DAY ── */
+  let story = null;
+  if(hasPrev && risers.length && fallers.length){
+    const top=risers[0], bot=fallers[0];
+    const topD=top.projDelta, botD=Math.abs(bot.projDelta);
+    if(topD>=3 && botD>=3){
+      story = {
+        type:'story_of_day',
+        kicker:'Story of the Day',
+        title:`${top.teamName} Rise While ${bot.teamName} Slip`,
+        take:`The biggest overnight swing in the league. <strong>${top.teamName}</strong> gained ${topD} projected wins while <strong>${bot.teamName}</strong> dropped ${botD}. In a pace race, that's a ${topD+botD}-win swing that changes the conversation.`,
+        stats:[
+          {label:`${top.teamName} pace`,val:`${top.projWins}W`},
+          {label:`${bot.teamName} pace`,val:`${bot.projWins}W`},
+          {label:'Combined swing',val:`${topD+botD}W`},
+        ],
+        t1:top.teamId, t2:bot.teamId,
+        url:teamUrl(top.teamId),
+        confidence:'high',
+      };
+    } else if(topD>=3){
+      story = {
+        type:'story_of_day',
+        kicker:'Story of the Day',
+        title:`${top.teamName} Made the Biggest Move Last Night`,
+        take:`A ${topD}-win jump in projected pace overnight. <strong>${top.teamName}</strong> are now on pace for ${top.projWins} wins — ${top.delta>=0?`${sign(top.delta)}W`:'below'} last year's pace. Small sample, real signal.`,
+        stats:[{label:'New pace',val:`${top.projWins}W`},{label:'Change',val:sign(topD)+'W'},{label:'vs Last Year',val:sign(top.delta||0)+'W'}],
+        t1:top.teamId, url:teamUrl(top.teamId), confidence:'high',
+      };
+    } else if(botD>=3){
+      story = {
+        type:'story_of_day',
+        kicker:'Story of the Day',
+        title:`${bot.teamName} Had the Sharpest Drop Overnight`,
+        take:`<strong>${bot.teamName}</strong> fell ${botD} projected wins overnight — down to a ${bot.projWins}W pace. That's ${Math.abs(bot.delta)||0} wins ${bot.delta<0?'behind':'ahead of'} last year at this point.`,
+        stats:[{label:'New pace',val:`${bot.projWins}W`},{label:'Change',val:sign(bot.projDelta)+'W'},{label:'vs Last Year',val:sign(bot.delta||0)+'W'}],
+        t1:bot.teamId, url:teamUrl(bot.teamId), confidence:'high',
+      };
+    }
+  }
+  if(!story && valid.length){
+    /* Fallback: most interesting team today */
+    const interesting=[...valid].sort((a,b)=>Math.abs(b.delta||0)-Math.abs(a.delta||0))[0];
+    story = {
+      type:'story_of_day',
+      kicker:'Today\'s Biggest Story',
+      title:`${interesting.teamName}: ${Math.abs(interesting.delta||0)}W ${(interesting.delta||0)>=0?'Ahead of':'Behind"'} Last Year's Pace`,
+      take:`Through ${interesting.gp} games, <strong>${interesting.teamName}</strong> are on a ${interesting.projWins}W pace — ${sign(interesting.delta||0)} wins vs last season. Their last 10: ${interesting.l10W}–${interesting.l10L}.`,
+      stats:[{label:'Pace',val:`${interesting.projWins}W`},{label:'vs Last Year',val:sign(interesting.delta||0)+'W'},{label:'L10',val:`${interesting.l10W}–${interesting.l10L}`}],
+      t1:interesting.teamId, url:teamUrl(interesting.teamId), confidence:'medium',
+    };
+  }
+  insights.push({slot:'story', data:story});
+
+  /* ── BIGGEST PACE SHIFT ── */
+  if(hasPrev && risers.length){
+    const top=risers[0];
+    insights.push({slot:'pace_shift', data:{
+      type:'pace_shift',
+      kicker:'Biggest Pace Shift',
+      title:`${top.teamName}: From ${top.prev?.projWins||'?'}W to ${top.projWins}W Overnight`,
+      take:`${top.projDelta>=3?`That's not noise — that's ${top.projDelta} projected wins in a single day.`:'Every game moves the needle.'} <strong>${top.teamName}</strong> are now ${sign(top.delta||0)}W vs last season's pace at this point.`,
+      stats:[{label:'Yesterday',val:`${top.prev?.projWins||'?'}W`},{label:'Today',val:`${top.projWins}W`},{label:'Change',val:sign(top.projDelta)+'W'}],
+      t1:top.teamId, url:teamUrl(top.teamId), confidence:'high',
+    }});
+  }
+
+  /* ── MOST MISLEADING RECORD ── */
+  /* Find team whose L10 most diverges from season record */
+  const mislead = valid.map(t=>{
+    const seasonPct = t.winPct||0;
+    const l10Pct = (t.l10W+t.l10L)>0 ? t.l10W/(t.l10W+t.l10L) : seasonPct;
+    return {...t, diverge: Math.abs(l10Pct - seasonPct), l10Pct};
+  }).sort((a,b)=>b.diverge-a.diverge)[0];
+
+  if(mislead && mislead.diverge>=0.15){
+    const isHotCold = mislead.l10Pct > mislead.winPct;
+    insights.push({slot:'misleading', data:{
+      type:'misleading_record',
+      kicker:'Most Misleading Record',
+      title:`${mislead.teamName}'s Record Doesn't Tell the Full Story`,
+      take:isHotCold
+        ? `<strong>${mislead.teamName}</strong> are ${mislead.wins}–${mislead.losses} on the season, but they're ${mislead.l10W}–${mislead.l10L} over their last 10. The season record is a lag indicator — the trend is what matters right now.`
+        : `<strong>${mislead.teamName}</strong> look like a ${mislead.projWins}W team on pace, but they're only ${mislead.l10W}–${mislead.l10L} over the last 10. Something may be slipping.`,
+      stats:[{label:'Season pace',val:`${mislead.projWins}W`},{label:'L10',val:`${mislead.l10W}–${mislead.l10L}`},{label:'vs Last Year',val:sign(mislead.delta||0)+'W'}],
+      t1:mislead.teamId, url:teamUrl(mislead.teamId), confidence:'medium',
+    }});
+  }
+
+  /* ── RIVALRY PRESSURE ── */
+  const rivalrySorted = RIVALRY_DEFS.map(r=>{
+    const t1=byId.get(r.t1), t2=byId.get(r.t2);
+    if(!t1||!t2||!t1.projWins||!t2.projWins) return null;
+    const gap=Math.abs(t1.projWins-t2.projWins);
+    const gapChanged = hasPrev ? Math.abs((t1.projDelta||0)-(t2.projDelta||0)) : 0;
+    return{...r,t1,t2,gap,gapChanged};
+  }).filter(Boolean).sort((a,b)=>b.gapChanged-a.gapChanged||b.gap-a.gap);
+
+  if(rivalrySorted.length){
+    const r=rivalrySorted[0];
+    const ahead=r.t1.projWins>=r.t2.projWins?r.t1:r.t2;
+    const behind=ahead===r.t1?r.t2:r.t1;
+    const aName=ahead.teamName, bName=behind.teamName;
+    insights.push({slot:'rivalry', data:{
+      type:'rivalry_pressure',
+      kicker:'Rivalry Pressure Meter',
+      title:`${aName} vs ${bName}: ${r.gap}W Apart in Projected Pace`,
+      take:r.gapChanged>=2
+        ? `The gap in this rivalry <strong>shifted ${r.gapChanged}W overnight</strong>. ${aName} are on a ${ahead.projWins}W pace vs ${bName} at ${behind.projWins}W. That's a real separation.`
+        : r.gap>=15 ? `<strong>${aName}</strong> are dominating the pace race — ${r.gap} projected wins ahead of ${bName}.`
+        : `<strong>${aName}</strong> lead ${bName} by ${r.gap} projected wins. Close enough to matter.`,
+      stats:[{label:aName,val:`${ahead.projWins}W`},{label:bName,val:`${behind.projWins}W`},{label:'Gap',val:`${r.gap}W`}],
+      t1:r.t1.teamId, t2:r.t2.teamId, url:`/${r.slug}`, label:r.label, confidence:'high',
+    }});
+  }
+
+  /* ── STARTER SIGNAL OF THE DAY ── */
+  /* Best available: team furthest ahead of last year = best story */
+  const ssTeam = valid.filter(t=>(t.delta||0)>=8).sort((a,b)=>(b.delta||0)-(a.delta||0))[0]||
+                 valid.sort((a,b)=>Math.abs(b.delta||0)-Math.abs(a.delta||0))[0];
+  if(ssTeam){
+    insights.push({slot:'starter_signal', data:{
+      type:'starter_signal',
+      kicker:'Starter Signal of the Day',
+      title:`${ssTeam.teamName}: Who's Changing the Shape of Their Season?`,
+      take:`<strong>${ssTeam.teamName}</strong> are ${sign(ssTeam.delta||0)}W vs last year's pace. The question isn't just their record — it's which starters are driving the difference. Tap to see Starter Signal.`,
+      stats:[{label:'Season pace',val:`${ssTeam.projWins}W`},{label:'vs Last Year',val:sign(ssTeam.delta||0)+'W'},{label:'L10',val:`${ssTeam.l10W}–${ssTeam.l10L}`}],
+      t1:ssTeam.teamId, url:teamUrl(ssTeam.teamId), confidence:'medium',
+    }});
+  }
+
+  return insights;
 }
 
-function generateSummary(teams, date, chaosCount, prevChaosCount){
-  const chaosDiff = chaosCount - (prevChaosCount||chaosCount);
-  const withDelta = teams.filter(t=>t.projDelta!=null).sort((a,b)=>b.projDelta-a.projDelta);
-  const top = withDelta[0], bot = withDelta[withDelta.length-1];
-  const gainers = withDelta.filter(t=>t.projDelta>0).length;
-  const fallers = withDelta.filter(t=>t.projDelta<0).length;
+/* ══ TOMORROW'S WATCHLIST ════════════════════════════════════ */
+function buildWatchlist(teams, insights){
+  const valid = teams.filter(t=>t.gp>=10&&t.projWins);
+  const byId  = new Map(valid.map(t=>[t.teamId,t]));
+  const items = [];
 
-  let s = '';
-  if(gainers>0||fallers>0)
-    s += `After last night's games, ${gainers} team${gainers!==1?'s':''} gained projected wins and ${fallers} fell. `;
-  if(Math.abs(chaosDiff)>=1)
-    s += `The Chaos Index ${chaosDiff>0?'rose to':'dropped to'} ${chaosCount} — ${chaosDiff>0?'more':'fewer'} teams tracking ±5W from last season. `;
-  if(top?.projDelta>=2)
-    s += `The ${top.teamName} made the biggest jump, gaining ${top.projDelta} projected win${top.projDelta!==1?'s':''}. `;
-  if(bot?.projDelta<=-2)
-    s += `The ${bot.teamName} had the sharpest drop, falling ${Math.abs(bot.projDelta)} projected win${Math.abs(bot.projDelta)!==1?'s':''}.`;
-  return s.trim() || `A look at how every team's projected win pace shifted after ${fmtShort(date)}.`;
+  /* 1. Team on biggest winning streak in L10 */
+  const hotTeam=[...valid].sort((a,b)=>b.l10W-a.l10W)[0];
+  if(hotTeam) items.push({
+    title:`${hotTeam.teamName}: Can they extend the run?`,
+    why:`${hotTeam.l10W}–${hotTeam.l10L} over the last 10. If this pace continues, their projection climbs.`,
+    url:teamUrl(hotTeam.teamId),
+  });
+
+  /* 2. Closest rivalry */
+  const closeRivalry = RIVALRY_DEFS.map(r=>{
+    const t1=byId.get(r.t1),t2=byId.get(r.t2);
+    if(!t1||!t2||!t1.projWins||!t2.projWins) return null;
+    return{...r,t1,t2,gap:Math.abs(t1.projWins-t2.projWins)};
+  }).filter(Boolean).sort((a,b)=>a.gap-b.gap)[0];
+  if(closeRivalry) items.push({
+    title:`${closeRivalry.t1.teamName} vs ${closeRivalry.t2.teamName}: A rivalry hiding in plain sight`,
+    why:`Only ${closeRivalry.gap}W separating these two in projected pace. One game shift can change the narrative.`,
+    url:`/${closeRivalry.slug}`,
+  });
+
+  /* 3. Team most behind last year with improving L10 */
+  const comeback=[...valid].filter(t=>(t.delta||0)<=-8&&t.l10W>=6).sort((a,b)=>b.l10W-a.l10W)[0];
+  if(comeback) items.push({
+    title:`${comeback.teamName}: Real correction or just noise?`,
+    why:`They're ${Math.abs(comeback.delta||0)}W behind last year's pace but ${comeback.l10W}–${comeback.l10L} in their last 10. Watch the next 5 games.`,
+    url:teamUrl(comeback.teamId),
+  });
+
+  /* Fallback */
+  if(items.length<3){
+    const fallback=[...valid].filter(t=>!items.find(i=>i.url===teamUrl(t.teamId)))
+      .sort((a,b)=>Math.abs(b.delta||0)-Math.abs(a.delta||0));
+    while(items.length<3&&fallback.length){
+      const t=fallback.shift();
+      items.push({title:`${t.teamName}: Check the pace trend`,why:`${sign(t.delta||0)}W vs last year. ${t.projWins}W pace through ${t.gp} games.`,url:teamUrl(t.teamId)});
+    }
+  }
+  return items.slice(0,3);
 }
 
-/* ══ Section renderers ══════════════════════════════════════ */
-function renderMoversSection(teams, dir){
-  const sorted = [...teams]
-    .filter(t=>t.projDelta!=null)
-    .sort((a,b)=> dir==='up' ? b.projDelta-a.projDelta : a.projDelta-b.projDelta)
-    .slice(0,3);
-  if(!sorted.length) return '<div style="color:var(--chalk);font-size:13px;font-family:var(--mono)">No significant movers.</div>';
-  return sorted.map(t=>{
-    const d = t.projDelta||0;
-    if(dir==='up'&&d<=0) return '';
-    if(dir==='down'&&d>=0) return '';
-    const cls = dir==='up'?'up':'down';
-    const sign = d>0?'+':'';
-    const now = t.projWins!=null?`${t.projWins}W pace`:null;
-    const prev = t.prev?.projWins!=null?`was ${t.prev.projWins}W`:null;
-    const rec = t.wins!=null?`${t.wins}–${t.losses} · ${t.gp} GP`:'';
-    const detail = t.delta!=null ? (t.delta>=0?`+${t.delta}W vs last season`:`${t.delta}W vs last season`) : '';
-    const text = [now, prev, detail].filter(Boolean).join(' · ');
-    return `<a class="mover-card ${cls}" href="${trackerUrl(t.teamId, t.gp||67)}">
-      <div class="mover-logo">${logoImg(t.teamId,32)}</div>
-      <div class="mover-body">
-        <div class="mover-name">${t.teamName}</div>
-        <div class="mover-sub">${rec}</div>
-        <div class="mover-text">${text}</div>
+/* ══ SOCIAL COMMENTS ═════════════════════════════════════════ */
+function buildSocialComments(teams, insights, date){
+  const valid=teams.filter(t=>t.gp>=10&&t.projWins);
+  const sorted=[...valid].filter(t=>t.delta!=null).sort((a,b)=>Math.abs(b.delta)-Math.abs(a.delta));
+  const top=sorted[0], url='https://tracktheseason.com';
+  const chaosCount=valid.filter(t=>t.chaosFlag===1||t.chaosFlag==='1').length;
+
+  const comments=[];
+
+  /* Insightful */
+  if(top){
+    const teamUrl2=`${url}${teamUrl(top.teamId)}`;
+    comments.push({
+      type:'💡 Insightful',
+      text:`The ${top.teamName} are ${sign(top.delta||0)}W vs last year's pace through ${top.gp} games. That's not a box score stat — it's a season trajectory signal. ${teamUrl2} #TrackTheSeason`,
+    });
+  }
+
+  /* Debate-driven */
+  const rival=RIVALRY_DEFS.map(r=>{
+    const t1=valid.find(t=>t.teamId===r.t1),t2=valid.find(t=>t.teamId===r.t2);
+    if(!t1||!t2) return null;
+    return{...r,t1,t2,gap:Math.abs(t1.projWins-t2.projWins)};
+  }).filter(Boolean).sort((a,b)=>b.gap-a.gap)[0];
+  if(rival){
+    const ahead=rival.t1.projWins>=rival.t2.projWins?rival.t1:rival.t2;
+    const behind=ahead===rival.t1?rival.t2:rival.t1;
+    const rivalUrl=`${url}/${rival.slug}`;
+    comments.push({
+      type:'🔥 Debate-Driven',
+      text:`${ahead.teamName} are tracking ${rival.gap} wins better than ${behind.teamName} over a full season. That's not a slump — that's a gap. Receipts: ${rivalUrl} #TrackTheSeason`,
+    });
+  }
+
+  /* Chaos */
+  comments.push({
+    type:'🌀 League-Wide',
+    text:`${chaosCount} of 30 MLB teams are tracking at least 5 wins differently than last season. The standings don't tell the full story. ${url} #TrackTheSeason #MLB`,
+  });
+
+  return comments;
+}
+
+/* ══ DEBATE HOOK ══════════════════════════════════════════════ */
+function buildDebate(teams, date){
+  const valid=teams.filter(t=>t.gp>=10&&t.projWins);
+  const chaosCount=valid.filter(t=>t.chaosFlag===1||t.chaosFlag==='1').length;
+  const sorted=[...valid].filter(t=>t.delta!=null).sort((a,b)=>Math.abs(b.delta)-Math.abs(a.delta));
+  const top=sorted[0];
+  const hot=[...valid].sort((a,b)=>b.l10W-a.l10W)[0];
+
+  const debates=[
+    top && `Are the ${top.teamName} for real — or is a ${sign(top.delta||0)}W pace gap vs last year misleading?`,
+    hot && `${hot.teamName} are ${hot.l10W}–${hot.l10L} in their last 10. Legitimate surge or small sample noise?`,
+    `With ${chaosCount} teams off last year's pace, which team's projection feels most unreliable right now?`,
+    top && `Which matters more right now: standings position, pace vs last year, or last-10 trend?`,
+  ].filter(Boolean);
+
+  return debates[new Date(date+'T12:00:00Z').getDate() % debates.length];
+}
+
+/* ══ RENDERERS ════════════════════════════════════════════════ */
+function renderInsightCard(ins, cls=''){
+  const statHtml=(ins.stats||[]).map(s=>`<div class="insight-stat">${s.label}: <span>${s.val}</span></div>`).join('');
+  const logosHtml=ins.t1?`<div style="display:flex;align-items:center;gap:4px;margin-bottom:10px">
+    <div class="story-logo">${logoImg(ins.t1,22)}</div>
+    ${ins.t2?`<div class="story-logo">${logoImg(ins.t2,22)}</div>`:''}
+  </div>`:'';
+  return `<a class="insight-card ${cls}" href="${ins.url||'#'}">
+    ${logosHtml}
+    <div class="insight-kicker">${ins.kicker}</div>
+    <div class="insight-hed">${ins.title}</div>
+    <div class="insight-take">${ins.take}</div>
+    <div class="insight-footer">
+      <div class="insight-stats">${statHtml}</div>
+      <div class="insight-cta">See full tracker →</div>
+    </div>
+  </a>`;
+}
+
+function renderStoryHero(ins){
+  if(!ins) return '';
+  const statHtml=(ins.stats||[]).map(s=>`<div class="story-stat">${s.label}: <span>${s.val}</span></div>`).join('');
+  return `<div class="story-hero">
+    <div class="story-hero-top">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px">
+        ${ins.t1?`<div class="story-logo">${logoImg(ins.t1,26)}</div>`:''}
+        ${ins.t2?`<div class="story-logo">${logoImg(ins.t2,26)}</div>`:''}
+        <div class="story-kicker">${ins.kicker}</div>
       </div>
-      <div class="mover-delta ${cls}">${sign}${d}W</div>
-    </a>`;
-  }).join('');
-}
-
-function renderChaosSection(chaosCount, prevChaosCount, gp){
-  const diff = prevChaosCount!=null ? chaosCount - prevChaosCount : 0;
-  const pct  = Math.round(chaosCount/30*100);
-  const changeCls = diff>0?'up':diff<0?'down':'flat';
-  const changeText = diff===0?'No change from yesterday'
-    : diff>0?`▲ ${diff} more team${diff!==1?'s':''} than yesterday`
-    :`▼ ${Math.abs(diff)} fewer team${Math.abs(diff)!==1?'s':''} than yesterday`;
-  return `<div class="chaos-delta-card">
-    <div class="chaos-big">${chaosCount}</div>
-    <div class="chaos-body-text">
-      <div class="chaos-title-label">Chaos Index · Through Game ${gp}</div>
-      <div class="chaos-desc">${chaosCount} of 30 teams are tracking at least 5 wins differently than last season — ${pct}% of the league.</div>
-      <div class="chaos-change ${changeCls}">${changeText}</div>
+      <div class="story-hed">${ins.title}</div>
+      <div class="story-take">${ins.take}</div>
+    </div>
+    <div class="story-hero-bottom">
+      <div class="story-stats">${statHtml}</div>
+      <a class="story-link" href="${ins.url||'#'}">See full tracker →</a>
     </div>
   </div>`;
 }
 
-function renderRivalrySection(teams){
-  const byId = new Map(teams.map(t=>[t.teamId,t]));
-  const cards = RIVALRY_DEFS.map(r=>{
-    const td1=byId.get(r.t1), td2=byId.get(r.t2);
-    if(!td1||!td2||!td1.projWins||!td2.projWins) return null;
-    const p1=td1.projWins, p2=td2.projWins, gap=Math.abs(p1-p2);
-    if(gap<3) return null;
-    const d1=td1.projDelta||0, d2=td2.projDelta||0;
-    const deltaText = (d1!==0||d2!==0)
-      ? `Gap ${Math.abs(d1-d2)>0?(d1>d2?'grew':'shrank')+' by '+(Math.abs(d1-d2))+'W overnight':' unchanged'}.`
-      : '';
-    const ahead=p1>=p2?td1:td2, aName=ahead.teamName;
-    const narrative = gap>=15
-      ? `<strong>${aName}</strong> dominate this rivalry — ${gap}W ahead in projected pace.`
-      : gap>=8 ? `<strong>${aName}</strong> hold a clear ${gap}-win pace edge.`
-      : `<strong>${aName}</strong> lead by ${gap} projected wins.`;
-    return `<a class="rivalry-delta-card" href="/${r.slug}">
-      <div class="rd-teams">
-        <div class="rd-logo">${logoImg(r.t1,22)}</div>
-        <div class="rd-vs">VS</div>
-        <div class="rd-logo">${logoImg(r.t2,22)}</div>
-        <div class="rd-label" style="margin-left:4px">${r.label}</div>
-      </div>
-      <div class="rd-narrative">${narrative}</div>
-      ${deltaText?`<div class="rd-delta">${deltaText}</div>`:''}
-      <div class="rd-cta">Full comparison →</div>
-    </a>`;
-  }).filter(Boolean).slice(0,3);
-  return cards.join('') || '';
+function renderChangeTable(teams, hasPrev){
+  if(!hasPrev) return `<div style="font-family:var(--mono);font-size:12px;color:var(--chalk);padding:12px 0">No prior snapshot available yet — deltas will appear after the second nightly snapshot.</div>`;
+  const top=[...teams].filter(t=>t.projDelta!=null).sort((a,b)=>Math.abs(b.projDelta)-Math.abs(a.projDelta)).slice(0,8);
+  if(!top.length) return '';
+  return `<div class="change-table-wrap"><table class="change-table">
+    <thead><tr>
+      <th>Team</th>
+      <th class="r">Yesterday</th>
+      <th class="r">Today</th>
+      <th class="r">Δ</th>
+      <th>Why it matters</th>
+      <th></th>
+    </tr></thead>
+    <tbody>${top.map(t=>{
+      const d=t.projDelta, cls=d>0?'ct-change-pos':d<0?'ct-change-neg':'ct-change-flat';
+      const why=d>=3?`Moving into serious contender range`
+        :d>=1?`Quietly gaining ground`
+        :d<=-3?`Sliding toward a harder conversation`
+        :d<=-1?`Losing projected pace`
+        :`Holding steady`;
+      return`<tr>
+        <td><div class="ct-team"><div class="ct-logo">${logoImg(t.teamId,18)}</div><span class="ct-name">${t.teamName}</span></div></td>
+        <td class="r">${t.prev?.projWins||'—'}W</td>
+        <td class="r">${t.projWins||'—'}W</td>
+        <td class="r ${cls}">${d>0?'+':''}${d}W</td>
+        <td><div class="ct-why">${why}</div></td>
+        <td><a class="ct-link" href="${teamUrl(t.teamId)}">→</a></td>
+      </tr>`;
+    }).join('')}</tbody>
+  </table></div>`;
 }
 
-function renderNotdSection(teams, chaosCount, prevChaosCount){
-  const withDelta = teams.filter(t=>t.projDelta!=null).sort((a,b)=>b.projDelta-a.projDelta);
-  const top=withDelta[0], bot=withDelta[withDelta.length-1];
-  const chaosDiff = prevChaosCount!=null ? chaosCount-prevChaosCount : null;
+function renderMovers(teams, dir, hasPrev){
+  if(!hasPrev) return '';
+  const sorted=[...teams].filter(t=>t.projDelta!=null)
+    .sort((a,b)=>dir==='up'?b.projDelta-a.projDelta:a.projDelta-b.projDelta)
+    .filter(t=>dir==='up'?t.projDelta>0:t.projDelta<0).slice(0,3);
+  return sorted.map(t=>`<a class="mover-card ${dir}" href="${teamUrl(t.teamId)}">
+    <div class="mover-logo">${logoImg(t.teamId,28)}</div>
+    <div class="mover-body">
+      <div class="mover-name">${t.teamName}</div>
+      <div class="mover-sub">${t.wins}–${t.losses} · ${t.projWins}W pace · ${sign(t.delta||0)}W vs last year</div>
+    </div>
+    <div class="mover-delta ${dir}">${dir==='up'?'+':''}${t.projDelta}W</div>
+  </a>`).join('');
+}
 
-  let num, context, text;
-  if(top?.projDelta>=3){
-    num=`+${top.projDelta}W`; context='Projected wins gained overnight';
-    text=`The ${top.teamName} gained ${top.projDelta} projected wins after last night's game. They're now tracking toward ${top.projWins||'—'} wins on the season.`;
-  } else if(Math.abs(bot?.projDelta||0)>=3){
-    num=`${bot.projDelta}W`; context='Projected wins lost overnight';
-    text=`The ${bot.teamName} dropped ${Math.abs(bot.projDelta)} projected wins. They're now on pace for ${bot.projWins||'—'} wins — ${bot.delta!=null?(bot.delta>=0?`+${bot.delta}W`:`${bot.delta}W`)+' vs last season':''}`.trim()+'.';
-  } else if(chaosDiff!==null&&Math.abs(chaosDiff)>=1){
-    num=String(chaosCount); context='Teams off prior-year pace';
-    text=`The Chaos Index ${chaosDiff>0?`rose by ${chaosDiff}`:`fell by ${Math.abs(chaosDiff)}`} today. ${chaosCount} teams are now tracking at least 5 wins differently than last season.`;
-  } else {
-    const pct=Math.round(chaosCount/30*100);
-    num=`${pct}%`; context='Of MLB off prior-year pace';
-    text=`${chaosCount} of 30 teams are tracking meaningfully differently than last season. The ${CURRENT_YEAR} standings alone don't tell the full story.`;
-  }
-  return `<div class="notd">
-    <div class="notd-label">Number of the Day</div>
-    <div class="notd-num">${num}</div>
-    <div class="notd-context">${context}</div>
-    <div class="notd-text">${text}</div>
+function renderChaos(teams, hasPrev){
+  const chaosCount=teams.filter(t=>t.chaosFlag===1||t.chaosFlag==='1').length;
+  const prevChaosCount=hasPrev?teams.filter(t=>t.prev?.chaosFlag===1||t.prev?.chaosFlag==='1').length:null;
+  const diff=prevChaosCount!=null?chaosCount-prevChaosCount:0;
+  const pct=Math.round(chaosCount/30*100);
+  const gp=teams[0]?.gp||0;
+  const deltaCls=diff>0?'up':diff<0?'down':'flat';
+  const deltaText=diff===0?'No change from yesterday':diff>0?`▲ ${diff} more team${diff!==1?'s':''} than yesterday`:`▼ ${Math.abs(diff)} fewer team${Math.abs(diff)!==1?'s':''} than yesterday`;
+  return `<div class="chaos-bar">
+    <div class="chaos-num">${chaosCount}</div>
+    <div class="chaos-txt">
+      <div class="chaos-label">Chaos Index · Game ${gp}</div>
+      <div class="chaos-desc">${chaosCount} of 30 teams tracking ±5W from last season — ${pct}% of the league.</div>
+      <div class="chaos-delta ${deltaCls}">${deltaText}</div>
+    </div>
   </div>`;
 }
 
-/* ══ Full article render ═══════════════════════════════════ */
+function renderWatchlist(items){
+  return `<div class="watchlist">${items.map((item,i)=>`
+    <a class="watch-item" href="${item.url}">
+      <div class="watch-num">0${i+1}</div>
+      <div class="watch-body">
+        <div class="watch-title">${item.title}</div>
+        <div class="watch-why">${item.why}</div>
+      </div>
+    </a>`).join('')}</div>`;
+}
+
+function renderSocialComments(comments){
+  return `<div class="social-grid">${comments.map(c=>`
+    <div class="social-card">
+      <div class="social-type">${c.type}</div>
+      <div class="social-text">${c.text}</div>
+      <button class="social-copy-btn" onclick="copyComment(this,'${encodeURIComponent(c.text)}')">⧉ Copy comment</button>
+    </div>`).join('')}</div>`;
+}
+
+window.copyComment=async function(btn,encoded){
+  const ok=await copyToClipboard(decodeURIComponent(encoded));
+  btn.textContent=ok?'✓ Copied!':'⧉ Copy comment';
+  setTimeout(()=>btn.textContent='⧉ Copy comment',2000);
+};
+
+/* ══ FULL ARTICLE RENDER ══════════════════════════════════════ */
 function renderArticle(data){
-  const {date, prevDate, snapshot, prevSnapshot, hasPrev, availableDates} = data;
+  const {date,prevDate,snapshot,prevSnapshot,hasPrev,availableDates}=data;
+  const teams=buildDeltas(snapshot,prevSnapshot);
+  const valid=teams.filter(t=>t.gp>=10&&t.projWins);
+  const chaosCount=valid.filter(t=>t.chaosFlag===1||t.chaosFlag==='1').length;
+  const prevChaosCount=hasPrev?valid.filter(t=>t.prev?.chaosFlag===1||t.prev?.chaosFlag==='1').length:null;
+  const gp=valid[0]?.gp||0;
 
-  /* Compute deltas */
-  const teams = hasPrev ? buildDeltas(snapshot, prevSnapshot) : snapshot.map(t=>({...t,projDelta:null,chaosChange:null}));
-  const chaosCount     = teams.filter(t=>t.chaosFlag===1||t.chaosFlag==='1').length;
-  const prevChaosCount = hasPrev
-    ? (prevSnapshot||[]).filter(t=>t.chaosFlag===1||t.chaosFlag==='1').length
-    : null;
-  const gp = teams[0]?.gp || 0;
+  const insights   = buildInsights(teams, date, hasPrev);
+  const watchlist  = buildWatchlist(teams, insights);
+  const comments   = buildSocialComments(teams, insights, date);
+  const debate     = buildDebate(teams, date);
+  const storyIns   = insights.find(i=>i.slot==='story')?.data;
+  const shiftIns   = insights.find(i=>i.slot==='pace_shift')?.data;
+  const misleadIns = insights.find(i=>i.slot==='misleading')?.data;
+  const rivalryIns = insights.find(i=>i.slot==='rivalry')?.data;
+  const ssIns      = insights.find(i=>i.slot==='starter_signal')?.data;
 
-  const hed     = generateHeadline(teams, date, chaosCount, prevChaosCount);
-  const summary = generateSummary(teams, date, chaosCount, prevChaosCount);
-
-  document.getElementById('bcDate').textContent = fmtShort(date);
-  document.title = `${hed} | Track The Season`;
-
-  /* Update OG */
-  const setMeta=(p,v)=>{document.querySelectorAll(`meta[property="${p}"],meta[name="${p}"]`).forEach(el=>el.setAttribute('content',v));};
-  setMeta('og:title',hed+' | Track The Season');
-  setMeta('og:description',summary);
-  setMeta('description',summary);
+  /* Update meta */
+  document.getElementById('bcDate').textContent=fmtShort(date);
+  const hed=storyIns?.title||`MLB Daily Pulse — ${fmtShort(date)}`;
+  document.title=`${hed} | Track The Season`;
   document.querySelector('link[rel="canonical"]').href=`https://tracktheseason.com/pulse/${date}`;
-
-  /* Update schema */
   const schema=document.getElementById('schemaScript');
-  if(schema){const obj=JSON.parse(schema.textContent);obj.headline=hed;obj.description=summary;
-    obj.datePublished=date;obj.dateModified=date;schema.textContent=JSON.stringify(obj,null,2);}
+  if(schema){const o=JSON.parse(schema.textContent);o.headline=hed;o.datePublished=date;o.dateModified=date;schema.textContent=JSON.stringify(o);}
 
-  const pageUrl = `https://tracktheseason.com/pulse/${date}`;
-  const shareText = `${hed}\n\n${summary}\n\nFull report: ${pageUrl}\n\n#TrackTheSeason #MLB`;
-  const shareBtns = `
-    <button class="share-btn primary" onclick="shareThis()">⬆ Share</button>
+  /* Date nav */
+  const idx=availableDates.indexOf(date);
+  const newer=idx>0?availableDates[idx-1]:null;
+  const older=idx<availableDates.length-1?availableDates[idx+1]:null;
+  const dateNavHtml=`<div class="date-nav">
+    ${older?`<a class="date-nav-btn" href="/pulse/${older}">← ${fmtShort(older)}</a>`:''}
+    <span class="date-nav-btn active">${fmtShort(date)}</span>
+    ${newer?`<a class="date-nav-btn" href="/pulse/${newer}">${fmtShort(newer)} →</a>`:''}
+  </div>`;
+
+  const pageUrl=`https://tracktheseason.com/pulse/${date}`;
+  const shareText=`${hed}\n\nNot yesterday's box scores. Yesterday's consequences.\n\n${pageUrl}\n\n#TrackTheSeason #MLB`;
+  const shareBtns=`<div class="share-bar">
+    <button class="share-btn primary" onclick="doShare()">⬆ Share</button>
     <a class="share-btn ghost" href="https://x.com/intent/tweet?text=${encodeURIComponent(shareText)}" target="_blank" rel="noopener">𝕏 X</a>
     <a class="share-btn ghost" href="https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(pageUrl)}" target="_blank" rel="noopener">Facebook</a>
-    <button class="share-btn ghost" onclick="copyLink()">⧉ Copy Link</button>`;
+    <button class="share-btn ghost" onclick="copyLink()">⧉ Copy Link</button>
+  </div>`;
+  window.doShare=async()=>{if(navigator.share)try{await navigator.share({title:hed,text:shareText,url:pageUrl});}catch(e){}else{await copyToClipboard(shareText);}};
+  window.copyLink=async()=>{const ok=await copyToClipboard(pageUrl);document.querySelectorAll('.share-btn').forEach(b=>{if(b.textContent.includes('Copy Link')){b.textContent=ok?'✓ Copied!':'⧉ Copy Link';setTimeout(()=>b.textContent='⧉ Copy Link',2000);}});};
 
-  /* Date nav: prev/next */
-  const idx = availableDates.indexOf(date);
-  const newerDate = idx>0 ? availableDates[idx-1] : null;
-  const olderDate = idx<availableDates.length-1 ? availableDates[idx+1] : null;
-  const dateNavHtml = `
-    <div class="pulse-date-nav">
-      ${olderDate?`<a class="date-nav-btn" href="/pulse/${olderDate}">← ${fmtShort(olderDate)}</a>`:''}
-      <span class="date-nav-btn active">${fmtShort(date)}</span>
-      ${newerDate?`<a class="date-nav-btn" href="/pulse/${newerDate}">${fmtShort(newerDate)} →</a>`:''}
-    </div>`;
-
-  /* Rivalry cards */
-  const rivalryHtml = renderRivalrySection(teams);
-
-  /* Movers */
-  const upHtml   = renderMoversSection(teams,'up');
-  const downHtml = renderMoversSection(teams,'down');
-
-  const noDeltaNotice = !hasPrev ? `
-    <div style="background:rgba(245,200,66,.06);border:1px solid rgba(245,200,66,.15);
-      border-radius:var(--r-md);padding:10px 14px;margin:12px 0;
-      font-family:var(--mono);font-size:11px;color:rgba(245,200,66,.7);line-height:1.6">
-      ⚠️ This is the first stored snapshot. Overnight deltas will be available from tomorrow's report.
-    </div>` : '';
+  const noDeltaNote=!hasPrev?`<div style="background:rgba(245,200,66,.06);border:1px solid rgba(245,200,66,.15);border-radius:var(--r-md);padding:10px 14px;margin:12px 0;font-family:var(--mono);font-size:11px;color:rgba(245,200,66,.7);line-height:1.6">⚠️ First snapshot stored. Overnight deltas will be available from tomorrow's report.</div>`:'';
 
   setRoot(`
-    <!-- ARTICLE HEADER -->
-    <div class="pulse-header">
+    <!-- HERO -->
+    <div class="pulse-hero">
       <div class="pulse-eyebrow"><div class="pulse-dot"></div>MLB Daily Pulse</div>
       <h1 class="pulse-hed">${hed}</h1>
-      <p class="pulse-summary">${summary}</p>
-      <div class="pulse-meta">
-        <span>${fmt(date)}</span>
-        <span>·</span>
-        <span>~45 second read</span>
-        ${hasPrev?`<span>·</span><span>Compared to ${fmtShort(prevDate)}</span>`:''}
+      <div class="pulse-tagline">Not yesterday's box scores. Yesterday's consequences.</div>
+      <div class="pulse-meta-row">
+        <span class="pulse-meta">${fmt(date)}</span>
+        <span class="pulse-meta">·</span>
+        <span class="pulse-meta">${valid.length} teams · Game ${gp}</span>
+        ${hasPrev?`<span class="pulse-meta">· vs ${fmtShort(prevDate)}</span>`:''}
       </div>
-      <div class="share-bar">${shareBtns}</div>
+      <div class="pulse-cta-row">
+        <a class="pulse-cta primary" href="/chaos-report">📊 Social Graphics</a>
+        <a class="pulse-cta ghost" href="/">Explore All Teams →</a>
+      </div>
       ${dateNavHtml}
     </div>
-    ${noDeltaNotice}
+    ${noDeltaNote}
 
-    <!-- SECTION 1: BIGGEST MOVERS -->
+    <!-- STORY OF THE DAY -->
+    ${storyIns?`<div class="pulse-section">
+      <div class="sec-eyebrow">Lead Story</div>
+      ${renderStoryHero(storyIns)}
+    </div>`:''}
+
+    <!-- WHAT CHANGED -->
     <div class="pulse-section">
       <div class="sec-eyebrow">Section 1</div>
-      <div class="sec-title">📈 Biggest Movers</div>
-      <div class="mover-list">${upHtml}</div>
+      <div class="sec-title">📊 What Changed Since Yesterday</div>
+      ${renderChangeTable(teams,hasPrev)}
     </div>
 
-    <!-- SECTION 2: BIGGEST FALLERS -->
-    <div class="pulse-section">
+    <!-- MOVERS -->
+    ${hasPrev?`<div class="pulse-section">
       <div class="sec-eyebrow">Section 2</div>
-      <div class="sec-title">📉 Biggest Fallers</div>
-      <div class="mover-list">${downHtml}</div>
-    </div>
+      <div class="sec-title">📈 Biggest Movers</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+        <div>
+          <div style="font-family:var(--mono);font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--gain-text);margin-bottom:7px">↑ Rising</div>
+          <div class="mover-list">${renderMovers(teams,'up',hasPrev)||'<div style="font-family:var(--mono);font-size:11px;color:var(--chalk)">No significant risers.</div>'}</div>
+        </div>
+        <div>
+          <div style="font-family:var(--mono);font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--loss-text);margin-bottom:7px">↓ Falling</div>
+          <div class="mover-list">${renderMovers(teams,'down',hasPrev)||'<div style="font-family:var(--mono);font-size:11px;color:var(--chalk)">No significant fallers.</div>'}</div>
+        </div>
+      </div>
+    </div>`:''}
 
-    <!-- SECTION 3: CHAOS INDEX -->
+    <!-- PACE SHIFT + MISLEADING -->
     <div class="pulse-section">
       <div class="sec-eyebrow">Section 3</div>
-      <div class="sec-title">⚡ Chaos Index</div>
-      ${renderChaosSection(chaosCount, prevChaosCount, gp)}
+      <div class="sec-title">🔍 Insight Cards</div>
+      ${shiftIns   ? renderInsightCard(shiftIns,   'shift')   : ''}
+      ${misleadIns ? renderInsightCard(misleadIns, 'mislead') : ''}
+      ${rivalryIns ? renderInsightCard(rivalryIns, 'rivalry') : ''}
     </div>
 
-    ${rivalryHtml ? `
-    <!-- SECTION 4: RIVALRY WATCH -->
+    <!-- CHAOS INDEX -->
     <div class="pulse-section">
       <div class="sec-eyebrow">Section 4</div>
-      <div class="sec-title">⚔️ Rivalry Watch</div>
-      <div class="rivalry-delta-list">${rivalryHtml}</div>
-    </div>` : ''}
+      <div class="sec-title">⚡ Chaos Index</div>
+      ${renderChaos(teams,hasPrev)}
+    </div>
 
-    <!-- SECTION 5: NUMBER OF THE DAY -->
-    <div class="pulse-section">
+    <!-- STARTER SIGNAL -->
+    ${ssIns?`<div class="pulse-section">
       <div class="sec-eyebrow">Section 5</div>
-      <div class="sec-title">💡 Number of the Day</div>
-      ${renderNotdSection(teams, chaosCount, prevChaosCount)}
-    </div>
+      <div class="sec-title">⚾ Starter Signal of the Day</div>
+      ${renderInsightCard(ssIns,'')}
+    </div>`:''}
 
-    <!-- ARCHIVE + BOTTOM SHARE -->
+    <!-- TOMORROW'S WATCHLIST -->
     <div class="pulse-section">
-      <div class="share-bar">${shareBtns}</div>
+      <div class="sec-eyebrow">Section 6</div>
+      <div class="sec-title">👀 Tomorrow's Watchlist</div>
+      ${renderWatchlist(watchlist)}
     </div>
-    ${renderArchiveNavHtml(availableDates, date)}
-  `);
 
-  /* Wire global share functions */
-  window.shareThis = async function(){
-    if(navigator.share) try{await navigator.share({title:hed,text:summary,url:pageUrl});}
-    catch(e){if(e.name!=='AbortError')console.warn(e);}
-    else { const ok=await copyToClipboard(shareText); alert(ok?'Copied!':'Could not copy'); }
-  };
-  window.copyLink = async function(){
-    const ok=await copyToClipboard(pageUrl);
-    document.querySelectorAll('.share-btn.ghost').forEach(b=>{
-      if(b.textContent.includes('Copy')){b.textContent=ok?'✓ Copied!':'⧉ Copy Link';
-      setTimeout(()=>b.textContent='⧉ Copy Link',2000);}
-    });
-  };
+    <!-- DEBATE HOOK -->
+    ${debate?`<div class="pulse-section">
+      <div class="sec-eyebrow">Section 7</div>
+      <div class="sec-title">💬 Debate Hook</div>
+      <div class="debate-card">
+        <div class="debate-label">Today's Question</div>
+        <div class="debate-q">${debate}</div>
+        <button class="debate-share" onclick="doShare()">⬆ Start the Debate</button>
+      </div>
+    </div>`:''}
+
+    <!-- SOCIAL COMMENTS -->
+    <div class="pulse-section">
+      <div class="sec-eyebrow">Section 8</div>
+      <div class="sec-title">📣 Use This as a Comment</div>
+      <div style="font-family:var(--sans);font-size:13px;color:rgba(255,255,255,.35);margin-bottom:10px">Copy-ready posts for MLB Facebook groups, X, and group chats.</div>
+      ${renderSocialComments(comments)}
+    </div>
+
+    <!-- SHARE + ARCHIVE -->
+    <div class="pulse-section">${shareBtns}</div>
+    ${renderArchiveNav(availableDates, date)}
+  `);
 }
 
 /* ══ MAIN ═══════════════════════════════════════════════════ */
 async function main(){
   renderLoading();
-
-  /* Extract date from URL: /pulse/YYYY-MM-DD or /pulse */
-  const pathParts = window.location.pathname.split('/').filter(Boolean);
-  const dateParam = pathParts[1] || null; // "2026-06-12" or null
+  const pathParts=window.location.pathname.split('/').filter(Boolean);
+  const dateParam=pathParts[1]||null;
 
   let data;
-  try {
-    const apiUrl = `/api/pulse-data${dateParam ? `?date=${dateParam}` : ''}`;
-    const res = await fetch(apiUrl);
-    data = await res.json();
-    /* Surface API errors clearly */
+  try{
+    const res=await fetch(`/api/pulse-data${dateParam?`?date=${dateParam}`:''}`);
+    data=await res.json();
     if(data.error){
-      setRoot(`<div class="state-box">
-        <div class="state-label" style="color:#f47570">Pulse data unavailable</div>
-        <div class="state-sub" style="margin-top:12px">${data.error}</div>
-        ${data.hint?`<div class="state-sub" style="margin-top:8px;color:rgba(245,200,66,.7)">${data.hint}</div>`:''}
-        <a href="/" style="display:inline-block;margin-top:20px;color:var(--signal);font-family:var(--mono);font-size:12px">← Back to Homepage</a>
-      </div>`);
+      setRoot(`<div class="state-box"><div class="state-label" style="color:#f47570">Pulse data unavailable</div><div class="state-sub">${data.error}</div>${data.hint?`<div class="state-sub" style="margin-top:8px;color:rgba(245,200,66,.6)">${data.hint}</div>`:''}</div>`);
       return;
     }
-  } catch(e) {
-    setRoot(`<div class="state-box"><div class="state-label" style="color:#f47570">Could not load Pulse data.</div>
-      <div class="state-sub">${e.message}</div></div>`);
+  }catch(e){
+    setRoot(`<div class="state-box"><div class="state-label" style="color:#f47570">Could not load Pulse data.</div><div class="state-sub">${e.message}</div></div>`);
     return;
   }
 
-  /* No snapshots at all yet */
-  if(!data.found && (!data.availableDates || !data.availableDates.length)){
-    renderComingSoon([]);
-    return;
-  }
-
-  /* Specific date not found */
-  if(!data.found){
-    renderComingSoon(data.availableDates);
-    return;
-  }
-
-  /* Render the article */
+  if(!data.found&&(!data.availableDates||!data.availableDates.length)){renderComingSoon([]);return;}
+  if(!data.found){renderComingSoon(data.availableDates);return;}
   renderArticle(data);
 }
 
