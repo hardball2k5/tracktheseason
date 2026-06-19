@@ -653,30 +653,35 @@ body{font-family:var(--sans);background:var(--ink);color:#e8edf8;min-height:100v
   </div>
 
   <!-- DAILY PULSE CTA -->
+  <!-- DAILY PULSE TEASER — gateway to the daily briefing -->
   <a href="/pulse" style="
-    display:flex;align-items:center;justify-content:space-between;gap:12px;
-    background:rgba(26,255,107,.05);border:1px solid rgba(26,255,107,.15);
-    border-radius:var(--r-lg);padding:14px 18px;margin:16px 0 0;
+    display:flex;align-items:flex-start;gap:16px;
+    background:var(--ink2);border:1px solid rgba(255,255,255,.07);
+    border-left:3px solid var(--signal);
+    border-radius:var(--r-lg);padding:16px 18px;margin:16px 0 0;
     text-decoration:none;transition:border-color .15s;
-  " onmouseover="this.style.borderColor='rgba(26,255,107,.35)'"
-     onmouseout="this.style.borderColor='rgba(26,255,107,.15)'">
-    <div>
-      <div style="font-family:var(--mono);font-size:9px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--signal);margin-bottom:4px;display:flex;align-items:center;gap:7px">
+  " onmouseover="this.style.borderColor='rgba(26,255,107,.3)'"
+     onmouseout="this.style.borderColor='rgba(255,255,255,.07)'">
+    <div style="flex:1;min-width:0">
+      <div style="font-family:var(--mono);font-size:9px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--signal);margin-bottom:6px;display:flex;align-items:center;gap:7px">
         <span style="width:6px;height:6px;border-radius:50%;background:var(--signal);display:inline-block;animation:pulseDot 2s ease-in-out infinite"></span>
         MLB Daily Pulse
       </div>
-      <div style="font-family:var(--mono);font-size:14px;font-weight:700;color:#e8edf8">What changed in baseball today?</div>
-      <div style="font-family:var(--sans);font-size:12px;color:rgba(255,255,255,.4);margin-top:3px">Movers · Chaos Index · Rivalries · Hot &amp; Cold</div>
+      <div style="font-family:var(--mono);font-size:15px;font-weight:700;color:#e8edf8;margin-bottom:5px;letter-spacing:-.01em">What changed in baseball overnight — and why it matters.</div>
+      <div style="font-family:var(--sans);font-size:13px;color:rgba(255,255,255,.4);line-height:1.5">Projected wins gained or lost · Overnight movers · Rivalry shifts · Chaos Index movement · Copy-ready social takes</div>
     </div>
-    <div style="font-family:var(--mono);font-size:13px;font-weight:700;color:var(--signal);flex-shrink:0;white-space:nowrap">Read →</div>
+    <div style="flex-shrink:0;display:flex;flex-direction:column;align-items:flex-end;gap:4px;padding-top:2px">
+      <div style="font-family:var(--mono);font-size:11px;font-weight:700;color:var(--signal);white-space:nowrap">Read Today's Pulse →</div>
+      <div style="font-family:var(--mono);font-size:9px;color:rgba(255,255,255,.2);white-space:nowrap;letter-spacing:.04em">UPDATED NIGHTLY</div>
+    </div>
   </a>
   <style>@keyframes pulseDot{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(.7)}}</style>
 
   <!-- TODAY'S STORY -->
   <div id="todaysStorySection" style="display:none">
     <div class="sec-header">
-      <div class="sec-title">Today's Story</div>
-      <div class="sec-sub" id="storiesDate"></div>
+      <div class="sec-title">Season's Biggest Story</div>
+      <div class="sec-sub" id="storiesDate">The single most important pace trend right now</div>
     </div>
     <div class="todays-story-hero" id="todaysStoryHero"></div>
   </div>
@@ -756,30 +761,14 @@ body{font-family:var(--sans);background:var(--ink);color:#e8edf8;min-height:100v
 
   <!-- LEAGUE SNAPSHOT / MLB PULSE -->
   <div class="sec-header" style="padding-top:24px">
-    <div class="sec-title">📡 MLB Pulse</div>
-    <div class="sec-sub">The state of baseball right now</div>
+    <div class="sec-title">📡 League Snapshot</div>
+    <div class="sec-sub">The state of the season — updated after every game</div>
   </div>
   <div class="snapshot-grid" id="snapshotGrid">
     <div class="snap-card"><div class="snap-label">Loading…</div></div>
   </div>
 
-  <!-- DAILY DEBATE -->
-  <div id="dailyDebateSection" style="display:none;padding-top:24px">
-    <div class="sec-header" style="padding-top:0;padding-bottom:8px">
-      <div class="sec-title">💬 Daily Debate</div>
-    </div>
-    <div class="daily-debate">
-      <div class="dd-quote">"</div>
-      <div class="dd-body">
-        <div class="dd-question" id="ddQuestion">Loading…</div>
-        <div class="dd-sub">Start the conversation</div>
-      </div>
-      <div class="dd-actions">
-        <button class="dd-btn dd-btn-primary" id="ddShareBtn">⬆ Start the Debate</button>
-        <a class="dd-btn dd-btn-ghost" id="ddLink" href="#">See the Data →</a>
-      </div>
-    </div>
-  </div>
+  <!-- Daily Debate moved to /pulse -->
 
   <!-- FAN CHALLENGE -->
   <div style="padding-top:24px">
@@ -828,8 +817,8 @@ body{font-family:var(--sans);background:var(--ink);color:#e8edf8;min-height:100v
   <!-- QUIETLY TRENDING -->
   <div id="quietlyTrendingSection" style="display:none;padding-top:24px">
     <div class="sec-header" style="padding-top:0">
-      <div class="sec-title">🔍 Quietly Trending</div>
-      <div class="sec-sub">Stories nobody's talking about yet</div>
+      <div class="sec-title">🔍 Under the Radar</div>
+      <div class="sec-sub">Teams whose trajectory doesn't match the narrative</div>
     </div>
     <div class="trending-list" id="trendingList"></div>
   </div>
@@ -1286,6 +1275,7 @@ function buildTodaysStory(allData){
     doShare(this,shareParams,nativeText,heroPageUrl,`${hname} — Track The Season`);
   });
   document.getElementById('todaysStorySection').style.display='block';
+  /* Section title already set in HTML */
   document.getElementById('storiesDate').textContent=new Date().toLocaleDateString('en-US',{month:'short',day:'numeric'});
 }
 
@@ -1742,7 +1732,6 @@ async function loadAllTeams(){
   buildChaosIndex(allData);
   buildMovers(allData);
   buildSnapshot(allData);
-  buildDailyDebate(allData);
   buildRivalryWatch(allData);
   buildQuietlyTrending(allData);
   buildLookingAheadPicker(allData);
