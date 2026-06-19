@@ -808,14 +808,28 @@ async function runComparison(){
     const absPace   = Math.abs(paceDiff);
     const absRec    = Math.abs((s1.w-s1.l)-(s2.w-s2.l));
 
+    /* Payroll efficiency angle for share copy */
+    const pay1=PAYROLLS[t1.id], pay2=PAYROLLS[t2.id];
+    const cpw1=(pay1&&s1.proj>0)?Math.round(pay1/s1.proj*100)/100:null;
+    const cpw2=(pay2&&s2.proj>0)?Math.round(pay2/s2.proj*100)/100:null;
+    const payrollAngle=(()=>{
+      if(!cpw1||!cpw2||!pay1||!pay2) return '';
+      const cheaper=cpw1<cpw2?t1:t2, pricier=cpw1<cpw2?t2:t1;
+      const payGap=Math.abs(pay1-pay2);
+      const cpwGap=Math.abs(cpw1-cpw2);
+      if(cpwGap>=0.5 && payGap>=30)
+        return ` And doing it spending $${payGap}M ${cpw1<cpw2?'less':'more'}.`;
+      return '';
+    })();
+
     const rivalryShareText = absPace>=10
-      ? `${t1.club} vs ${t2.club} check-in ⚔️ The ${aheadTeam.club} are tracking ${absPace} wins better over a full season. That's not a slump — that's a gap. See the rivalry pace:\n${compareUrl}\n\n#TrackTheSeason #MLB`
+      ? `${t1.club} vs ${t2.club} check-in ⚔️ The ${aheadTeam.club} are tracking ${absPace} wins better over a full season. That's not a slump — that's a gap.${payrollAngle}\n${compareUrl}\n\n#TrackTheSeason #MLB`
       : absPace>=4
-      ? `${t1.club} vs ${t2.club} check-in ⚔️ The ${aheadTeam.club} hold a ${absPace}-win pace advantage right now. Who pulls away?\n${compareUrl}\n\n#TrackTheSeason #MLB`
+      ? `${t1.club} vs ${t2.club} check-in ⚔️ The ${aheadTeam.club} hold a ${absPace}-win pace advantage right now.${payrollAngle} Who pulls away?\n${compareUrl}\n\n#TrackTheSeason #MLB`
       : `${t1.club} vs ${t2.club} check-in ⚔️ About as even as it gets this season. Bragging rights are up for grabs.\n${compareUrl}\n\n#TrackTheSeason #MLB`;
 
     const shareText = IS_RIVALRY ? rivalryShareText
-      : `${t1.club} vs ${t2.club}: ${s1.w}–${s1.l} (${s1.proj||'—'}W pace) vs ${s2.w}–${s2.l} (${s2.proj||'—'}W pace).\n\nFull comparison: ${compareUrl}\n\n#TrackTheSeason #MLB`;
+      : `${t1.club} vs ${t2.club}: ${s1.w}–${s1.l} (${s1.proj||'—'}W pace) vs ${s2.w}–${s2.l} (${s2.proj||'—'}W pace).${payrollAngle}\n\nFull comparison: ${compareUrl}\n\n#TrackTheSeason #MLB`;
 
     document.getElementById('shareCompBtn').onclick=function(){
       doShare(this,shareText,compareUrl,`${t1.club} vs ${t2.club} — Track The Season`);
@@ -929,6 +943,21 @@ function renderRivalryVerdict(t1, t2, s1, s2){
 /* ── Bragging Rights table ────────────────────────
    Three columns: T1 value · Metric + Edge pill · T2 value
    Edge pill shows which team leads and by how much.        */
+
+/* 2026 Opening Day payrolls (USD millions) — update each offseason */
+const PAYROLLS = {
+  108:226,109:164,110:207,111:218,112:233,113:119,114:152,115:107,
+  116:129,117:233,118:122,119:311,120:102,121:319,133:75, 134:88,
+  135:245,136:159,137:162,138:186,139:105,140:227,141:213,142:173,
+  143:241,144:284,145:79, 146:87, 147:313,158:138,
+};
+
+function fmtPayroll(m){ return m!=null?`$${m}M`:null; }
+function fmtCPW(m){
+  if(m==null) return null;
+  return m>=1?`$${m.toFixed(2)}M/W`:`$${(m*1000).toFixed(0)}K/W`;
+}
+
 function renderBraggingRights(t1, t2, s1, s2, r1, r2){
   const wrap = document.getElementById('braggingRights');
   if(!wrap) return;
@@ -958,6 +987,15 @@ function renderBraggingRights(t1, t2, s1, s2, r1, r2){
   const deltaDiff = (s1.delta||0)-(s2.delta||0);
   const rankDiff  = (r2||99)-(r1||99);
 
+  /* Payroll efficiency */
+  const pay1 = PAYROLLS[t1.id]||null;
+  const pay2 = PAYROLLS[t2.id]||null;
+  const cpw1 = (pay1&&s1.proj>0) ? Math.round(pay1/s1.proj*1000)/1000 : null;
+  const cpw2 = (pay2&&s2.proj>0) ? Math.round(pay2/s2.proj*1000)/1000 : null;
+  /* Lower CPW = better value — so flip sign for cmp */
+  const cpwDiff = (cpw1!=null&&cpw2!=null) ? cpw2-cpw1 : null;
+  const payDiff = (pay1!=null&&pay2!=null) ? pay2-pay1 : null;
+
   const rows=[
     row('Record',
         `${s1.w}–${s1.l}`, `${s2.w}–${s2.l}`,
@@ -984,9 +1022,37 @@ function renderBraggingRights(t1, t2, s1, s2, r1, r2){
         ordinal(r1), ordinal(r2),
         rankDiff,
         rankDiff!==0?`${Math.abs(rankDiff)} spots`:null):'',
+    /* ── Payroll rows ── */
+    pay1&&pay2?row('Payroll',
+        fmtPayroll(pay1), fmtPayroll(pay2),
+        payDiff,  /* higher payroll = worse = cmp favors lower */
+        payDiff!=null&&payDiff!==0?`$${Math.abs(pay1-(pay2))}M more`:''):'',
+    cpw1&&cpw2?row('Cost Per Projected Win',
+        fmtCPW(cpw1), fmtCPW(cpw2),
+        cpwDiff,  /* lower CPW = better value = positive cmp */
+        cpwDiff!=null&&cpwDiff!==0?`$${Math.abs(Math.round((cpw1-cpw2)*100)/100).toFixed(2)}M/W`:''):'',
   ].filter(Boolean).join('');
 
   if(!rows){wrap.style.display='none';return;}
+
+  /* Payroll efficiency narrative */
+  let effNote = '';
+  if(cpw1&&cpw2&&Math.abs(cpw1-cpw2)>=0.3){
+    const betterTeam = cpw1<cpw2?t1.club:t2.club;
+    const worseTeam  = cpw1<cpw2?t2.club:t1.club;
+    const betterCpw  = cpw1<cpw2?cpw1:cpw2;
+    const worseCpw   = cpw1<cpw2?cpw2:cpw1;
+    const payDelta   = pay1&&pay2?Math.abs(pay1-pay2):null;
+    effNote = `<div style="margin:10px 12px 0;padding:10px 12px;border-radius:8px;
+      background:rgba(26,255,107,.04);border-left:3px solid rgba(26,255,107,.3);
+      font-family:'IBM Plex Sans',sans-serif;font-size:13px;color:rgba(255,255,255,.55);line-height:1.5">
+      <strong style="color:rgba(26,255,107,.7);font-family:'IBM Plex Mono',monospace;font-size:9px;
+        letter-spacing:.1em;text-transform:uppercase;display:block;margin-bottom:3px">💰 Payroll Efficiency</strong>
+      ${betterTeam} are getting more wins per dollar — ${fmtCPW(betterCpw)} vs ${fmtCPW(worseCpw)} for ${worseTeam}.
+      ${payDelta?`That's $${payDelta}M more spent for `+(paceDiff!==0?`${Math.abs(paceDiff)} fewer projected wins.`:`a similar pace.`):''}
+    </div>`;
+  }
+
   wrap.style.display='block';
   wrap.innerHTML=`<div class="bragging-rights">
     <div class="br-header"><div class="br-title">🏆 Bragging Rights</div></div>
@@ -996,6 +1062,7 @@ function renderBraggingRights(t1, t2, s1, s2, r1, r2){
       <div class="br-col-head" style="text-align:right">${t2.club}</div>
     </div>
     ${rows}
+    ${effNote}
   </div>`;
 }
 /* ── Rivalry header ──────────────────────────────── */
