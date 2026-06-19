@@ -1389,8 +1389,7 @@ function buildSnapshot(allData){
       href: (()=>{
         const t1=closestDiv.teams[0], t2=closestDiv.teams[1];
         if(!t1||!t2) return '#';
-        const s1=getSlug(t1.team.id), s2=getSlug(t2.team.id);
-        return s1&&s2 ? `/${s1}-vs-${s2}` : `/compare?team1=${t1.team.id}&team2=${t2.team.id}`;
+        return `/compare?team1=${t1.team.id}&team2=${t2.team.id}`;
       })(),
       icon:'⚔️'
     } : null,
@@ -1957,8 +1956,7 @@ function fcCompare(){
   document.getElementById('fcResultHed').innerHTML=hed;
   document.getElementById('fcResult').classList.add('visible');
 
-  const slug1=getSlug(t1.id),slug2=getSlug(t2.id);
-  const compUrl=slug1&&slug2?`https://tracktheseason.com/${slug1}-vs-${slug2}`:`https://tracktheseason.com/compare?team1=${t1.id}&team2=${t2.id}`;
+  const compUrl=`https://tracktheseason.com/compare?team1=${t1.id}&team2=${t2.id}`;
   document.getElementById('fcCompareBtn').href=compUrl;
 
   const bragText=gap>=8
