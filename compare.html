@@ -727,8 +727,8 @@ async function runComparison(){
     /* Rivalry verdict + bragging rights */
     if(IS_RIVALRY){
       renderRivalryVerdict(t1, t2, s1, s2);
-      renderBraggingRights(t1, t2, s1, s2, r1, r2);
     }
+    renderBraggingRights(t1, t2, s1, s2, r1, r2);
 
     document.getElementById('col1Head').textContent=t1.club;
     document.getElementById('col2Head').textContent=t2.club;
