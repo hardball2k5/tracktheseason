@@ -926,8 +926,10 @@ body{font-family:var(--sans);background:var(--ink);color:#e8edf8;min-height:100v
 <div class="wrap">
   <footer class="site-footer">
     <a href="/" class="footer-logo">TRACK THE <span class="accent">SEASON</span></a>
-    <div class="footer-links">
+    <div class="footer-links" style="display:flex;gap:16px;align-items:center;flex-wrap:wrap">
       <a href="https://x.com/tracktheseason" target="_blank" rel="noopener">@tracktheseason</a>
+      <span style="color:rgba(255,255,255,.15)">·</span>
+      <a href="mailto:support@tracktheseason.com" style="color:rgba(255,255,255,.3);text-decoration:none" onmouseover="this.style.color='var(--signal,#1aff6b)'" onmouseout="this.style.color='rgba(255,255,255,.3)'">support@tracktheseason.com</a>
     </div>
     <p class="footer-note">Data: MLB Stats API. Final regular-season games only. Live, postponed, or suspended games excluded until final. Not affiliated with or endorsed by MLB or its clubs.</p>
   </footer>
