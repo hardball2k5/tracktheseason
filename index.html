@@ -652,16 +652,6 @@ body{font-family:var(--sans);background:var(--ink);color:#e8edf8;min-height:100v
     <div class="league-pills" id="leaguePills"></div>
   </div>
 
-  <!-- CHAOS INDEX -->
-  <div class="chaos-bar" id="chaosBar" style="display:none">
-    <div class="chaos-number" id="chaosNum">—</div>
-    <div class="chaos-text-block">
-      <div class="chaos-label">MLB Chaos Index</div>
-      <div class="chaos-desc" id="chaosDesc">—</div>
-    </div>
-    <button class="chaos-share" id="chaosShareBtn">⬆ Share</button>
-  </div>
-
   <!-- DAILY PULSE CTA -->
   <a href="/pulse" style="
     display:flex;align-items:center;justify-content:space-between;gap:12px;
@@ -718,15 +708,41 @@ body{font-family:var(--sans);background:var(--ink);color:#e8edf8;min-height:100v
     </div>
   </div>
 
-  <!-- CHAOS INDEX -->
-  <div class="chaos-bar" id="chaosBar" style="display:none">
-    <div class="chaos-number" id="chaosNum">—</div>
-    <div class="chaos-text-block">
-      <div class="chaos-label">MLB Chaos Index</div>
-      <div class="chaos-desc" id="chaosDesc">—</div>
+  <!-- CHAOS REPORT FEATURE CARD -->
+  <a href="/chaos-report" id="chaosReportCard" style="display:none;text-decoration:none;color:inherit;
+    background:var(--ink2);border:1px solid rgba(255,255,255,.08);border-radius:var(--r-lg);
+    padding:16px 18px;margin-top:16px;display:none;
+    flex-direction:row;align-items:center;gap:16px;flex-wrap:wrap;
+    transition:border-color .15s;"
+    onmouseover="this.style.borderColor='rgba(26,255,107,.25)'"
+    onmouseout="this.style.borderColor='rgba(255,255,255,.08)'">
+    <!-- Left: number -->
+    <div style="flex-shrink:0;text-align:center;min-width:60px">
+      <div id="chaosNum" style="font-family:var(--mono);font-size:44px;font-weight:700;color:var(--signal);letter-spacing:-.04em;line-height:1">—</div>
+      <div style="font-family:var(--mono);font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:rgba(26,255,107,.5);margin-top:2px">of 30</div>
     </div>
-    <button class="chaos-share" id="chaosShareBtn">⬆ Share the Chaos</button>
-  </div>
+    <!-- Divider -->
+    <div style="width:1px;height:52px;background:rgba(255,255,255,.06);flex-shrink:0"></div>
+    <!-- Center: copy -->
+    <div style="flex:1;min-width:180px">
+      <div style="font-family:var(--mono);font-size:9px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:rgba(255,255,255,.3);margin-bottom:5px">Chaos Report</div>
+      <div style="font-family:var(--mono);font-size:15px;font-weight:700;color:#e8edf8;letter-spacing:-.01em;margin-bottom:4px">Who's breaking from last year's script?</div>
+      <div id="chaosDesc" style="font-family:var(--sans);font-size:13px;color:rgba(255,255,255,.45);line-height:1.45">Teams tracking ±5W from last season · Updated after every game</div>
+    </div>
+    <!-- Right: CTA -->
+    <div style="flex-shrink:0;display:flex;flex-direction:column;align-items:flex-end;gap:8px">
+      <div style="font-family:var(--mono);font-size:11px;font-weight:700;color:var(--signal);letter-spacing:.04em;white-space:nowrap">View the Chaos Report →</div>
+      <button id="chaosShareBtn" style="font-family:var(--mono);font-size:10px;font-weight:700;
+        padding:5px 11px;border-radius:var(--r-pill);background:transparent;
+        border:1px solid rgba(255,255,255,.1);color:var(--chalk);cursor:pointer;
+        transition:all .13s;white-space:nowrap"
+        onmouseover="this.style.borderColor='rgba(26,255,107,.35)';this.style.color='var(--signal)'"
+        onmouseout="this.style.borderColor='rgba(255,255,255,.1)';this.style.color='var(--chalk)'"
+        onclick="event.preventDefault();event.stopPropagation();chaosShareClick()">
+        ⬆ Share the Chaos
+      </button>
+    </div>
+  </a>
 
   <!-- BIGGEST MOVERS -->
   <div class="sec-header" style="padding-top:24px">
@@ -1157,18 +1173,25 @@ function buildChaosIndex(allData){
   const valid=allData.filter(t=>t.curGames.length>=15);
   const chaotic=valid.filter(t=>Math.abs(getDelta(t))>=CHAOS_THRESHOLD);
   const pct=Math.round(chaotic.length/30*100);
-  const desc=`${chaotic.length} of 30 teams are tracking ±${CHAOS_THRESHOLD}+ wins different from last season. That's ${pct}% of the league off its prior-year pace.`;
+  let interp;
+  if(pct>=60)      interp=`${pct}% of the league off last year's pace — one of the most volatile seasons in recent memory.`;
+  else if(pct>=45) interp=`${pct}% of the league is no longer following last year's script.`;
+  else if(pct>=30) interp=`${pct}% of MLB teams are tracking meaningfully differently than last season.`;
+  else             interp=`${chaotic.length} teams are at least 5W ahead or behind last year's pace.`;
 
   document.getElementById('chaosNum').textContent=chaotic.length;
-  document.getElementById('chaosDesc').textContent=desc;
-  document.getElementById('chaosBar').style.display='flex';
-
-  document.getElementById('chaosShareBtn').addEventListener('click',function(){
-    const chaosUrl='https://tracktheseason.com/chaos-report';
-    const text='⚾ MLB Chaos Index: '+desc+'\n\nSee the full report:\n'+chaosUrl+'\n\n#TrackTheSeason #MLB';
-    doShare(this,text,text,chaosUrl,'MLB Chaos Report — Track The Season');
-  });
+  document.getElementById('chaosDesc').textContent=interp;
+  const card=document.getElementById('chaosReportCard');
+  if(card) card.style.display='flex';
 }
+
+window.chaosShareClick=function(){
+  const chaosUrl='https://tracktheseason.com/chaos-report';
+  const num=document.getElementById('chaosNum')?.textContent||'?';
+  const desc=document.getElementById('chaosDesc')?.textContent||'';
+  const text=`⚾ MLB Chaos Index: ${num} of 30 teams off last year's pace.\n\n${desc}\n\nFull report: ${chaosUrl}\n\n#TrackTheSeason #MLB`;
+  doShare(document.getElementById('chaosShareBtn'),text,text,chaosUrl,'MLB Chaos Report — Track The Season');
+};
 
 /* ═══════════════════════════════════════════════════
    TODAY'S STORY — editorial selection with deduplication
