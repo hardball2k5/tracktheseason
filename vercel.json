@@ -233,6 +233,22 @@
     {
       "source": "/api/pitcher-splits",
       "destination": "/api/pitcher-splits.js"
+    },
+    {
+      "source": "/api/scout",
+      "destination": "/api/scout.js"
+    },
+    {
+      "source": "/api/scout-widget.js",
+      "destination": "/api/scout-widget.js"
+    },
+    {
+      "source": "/pitching-board",
+      "destination": "/pitching-board.html"
+    },
+    {
+      "source": "/api/pitching-board-refresh",
+      "destination": "/api/pitching-board-refresh.js"
     }
   ],
   "redirects": [
