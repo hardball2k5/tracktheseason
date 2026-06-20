@@ -1,0 +1,496 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Pitching Board | Track The Season</title>
+<meta name="description" content="A league-wide view of MLB starter impact: best 1–2 punches, biggest rotation cliffs, and the teams with real pitching depth."/>
+<meta property="og:title"       content="Pitching Board | Track The Season"/>
+<meta property="og:description" content="The standings show who is winning. The Pitching Board shows how much the rotation is driving it."/>
+<meta property="og:image"       content="https://tracktheseason.com/api/chaos-report"/>
+<meta property="og:site_name"   content="Track The Season"/>
+<meta name="twitter:card"       content="summary_large_image"/>
+<link rel="canonical"           href="https://tracktheseason.com/pitching-board"/>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet"/>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-DCSQPGSY1D"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-DCSQPGSY1D');</script>
+<style>
+:root{
+  --ink:#0f1014;--ink2:#1a1d24;--ink3:#252830;
+  --chalk:#8a8a82;--rule:rgba(255,255,255,.07);--rule2:rgba(255,255,255,.04);
+  --signal:#1aff6b;--gain-text:#4ecb77;--loss-text:#f47570;--caution-text:#f9d96e;
+  --logo-bg:#fff;--logo-border:rgba(0,0,0,.1);--logo-shadow:0 2px 8px rgba(0,0,0,.18);
+  --r-sm:6px;--r-md:10px;--r-lg:14px;--r-pill:999px;
+  --mono:'IBM Plex Mono',monospace;--sans:'IBM Plex Sans',sans-serif;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{width:100%;overflow-x:hidden}
+body{font-family:var(--sans);background:var(--ink);color:#e8edf8;min-height:100vh;
+  background-image:radial-gradient(ellipse 100% 30% at 50% -2%,rgba(26,255,107,.06) 0%,transparent 60%)}
+.nav{padding:11px 0;border-bottom:1px solid var(--rule);position:sticky;top:0;z-index:100;background:rgba(15,16,20,.96);backdrop-filter:blur(16px)}
+.nav-inner{max-width:960px;margin:0 auto;padding:0 16px;display:flex;align-items:center;gap:10px}
+.back-btn{display:flex;align-items:center;gap:5px;font-family:var(--mono);font-size:12px;font-weight:600;color:var(--chalk);text-decoration:none;border:1px solid var(--rule);border-radius:var(--r-sm);padding:5px 11px;transition:all .13s}
+.back-btn:hover{border-color:rgba(255,255,255,.2);color:#e8edf8}
+.nav-logo{display:flex;align-items:center;gap:8px;text-decoration:none;margin-left:auto}
+.nav-mono{width:28px;height:28px;background:var(--signal);border-radius:5px;display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:10px;font-weight:700;color:var(--ink)}
+.nav-word{font-family:var(--mono);font-size:13px;font-weight:700;color:#e8edf8}
+.nav-word span{color:var(--signal)}
+.wrap{max-width:960px;margin:0 auto;padding:0 16px 80px}
+
+/* HERO */
+.hero{padding:32px 0 24px;border-bottom:1px solid var(--rule)}
+.hero-eyebrow{font-family:var(--mono);font-size:9px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--signal);margin-bottom:10px}
+.hero-hed{font-family:var(--mono);font-size:clamp(28px,5vw,48px);font-weight:700;letter-spacing:-.03em;color:#e8edf8;line-height:1.05;margin-bottom:8px}
+.hero-sub{font-family:var(--sans);font-size:16px;color:rgba(255,255,255,.5);margin-bottom:10px;max-width:640px;line-height:1.5}
+.hero-tagline{font-family:var(--mono);font-size:12px;color:rgba(255,255,255,.3);font-style:italic;margin-bottom:14px}
+.hero-meta{font-family:var(--mono);font-size:11px;color:rgba(255,255,255,.25)}
+.share-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
+.share-btn{display:inline-flex;align-items:center;gap:5px;padding:8px 14px;border-radius:var(--r-sm);font-family:var(--mono);font-size:11px;font-weight:700;cursor:pointer;transition:all .13s;text-decoration:none;letter-spacing:.02em}
+.share-btn.primary{background:var(--signal);color:var(--ink);border:none}
+.share-btn.ghost{background:transparent;color:var(--chalk);border:1px solid var(--rule)}
+.share-btn.ghost:hover{border-color:var(--signal);color:var(--signal)}
+
+/* LOADING */
+.loading{text-align:center;padding:64px 20px}
+.spinner{width:32px;height:32px;border-radius:50%;border:3px solid var(--rule);border-top-color:var(--signal);animation:spin .75s linear infinite;margin:0 auto 14px}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loading-text{font-family:var(--mono);font-size:13px;color:var(--chalk)}
+
+/* SECTION */
+.section{padding:28px 0 0}
+.sec-label{font-family:var(--mono);font-size:9px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:rgba(255,255,255,.3);margin-bottom:4px;display:flex;align-items:center;gap:8px}
+.sec-label::after{content:'';flex:1;height:1px;background:var(--rule)}
+.sec-title{font-family:var(--mono);font-size:18px;font-weight:700;color:#e8edf8;letter-spacing:-.02em;margin-bottom:4px}
+.sec-sub{font-family:var(--sans);font-size:13px;color:rgba(255,255,255,.35);margin-bottom:14px}
+
+/* SPOTLIGHT CARDS */
+.spotlight-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px;margin-bottom:4px}
+.spot-card{background:var(--ink2);border:1px solid var(--rule);border-radius:var(--r-lg);padding:16px}
+.spot-card.green{border-left:3px solid var(--signal)}
+.spot-card.amber{border-left:3px solid var(--caution-text)}
+.spot-card.red{border-left:3px solid var(--loss-text)}
+.spot-card.blue{border-left:3px solid #5b8fff}
+.spot-label{font-family:var(--mono);font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.3);margin-bottom:8px}
+.spot-logo{width:32px;height:32px;background:var(--logo-bg);border:1px solid var(--logo-border);border-radius:var(--r-sm);box-shadow:var(--logo-shadow);display:flex;align-items:center;justify-content:center;overflow:hidden;margin-bottom:8px}
+.spot-logo img{width:24px;height:24px;object-fit:contain}
+.spot-team{font-family:var(--mono);font-size:14px;font-weight:700;color:#e8edf8;margin-bottom:4px}
+.spot-val{font-family:var(--mono);font-size:28px;font-weight:700;letter-spacing:-.03em;line-height:1;margin-bottom:4px}
+.spot-val.green{color:var(--signal)}
+.spot-val.red{color:var(--loss-text)}
+.spot-val.amber{color:var(--caution-text)}
+.spot-meta{font-family:var(--sans);font-size:12px;color:rgba(255,255,255,.4);line-height:1.4}
+.spot-link{font-family:var(--mono);font-size:10px;font-weight:700;color:var(--signal);text-decoration:none;letter-spacing:.06em;display:block;margin-top:8px}
+
+/* RANKING CARDS */
+.rank-list{display:flex;flex-direction:column;gap:7px}
+.rank-card{background:var(--ink2);border:1px solid var(--rule);border-radius:var(--r-lg);padding:13px 16px;display:flex;align-items:center;gap:14px;transition:border-color .13s}
+.rank-card:hover{border-color:rgba(255,255,255,.15)}
+.rank-num{font-family:var(--mono);font-size:18px;font-weight:700;color:rgba(255,255,255,.15);flex-shrink:0;min-width:28px;text-align:center}
+.rank-num.top{color:rgba(26,255,107,.5)}
+.rank-logo{width:38px;height:38px;flex-shrink:0;background:var(--logo-bg);border:1px solid var(--logo-border);border-radius:var(--r-sm);box-shadow:var(--logo-shadow);display:flex;align-items:center;justify-content:center;overflow:hidden}
+.rank-logo img{width:28px;height:28px;object-fit:contain}
+.rank-body{flex:1;min-width:0}
+.rank-team{font-family:var(--mono);font-size:14px;font-weight:700;color:#e8edf8;text-decoration:none;letter-spacing:-.01em}
+.rank-team:hover{color:var(--signal)}
+.rank-names{font-family:var(--sans);font-size:12px;color:rgba(255,255,255,.4);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rank-stats{display:flex;gap:16px;flex-shrink:0;flex-wrap:wrap}
+.rank-stat{font-family:var(--mono);font-size:11px;color:rgba(255,255,255,.35);text-align:right}
+.rank-stat strong{display:block;font-size:18px;font-weight:700;letter-spacing:-.02em;line-height:1}
+.rank-stat strong.green{color:var(--signal)}
+.rank-stat strong.red{color:var(--loss-text)}
+.rank-stat strong.amber{color:var(--caution-text)}
+.signal-badge{display:inline-flex;align-items:center;padding:2px 8px;border-radius:var(--r-pill);font-family:var(--mono);font-size:9px;font-weight:700;letter-spacing:.06em;white-space:nowrap;flex-shrink:0}
+.badge-cliff{background:rgba(244,117,112,.1);color:var(--loss-text);border:1px solid rgba(244,117,112,.2)}
+.badge-engine{background:rgba(26,255,107,.1);color:var(--signal);border:1px solid rgba(26,255,107,.2)}
+.badge-deep{background:rgba(91,143,255,.1);color:#5b8fff;border:1px solid rgba(91,143,255,.2)}
+.badge-balanced{background:rgba(78,203,119,.1);color:var(--gain-text);border:1px solid rgba(78,203,119,.2)}
+.badge-ace{background:rgba(249,217,110,.1);color:var(--caution-text);border:1px solid rgba(249,217,110,.2)}
+.badge-flux{background:rgba(255,255,255,.05);color:rgba(255,255,255,.3);border:1px solid rgba(255,255,255,.1)}
+.badge-backend{background:rgba(244,117,112,.08);color:var(--loss-text);border:1px solid rgba(244,117,112,.15)}
+.badge-sample{background:rgba(255,255,255,.04);color:rgba(255,255,255,.25);border:1px solid rgba(255,255,255,.08)}
+
+/* SORT TABS */
+.sort-row{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px}
+.sort-btn{padding:5px 12px;border-radius:var(--r-pill);border:1px solid var(--rule);background:transparent;color:var(--chalk);font-family:var(--mono);font-size:10px;font-weight:700;cursor:pointer;transition:all .13s;letter-spacing:.04em}
+.sort-btn.active{background:var(--signal);border-color:var(--signal);color:var(--ink)}
+.sort-btn:hover:not(.active){border-color:var(--signal);color:var(--signal)}
+
+/* FULL TABLE */
+.board-table-wrap{overflow-x:auto;margin-top:4px}
+.board-table{width:100%;border-collapse:collapse;font-family:var(--mono)}
+.board-table th{font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.3);padding:7px 10px;text-align:right;border-bottom:1px solid var(--rule);white-space:nowrap;cursor:pointer;transition:color .13s}
+.board-table th:first-child,.board-table th:nth-child(2){text-align:left}
+.board-table th:hover{color:var(--signal)}
+.board-table th.sorted{color:var(--signal)}
+.board-table td{padding:11px 10px;font-size:12px;border-bottom:1px solid var(--rule2);text-align:right;color:rgba(255,255,255,.7);vertical-align:middle}
+.board-table td:first-child,.board-table td:nth-child(2){text-align:left}
+.board-table tr:hover td{background:rgba(255,255,255,.02)}
+.bt-team{display:flex;align-items:center;gap:8px}
+.bt-logo{width:24px;height:24px;background:var(--logo-bg);border:1px solid var(--logo-border);border-radius:4px;box-shadow:var(--logo-shadow);display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0}
+.bt-logo img{width:18px;height:18px;object-fit:contain}
+.bt-name{font-weight:700;color:#e8edf8;text-decoration:none}
+.bt-name:hover{color:var(--signal)}
+.pace-green{color:var(--signal);font-weight:700}
+.pace-good{color:var(--gain-text);font-weight:700}
+.pace-avg{color:rgba(255,255,255,.5)}
+.pace-bad{color:var(--loss-text);font-weight:700}
+.gap-big{color:var(--loss-text);font-weight:700}
+.gap-med{color:var(--caution-text);font-weight:700}
+.gap-low{color:rgba(255,255,255,.4)}
+
+.footer{border-top:1px solid var(--rule);padding:20px 0;margin-top:40px;font-family:var(--mono);font-size:12px;color:rgba(255,255,255,.2);display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between}
+.footer a{color:rgba(255,255,255,.3);text-decoration:none}
+.footer a:hover{color:var(--signal)}
+
+.no-data{text-align:center;padding:48px 20px;font-family:var(--mono);font-size:13px;color:rgba(255,255,255,.25)}
+
+@media(max-width:640px){
+  .rank-stats{display:none}
+  .board-table th:nth-child(n+5),.board-table td:nth-child(n+5){display:none}
+  .spotlight-grid{grid-template-columns:1fr 1fr}
+}
+</style>
+</head>
+<body>
+<nav class="nav">
+  <div class="nav-inner">
+    <a href="/" class="back-btn">← Home</a>
+    <a href="/" class="nav-logo">
+      <div class="nav-mono">TTS</div>
+      <div class="nav-word">TRACK THE <span>SEASON</span></div>
+    </a>
+  </div>
+</nav>
+
+<div class="wrap">
+  <!-- HERO -->
+  <div class="hero">
+    <div class="hero-eyebrow">⚾ Track The Season</div>
+    <h1 class="hero-hed">Pitching Board</h1>
+    <p class="hero-sub">Which teams have the best 1–2 punch, the biggest rotation cliff, and the deepest rotations?</p>
+    <p class="hero-tagline">Starter Signal compares how each team performs based on who starts. The Pitching Board turns that into a league-wide view.</p>
+    <div class="hero-meta" id="heroMeta">Loading…</div>
+    <div class="share-row">
+      <button class="share-btn primary" onclick="sharePage()">⬆ Share Board</button>
+      <a class="share-btn ghost" href="/chaos-report">📊 Social Graphics</a>
+      <a class="share-btn ghost" href="/">All Teams</a>
+    </div>
+  </div>
+
+  <div id="pageContent">
+    <div class="loading"><div class="spinner"></div><div class="loading-text">Loading Pitching Board…</div></div>
+  </div>
+
+  <footer class="footer">
+    <a href="/">TRACK THE <span style="color:var(--signal)">SEASON</span></a>
+    <span>Starter Signal data · Completed games only · <a href="mailto:support@tracktheseason.com">support@tracktheseason.com</a></span>
+  </footer>
+</div>
+
+<script>
+/* ══════════════════════════════════════════════════════════
+   PITCHING BOARD — data + render
+══════════════════════════════════════════════════════════ */
+const CURRENT_YEAR = new Date().getFullYear();
+const SEASON_GAMES = 162;
+
+/* Published CSV URL for PitchingBoard tab — set after first refresh run */
+const PITCHING_CSV = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTXMt3G9Q0ZroM_P5jUaetEBCqag8q8KTzlNIzH7LM7euuEQWH7LHa-VFbzpIkTrB911K70L39v5Zd3/pub?gid=PITCHING_GID&single=true&output=csv';
+
+const TEAM_SLUGS = {
+  108:'angels',109:'diamondbacks',110:'orioles',111:'red-sox',112:'cubs',
+  113:'reds',114:'guardians',115:'rockies',116:'tigers',117:'astros',
+  118:'royals',119:'dodgers',120:'nationals',121:'mets',133:'athletics',
+  134:'pirates',135:'padres',136:'mariners',137:'giants',138:'cardinals',
+  139:'rays',140:'rangers',141:'blue-jays',142:'twins',143:'phillies',
+  144:'braves',145:'white-sox',146:'marlins',147:'yankees',158:'brewers',
+};
+
+const logoUrl  = id=>`https://www.mlbstatic.com/team-logos/${id}.svg`;
+const teamUrl  = (id,slug)=>slug?`/${slug}`:`/tracker.html?team=${id}`;
+
+/* ── CSV parser ──────────────────────────────────────── */
+function parseCSV(text){
+  const lines=text.trim().split('\n');
+  const headers=lines[0].split(',').map(h=>h.replace(/"/g,'').trim().toLowerCase());
+  return lines.slice(1).map(line=>{
+    const cols=[];let cur='',inQ=false;
+    for(const ch of line){if(ch==='"'){inQ=!inQ;continue;}if(ch===','&&!inQ){cols.push(cur.trim());cur='';continue;}cur+=ch;}
+    cols.push(cur.trim());
+    const row={};headers.forEach((h,i)=>row[h]=(cols[i]||'').replace(/"/g,''));
+    return row;
+  }).filter(r=>r.teamid&&r.teamid!=='teamid');
+}
+
+function parseRow(r){
+  const n=k=>r[k]!==''?Number(r[k]):null;
+  return {
+    teamId:    Number(r.teamid),
+    teamName:  r.teamname||'Unknown',
+    teamSlug:  r.teamslug||TEAM_SLUGS[Number(r.teamid)]||'',
+    date:      r.date||'',
+    top1:      {name:r.top1name||'',starts:n('top1starts'),w:n('top1w'),l:n('top1l'),pace:n('top1pace'),rs:n('top1rs'),ra:n('top1ra'),diff:n('top1diff')},
+    top2:      r.top2name?{name:r.top2name,starts:n('top2starts'),w:n('top2w'),l:n('top2l'),pace:n('top2pace'),rs:n('top2rs'),ra:n('top2ra'),diff:n('top2diff')}:null,
+    duo:       {w:n('duow'),l:n('duol'),pace:n('duopace'),rs:n('duors'),ra:n('duora'),diff:n('duodiff')},
+    rest:      {w:n('restw'),l:n('restl'),pace:n('restpace'),rs:n('restrs'),ra:n('restra'),diff:n('restdiff')},
+    gap:       n('rotationgap'),
+    label:     r.signallabel||'Staff in Flux',
+    qualified: r.qualified==='1'||r.qualified===1,
+    gp:        n('gamesanalyzed'),
+  };
+}
+
+/* ── Load data ───────────────────────────────────────── */
+async function loadData(){
+  /* Try Sheet CSV first */
+  try{
+    const res=await fetch(PITCHING_CSV);
+    const text=await res.text();
+    if(text&&!text.trim().startsWith('<')&&text.includes(',')&&!text.includes('PITCHING_GID')){
+      const rows=parseCSV(text);
+      if(rows.length>=20) return rows.map(parseRow);
+    }
+  }catch(e){console.warn('Sheet CSV failed, falling back to live API',e.message);}
+
+  /* Fallback: fetch live from pitcher-splits API for each team */
+  return loadLive();
+}
+
+async function loadLive(){
+  const TEAMS=[108,109,110,111,112,113,114,115,116,117,118,119,120,121,133,134,135,136,137,138,139,140,141,142,143,144,145,146,147,158];
+  const TEAM_NAMES={108:'Angels',109:'Diamondbacks',110:'Orioles',111:'Red Sox',112:'Cubs',113:'Reds',114:'Guardians',115:'Rockies',116:'Tigers',117:'Astros',118:'Royals',119:'Dodgers',120:'Nationals',121:'Mets',133:'Athletics',134:'Pirates',135:'Padres',136:'Mariners',137:'Giants',138:'Cardinals',139:'Rays',140:'Rangers',141:'Blue Jays',142:'Twins',143:'Phillies',144:'Braves',145:'White Sox',146:'Marlins',147:'Yankees',158:'Brewers'};
+  const BATCH=5;
+  const results=[];
+  for(let i=0;i<TEAMS.length;i+=BATCH){
+    const batch=TEAMS.slice(i,i+BATCH);
+    const br=await Promise.allSettled(batch.map(async id=>{
+      const res=await fetch(`/api/pitcher-splits?teamId=${id}&season=${CURRENT_YEAR}`);
+      const d=await res.json();
+      if(d.error) return null;
+      return{
+        teamId:id, teamName:TEAM_NAMES[id]||'', teamSlug:TEAM_SLUGS[id]||'', date:'live', qualified:true,
+        gp:d.gamesAnalyzed||0, label:d.splits?.length>=2?'':'Staff in Flux',
+        top1:d.splits?.[0]?{name:d.splits[0].name,starts:d.splits[0].starts,w:d.splits[0].wins,l:d.splits[0].losses,pace:d.splits[0].pace,rs:d.splits[0].avgScored,ra:d.splits[0].avgAllowed,diff:d.splits[0].runDiff}:null,
+        top2:d.splits?.[1]?{name:d.splits[1].name,starts:d.splits[1].starts,w:d.splits[1].wins,l:d.splits[1].losses,pace:d.splits[1].pace,rs:d.splits[1].avgScored,ra:d.splits[1].avgAllowed,diff:d.splits[1].runDiff}:null,
+        duo:d.duo?{w:d.duo.wins,l:d.duo.losses,pace:d.duo.pace,rs:0,ra:0,diff:d.duo.runDiff}:{w:0,l:0,pace:0,rs:0,ra:0,diff:0},
+        rest:d.rest?{w:d.rest.wins,l:d.rest.losses,pace:d.rest.pace,rs:0,ra:0,diff:d.rest.runDiff}:{w:0,l:0,pace:0,rs:0,ra:0,diff:0},
+        gap:d.duo&&d.rest?d.duo.pace-d.rest.pace:null,
+      };
+    }));
+    for(const r of br) if(r.status==='fulfilled'&&r.value) results.push(r.value);
+  }
+  return results;
+}
+
+/* ── Helpers ─────────────────────────────────────────── */
+function paceClass(p){return p>=100?'pace-green':p>=90?'pace-good':p>=75?'pace-avg':'pace-bad';}
+function gapClass(g){return Math.abs(g)>=30?'gap-big':Math.abs(g)>=15?'gap-med':'gap-low';}
+function badgeCls(l){
+  if(l==='Rotation Cliff')    return 'badge-cliff';
+  if(l==='Two-Man Engine')    return 'badge-engine';
+  if(l==='Deep Staff')        return 'badge-deep';
+  if(l==='Balanced Rotation') return 'badge-balanced';
+  if(l==='Ace-Driven')        return 'badge-ace';
+  if(l==='Back-End Problem')  return 'badge-backend';
+  if(l==='Small Sample')      return 'badge-sample';
+  return 'badge-flux';
+}
+function logoImg(id,sz=28){return `<img src="${logoUrl(id)}" width="${sz}" height="${sz}" style="object-fit:contain" onerror="this.style.display='none'"/>`;}
+function fmtRecord(w,l){return`${w??'—'}–${l??'—'}`;}
+
+/* ── Render spotlight cards ──────────────────────────── */
+function renderSpotlights(teams){
+  const q=teams.filter(t=>t.qualified&&t.duo.pace>0&&t.rest.pace>0&&t.gap!=null);
+  if(!q.length) return '';
+
+  const byDuoPace=[...q].sort((a,b)=>b.duo.pace-a.duo.pace)[0];
+  const byGap=[...q].sort((a,b)=>b.gap-a.gap)[0];
+  const byDepth=[...q].filter(t=>t.rest.pace>=81).sort((a,b)=>a.gap-b.gap)[0];
+  const mostExposed=[...q].sort((a,b)=>a.rest.pace-b.rest.pace)[0];
+
+  const card=(cls,label,t,val,valCls,meta)=>`
+    <div class="spot-card ${cls}">
+      <div class="spot-label">${label}</div>
+      <div class="spot-logo">${logoImg(t.teamId,22)}</div>
+      <div class="spot-team">${t.teamName}</div>
+      <div class="spot-val ${valCls}">${val}</div>
+      <div class="spot-meta">${meta}</div>
+      <a class="spot-link" href="${teamUrl(t.teamId,t.teamSlug)}">See team →</a>
+    </div>`;
+
+  return`<div class="spotlight-grid">
+    ${byDuoPace?card('green','🏆 Best 1–2 Punch',byDuoPace,`${byDuoPace.duo.pace}W`,'green',`${[byDuoPace.top1?.name,byDuoPace.top2?.name].filter(Boolean).map(n=>n.split(' ').pop()).join(' + ')} · ${fmtRecord(byDuoPace.duo.w,byDuoPace.duo.l)}`):''}
+    ${byGap?card('amber','📉 Biggest Cliff',byGap,`+${byGap.gap}W gap`,'amber',`Top 2: ${byGap.duo.pace}W vs Rest: ${byGap.rest.pace}W`):''}
+    ${byDepth?card('blue','🛡️ Deepest Rotation',byDepth,`${byDepth.rest.pace}W`,'green',`Rest pace · Gap: only ${byDepth.gap}W`):''}
+    ${mostExposed?card('red','⚠️ Most Exposed',mostExposed,`${mostExposed.rest.pace}W`,'red',`Rest pace · Top 2: ${mostExposed.duo.pace}W`):''}
+  </div>`;
+}
+
+/* ── Render ranking section ──────────────────────────── */
+function renderRanking(teams, sortFn, cols, title, sub, sectionLabel, n=10){
+  const sorted=teams.filter(t=>t.qualified&&t.duo.pace>0).sort(sortFn).slice(0,n);
+  if(!sorted.length) return '';
+
+  const cards=sorted.map((t,i)=>{
+    const names=[t.top1?.name,t.top2?.name].filter(Boolean).map(n=>n.split(' ').pop()).join(' + ');
+    return`<div class="rank-card">
+      <div class="rank-num ${i<3?'top':''}">${i+1}</div>
+      <div class="rank-logo">${logoImg(t.teamId,28)}</div>
+      <div class="rank-body">
+        <a class="rank-team" href="${teamUrl(t.teamId,t.teamSlug)}">${t.teamName}</a>
+        <div class="rank-names">${names||'—'}</div>
+      </div>
+      <div class="rank-stats">${cols.map(c=>c(t)).join('')}</div>
+      <span class="signal-badge ${badgeCls(t.label)}">${t.label}</span>
+    </div>`;
+  }).join('');
+
+  return`<div class="section">
+    <div class="sec-label">${sectionLabel}</div>
+    <div class="sec-title">${title}</div>
+    <div class="sec-sub">${sub}</div>
+    <div class="rank-list">${cards}</div>
+  </div>`;
+}
+
+function stat(label,val,cls=''){return`<div class="rank-stat"><strong class="${cls}">${val}</strong>${label}</div>`;}
+
+/* ── Full sortable table ─────────────────────────────── */
+let _allTeams=[], _sortKey='duopace', _sortDir=-1;
+
+function renderTable(teams){
+  const sorted=[...teams].sort((a,b)=>{
+    const vals={
+      team:[a.teamName,b.teamName],
+      duopace:[a.duo.pace,b.duo.pace],
+      restpace:[a.rest.pace,b.rest.pace],
+      gap:[a.gap,b.gap],
+      top1pace:[a.top1?.pace||0,b.top1?.pace||0],
+    };
+    const [av,bv]=vals[_sortKey]||vals.duopace;
+    if(typeof av==='string') return av.localeCompare(bv)*_sortDir;
+    return((bv-av)*_sortDir);
+  });
+
+  const head=(key,label,extra='')=>`<th class="${_sortKey===key?'sorted':''}" onclick="tableSort('${key}')" ${extra}>${label} ${_sortKey===key?(_sortDir<0?'↓':'↑'):''}</th>`;
+
+  const rows=sorted.map(t=>{
+    const names=[t.top1?.name,t.top2?.name].filter(Boolean).map(n=>n.split(' ').pop()).join(' + ')||'—';
+    const d2=fmtRecord(t.duo.w,t.duo.l);
+    const dr=fmtRecord(t.rest.w,t.rest.l);
+    return`<tr>
+      <td><div class="bt-team"><div class="bt-logo">${logoImg(t.teamId,18)}</div><a class="bt-name" href="${teamUrl(t.teamId,t.teamSlug)}">${t.teamName}</a></div></td>
+      <td style="font-size:11px;color:rgba(255,255,255,.4);max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${names}</td>
+      <td>${d2}</td>
+      <td class="${paceClass(t.duo.pace||0)}">${t.duo.pace||'—'}W</td>
+      <td>${dr}</td>
+      <td class="${paceClass(t.rest.pace||0)}">${t.rest.pace||'—'}W</td>
+      <td class="${gapClass(t.gap||0)}">${t.gap!=null?(t.gap>=0?'+':'')+t.gap+'W':'—'}</td>
+      <td><span class="signal-badge ${badgeCls(t.label)}">${t.label}</span></td>
+    </tr>`;
+  }).join('');
+
+  return`<div class="section">
+    <div class="sec-label">Full Board</div>
+    <div class="sec-title">📋 Full Pitching Board</div>
+    <div class="sec-sub">All 30 teams — click headers to sort</div>
+    <div class="sort-row">
+      <button class="sort-btn ${_sortKey==='duopace'?'active':''}" onclick="tableSort('duopace')">Top 2 Pace</button>
+      <button class="sort-btn ${_sortKey==='restpace'?'active':''}" onclick="tableSort('restpace')">Rest Pace</button>
+      <button class="sort-btn ${_sortKey==='gap'?'active':''}" onclick="tableSort('gap')">Gap</button>
+      <button class="sort-btn ${_sortKey==='top1pace'?'active':''}" onclick="tableSort('top1pace')">Ace Pace</button>
+      <button class="sort-btn ${_sortKey==='team'?'active':''}" onclick="tableSort('team')">A–Z</button>
+    </div>
+    <div class="board-table-wrap"><table class="board-table">
+      <thead><tr>
+        ${head('team','Team')}${head('top1pace','Top Starters')}
+        ${head('duopace','Top 2 Rec','')}${head('duopace','Top 2 W')}
+        ${head('restpace','Rest Rec','')}${head('restpace','Rest W')}
+        ${head('gap','Gap')}
+        <th>Signal</th>
+      </tr></thead>
+      <tbody>${rows}</tbody>
+    </table></div>
+  </div>`;
+}
+
+window.tableSort=function(key){
+  if(_sortKey===key) _sortDir*=-1; else{_sortKey=key;_sortDir=-1;}
+  const el=document.getElementById('fullTable');
+  if(el) el.innerHTML=renderTable(_allTeams);
+};
+
+/* ── Share ───────────────────────────────────────────── */
+window.sharePage=async function(){
+  const q=_allTeams.filter(t=>t.qualified&&t.duo.pace>0).sort((a,b)=>b.duo.pace-a.duo.pace)[0];
+  const text=q
+    ?`⚾ MLB Pitching Board — ${q.teamName} lead the 1–2 punch rankings with a ${q.duo.pace}W pace when their top two starters take the mound.\n\nThe standings show who's winning. The Pitching Board shows how much the rotation is driving it.\n\nhttps://tracktheseason.com/pitching-board\n\n#TrackTheSeason #MLB`
+    :`⚾ MLB Pitching Board — which teams have the best rotation depth vs the biggest cliff?\n\nhttps://tracktheseason.com/pitching-board\n\n#TrackTheSeason`;
+  if(navigator.share) try{await navigator.share({title:'MLB Pitching Board — Track The Season',text,url:'https://tracktheseason.com/pitching-board'});}catch(e){}
+  else{ await navigator.clipboard?.writeText(text); }
+};
+
+/* ── Main ────────────────────────────────────────────── */
+async function main(){
+  let teams=[];
+  try{ teams=await loadData(); }
+  catch(e){
+    document.getElementById('pageContent').innerHTML=`<div class="no-data">Could not load Pitching Board data.<br><small style="opacity:.5">${e.message}</small><br><br><a href="/" style="color:var(--signal);font-family:var(--mono);font-size:12px">← Back to homepage</a></div>`;
+    return;
+  }
+
+  if(!teams.length){
+    document.getElementById('pageContent').innerHTML=`<div class="no-data">No pitching data available yet.<br><small style="opacity:.5">Run the Pitching Board refresh to populate data.</small></div>`;
+    return;
+  }
+
+  _allTeams=teams;
+  const date=teams[0]?.date||'live';
+  const qualified=teams.filter(t=>t.qualified).length;
+  document.getElementById('heroMeta').textContent=`${qualified} of 30 teams · ${date==='live'?'Live data':'Data from '+date} · Completed games only`;
+
+  const q=teams.filter(t=>t.qualified&&t.duo.pace>0&&t.rest.pace>0&&t.gap!=null);
+
+  const html=`
+    ${renderSpotlights(teams)}
+
+    ${renderRanking(q,(a,b)=>b.duo.pace-a.duo.pace,[
+      t=>stat('Top 2 W',`${t.duo.pace}W`,'green'),
+      t=>stat('Record',fmtRecord(t.duo.w,t.duo.l)),
+      t=>stat('R/G',t.duo.rs??'—'),
+    ],'🏆 Best 1–2 Punch','Teams ranked by win pace when their top two starters take the mound.','Section 1',10)}
+
+    ${renderRanking(q,(a,b)=>b.gap-a.gap,[
+      t=>stat('Top 2',`${t.duo.pace}W`,'green'),
+      t=>stat('Everyone Else',`${t.rest.pace}W`,'red'),
+      t=>stat('Gap',`+${t.gap}W`,'amber'),
+    ],'📉 Biggest Rotation Cliff','How much does the team fall off after the top two starters?','Section 2',10)}
+
+    ${renderRanking(q.filter(t=>t.rest.pace>=81),(a,b)=>a.gap-b.gap,[
+      t=>stat('Top 2',`${t.duo.pace}W`,'green'),
+      t=>stat('Rest Pace',`${t.rest.pace}W`,'green'),
+      t=>stat('Gap',`${t.gap}W`),
+    ],'🛡️ Best Rotation Depth','Teams where the rest of the rotation holds up — smallest gap with qualifying rest pace (81W+).','Section 3',8)}
+
+    ${renderRanking(q,(a,b)=>a.rest.pace-b.rest.pace,[
+      t=>stat('Rest Pace',`${t.rest.pace}W`,'red'),
+      t=>stat('Top 2',`${t.duo.pace}W`,'green'),
+      t=>stat('Gap',`+${t.gap}W`,'amber'),
+    ],'⚠️ Most Exposed Rotations','Teams most dependent on their top two starters to stay competitive.','Section 4',8)}
+
+    <div id="fullTable">${renderTable(teams)}</div>`;
+
+  document.getElementById('pageContent').innerHTML=html;
+
+  /* Update meta */
+  const top=q.sort((a,b)=>b.duo.pace-a.duo.pace)[0];
+  if(top){
+    document.querySelector('meta[property="og:description"]')?.setAttribute('content',
+      `${top.teamName} lead the 1–2 punch rankings at ${top.duo.pace}W pace. The Pitching Board shows which rotations are built to last.`);
+  }
+}
+
+main();
+</script>
+</body>
+</html>
