@@ -1893,7 +1893,7 @@ function renderInsights(params){
   const ins = buildInsights(params);
   const{year,rs,re,curGames,rangeGames} = params;
   const curRec  = recordFromGames(curGames);
-  window._lastProj = proj;
+  window._lastProj = ins.seasProj || 0;
   const momentum= getMomentum(curGames, rangeGames);
 
   $('momentumBadge').innerHTML = `<span style="color:var(--chalk);font-size:10px;font-weight:400">${momentum.paceLabel}</span> <span style="color:rgba(255,255,255,.2)">·</span> ${momentum.trendEmoji} ${momentum.trendLabel}`;
