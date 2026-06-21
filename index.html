@@ -2076,6 +2076,16 @@ window.toggleFav=function(e,teamId){
   const newFavs = isAlreadyFav ? [] : [teamId];
   setFavs(newFavs);
 
+  /* Track in GA4 when a team is favorited (not when un-favorited) */
+  if(!isAlreadyFav && typeof gtag === 'function'){
+    const row = (window._allData||[]).find(d=>d.team?.id===teamId||d.team?.id===Number(teamId));
+    const tName = row?.team?.name || String(teamId);
+    gtag('event','favorite_team',{
+      team_id:   Number(teamId),
+      team_name: tName,
+    });
+  }
+
   /* Update all star buttons */
   document.querySelectorAll('.fav-star').forEach(btn=>{
     const id=Number(btn.dataset.teamId);
