@@ -15,7 +15,7 @@
 <script type="application/ld+json" id="schemaScript">{"@context":"https://schema.org","@type":"NewsArticle","headline":"MLB Daily Pulse","publisher":{"@type":"Organization","name":"Track The Season","url":"https://tracktheseason.com"},"datePublished":"","dateModified":"","description":"Daily MLB pace, momentum, and rivalry shifts."}</script>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet"/>
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-DCSQPGSY1D"></script>
-<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-DCSQPGSY1D');</script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-DCSQPGSY1D',{send_page_view:false});</script>
 <style>
 :root{
   --ink:#0f1014;--ink2:#1a1d24;--ink3:#252830;
@@ -746,6 +746,17 @@ function renderArticle(data){
 
   /* Update meta */
   document.getElementById('bcDate').textContent=fmtShort(date);
+
+  /* Fire GA4 page_view after title is set correctly */
+  if(typeof gtag === 'function'){
+    const pulseTitle = (storyIns?.title ? storyIns.title + ' | Track The Season' : `MLB Daily Pulse — ${fmtShort(date)} | Track The Season`);
+    document.title = pulseTitle;
+    gtag('event', 'page_view', {
+      page_title:    pulseTitle,
+      page_location: window.location.href,
+      page_path:     window.location.pathname,
+    });
+  }
   const hed=storyIns?.title||`MLB Daily Pulse — ${fmtShort(date)}`;
   document.title=`${hed} | Track The Season`;
   document.querySelector('link[rel="canonical"]').href=`https://tracktheseason.com/pulse/${date}`;
@@ -806,6 +817,11 @@ function renderArticle(data){
       <div class="sec-eyebrow">Section 1 · What Moved Overnight</div>
       <div class="sec-title">📊 What Changed Since Yesterday</div>
       ${renderChangeTable(teams,hasPrev)}
+    </div>
+
+    <!-- SCOUT -->
+    <div class="pulse-section">
+      <div id="scout-pulse-container"></div>
     </div>
 
     <!-- MOVERS -->
@@ -907,6 +923,24 @@ async function main(){
   if(!data.found&&(!data.availableDates||!data.availableDates.length)){renderComingSoon([]);return;}
   if(!data.found){renderComingSoon(data.availableDates);return;}
   renderArticle(data);
+  /* Scout widget — loads after article renders */
+  setTimeout(()=>{
+    if(!document.getElementById('scout-pulse-container')) return;
+    const loadScout=()=>ScoutWidget.init({
+      containerId:'scout-pulse-container',
+      pageType:'pulse',
+      date:data.date,
+      title:'Scout today\'s movement',
+      subtitle:'Ask what changed overnight, which teams moved, and what fans should talk about today.',
+    });
+    if(window.ScoutWidget) loadScout();
+    else{
+      const s=document.createElement('script');
+      s.src='/api/scout-widget.js';
+      s.onload=loadScout;
+      document.head.appendChild(s);
+    }
+  },200);
 }
 
 main();

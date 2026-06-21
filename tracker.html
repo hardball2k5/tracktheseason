@@ -599,7 +599,7 @@ tr.cur-row td{background:rgba(26,255,107,.05)}
   window.dataLayer = window.dataLayer || [];
   function gtag(){dataLayer.push(arguments);}
   gtag('js', new Date());
-  gtag('config', 'G-DCSQPGSY1D');
+  gtag('config', 'G-DCSQPGSY1D', { send_page_view: false });
 </script>
 <!-- Team page view tracking — fires team_id as a custom dimension on every tracker page load -->
 <script>
@@ -610,15 +610,8 @@ tr.cur-row td{background:rgba(26,255,107,.05)}
     const rs     = p.get('rs');
     const re     = p.get('re');
     if(teamId && typeof gtag === 'function'){
-      /* Set as user property so it persists across the session */
-      gtag('set', 'user_properties', { favorite_team: teamId });
-      /* Fire a page_view event with team context so you can pivot by team in GA4 */
-      gtag('event', 'tracker_page_view', {
-        team_id:    Number(teamId),
-        season:     season ? Number(season) : null,
-        start_game: rs ? Number(rs) : null,
-        end_game:   re ? Number(re) : null,
-      });
+      gtag('set', 'user_properties', { favorite_team: Number(teamId) });
+      /* page_view with correct title fires later in updateMetaTags() */
     }
   })();
 </script>
@@ -975,6 +968,17 @@ function updateMetaTags(teamName, w, l, gp, proj, l10w, l10l, delta, compareYear
   const pageUrl = buildCleanUrl(currentTeamId, CURRENT_YEAR, $('gameFrom')?.value, $('gameTo')?.value, null);
 
   document.title = `${teamName} Tracker | Track The Season`;
+
+  /* Fire GA4 page_view NOW — when we have the real title and URL */
+  if(typeof gtag === 'function'){
+    gtag('event', 'page_view', {
+      page_title:    document.title,
+      page_location: window.location.href,
+      page_path:     window.location.pathname + window.location.search,
+      team_name:     teamName,
+      team_id:       currentTeamId,
+    });
+  }
 
   const setMeta = (key, val) => {
     const sel = key.startsWith('og:') ? `meta[property="${key}"]` : `meta[name="${key}"]`;
@@ -2391,7 +2395,7 @@ async function update(){
     $('navTeamLogo').src=logoUrl; $('navTeamLogo').style.display='block';
     $('navTeamName').textContent=teamName;
     $('navTeamWrap').classList.add('visible');
-    document.title=`${teamName} — Track The Season`;
+    /* title set correctly in updateMetaTags() below — do not set here */
 
     /* Dynamic OG/meta tags — update after data loads so shares get team-specific previews */
     const l10data  = curGames.slice(-10);
