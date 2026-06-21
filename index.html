@@ -158,6 +158,26 @@ body{font-family:var(--sans);background:var(--ink);color:#e8edf8;min-height:100v
 .mover-delta-big.down{color:var(--loss-text)}
 .mover-arrow{font-size:14px;flex-shrink:0}
 
+/* ── PACE TIER STRIP ─────────────────── */
+.tier-strip{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:10px}
+.tier-card{background:var(--ink2);border:1px solid var(--rule);border-radius:var(--r-md);padding:11px 12px;cursor:pointer;transition:border-color .13s;text-align:left}
+.tier-card:hover{border-color:rgba(255,255,255,.2)}
+.tier-card.active{border-color:var(--signal);background:rgba(26,255,107,.04)}
+.tier-card.tier-a{border-top:2px solid var(--signal)}
+.tier-card.tier-b{border-top:2px solid var(--caution-text)}
+.tier-card.tier-c{border-top:2px solid rgba(255,255,255,.2)}
+.tier-card.tier-d{border-top:2px solid var(--loss-text)}
+.tier-count{font-family:var(--mono);font-size:26px;font-weight:700;letter-spacing:-.03em;line-height:1;margin-bottom:3px}
+.tier-count.a{color:var(--signal)}
+.tier-count.b{color:var(--caution-text)}
+.tier-count.c{color:rgba(255,255,255,.4)}
+.tier-count.d{color:var(--loss-text)}
+.tier-name{font-family:var(--mono);font-size:10px;font-weight:700;color:#e8edf8;margin-bottom:2px}
+.tier-pace{font-family:var(--mono);font-size:9px;color:rgba(255,255,255,.3);letter-spacing:.04em}
+.tier-logos{display:flex;gap:3px;flex-wrap:wrap;margin-top:6px}
+.tier-logo{width:18px;height:18px;background:var(--logo-bg);border:1px solid var(--logo-border);border-radius:3px;display:flex;align-items:center;justify-content:center;overflow:hidden}
+.tier-logo img{width:14px;height:14px;object-fit:contain}
+@media(max-width:560px){.tier-strip{grid-template-columns:repeat(2,1fr)}}
 /* ── LEAGUE SNAPSHOT ─────────────────── */
 .snapshot-grid{
   display:grid;
@@ -817,6 +837,7 @@ body{font-family:var(--sans);background:var(--ink);color:#e8edf8;min-height:100v
   <div class="snapshot-grid" id="snapshotGrid">
     <div class="snap-card"><div class="snap-label">Loading…</div></div>
   </div>
+  <div class="tier-strip" id="tierStrip" style="display:none"></div>
 
   <!-- Daily Debate moved to /pulse -->
 
@@ -926,19 +947,21 @@ body{font-family:var(--sans);background:var(--ink);color:#e8edf8;min-height:100v
 
     <div class="momentum-bar" id="momentumBar">
       <button class="mom-btn active-all" data-mom="all">All</button>
+      <button class="mom-btn mom-detailed" data-mom="__tier_a" style="border-color:rgba(26,255,107,.3);color:rgba(26,255,107,.8)">✅ Contender</button>
+      <button class="mom-btn mom-detailed" data-mom="__tier_b" style="border-color:rgba(249,217,110,.3);color:rgba(249,217,110,.8)">🎯 In the race</button>
+      <button class="mom-btn mom-detailed" data-mom="__tier_c" style="border-color:rgba(255,255,255,.15);color:rgba(255,255,255,.4)">👀 On the outside</button>
+      <button class="mom-btn mom-detailed" data-mom="__tier_d" style="border-color:rgba(244,117,112,.3);color:rgba(244,117,112,.7)">❄️ Difficult season</button>
       <button class="mom-btn mom-group mom-hot"  data-mom="__hot">🔥 Hot</button>
       <button class="mom-btn mom-group mom-hot"  data-mom="__rising">📈 Rising</button>
       <button class="mom-btn mom-group mom-neu"  data-mom="__stable">➡️ Stable</button>
       <button class="mom-btn mom-group mom-cold" data-mom="__falling">⬇️ Falling</button>
       <button class="mom-btn mom-group mom-cold" data-mom="__cold">❄️ Cold</button>
-      <button class="mom-btn mom-detailed mom-hot"  data-mom="Elite pace">🔥 Elite pace</button>
+      <button class="mom-btn mom-detailed mom-hot"  data-mom="Surging">🔥 Surging</button>
       <button class="mom-btn mom-detailed mom-hot"  data-mom="Heating up">📈 Heating up</button>
-      <button class="mom-btn mom-detailed mom-hot"  data-mom="Strong stretch">✅ Strong stretch</button>
-      <button class="mom-btn mom-detailed mom-hot"  data-mom="Trending up">⬆️ Trending up</button>
-      <button class="mom-btn mom-detailed mom-neu"  data-mom="Stable">➡️ Stable</button>
+      <button class="mom-btn mom-detailed mom-hot"  data-mom="Recovering">⬆️ Recovering</button>
+      <button class="mom-btn mom-detailed mom-neu"  data-mom="Steady">➡️ Steady</button>
+      <button class="mom-btn mom-detailed mom-cold" data-mom="Fading">⬇️ Fading</button>
       <button class="mom-btn mom-detailed mom-cold" data-mom="Sliding">📉 Sliding</button>
-      <button class="mom-btn mom-detailed mom-cold" data-mom="Cooling off">📉 Cooling off</button>
-      <button class="mom-btn mom-detailed mom-cold" data-mom="Struggling">❄️ Struggling</button>
       <button class="explain-link" id="explainBtn">What does this mean? ↓</button>
     </div>
     <button class="mobile-explain-btn" id="mobileExplainBtn">⚡ What do these labels mean?</button>
@@ -955,7 +978,7 @@ body{font-family:var(--sans);background:var(--ink);color:#e8edf8;min-height:100v
           <div class="explainer-row"><span class="explainer-chip cold">📉 Sliding</span><span class="explainer-text">Last 20 ≤ 40% and Last 10 ≤ 40%.</span></div>
         </div>
       </div>
-        <p class="explainer-footer">Needs 10+ completed games. Based on last-20 vs full-season win%.</p>
+        <p class="explainer-footer">Needs 10+ completed games. Pace = projected wins. Trend = last 10 + last 20 games.</p>
       </div>
     </div>
 
@@ -1524,6 +1547,36 @@ function buildSnapshot(allData){
     } : null,
   ].filter(Boolean);
 
+  /* Build pace tier strip */
+  const TIER_DEFS = [
+    {key:'a', cls:'a', name:'Contender',       pace:'90W+ pace',   color:'var(--signal)'},
+    {key:'b', cls:'b', name:'In the race',      pace:'81–89W pace', color:'var(--caution-text)'},
+    {key:'c', cls:'c', name:'On the outside',   pace:'70–80W pace', color:'rgba(255,255,255,.4)'},
+    {key:'d', cls:'d', name:'Difficult season', pace:'<70W pace',   color:'var(--loss-text)'},
+  ];
+  const tierTeams = {
+    a: byProj.filter(t=>(projWins(t.curGames)||0)>=90),
+    b: byProj.filter(t=>{const p=projWins(t.curGames)||0;return p>=81&&p<90;}),
+    c: byProj.filter(t=>{const p=projWins(t.curGames)||0;return p>=70&&p<81;}),
+    d: byProj.filter(t=>(projWins(t.curGames)||0)<70),
+  };
+  const tierStrip = document.getElementById('tierStrip');
+  if(tierStrip){
+    tierStrip.style.display='grid';
+    tierStrip.innerHTML = TIER_DEFS.map(tier=>{
+      const teams = tierTeams[tier.key];
+      const logos = teams.slice(0,6).map(t=>
+        `<div class="tier-logo"><img src="https://www.mlbstatic.com/team-logos/${t.team.id}.svg" width="14" height="14" style="object-fit:contain" onerror="this.style.display='none'"/></div>`
+      ).join('');
+      return `<div class="tier-card tier-${tier.key}" onclick="filterByTier('${tier.key}')">
+        <div class="tier-count ${tier.cls}">${teams.length}</div>
+        <div class="tier-name">${tier.name}</div>
+        <div class="tier-pace">${tier.pace}</div>
+        <div class="tier-logos">${logos}</div>
+      </div>`;
+    }).join('');
+  }
+
   document.getElementById('snapshotGrid').innerHTML = snaps.map(s=>`
     <a class="snap-card" href="${s.href}">
       <div class="snap-label">${s.icon} ${s.label}</div>
@@ -1661,9 +1714,10 @@ function buildCard(team,curGames,prevGames){
     data-div="${div.divKey}"
     data-winpct="${pct.toFixed(4)}"
     data-proj="${proj||0}"
+    data-pace-tier="${proj>=90?'a':proj>=81?'b':proj>=70?'c':'d'}"
     data-delta="${deltaNum!==null?deltaNum:-999}"
     data-momentum="${MOMENTUM_RANK[momentum.label]??2}"
-    data-momentum-label="${momentum.label}"
+    data-momentum-label="${momentum.trendLabel}"
     data-name="${team.name}"
     data-gp="${gp}">
     <div class="card-top">
@@ -1675,10 +1729,10 @@ function buildCard(team,curGames,prevGames){
         <div class="team-city">${div.league} · ${div.divName}</div>
         <div class="team-name">${team.clubName||team.name}</div>
       </div>
-      <div class="momentum-chip ${momentum.chipClass}" style="display:flex;gap:4px;align-items:center">
-        <span style="color:var(--chalk);font-size:9px">${momentum.paceLabel}</span>
-        <span style="color:rgba(255,255,255,.2)">·</span>
-        <span>${momentum.trendEmoji} ${momentum.trendLabel}</span>
+      <div class="momentum-chip ${momentum.chipClass}" style="display:inline-flex;gap:3px;align-items:center;max-width:100%;overflow:hidden">
+        <span style="color:var(--chalk);font-size:9px;flex-shrink:0;white-space:nowrap">${momentum.paceLabel}</span>
+        <span style="color:rgba(255,255,255,.2);flex-shrink:0">·</span>
+        <span style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${momentum.trendEmoji} ${momentum.trendLabel}</span>
       </div>
       <button class="fav-star ${isFav?'active':''}" data-team-id="${team.id}" onclick="toggleFav(event,${team.id})" title="${isFav?'Remove':'Favorite'}">${isFav?'★':'☆'}</button>
     </div>
@@ -1784,7 +1838,12 @@ function closeModal(){
    FILTER / SORT
 ═══════════════════════════════════════════════════ */
 let activeFilter='all',activeSort='winpct',searchQuery='',activeMomentum='all';
-function momentumMatchesMobileGroup(label,group){
+function momentumMatchesMobileGroup(label,group,card){
+  /* Pace tier filters — use data-pace-tier on the card element */
+  if(group==='__tier_a') return card?.dataset?.paceTier==='a';
+  if(group==='__tier_b') return card?.dataset?.paceTier==='b';
+  if(group==='__tier_c') return card?.dataset?.paceTier==='c';
+  if(group==='__tier_d') return card?.dataset?.paceTier==='d';
   switch(group){
     case '__hot':    return MOMENTUM_HOT_LABELS.has(label);
     case '__rising': return MOMENTUM_RISING_LABELS.has(label);
@@ -1794,6 +1853,16 @@ function momentumMatchesMobileGroup(label,group){
     default: return label===group;
   }
 }
+window.filterByTier=function(tier){
+  activeMomentum='__tier_'+tier;
+  syncMomBtns();
+  applyFiltersAndSort();
+  /* Scroll to team grid */
+  document.getElementById('all-teams')?.scrollIntoView({behavior:'smooth',block:'start'});
+  /* Highlight the clicked tier card */
+  document.querySelectorAll('.tier-card').forEach(c=>c.classList.toggle('active',c.classList.contains('tier-'+tier)));
+};
+
 function applyFiltersAndSort(){
   const grid=document.getElementById('teamGrid');
   const cards=[...grid.querySelectorAll('.team-card')];
@@ -1801,7 +1870,7 @@ function applyFiltersAndSort(){
     const matchFilter   =activeFilter==='all'||activeFilter===c.dataset.league||activeFilter===c.dataset.div;
     const matchSearch   =!searchQuery||(c.dataset.name||'').toLowerCase().includes(searchQuery.toLowerCase());
     const label         =c.dataset.momentumLabel||'';
-    const matchMomentum =activeMomentum==='all'||momentumMatchesMobileGroup(label,activeMomentum);
+    const matchMomentum =activeMomentum==='all'||momentumMatchesMobileGroup(label,activeMomentum,c);
     c.classList.toggle('hidden-card',!matchFilter||!matchSearch||!matchMomentum);
   });
   const visible=cards.filter(c=>!c.classList.contains('hidden-card'));
