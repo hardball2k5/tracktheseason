@@ -936,7 +936,7 @@ body{font-family:var(--sans);background:var(--ink);color:#e8edf8;min-height:100v
       <button class="mom-btn mom-detailed mom-hot"  data-mom="Strong stretch">✅ Strong stretch</button>
       <button class="mom-btn mom-detailed mom-hot"  data-mom="Trending up">⬆️ Trending up</button>
       <button class="mom-btn mom-detailed mom-neu"  data-mom="Stable">➡️ Stable</button>
-      <button class="mom-btn mom-detailed mom-cold" data-mom="Trending down">⬇️ Trending down</button>
+      <button class="mom-btn mom-detailed mom-cold" data-mom="Sliding">📉 Sliding</button>
       <button class="mom-btn mom-detailed mom-cold" data-mom="Cooling off">📉 Cooling off</button>
       <button class="mom-btn mom-detailed mom-cold" data-mom="Struggling">❄️ Struggling</button>
       <button class="explain-link" id="explainBtn">What does this mean? ↓</button>
@@ -946,17 +946,15 @@ body{font-family:var(--sans);background:var(--ink);color:#e8edf8;min-height:100v
     <div class="explainer-panel" id="explainerPanel">
       <div class="explainer-inner">
         <div class="explainer-title">How momentum labels work</div>
-        <p class="explainer-intro">Every label compares a team's <strong style="color:rgba(255,255,255,.7)">last-20 game win%</strong> to their <strong style="color:rgba(255,255,255,.7)">full-season win%</strong>. The gap shows direction — regardless of standings.</p>
-        <div class="explainer-grid">
-          <div class="explainer-row"><span class="explainer-chip hot">🔥 Elite pace</span><span class="explainer-text">Last 20 win% ≥ .650. Historically dominant stretch.</span></div>
-          <div class="explainer-row"><span class="explainer-chip hot">📈 Heating up</span><span class="explainer-text">Last 20 ≥ .600 and better than season average.</span></div>
-          <div class="explainer-row"><span class="explainer-chip hot">✅ Strong stretch</span><span class="explainer-text">Last 20 ≥ .575. Above a 93-win pace recently.</span></div>
-          <div class="explainer-row"><span class="explainer-chip hot">⬆️ Trending up</span><span class="explainer-text">Last 20 noticeably better than season average.</span></div>
-          <div class="explainer-row"><span class="explainer-chip neu">➡️ Stable</span><span class="explainer-text">Recent form roughly matches overall season pace.</span></div>
-          <div class="explainer-row"><span class="explainer-chip cold">⬇️ Trending down</span><span class="explainer-text">Last 20 noticeably worse than season average.</span></div>
-          <div class="explainer-row"><span class="explainer-chip cold">📉 Cooling off</span><span class="explainer-text">Last 20 ≤ .420 and significantly below season average.</span></div>
-          <div class="explainer-row"><span class="explainer-chip cold">❄️ Struggling</span><span class="explainer-text">Last 20 win% ≤ .350. Historically bad recent stretch.</span></div>
+          <div class="explainer-body">Each team gets two labels: <strong>where the season is headed</strong> (pace) and <strong>which direction right now</strong> (last 10 + 20 games).</div>
+          <div class="explainer-row"><span class="explainer-chip hot">🔥 Surging</span><span class="explainer-text">Last 10 ≥ 65% and Last 20 ≥ 60%.</span></div>
+          <div class="explainer-row"><span class="explainer-chip hot">📈 Heating up</span><span class="explainer-text">Last 20 ≥ 60% and Last 10 ≥ 50%.</span></div>
+          <div class="explainer-row"><span class="explainer-chip hot">⬆️ Recovering</span><span class="explainer-text">Last 20 ≤ 40% but Last 10 ≥ 60% — turning it around.</span></div>
+          <div class="explainer-row"><span class="explainer-chip neutral">➡️ Steady</span><span class="explainer-text">No strong trend in either direction.</span></div>
+          <div class="explainer-row"><span class="explainer-chip cold">⬇️ Fading</span><span class="explainer-text">Last 20 ≥ 60% but Last 10 < 50% — momentum slipping.</span></div>
+          <div class="explainer-row"><span class="explainer-chip cold">📉 Sliding</span><span class="explainer-text">Last 20 ≤ 40% and Last 10 ≤ 40%.</span></div>
         </div>
+      </div>
         <p class="explainer-footer">Needs 10+ completed games. Based on last-20 vs full-season win%.</p>
       </div>
     </div>
@@ -1052,13 +1050,13 @@ const TEAM_EMOJI = {
   143:'🔴',144:'🔨',145:'🌹',146:'🐟',147:'🟦',158:'🏃',
 };
 const MOMENTUM_RANK = {
-  'Elite pace':6,'Heating up':5,'Strong stretch':4,
-  'Trending up':3,'Stable':2,'Trending down':1,'Cooling off':0,'Struggling':-1,
+  'Surging':6, 'Heating up':5, 'Recovering':4,
+  'Steady':3, 'Fading':2, 'Sliding':1, 'Difficult season':0,
 };
-const MOMENTUM_HOT_LABELS    = new Set(['Elite pace','Heating up','Strong stretch','Trending up']);
-const MOMENTUM_RISING_LABELS = new Set(['Heating up','Trending up']);
+const MOMENTUM_HOT_LABELS    = new Set(['Surging','Heating up','Recovering']);
+const MOMENTUM_RISING_LABELS = new Set(['Surging','Heating up']);
 const MOMENTUM_STABLE_LABELS = new Set(['Stable']);
-const MOMENTUM_FALLING_LABELS= new Set(['Trending down','Cooling off']);
+const MOMENTUM_FALLING_LABELS= new Set(['Fading','Sliding']);
 const MOMENTUM_COLD_LABELS   = new Set(['Struggling','Cooling off']);
 
 const TEAM_DIV = {};
@@ -1101,24 +1099,82 @@ function projWins(games){
   return Math.round(winPct(g.cumWins,g.cumLosses)*SEASON_GAMES);
 }
 function last10(games){const s=games.slice(-10);const w=s.filter(g=>g.win).length;return{w,l:s.length-w};}
-function getMomentum(games){
-  if(games.length<10) return{label:'Stable',cls:'chip-neutral',emoji:'➡️'};
-  const last20=games.slice(-20);
-  const rPct=winPct(last20.filter(g=>g.win).length,last20.filter(g=>!g.win).length);
-  const sPct=winPct(games.filter(g=>g.win).length,games.filter(g=>!g.win).length);
-  const d=rPct-sPct;
-  if(rPct>=.650) return{label:'Elite pace',    cls:'chip-hot', emoji:'🔥'};
-  if(rPct>=.600&&d>=.05) return{label:'Heating up',   cls:'chip-hot', emoji:'📈'};
-  if(rPct>=.575) return{label:'Strong stretch',cls:'chip-hot', emoji:'✅'};
-  if(rPct<=.350) return{label:'Struggling',    cls:'chip-cold',emoji:'❄️'};
-  if(rPct<=.420&&d<=-.05) return{label:'Cooling off', cls:'chip-cold',emoji:'📉'};
-  if(d>=.05)  return{label:'Trending up',  cls:'chip-hot', emoji:'⬆️'};
-  if(d<=-.05) return{label:'Trending down',cls:'chip-cold',emoji:'⬇️'};
-  return{label:'Stable',cls:'chip-neutral',emoji:'➡️'};
+
+/* ── Two-label momentum system ──────────────────────────────────
+   pace  = where the season is headed  (4 tiers)
+   trend = which direction right now   (6 states, no overlap)
+
+   Pace tiers:
+     90W+    → Contender
+     81-89W  → In the race
+     70-80W  → On the outside
+     <70W    → Difficult season
+
+   Trend states (checked in priority order, mutually exclusive):
+     1. L10 ≥.650 AND L20 ≥.600           → Surging
+     2. L20 ≤.400 AND L10 ≤.400           → Sliding
+     3. L20 ≥.600 AND L10 ≥.500           → Heating up
+     4. L20 ≥.600 AND L10 <.500           → Fading
+     5. L20 ≤.400 AND L10 ≥.600           → Recovering
+     6. everything else                    → Steady
+────────────────────────────────────────────────────── */
+function getTwoLabelMomentum(games, projectedWins){
+  const winsOf = arr => arr.filter(g=>g.win||g===true).length;
+  const pct    = arr => arr.length ? winsOf(arr)/arr.length : 0;
+
+  /* Pace label */
+  const proj = projectedWins || 0;
+  let paceLabel, paceCls;
+  if(proj>=90)      { paceLabel='Contender';        paceCls='badge-good'; }
+  else if(proj>=81) { paceLabel='In the race';      paceCls='badge-warn'; }
+  else if(proj>=70) { paceLabel='On the outside';   paceCls='badge-warn'; }
+  else              { paceLabel='Difficult season'; paceCls='badge-bad';  }
+
+  /* Trend label */
+  let trendLabel, trendCls, trendEmoji;
+  if(games && games.length >= 10){
+    const l10  = games.slice(-10);
+    const l20  = games.slice(-20);
+    const p10  = pct(l10);
+    const p20  = pct(l20);
+
+    if(p10>=.650 && p20>=.600)      { trendLabel='Surging';    trendCls='badge-good'; trendEmoji='🔥'; }
+    else if(p20<=.400 && p10<=.400) { trendLabel='Sliding';    trendCls='badge-bad';  trendEmoji='📉'; }
+    else if(p20>=.600 && p10>=.500) { trendLabel='Heating up'; trendCls='badge-good'; trendEmoji='📈'; }
+    else if(p20>=.600 && p10<.500)  { trendLabel='Fading';     trendCls='badge-bad';  trendEmoji='⬇️'; }
+    else if(p20<=.400 && p10>=.600) { trendLabel='Recovering'; trendCls='badge-good'; trendEmoji='⬆️'; }
+    else                            { trendLabel='Steady';     trendCls='badge-warn'; trendEmoji='➡️'; }
+  } else {
+    trendLabel='Steady'; trendCls='badge-warn'; trendEmoji='➡️';
+  }
+
+  return {
+    paceLabel, paceCls,
+    trendLabel, trendCls, trendEmoji,
+    /* combined for single-badge display */
+    label:    trendLabel,
+    cls:      trendCls,
+    chipCls:  trendCls,
+    chipClass: trendCls==='badge-good'?'chip-hot':trendCls==='badge-bad'?'chip-cold':'chip-neutral',
+    emoji:    trendEmoji,
+    combined: paceLabel + ' · ' + trendLabel,
+  };
+}
+
+/* Legacy alias — pages that call getMomentumFromGames(games) still work.
+   projectedWins defaults to 0 (falls into "Difficult season") until
+   updated callers pass it in. */
+function getMomentumFromGames(games, projectedWins){
+  return getTwoLabelMomentum(games, projectedWins||0);
+}
+
+/* Index alias — getMomentum(games) still used by card rendering */
+function getMomentum(games, proj){
+  return getTwoLabelMomentum(games, proj||0);
 }
 function momentumColor(label){
   if(MOMENTUM_HOT_LABELS.has(label)) return '#1aff6b';
-  if(['Struggling','Cooling off','Trending down'].includes(label)) return '#f47570';
+  if(MOMENTUM_FALLING_LABELS.has(label)) return '#f47570';
   return '#8a8a82';
 }
 function getDelta(td){
@@ -1519,8 +1575,8 @@ function buildStoriesGrid(allData){
 ═══════════════════════════════════════════════════ */
 function renderPills(allData){
   const valid=allData.filter(t=>t.curGames.length>0);
-  const hot =valid.filter(t=>MOMENTUM_HOT_LABELS.has(getMomentum(t.curGames).label)).length;
-  const cold=valid.filter(t=>['Struggling','Cooling off'].includes(getMomentum(t.curGames).label)).length;
+  const hot =valid.filter(t=>MOMENTUM_HOT_LABELS.has(getMomentum(t.curGames,null).label)).length;
+  const cold=valid.filter(t=>MOMENTUM_FALLING_LABELS.has(getMomentum(t.curGames,null).label)).length;
   const gps =valid.map(t=>t.curGames.length);
   const minGp=Math.min(...gps),maxGp=Math.max(...gps);
 
@@ -1588,7 +1644,7 @@ function buildCard(team,curGames,prevGames){
   const last=curGames[curGames.length-1]||{cumWins:0,cumLosses:0};
   const gp=curGames.length,w=last.cumWins,l=last.cumLosses;
   const pct=winPct(w,l),proj=projWins(curGames),l10=last10(curGames);
-  const momentum=getMomentum(curGames),sColor=momentumColor(momentum.label);
+  const momentum=getMomentum(curGames, proj),sColor=momentumColor(momentum.label);
   const div=TEAM_DIV[team.id]||{divName:'—',league:'—',divKey:''};
   const logoUrl=`https://www.mlbstatic.com/team-logos/${team.id}.svg`;
   const emoji=TEAM_EMOJI[team.id]||'⚾',url=trackerUrl(team.id,gp);
@@ -1619,7 +1675,11 @@ function buildCard(team,curGames,prevGames){
         <div class="team-city">${div.league} · ${div.divName}</div>
         <div class="team-name">${team.clubName||team.name}</div>
       </div>
-      <div class="momentum-chip ${momentum.cls}">${momentum.emoji} ${momentum.label}</div>
+      <div class="momentum-chip ${momentum.chipClass}" style="display:flex;gap:4px;align-items:center">
+        <span style="color:var(--chalk);font-size:9px">${momentum.paceLabel}</span>
+        <span style="color:rgba(255,255,255,.2)">·</span>
+        <span>${momentum.trendEmoji} ${momentum.trendLabel}</span>
+      </div>
       <button class="fav-star ${isFav?'active':''}" data-team-id="${team.id}" onclick="toggleFav(event,${team.id})" title="${isFav?'Remove':'Favorite'}">${isFav?'★':'☆'}</button>
     </div>
     <div class="card-record">
@@ -1643,7 +1703,7 @@ function buildCard(team,curGames,prevGames){
 function openModal(team,curGames,prevGames){
   const gp=curGames.length,last=curGames[gp-1]||{cumWins:0,cumLosses:0};
   const w=last.cumWins,l=last.cumLosses,pct=winPct(w,l),proj=projWins(curGames),l10=last10(curGames);
-  const momentum=getMomentum(curGames),logoUrl=`https://www.mlbstatic.com/team-logos/${team.id}.svg`;
+  const momentum=getMomentum(curGames,proj),logoUrl=`https://www.mlbstatic.com/team-logos/${team.id}.svg`;
   const div=TEAM_DIV[team.id]||{divName:'—'},url=trackerUrl(team.id,gp);
   document.getElementById('modalTeamName').textContent=team.name;
   document.getElementById('modalSubtitle').textContent=`${CURRENT_YEAR} · ${div.divName} · ${gp} GP`;

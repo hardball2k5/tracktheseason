@@ -1383,23 +1383,79 @@ function curveSimilarity(a, b, upToGame){
 /* ═══════════════════════════════════════════════════════
    MOMENTUM
 ═══════════════════════════════════════════════════════ */
+
+/* ── Two-label momentum system ──────────────────────────────────
+   pace  = where the season is headed  (4 tiers)
+   trend = which direction right now   (6 states, no overlap)
+
+   Pace tiers:
+     90W+    → Contender
+     81-89W  → In the race
+     70-80W  → On the outside
+     <70W    → Difficult season
+
+   Trend states (checked in priority order, mutually exclusive):
+     1. L10 ≥.650 AND L20 ≥.600           → Surging
+     2. L20 ≤.400 AND L10 ≤.400           → Sliding
+     3. L20 ≥.600 AND L10 ≥.500           → Heating up
+     4. L20 ≥.600 AND L10 <.500           → Fading
+     5. L20 ≤.400 AND L10 ≥.600           → Recovering
+     6. everything else                    → Steady
+────────────────────────────────────────────────────── */
+function getTwoLabelMomentum(games, projectedWins){
+  const winsOf = arr => arr.filter(g=>g.win||g===true).length;
+  const pct    = arr => arr.length ? winsOf(arr)/arr.length : 0;
+
+  /* Pace label */
+  const proj = projectedWins || 0;
+  let paceLabel, paceCls;
+  if(proj>=90)      { paceLabel='Contender';        paceCls='badge-good'; }
+  else if(proj>=81) { paceLabel='In the race';      paceCls='badge-warn'; }
+  else if(proj>=70) { paceLabel='On the outside';   paceCls='badge-warn'; }
+  else              { paceLabel='Difficult season'; paceCls='badge-bad';  }
+
+  /* Trend label */
+  let trendLabel, trendCls, trendEmoji;
+  if(games && games.length >= 10){
+    const l10  = games.slice(-10);
+    const l20  = games.slice(-20);
+    const p10  = pct(l10);
+    const p20  = pct(l20);
+
+    if(p10>=.650 && p20>=.600)      { trendLabel='Surging';    trendCls='badge-good'; trendEmoji='🔥'; }
+    else if(p20<=.400 && p10<=.400) { trendLabel='Sliding';    trendCls='badge-bad';  trendEmoji='📉'; }
+    else if(p20>=.600 && p10>=.500) { trendLabel='Heating up'; trendCls='badge-good'; trendEmoji='📈'; }
+    else if(p20>=.600 && p10<.500)  { trendLabel='Fading';     trendCls='badge-bad';  trendEmoji='⬇️'; }
+    else if(p20<=.400 && p10>=.600) { trendLabel='Recovering'; trendCls='badge-good'; trendEmoji='⬆️'; }
+    else                            { trendLabel='Steady';     trendCls='badge-warn'; trendEmoji='➡️'; }
+  } else {
+    trendLabel='Steady'; trendCls='badge-warn'; trendEmoji='➡️';
+  }
+
+  return {
+    paceLabel, paceCls,
+    trendLabel, trendCls, trendEmoji,
+    /* combined for single-badge display */
+    label:    trendLabel,
+    cls:      trendCls,
+    chipCls:  trendCls,
+    chipClass: trendCls==='badge-good'?'chip-hot':trendCls==='badge-bad'?'chip-cold':'chip-neutral',
+    emoji:    trendEmoji,
+    combined: paceLabel + ' · ' + trendLabel,
+  };
+}
+
+/* Legacy alias — pages that call getMomentumFromGames(games) still work.
+   projectedWins defaults to 0 (falls into "Difficult season") until
+   updated callers pass it in. */
+function getMomentumFromGames(games, projectedWins){
+  return getTwoLabelMomentum(games, projectedWins||0);
+}
+
+/* Tracker alias — getMomentum(games, rangeGames) kept for compatibility */
 function getMomentum(games, rangeGames){
-  /* Range win% vs full season win% */
-  if(games.length < 10) return { label:'➡️ Stable', cls:'badge-warn', chipCls:'badge-neu' };
-  const fullRec  = recordFromGames(games);
-  const rangeRec = recordFromGames(rangeGames.length ? rangeGames : games.slice(-20));
-  const fPct = winPct(fullRec.w, fullRec.l);
-  const rPct = winPct(rangeRec.w, rangeRec.l);
-  const d = rPct - fPct;
-  if(rPct>=.650) return{label:'🔥 Elite pace',    cls:'badge-good',chipCls:'badge-hot'};
-  if(rPct>=.600&&d>=.05) return{label:'📈 Heating up',   cls:'badge-good',chipCls:'badge-hot'};
-  if(rPct>=.575) return{label:'✅ Strong stretch',cls:'badge-good',chipCls:'badge-hot'};
-  if(rPct<=.350) return{label:'❄️ Struggling',    cls:'badge-bad', chipCls:'badge-cold'};
-  if(rPct<=.420&&d<=-.05) return{label:'📉 Cooling off', cls:'badge-bad', chipCls:'badge-cold'};
-  if(d>=.06&&rangeGames.length>=25) return{label:'⬆️ Recovering', cls:'badge-good',chipCls:'badge-hot'};
-  if(Math.abs(d)<=.025) return{label:'➡️ Stable',    cls:'badge-warn',chipCls:'badge-neu'};
-  if(d>.025) return{label:'⬆️ Trending up',  cls:'badge-good',chipCls:'badge-hot'};
-  return{label:'⬇️ Trending down',cls:'badge-bad',chipCls:'badge-cold'};
+  /* proj passed separately by renderInsights — use window._lastProj if available */
+  return getTwoLabelMomentum(games, window._lastProj||0);
 }
 
 /* ═══════════════════════════════════════════════════════
@@ -1837,11 +1893,12 @@ function renderInsights(params){
   const ins = buildInsights(params);
   const{year,rs,re,curGames,rangeGames} = params;
   const curRec  = recordFromGames(curGames);
+  window._lastProj = proj;
   const momentum= getMomentum(curGames, rangeGames);
 
-  $('momentumBadge').textContent = momentum.label;
+  $('momentumBadge').innerHTML = `<span style="color:var(--chalk);font-size:10px;font-weight:400">${momentum.paceLabel}</span> <span style="color:rgba(255,255,255,.2)">·</span> ${momentum.trendEmoji} ${momentum.trendLabel}`;
   $('momentumBadge').className   = `momentum-badge ${momentum.cls}`;
-  $('heroBadge').textContent     = momentum.label;
+  $('heroBadge').innerHTML       = `${momentum.trendEmoji} ${momentum.trendLabel}`;
   $('heroBadge').className       = `hero-badge ${momentum.chipCls}`;
   $('paceStoryText').innerHTML   = ins.story;
 
