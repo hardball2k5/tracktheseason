@@ -624,6 +624,16 @@ tr.cur-row td{background:rgba(26,255,107,.05)}
 </script>
 </head>
 <body>
+  <!-- CRAWLABLE SEO TEXT — visible to search engines and LLMs -->
+  <div id="seoIntro" style="position:absolute;left:-9999px;top:auto;width:1px;height:1px;overflow:hidden" aria-hidden="true">
+    <h2>MLB Team Pace Tracker — Track The Season</h2>
+    <p>This page compares an MLB team's current season record to prior seasons at the same number of games played.
+    It shows whether the team is ahead of, behind, or matching last year's pace — and identifies the closest historical comparison season.
+    Features include: current record, 162-game win pace projection, year-over-year delta, last 10 and last 20 game trends,
+    Starter Signal (team performance by starting pitcher), season arc comparison chart, and rivalry context.
+    Data is sourced from the MLB Stats API and updated after every completed regular-season game.
+    Track The Season is not affiliated with or endorsed by Major League Baseball.</p>
+  </div>
 
 <nav class="site-nav">
   <div class="wrap nav-inner">
@@ -2462,6 +2472,35 @@ async function update(){
 
     /* Starter Signal — lazy loaded, non-blocking, slight delay for DOM settle */
     setTimeout(()=>initStarterSignal(currentTeamId, year, teamName), 100);
+
+    /* Scout widget — team context */
+    if(!document.getElementById('scout-team-container')){
+      const scoutWrap=document.createElement('div');
+      scoutWrap.id='scout-team-container';
+      const src=document.querySelector('.source-note');
+      if(src) src.before(scoutWrap); else document.querySelector('.results-col')?.appendChild(scoutWrap);
+    }
+    if(window.ScoutWidget){
+      ScoutWidget.init({
+        containerId:'scout-team-container',
+        pageType:'team',
+        teamId:currentTeamId,
+        teamSlug:teamSlugById(currentTeamId)||'',
+      });
+    } else if(!document.getElementById('scout-widget-script')){
+      const s=document.createElement('script');
+      s.id='scout-widget-script';
+      s.src='/api/scout-widget.js';
+      s.onload=()=>{
+        ScoutWidget.init({
+          containerId:'scout-team-container',
+          pageType:'team',
+          teamId:currentTeamId,
+          teamSlug:teamSlugById(currentTeamId)||'',
+        });
+      };
+      document.head.appendChild(s);
+    }
 
     /* Auto-close the accordion on mobile after updating */
     if(window.innerWidth <= 860){

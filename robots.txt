@@ -10,4 +10,32 @@ Disallow: /pulse.html
 Disallow: /reel.html
 Disallow: /admin.html
 
+# Explicitly allow AI and LLM crawlers
+User-agent: GPTBot
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: Googlebot
+Allow: /
+
+User-agent: GoogleOther
+Allow: /
+
+User-agent: Bingbot
+Allow: /
+
+User-agent: cohere-ai
+Allow: /
+
+User-agent: anthropic-ai
+Allow: /
+
+# LLM discovery file
+Allow: /llms.txt
+
 Sitemap: https://tracktheseason.com/sitemap.xml

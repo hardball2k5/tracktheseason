@@ -4,9 +4,9 @@
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>Track The Season — MLB Pace Dashboard</title>
-<meta name="description" content="Which MLB teams are surging, collapsing, or heading for history? Updated after every final game."/>
+<meta name="description" content="Track The Season is a live MLB pace and trajectory dashboard. Compare every team's current season to prior seasons at the same games played. See who's ahead of last year's pace, who's falling behind, and what the rotation is driving."/>
 <meta property="og:title" content="Track The Season — MLB Pace Dashboard"/>
-<meta property="og:description" content="The story of the MLB season, updated daily."/>
+<meta property="og:description" content="Which MLB teams are ahead of last year's pace? Which have the biggest rotation cliff? Track The Season shows where every team is headed — updated after every game."/>
 <meta property="og:url" content="https://tracktheseason.com/"/>
 <meta name="theme-color" content="#0f1014"/>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
@@ -612,6 +612,53 @@ body{font-family:var(--sans);background:var(--ink);color:#e8edf8;min-height:100v
   gtag('config','G-DCSQPGSY1D');
 </script>
 <link rel="canonical" href="https://tracktheseason.com/"/>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebSite",
+      "@id": "https://tracktheseason.com",
+      "name": "Track The Season",
+      "url": "https://tracktheseason.com",
+      "description": "Live MLB season pace and trajectory dashboard. Compares every team to prior seasons at the same games played.",
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": "https://tracktheseason.com/compare?team1={team}",
+        "query-input": "required name=team"
+      }
+    },
+    {
+      "@type": "Organization",
+      "@id": "https://tracktheseason.com/#org",
+      "name": "Track The Season",
+      "url": "https://tracktheseason.com",
+      "logo": "https://tracktheseason.com/api/card/phillies",
+      "contactPoint": {
+        "@type": "ContactPoint",
+        "email": "support@tracktheseason.com",
+        "contactType": "customer support"
+      },
+      "sameAs": ["https://x.com/tracktheseason"]
+    },
+    {
+      "@type": "DataCatalog",
+      "@id": "https://tracktheseason.com/#data",
+      "name": "Track The Season MLB Data",
+      "description": "MLB team pace, win projections, Starter Signal, Chaos Index, and rivalry comparisons. Updated after every completed regular-season game.",
+      "url": "https://tracktheseason.com",
+      "license": "https://tracktheseason.com",
+      "creator": {"@id": "https://tracktheseason.com/#org"},
+      "dataset": [
+        {"@type":"Dataset","name":"MLB Team Pace Tracker","url":"https://tracktheseason.com/pace-leaders"},
+        {"@type":"Dataset","name":"MLB Chaos Index","url":"https://tracktheseason.com/chaos-report"},
+        {"@type":"Dataset","name":"MLB Pitching Board","url":"https://tracktheseason.com/pitching-board"},
+        {"@type":"Dataset","name":"MLB Payroll Efficiency","url":"https://tracktheseason.com/payroll-efficiency"}
+      ]
+    }
+  ]
+}
+</script>
 </head>
 <body>
 

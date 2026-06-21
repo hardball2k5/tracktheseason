@@ -1,0 +1,187 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>MLB Rivalry Watch — Pace Gaps Between Rival Teams | Track The Season</title>
+<meta name="description" content="Track The Season's Rivalry Watch compares rival MLB teams by projected win pace, showing which rival is ahead and by how much. Updated after every game."/>
+<meta property="og:title" content="MLB Rivalry Watch | Track The Season"/>
+<meta property="og:description" content="Which rival is actually winning the season? Rivalry Watch shows the pace gap between rival teams, updated daily."/>
+<meta property="og:url" content="https://tracktheseason.com/mlb-rivalry-watch"/>
+<meta property="og:site_name" content="Track The Season"/>
+<link rel="canonical" href="https://tracktheseason.com/mlb-rivalry-watch"/>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "Which MLB rivalry has the biggest pace gap right now?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Track The Season's Rivalry Watch pages compare rival teams by projected win pace. The team ahead in pace is leading the rivalry in season trajectory. Visit tracktheseason.com for live rivalry pace comparisons."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How does the Phillies vs Mets rivalry look this season?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Visit tracktheseason.com/phillies-vs-mets for a live pace comparison showing each team's current win pace, year-over-year delta, last 10 record, and which team is ahead in projected wins for the full season."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Are the Yankees or Red Sox having a better season?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Track The Season's Yankees vs Red Sox rivalry page compares both teams by current projected win pace, wins vs last year, and recent momentum. Visit tracktheseason.com/yankees-vs-red-sox for the current comparison."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Which MLB team is spending more efficiently in a rivalry?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Track The Season's rivalry comparison pages include a payroll efficiency section showing each team's cost per projected win. The team with the lower cost per win is getting better value from their payroll."
+      }
+    }
+  ]
+}
+</script>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet"/>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-DCSQPGSY1D"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-DCSQPGSY1D');</script>
+<style>
+:root{--ink:#0f1014;--ink2:#1a1d24;--rule:rgba(255,255,255,.07);--signal:#1aff6b;--mono:'IBM Plex Mono',monospace;--sans:'IBM Plex Sans',sans-serif;--chalk:#8a8a82;--r-lg:14px}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{overflow-x:hidden}
+body{font-family:var(--sans);background:var(--ink);color:#e8edf8;line-height:1.7}
+.nav{padding:11px 0;border-bottom:1px solid var(--rule);background:rgba(15,16,20,.96);position:sticky;top:0;z-index:100}
+.nav-inner{max-width:860px;margin:0 auto;padding:0 16px;display:flex;align-items:center;gap:10px}
+.back-btn{font-family:var(--mono);font-size:12px;font-weight:600;color:var(--chalk);text-decoration:none;border:1px solid var(--rule);border-radius:6px;padding:5px 11px}
+.back-btn:hover{color:#e8edf8}
+.nav-logo{display:flex;align-items:center;gap:8px;text-decoration:none;margin-left:auto}
+.nav-mono{width:28px;height:28px;background:var(--signal);border-radius:5px;display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:10px;font-weight:700;color:var(--ink)}
+.nav-word{font-family:var(--mono);font-size:13px;font-weight:700;color:#e8edf8}.nav-word span{color:var(--signal)}
+.wrap{max-width:860px;margin:0 auto;padding:16px 16px 80px}
+.breadcrumb{font-family:var(--mono);font-size:10px;color:rgba(255,255,255,.25);letter-spacing:.06em;padding:8px 0 20px}
+.breadcrumb a{color:rgba(255,255,255,.25);text-decoration:none}
+.breadcrumb a:hover{color:var(--signal)}
+.hero{padding:28px 0 24px;border-bottom:1px solid var(--rule);margin-bottom:32px}
+.eyebrow{font-family:var(--mono);font-size:9px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--signal);margin-bottom:10px}
+h1{font-family:var(--mono);font-size:clamp(26px,5vw,44px);font-weight:700;letter-spacing:-.03em;color:#e8edf8;margin-bottom:12px;line-height:1.1}
+h2{font-family:var(--mono);font-size:19px;font-weight:700;color:#e8edf8;letter-spacing:-.02em;margin:32px 0 10px}
+.lead{font-size:17px;color:rgba(255,255,255,.55);line-height:1.65;max-width:640px}
+p{font-size:15px;color:rgba(255,255,255,.6);line-height:1.75;margin-bottom:16px}
+strong{color:#e8edf8;font-weight:600}
+ul,ol{padding-left:22px;margin-bottom:16px}
+li{font-size:15px;color:rgba(255,255,255,.6);line-height:1.7;margin-bottom:5px}
+a{color:var(--signal)}
+a:hover{text-decoration:underline}
+.rivalry-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:8px;margin:14px 0 28px}
+.rivalry-card{background:var(--ink2);border:1px solid var(--rule);border-radius:var(--r-lg);padding:14px 16px;text-decoration:none;display:block;transition:border-color .13s}
+.rivalry-card:hover{border-color:rgba(26,255,107,.3);text-decoration:none}
+.rv-division{font-family:var(--mono);font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.3);margin-bottom:5px}
+.rv-matchup{font-family:var(--mono);font-size:13px;font-weight:700;color:#e8edf8}
+.related-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:8px;margin:14px 0 24px}
+.related-card{background:var(--ink2);border:1px solid var(--rule);border-radius:var(--r-lg);padding:14px 16px;text-decoration:none;display:block;transition:border-color .13s}
+.related-card:hover{border-color:rgba(26,255,107,.3);text-decoration:none}
+.rc-label{font-family:var(--mono);font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.3);margin-bottom:5px}
+.rc-title{font-family:var(--mono);font-size:13px;font-weight:700;color:#e8edf8;margin-bottom:3px}
+.rc-sub{font-family:var(--sans);font-size:12px;color:rgba(255,255,255,.35)}
+.cta-block{margin-top:36px;padding-top:24px;border-top:1px solid var(--rule)}
+.cta-btn{display:inline-flex;align-items:center;gap:6px;padding:12px 22px;background:var(--signal);color:var(--ink);font-family:var(--mono);font-size:13px;font-weight:700;border-radius:8px;text-decoration:none}
+.cta-btn:hover{filter:brightness(1.08);text-decoration:none}
+footer.site{border-top:1px solid var(--rule);padding:20px 0;margin-top:40px;font-family:var(--mono);font-size:11px;color:rgba(255,255,255,.2);display:flex;flex-wrap:wrap;gap:10px;justify-content:space-between;align-items:center}
+footer.site a{color:rgba(255,255,255,.3);text-decoration:none}
+</style>
+</head>
+<body>
+<nav class="nav">
+  <div class="nav-inner">
+    <a href="/" class="back-btn">← Home</a>
+    <a href="/" class="nav-logo">
+      <div class="nav-mono">TTS</div>
+      <div class="nav-word">TRACK THE <span>SEASON</span></div>
+    </a>
+  </div>
+</nav>
+<div class="wrap">
+  <nav class="breadcrumb" aria-label="Breadcrumb">
+    <a href="/">Home</a> &rsaquo; MLB Rivalry Watch
+  </nav>
+  <article>
+    <div class="hero">
+      <div class="eyebrow">Track The Season Feature</div>
+      <h1>MLB Rivalry Watch</h1>
+      <p class="lead">The box score tells you who won last night. Rivalry Watch tells you which team is actually winning the season — by comparing projected win pace, year-over-year delta, and recent momentum between rival teams.</p>
+    </div>
+
+    <h2>What is MLB Rivalry Watch?</h2>
+    <p>Rivalry Watch compares two rival teams across the metrics that matter most for understanding a season: current projected win pace, wins gained or lost vs last year, last 10 record, and payroll efficiency. It answers the question fans argue about — not who won last night, but which team is <strong>actually tracking better</strong> across a full season.</p>
+    <p>Every rivalry page updates automatically after every completed game using the MLB Stats API.</p>
+
+    <h2>How does Track The Season compare rival teams?</h2>
+    <p>For each rivalry comparison, Track The Season calculates:</p>
+    <ul>
+      <li><strong>Current record and 162-game win pace</strong> for each team</li>
+      <li><strong>Delta vs last season</strong> — wins ahead or behind last year at the same games-played point</li>
+      <li><strong>Pace gap</strong> — difference in projected wins between the two teams</li>
+      <li><strong>Last 10 and Last 20 records</strong> — recent momentum for each team</li>
+      <li><strong>Payroll efficiency</strong> — cost per projected win for each team</li>
+      <li><strong>Bragging rights</strong> — which team leads in each category</li>
+    </ul>
+
+    <h2>How does the Phillies vs Mets rivalry look this season?</h2>
+    <p>Visit <a href="/phillies-vs-mets">tracktheseason.com/phillies-vs-mets</a> for the current comparison. The page shows which team leads in projected wins, which is trending better over the last 10 games, and how each team's payroll stacks up per projected win.</p>
+
+    <h2>Are the Yankees or Red Sox having a better season?</h2>
+    <p>The <a href="/yankees-vs-red-sox">Yankees vs Red Sox rivalry page</a> answers this with data. The pace comparison shows which team is tracking more wins over a full season, which is ahead of last year's pace, and whether the gap is growing or narrowing.</p>
+
+    <h2>Available rivalry pages</h2>
+    <div class="rivalry-grid">
+      <a class="rivalry-card" href="/phillies-vs-mets"><div class="rv-division">NL East</div><div class="rv-matchup">Phillies vs Mets</div></a>
+      <a class="rivalry-card" href="/yankees-vs-red-sox"><div class="rv-division">AL East</div><div class="rv-matchup">Yankees vs Red Sox</div></a>
+      <a class="rivalry-card" href="/dodgers-vs-giants"><div class="rv-division">NL West</div><div class="rv-matchup">Dodgers vs Giants</div></a>
+      <a class="rivalry-card" href="/cubs-vs-cardinals"><div class="rv-division">NL Central</div><div class="rv-matchup">Cubs vs Cardinals</div></a>
+      <a class="rivalry-card" href="/braves-vs-mets"><div class="rv-division">NL East</div><div class="rv-matchup">Braves vs Mets</div></a>
+      <a class="rivalry-card" href="/phillies-vs-braves"><div class="rv-division">NL East</div><div class="rv-matchup">Phillies vs Braves</div></a>
+      <a class="rivalry-card" href="/yankees-vs-mets"><div class="rv-division">NYC</div><div class="rv-matchup">Yankees vs Mets</div></a>
+      <a class="rivalry-card" href="/astros-vs-rangers"><div class="rv-division">AL West</div><div class="rv-matchup">Astros vs Rangers</div></a>
+      <a class="rivalry-card" href="/dodgers-vs-padres"><div class="rv-division">NL West</div><div class="rv-matchup">Dodgers vs Padres</div></a>
+    </div>
+
+    <h2>Compare any two teams</h2>
+    <p>Rivalry Watch pages cover the most popular matchups, but you can compare any two MLB teams using the <a href="/compare">full comparison tool</a> at tracktheseason.com/compare.</p>
+
+    <div class="related-grid">
+      <a class="related-card" href="/compare">
+        <div class="rc-label">Tool</div>
+        <div class="rc-title">Compare Any Teams</div>
+        <div class="rc-sub">Custom head-to-head comparison</div>
+      </a>
+      <a class="related-card" href="/pace-leaders">
+        <div class="rc-label">Leaderboard</div>
+        <div class="rc-title">Pace Leaders</div>
+        <div class="rc-sub">All 30 teams by projected wins</div>
+      </a>
+      <a class="related-card" href="/pulse">
+        <div class="rc-label">Daily</div>
+        <div class="rc-title">Daily Pulse</div>
+        <div class="rc-sub">Rivalry shifts overnight</div>
+      </a>
+    </div>
+
+    <div class="cta-block">
+      <a href="/compare" class="cta-btn">Compare Any Two Teams &rarr;</a>
+    </div>
+  </article>
+</div>
+<footer class="site wrap">
+  <a href="/">TRACK THE <span style="color:var(--signal)">SEASON</span></a>
+  <span>Data: MLB Stats API &middot; Not affiliated with MLB &middot; <a href="mailto:support@tracktheseason.com">support@tracktheseason.com</a></span>
+</footer>
+</body>
+</html>

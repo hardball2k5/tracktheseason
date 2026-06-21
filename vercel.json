@@ -249,6 +249,30 @@
     {
       "source": "/api/pitching-board-refresh",
       "destination": "/api/pitching-board-refresh.js"
+    },
+    {
+      "source": "/mlb-pace-tracker",
+      "destination": "/mlb-pace-tracker.html"
+    },
+    {
+      "source": "/mlb-chaos-index",
+      "destination": "/mlb-chaos-index.html"
+    },
+    {
+      "source": "/mlb-starter-signal",
+      "destination": "/mlb-starter-signal.html"
+    },
+    {
+      "source": "/mlb-pitching-board",
+      "destination": "/mlb-pitching-board.html"
+    },
+    {
+      "source": "/mlb-rivalry-watch",
+      "destination": "/mlb-rivalry-watch.html"
+    },
+    {
+      "source": "/llms.txt",
+      "destination": "/llms.txt"
     }
   ],
   "redirects": [

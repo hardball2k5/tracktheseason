@@ -1,0 +1,174 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>MLB Pitching Board — Rotation Cliffs, Best 1-2 Punches, and Rotation Depth | Track The Season</title>
+<meta name="description" content="The MLB Pitching Board ranks all 30 teams by best 1-2 starter punch, biggest rotation cliff, and deepest rotations. See which teams fall apart without their top two starters."/>
+<meta property="og:title" content="MLB Pitching Board | Track The Season"/>
+<meta property="og:description" content="Which MLB teams have the biggest rotation cliff? Which have the deepest rotations? The Pitching Board ranks all 30 teams."/>
+<meta property="og:url" content="https://tracktheseason.com/mlb-pitching-board"/>
+<meta property="og:site_name" content="Track The Season"/>
+<link rel="canonical" href="https://tracktheseason.com/mlb-pitching-board"/>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "Which MLB teams have the biggest rotation cliff?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Track The Season's Pitching Board ranks all 30 MLB teams by the gap between their top-two-starters win pace and their everyone-else win pace. A larger gap means a bigger rotation cliff. Visit tracktheseason.com/pitching-board for current rankings."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Which MLB teams have the best 1-2 starting pitcher combination?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "The Pitching Board's Best 1-2 Punch section ranks teams by the combined win pace when their top two starters take the mound. This is based on actual team performance in those starts, not pitcher ERA or reputation."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Which MLB teams have the deepest pitching rotations?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Track The Season's Pitching Board Rotation Depth section identifies teams where the rest of the rotation still performs at an 81+ win pace. These teams don't fall apart after the top two starters."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What is a Two-Man Engine in baseball?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "A Two-Man Engine is a Track The Season Pitching Board label for teams whose top two starters produce a 95+ win pace combined, with a 20+ win gap over the rest of the rotation. The team essentially runs on those two pitchers."
+      }
+    }
+  ]
+}
+</script>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet"/>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-DCSQPGSY1D"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-DCSQPGSY1D');</script>
+<style>
+:root{--ink:#0f1014;--ink2:#1a1d24;--rule:rgba(255,255,255,.07);--signal:#1aff6b;--mono:'IBM Plex Mono',monospace;--sans:'IBM Plex Sans',sans-serif;--chalk:#8a8a82;--r-lg:14px}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{overflow-x:hidden}
+body{font-family:var(--sans);background:var(--ink);color:#e8edf8;line-height:1.7}
+.nav{padding:11px 0;border-bottom:1px solid var(--rule);background:rgba(15,16,20,.96);position:sticky;top:0;z-index:100}
+.nav-inner{max-width:860px;margin:0 auto;padding:0 16px;display:flex;align-items:center;gap:10px}
+.back-btn{font-family:var(--mono);font-size:12px;font-weight:600;color:var(--chalk);text-decoration:none;border:1px solid var(--rule);border-radius:6px;padding:5px 11px}
+.back-btn:hover{color:#e8edf8}
+.nav-logo{display:flex;align-items:center;gap:8px;text-decoration:none;margin-left:auto}
+.nav-mono{width:28px;height:28px;background:var(--signal);border-radius:5px;display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:10px;font-weight:700;color:var(--ink)}
+.nav-word{font-family:var(--mono);font-size:13px;font-weight:700;color:#e8edf8}.nav-word span{color:var(--signal)}
+.wrap{max-width:860px;margin:0 auto;padding:16px 16px 80px}
+.breadcrumb{font-family:var(--mono);font-size:10px;color:rgba(255,255,255,.25);letter-spacing:.06em;padding:8px 0 20px}
+.breadcrumb a{color:rgba(255,255,255,.25);text-decoration:none}
+.breadcrumb a:hover{color:var(--signal)}
+.hero{padding:28px 0 24px;border-bottom:1px solid var(--rule);margin-bottom:32px}
+.eyebrow{font-family:var(--mono);font-size:9px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--signal);margin-bottom:10px}
+h1{font-family:var(--mono);font-size:clamp(26px,5vw,44px);font-weight:700;letter-spacing:-.03em;color:#e8edf8;margin-bottom:12px;line-height:1.1}
+h2{font-family:var(--mono);font-size:19px;font-weight:700;color:#e8edf8;letter-spacing:-.02em;margin:32px 0 10px}
+h3{font-family:var(--mono);font-size:14px;font-weight:700;color:rgba(255,255,255,.7);margin:20px 0 8px}
+.lead{font-size:17px;color:rgba(255,255,255,.55);line-height:1.65;max-width:640px}
+p{font-size:15px;color:rgba(255,255,255,.6);line-height:1.75;margin-bottom:16px}
+strong{color:#e8edf8;font-weight:600}
+ul,ol{padding-left:22px;margin-bottom:16px}
+li{font-size:15px;color:rgba(255,255,255,.6);line-height:1.7;margin-bottom:5px}
+a{color:var(--signal)}
+a:hover{text-decoration:underline}
+.label-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:8px;margin:14px 0 24px}
+.label-card{background:var(--ink2);border:1px solid var(--rule);border-radius:var(--r-lg);padding:13px 16px}
+.lc-name{font-family:var(--mono);font-size:12px;font-weight:700;color:#e8edf8;margin-bottom:4px}
+.lc-def{font-family:var(--sans);font-size:12px;color:rgba(255,255,255,.4);line-height:1.4}
+.related-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:8px;margin:14px 0 24px}
+.related-card{background:var(--ink2);border:1px solid var(--rule);border-radius:var(--r-lg);padding:14px 16px;text-decoration:none;display:block;transition:border-color .13s}
+.related-card:hover{border-color:rgba(26,255,107,.3);text-decoration:none}
+.rc-label{font-family:var(--mono);font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.3);margin-bottom:5px}
+.rc-title{font-family:var(--mono);font-size:13px;font-weight:700;color:#e8edf8;margin-bottom:3px}
+.rc-sub{font-family:var(--sans);font-size:12px;color:rgba(255,255,255,.35)}
+.cta-block{margin-top:36px;padding-top:24px;border-top:1px solid var(--rule)}
+.cta-btn{display:inline-flex;align-items:center;gap:6px;padding:12px 22px;background:var(--signal);color:var(--ink);font-family:var(--mono);font-size:13px;font-weight:700;border-radius:8px;text-decoration:none}
+.cta-btn:hover{filter:brightness(1.08);text-decoration:none}
+footer.site{border-top:1px solid var(--rule);padding:20px 0;margin-top:40px;font-family:var(--mono);font-size:11px;color:rgba(255,255,255,.2);display:flex;flex-wrap:wrap;gap:10px;justify-content:space-between;align-items:center}
+footer.site a{color:rgba(255,255,255,.3);text-decoration:none}
+</style>
+</head>
+<body>
+<nav class="nav">
+  <div class="nav-inner">
+    <a href="/" class="back-btn">← Home</a>
+    <a href="/" class="nav-logo">
+      <div class="nav-mono">TTS</div>
+      <div class="nav-word">TRACK THE <span>SEASON</span></div>
+    </a>
+  </div>
+</nav>
+<div class="wrap">
+  <nav class="breadcrumb" aria-label="Breadcrumb">
+    <a href="/">Home</a> &rsaquo; <a href="/pitching-board">Pitching Board</a> &rsaquo; MLB Pitching Board Guide
+  </nav>
+  <article>
+    <div class="hero">
+      <div class="eyebrow">Track The Season Feature</div>
+      <h1>MLB Pitching Board</h1>
+      <p class="lead">The standings show who is winning. The Pitching Board shows how much the rotation is driving it — ranking all 30 MLB teams by 1-2 punch, rotation cliff, and depth.</p>
+    </div>
+
+    <h2>What is the MLB Pitching Board?</h2>
+    <p>The Pitching Board is a league-wide expansion of <a href="/mlb-starter-signal">Starter Signal</a>. For every MLB team, it calculates how the team performs with their top two starters versus how they perform with everyone else — then ranks all 30 teams by those metrics.</p>
+    <p>This is not a traditional ERA leaderboard. The Pitching Board uses <strong>team win pace</strong> in each pitcher's starts, so it reflects the full picture of what happens when a specific pitcher takes the mound: run support, bullpen performance, and team execution.</p>
+
+    <h2>Which MLB teams have the biggest rotation cliff?</h2>
+    <p>The rotation cliff is the gap between a team's top-two-starters win pace and their everyone-else win pace. A team with a 108W pace when Cole and Schmidt start, but only a 66W pace with everyone else, has a 42-win rotation cliff. That team is playing two completely different seasons depending on the day's starter.</p>
+    <p>Track The Season's <a href="/pitching-board">Pitching Board</a> ranks all 30 teams by this gap, updated nightly.</p>
+
+    <h2>Which MLB teams have the best 1-2 punch?</h2>
+    <p>The Best 1-2 Punch section ranks teams by the combined win pace of their top two starters. A team where the top two starters combine for a 115W+ pace has one of the most dominant top-of-rotation combinations in baseball — based entirely on how the team actually performs in those games.</p>
+
+    <h2>Which MLB teams have the deepest pitching rotations?</h2>
+    <p>Rotation depth means the team does not fall apart after the top two starters. The Pitching Board identifies teams where the everyone-else pace is still 81W or higher, with a small gap. These are teams with genuine depth — their season does not hinge on two pitchers staying healthy.</p>
+
+    <h2>Signal labels explained</h2>
+    <div class="label-grid">
+      <div class="label-card"><div class="lc-name">Two-Man Engine</div><div class="lc-def">Top-two pace &ge;95W and gap &ge;20W. The team runs on two pitchers.</div></div>
+      <div class="label-card"><div class="lc-name">Rotation Cliff</div><div class="lc-def">Gap &ge;30W. Dramatic drop-off after the top two.</div></div>
+      <div class="label-card"><div class="lc-name">Deep Staff</div><div class="lc-def">Everyone-else pace &ge;90W. Genuine depth throughout.</div></div>
+      <div class="label-card"><div class="lc-name">Balanced Rotation</div><div class="lc-def">Gap &le;10W and everyone-else pace &ge;81W. Consistent top to bottom.</div></div>
+      <div class="label-card"><div class="lc-name">Ace-Driven</div><div class="lc-def">One pitcher significantly above the rest.</div></div>
+      <div class="label-card"><div class="lc-name">Back-End Problem</div><div class="lc-def">Everyone-else pace &lt;70W with large gap. Rotation is thin beyond the top.</div></div>
+    </div>
+
+    <div class="related-grid">
+      <a class="related-card" href="/pitching-board">
+        <div class="rc-label">Live Board</div>
+        <div class="rc-title">Pitching Board</div>
+        <div class="rc-sub">All 30 teams ranked now</div>
+      </a>
+      <a class="related-card" href="/mlb-starter-signal">
+        <div class="rc-label">Feature</div>
+        <div class="rc-title">Starter Signal</div>
+        <div class="rc-sub">Per-team starter breakdown</div>
+      </a>
+      <a class="related-card" href="/pace-leaders">
+        <div class="rc-label">Leaderboard</div>
+        <div class="rc-title">Pace Leaders</div>
+        <div class="rc-sub">Overall season pace rankings</div>
+      </a>
+    </div>
+
+    <div class="cta-block">
+      <a href="/pitching-board" class="cta-btn">View Live Pitching Board &rarr;</a>
+    </div>
+  </article>
+</div>
+<footer class="site wrap">
+  <a href="/">TRACK THE <span style="color:var(--signal)">SEASON</span></a>
+  <span>Data: MLB Stats API &middot; Not affiliated with MLB &middot; <a href="mailto:support@tracktheseason.com">support@tracktheseason.com</a></span>
+</footer>
+</body>
+</html>

@@ -1,0 +1,178 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>MLB Chaos Index — How Volatile Is This MLB Season? | Track The Season</title>
+<meta name="description" content="The MLB Chaos Index counts how many teams are running 5+ wins ahead or behind last year's pace. A higher number means a more unpredictable season. Updated after every game."/>
+<meta property="og:title" content="MLB Chaos Index | Track The Season"/>
+<meta property="og:description" content="Which MLB teams are breaking from last year's script? The Chaos Index tracks season volatility across all 30 teams."/>
+<meta property="og:url" content="https://tracktheseason.com/mlb-chaos-index"/>
+<meta property="og:site_name" content="Track The Season"/>
+<meta property="og:type" content="website"/>
+<link rel="canonical" href="https://tracktheseason.com/mlb-chaos-index"/>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "What is the MLB Chaos Index?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "The MLB Chaos Index counts how many of the 30 MLB teams are tracking 5 or more wins ahead or behind their pace at the same point last season. A higher number means more teams are diverging from last year's script."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Which MLB teams are most chaotic compared to last season?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Track The Season's Chaos Report ranks teams by how far they are diverging from last year's pace. Visit tracktheseason.com/chaos-report for the current season's full chaos breakdown."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How is the MLB Chaos Index calculated?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "For each team, Track The Season calculates: delta = current wins minus prior season wins at the same games-played point. If the absolute value of delta is 5 or more, the team counts toward the Chaos Index. The index is the total count of qualifying teams out of 30."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How often is the Chaos Index updated?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "The Chaos Index updates automatically after every completed regular-season game using live data from the MLB Stats API."
+      }
+    }
+  ]
+}
+</script>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet"/>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-DCSQPGSY1D"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-DCSQPGSY1D');</script>
+<style>
+:root{--ink:#0f1014;--ink2:#1a1d24;--rule:rgba(255,255,255,.07);--signal:#1aff6b;--mono:'IBM Plex Mono',monospace;--sans:'IBM Plex Sans',sans-serif;--chalk:#8a8a82;--r-lg:14px}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{overflow-x:hidden}
+body{font-family:var(--sans);background:var(--ink);color:#e8edf8;line-height:1.7}
+.nav{padding:11px 0;border-bottom:1px solid var(--rule);background:rgba(15,16,20,.96);position:sticky;top:0;z-index:100}
+.nav-inner{max-width:860px;margin:0 auto;padding:0 16px;display:flex;align-items:center;gap:10px}
+.back-btn{font-family:var(--mono);font-size:12px;font-weight:600;color:var(--chalk);text-decoration:none;border:1px solid var(--rule);border-radius:6px;padding:5px 11px}
+.back-btn:hover{color:#e8edf8}
+.nav-logo{display:flex;align-items:center;gap:8px;text-decoration:none;margin-left:auto}
+.nav-mono{width:28px;height:28px;background:var(--signal);border-radius:5px;display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:10px;font-weight:700;color:var(--ink)}
+.nav-word{font-family:var(--mono);font-size:13px;font-weight:700;color:#e8edf8}
+.nav-word span{color:var(--signal)}
+.wrap{max-width:860px;margin:0 auto;padding:16px 16px 80px}
+.breadcrumb{font-family:var(--mono);font-size:10px;color:rgba(255,255,255,.25);letter-spacing:.06em;padding:8px 0 20px}
+.breadcrumb a{color:rgba(255,255,255,.25);text-decoration:none}
+.breadcrumb a:hover{color:var(--signal)}
+.hero{padding:28px 0 24px;border-bottom:1px solid var(--rule);margin-bottom:32px}
+.eyebrow{font-family:var(--mono);font-size:9px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--signal);margin-bottom:10px}
+h1{font-family:var(--mono);font-size:clamp(26px,5vw,44px);font-weight:700;letter-spacing:-.03em;color:#e8edf8;margin-bottom:12px;line-height:1.1}
+h2{font-family:var(--mono);font-size:19px;font-weight:700;color:#e8edf8;letter-spacing:-.02em;margin:32px 0 10px;padding-top:8px}
+h3{font-family:var(--mono);font-size:14px;font-weight:700;color:rgba(255,255,255,.7);margin:20px 0 8px}
+.lead{font-size:17px;color:rgba(255,255,255,.55);line-height:1.65;max-width:640px;margin-bottom:0}
+p{font-size:15px;color:rgba(255,255,255,.6);line-height:1.75;margin-bottom:16px}
+strong{color:#e8edf8;font-weight:600}
+ul,ol{padding-left:22px;margin-bottom:16px}
+li{font-size:15px;color:rgba(255,255,255,.6);line-height:1.7;margin-bottom:5px}
+a{color:var(--signal)}
+a:hover{text-decoration:underline}
+.related-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:8px;margin:14px 0 24px}
+.related-card{background:var(--ink2);border:1px solid var(--rule);border-radius:var(--r-lg);padding:14px 16px;text-decoration:none;display:block;transition:border-color .13s}
+.related-card:hover{border-color:rgba(26,255,107,.3);text-decoration:none}
+.rc-label{font-family:var(--mono);font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.3);margin-bottom:5px}
+.rc-title{font-family:var(--mono);font-size:13px;font-weight:700;color:#e8edf8;margin-bottom:3px}
+.rc-sub{font-family:var(--sans);font-size:12px;color:rgba(255,255,255,.35);line-height:1.4}
+.cta-block{margin-top:36px;padding-top:24px;border-top:1px solid var(--rule)}
+.cta-btn{display:inline-flex;align-items:center;gap:6px;padding:12px 22px;background:var(--signal);color:var(--ink);font-family:var(--mono);font-size:13px;font-weight:700;border-radius:8px;text-decoration:none;transition:filter .13s}
+.cta-btn:hover{filter:brightness(1.08);text-decoration:none}
+footer.site{border-top:1px solid var(--rule);padding:20px 0;margin-top:40px;font-family:var(--mono);font-size:11px;color:rgba(255,255,255,.2);display:flex;flex-wrap:wrap;gap:10px;justify-content:space-between;align-items:center}
+footer.site a{color:rgba(255,255,255,.3);text-decoration:none}
+footer.site a:hover{color:var(--signal)}
+</style>
+</head>
+<body>
+<nav class="nav">
+  <div class="nav-inner">
+    <a href="/" class="back-btn">← Home</a>
+    <a href="/" class="nav-logo">
+      <div class="nav-mono">TTS</div>
+      <div class="nav-word">TRACK THE <span>SEASON</span></div>
+    </a>
+  </div>
+</nav>
+<div class="wrap">
+  <nav class="breadcrumb" aria-label="Breadcrumb">
+    <a href="/">Home</a> &rsaquo; <a href="/chaos-report">Chaos Report</a> &rsaquo; MLB Chaos Index
+  </nav>
+  <article>
+    <div class="hero">
+      <div class="eyebrow">Track The Season Feature</div>
+      <h1>MLB Chaos Index</h1>
+      <p class="lead">The Chaos Index answers one question: how many MLB teams are running a meaningfully different season than last year? The higher the number, the more the league is diverging from its own recent script.</p>
+    </div>
+
+    <h2>What is the MLB Chaos Index?</h2>
+    <p>The Chaos Index counts how many of the 30 MLB teams are tracking <strong>5 or more wins ahead or behind</strong> their pace at the same point last season. A team with 42 wins through 65 games this year, when they had 35 wins through 65 games last year, is in "chaos" — their season is following a different trajectory than before.</p>
+    <p>When the Chaos Index is high, the current season is particularly unpredictable based on last year's results. When it is low, most teams are running close to their prior-year script — meaning the standings are more predictable.</p>
+
+    <h2>Which MLB teams are most chaotic compared to last season?</h2>
+    <p>Track The Season's <a href="/chaos-report">Chaos Report</a> shows the full breakdown: which teams are surging ahead of last year's pace, which are falling behind, and how volatile the current season is overall. The Daily Pulse shows the overnight Chaos Index movement — how many teams entered or left chaos territory since yesterday.</p>
+
+    <h2>How is the Chaos Index calculated?</h2>
+    <p>For each team:</p>
+    <ul>
+      <li>Fetch the team's win total through the current number of games played</li>
+      <li>Fetch the team's win total through the same number of games last season</li>
+      <li>Calculate delta = current wins minus prior-season wins at the same point</li>
+      <li>If |delta| &ge; 5, the team counts toward the Chaos Index</li>
+    </ul>
+    <p>The Chaos Index is the total count of qualifying teams. Updated automatically after every completed regular-season game using the <strong>MLB Stats API</strong>.</p>
+
+    <h2>Which MLB teams are most chaotic this season?</h2>
+    <p>This changes every day as games are played. Track The Season's Chaos Report shows a live ranking of the teams with the largest positive and negative deltas — the biggest surgers and the biggest sliders.</p>
+
+    <h2>Why the Chaos Index matters</h2>
+    <p>Traditional standings only show where teams are today. The Chaos Index shows how many teams are in uncharted territory relative to their own recent history. A team at .500 might be dramatically outperforming expectations if they were 10 games under .500 at this point last year. The Chaos Index captures how much of that is happening simultaneously across the league.</p>
+
+    <h2>Related features</h2>
+    <div class="related-grid">
+      <a class="related-card" href="/chaos-report">
+        <div class="rc-label">Report</div>
+        <div class="rc-title">Chaos Report</div>
+        <div class="rc-sub">Full breakdown + social graphics</div>
+      </a>
+      <a class="related-card" href="/pace-leaders">
+        <div class="rc-label">Leaderboard</div>
+        <div class="rc-title">Pace Leaders</div>
+        <div class="rc-sub">All 30 teams by projected wins</div>
+      </a>
+      <a class="related-card" href="/pulse">
+        <div class="rc-label">Daily</div>
+        <div class="rc-title">Daily Pulse</div>
+        <div class="rc-sub">Overnight chaos movement</div>
+      </a>
+      <a class="related-card" href="/mlb-pace-tracker">
+        <div class="rc-label">Feature</div>
+        <div class="rc-title">Pace Tracker</div>
+        <div class="rc-sub">Per-team pace vs prior seasons</div>
+      </a>
+    </div>
+
+    <div class="cta-block">
+      <a href="/chaos-report" class="cta-btn">View Full Chaos Report &rarr;</a>
+    </div>
+  </article>
+</div>
+<footer class="site wrap">
+  <a href="/">TRACK THE <span style="color:var(--signal)">SEASON</span></a>
+  <span>Data: MLB Stats API &middot; Not affiliated with MLB &middot; <a href="mailto:support@tracktheseason.com">support@tracktheseason.com</a></span>
+</footer>
+</body>
+</html>

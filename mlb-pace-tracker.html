@@ -1,0 +1,85 @@
+<!doctype html><html lang="en"><head>
+<meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>MLB Pace Tracker — Track Every Team's Season Trajectory | Track The Season</title>
+<meta name="description" content="Track The Season's MLB Pace Tracker compares every team's current record to previous seasons at the same games played. See which teams are ahead of, behind, or matching last year's pace."/>
+<meta property="og:title" content="MLB Pace Tracker | Track The Season"/>
+<meta property="og:description" content="Which MLB teams are ahead of last year's pace? Which are in freefall? Track The Season shows where every team is headed."/>
+<meta property="og:url" content="https://tracktheseason.com/mlb-pace-tracker"/>
+<meta property="og:site_name" content="Track The Season"/>
+<meta property="og:type" content="website"/>
+<link rel="canonical" href="https://tracktheseason.com/mlb-pace-tracker"/>
+<script type="application/ld+json">{
+  "@context":"https://schema.org",
+  "@graph":[
+    {"@type":"WebPage","@id":"https://tracktheseason.com/mlb-pace-tracker","name":"MLB Pace Tracker","url":"https://tracktheseason.com/mlb-pace-tracker","description":"Track The Season's MLB pace tracker compares every team's current season to prior seasons at the same games played.","isPartOf":{"@id":"https://tracktheseason.com"}},
+    {"@type":"FAQPage","mainEntity":[
+      {"@type":"Question","name":"What is an MLB win pace?","acceptedAnswer":{"@type":"Answer","text":"Win pace is a team's current win percentage projected over a full 162-game season. Formula: (wins ÷ games played) × 162. It is a pace calculation, not a prediction."}},
+      {"@type":"Question","name":"Which MLB teams are ahead of last year's pace?","acceptedAnswer":{"@type":"Answer","text":"Track The Season's pace tracker compares every team's current wins to their win total at the same games-played point last season. Teams with a positive delta are ahead of last year's pace."}},
+      {"@type":"Question","name":"How does Track The Season compare seasons?","acceptedAnswer":{"@type":"Answer","text":"Track The Season uses the MLB Stats API to fetch completed regular-season games. For year-over-year comparisons, it compares a team's current win total to their win total at the exact same games-played point in prior seasons."}},
+      {"@type":"Question","name":"Which MLB teams are improving the fastest?","acceptedAnswer":{"@type":"Answer","text":"Track The Season's Pace Leaders page ranks all 30 teams by current projected win pace. The Biggest Movers section shows which teams have gained the most vs last year's pace."}}
+    ]}
+  ]
+}</script>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet"/>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-DCSQPGSY1D"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-DCSQPGSY1D');</script>
+<style>/* see other pages */</style>
+</head><body>
+<nav class="nav"><div class="nav-inner"><a href="/" class="back-btn">← Home</a><a href="/" class="nav-logo"><div class="nav-mono">TTS</div><div class="nav-word">TRACK THE <span>SEASON</span></div></a></div></nav>
+<main class="wrap">
+  <nav class="breadcrumb"><a href="/">Home</a> › <span>MLB Pace Tracker</span></nav>
+  <article>
+    <div class="hero">
+      <div class="eyebrow">Track The Season Feature</div>
+      <h1>MLB Pace Tracker</h1>
+      <p class="lead">The standings tell you where teams are. The MLB Pace Tracker tells you where they're headed — by comparing every team's current season to prior seasons at the exact same point.</p>
+    </div>
+
+    <h2>What is the MLB Pace Tracker?</h2>
+    <p>Track The Season's pace tracker compares each MLB team's current record to their record in prior seasons at the same number of games played. Instead of asking "how good is this team today?", it asks: "how does this season compare to seasons we already know the outcome of?"</p>
+    <p>If a team is 38–30 through 68 games and their 2023 season also had them at 36–32 through 68 games, Track The Season identifies 2023 as a historical comp — and shows how that season finished.</p>
+
+    <h2>How is win pace calculated?</h2>
+    <p>Win pace = <strong>(wins ÷ games played) × 162</strong>. A team that is 40–30 through 70 games has a win pace of (40 ÷ 70) × 162 = 92.6 wins. This is a pace projection, not a predictive model — it assumes the current win rate holds for the rest of the season.</p>
+
+    <h2>What questions does it answer?</h2>
+    <ul>
+      <li>Which MLB teams are ahead of last year's pace?</li>
+      <li>Which teams are improving the fastest right now?</li>
+      <li>Is this team on pace for a playoff season?</li>
+      <li>How does this season compare to the team's best recent years?</li>
+      <li>Which teams are trending up or down over the last 10, 20, or 30 games?</li>
+    </ul>
+
+    <h2>Year-over-year delta</h2>
+    <p>The delta metric shows how many more (or fewer) wins a team has compared to last season at the same games-played point. A delta of +10 means the team has 10 more wins through the same number of games as last year. A delta of –8 means they are 8 wins behind last year's pace.</p>
+
+    <h2>Related features</h2>
+    <ul>
+      <li><a href="/pace-leaders">Pace Leaders</a> — all 30 teams ranked by projected wins</li>
+      <li><a href="/chaos-report">Chaos Report</a> — how many teams are off last year's script</li>
+      <li><a href="/pitching-board">Pitching Board</a> — how much the rotation drives the pace</li>
+      <li><a href="/pulse">Daily Pulse</a> — what changed overnight</li>
+    </ul>
+
+    <h2>Explore team pace trackers</h2>
+    <div class="team-grid">
+      <a href="/phillies">Phillies</a><a href="/braves">Braves</a><a href="/mets">Mets</a>
+      <a href="/dodgers">Dodgers</a><a href="/yankees">Yankees</a><a href="/red-sox">Red Sox</a>
+      <a href="/astros">Astros</a><a href="/cubs">Cubs</a><a href="/cardinals">Cardinals</a>
+      <a href="/rays">Rays</a><a href="/brewers">Brewers</a><a href="/padres">Padres</a>
+      <a href="/rangers">Rangers</a><a href="/giants">Giants</a><a href="/mariners">Mariners</a>
+      <a href="/orioles">Orioles</a><a href="/twins">Twins</a><a href="/guardians">Guardians</a>
+      <a href="/tigers">Tigers</a><a href="/blue-jays">Blue Jays</a><a href="/royals">Royals</a>
+      <a href="/angels">Angels</a><a href="/athletics">Athletics</a><a href="/nationals">Nationals</a>
+      <a href="/pirates">Pirates</a><a href="/reds">Reds</a><a href="/rockies">Rockies</a>
+      <a href="/white-sox">White Sox</a><a href="/marlins">Marlins</a><a href="/diamondbacks">Diamondbacks</a>
+    </div>
+
+    <div class="cta-block">
+      <a href="/" class="cta-btn">View Live MLB Pace Dashboard →</a>
+    </div>
+  </article>
+</main>
+<footer class="site"><a href="/">TRACK THE <span style="color:var(--signal)">SEASON</span></a><span>Data: MLB Stats API · <a href="mailto:support@tracktheseason.com">support@tracktheseason.com</a></span></footer>
+</body></html>

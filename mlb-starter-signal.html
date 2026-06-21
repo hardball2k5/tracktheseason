@@ -1,0 +1,185 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>MLB Starter Signal — How Starting Pitchers Shape Each Team's Season | Track The Season</title>
+<meta name="description" content="Starter Signal shows how each MLB team's record, win pace, and run differential change depending on which pitcher starts. See which starters are changing their team's season arc."/>
+<meta property="og:title" content="MLB Starter Signal | Track The Season"/>
+<meta property="og:description" content="Which MLB starters give their team the best win shape? Starter Signal tracks team record and pace in every pitcher's starts."/>
+<meta property="og:url" content="https://tracktheseason.com/mlb-starter-signal"/>
+<meta property="og:site_name" content="Track The Season"/>
+<link rel="canonical" href="https://tracktheseason.com/mlb-starter-signal"/>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "What is MLB Starter Signal?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Starter Signal is a Track The Season feature that shows how an MLB team performs specifically in games started by each pitcher. It measures team record, win pace, runs scored, and runs allowed in those starts — not the pitcher's individual ERA or strikeout totals."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What is the Phillies record when Wheeler starts?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Track The Season's Starter Signal calculates the Phillies' team record, win pace, and run differential specifically in Zack Wheeler's starts. Visit tracktheseason.com/phillies and tap the Starter Signal section for current season data."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Which teams rely most on their top starters?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Track The Season's Pitching Board ranks all 30 MLB teams by the gap between their top-two-starters win pace and their everyone-else win pace. A large gap means the team plays very different baseball depending on who starts."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What is a rotation cliff in baseball?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "A rotation cliff is when a team's win pace drops dramatically when their top starters are not pitching. Track The Season quantifies this as the gap between the top-two-starters pace and the everyone-else pace. A gap of 30+ projected wins is considered a significant rotation cliff."
+      }
+    }
+  ]
+}
+</script>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet"/>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-DCSQPGSY1D"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-DCSQPGSY1D');</script>
+<style>
+:root{--ink:#0f1014;--ink2:#1a1d24;--rule:rgba(255,255,255,.07);--signal:#1aff6b;--mono:'IBM Plex Mono',monospace;--sans:'IBM Plex Sans',sans-serif;--chalk:#8a8a82;--r-lg:14px}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{overflow-x:hidden}
+body{font-family:var(--sans);background:var(--ink);color:#e8edf8;line-height:1.7}
+.nav{padding:11px 0;border-bottom:1px solid var(--rule);background:rgba(15,16,20,.96);position:sticky;top:0;z-index:100}
+.nav-inner{max-width:860px;margin:0 auto;padding:0 16px;display:flex;align-items:center;gap:10px}
+.back-btn{font-family:var(--mono);font-size:12px;font-weight:600;color:var(--chalk);text-decoration:none;border:1px solid var(--rule);border-radius:6px;padding:5px 11px}
+.back-btn:hover{color:#e8edf8}
+.nav-logo{display:flex;align-items:center;gap:8px;text-decoration:none;margin-left:auto}
+.nav-mono{width:28px;height:28px;background:var(--signal);border-radius:5px;display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:10px;font-weight:700;color:var(--ink)}
+.nav-word{font-family:var(--mono);font-size:13px;font-weight:700;color:#e8edf8}.nav-word span{color:var(--signal)}
+.wrap{max-width:860px;margin:0 auto;padding:16px 16px 80px}
+.breadcrumb{font-family:var(--mono);font-size:10px;color:rgba(255,255,255,.25);letter-spacing:.06em;padding:8px 0 20px}
+.breadcrumb a{color:rgba(255,255,255,.25);text-decoration:none}
+.breadcrumb a:hover{color:var(--signal)}
+.hero{padding:28px 0 24px;border-bottom:1px solid var(--rule);margin-bottom:32px}
+.eyebrow{font-family:var(--mono);font-size:9px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--signal);margin-bottom:10px}
+h1{font-family:var(--mono);font-size:clamp(26px,5vw,44px);font-weight:700;letter-spacing:-.03em;color:#e8edf8;margin-bottom:12px;line-height:1.1}
+h2{font-family:var(--mono);font-size:19px;font-weight:700;color:#e8edf8;letter-spacing:-.02em;margin:32px 0 10px}
+h3{font-family:var(--mono);font-size:14px;font-weight:700;color:rgba(255,255,255,.7);margin:20px 0 8px}
+.lead{font-size:17px;color:rgba(255,255,255,.55);line-height:1.65;max-width:640px}
+p{font-size:15px;color:rgba(255,255,255,.6);line-height:1.75;margin-bottom:16px}
+strong{color:#e8edf8;font-weight:600}
+ul,ol{padding-left:22px;margin-bottom:16px}
+li{font-size:15px;color:rgba(255,255,255,.6);line-height:1.7;margin-bottom:5px}
+a{color:var(--signal)}
+a:hover{text-decoration:underline}
+.related-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:8px;margin:14px 0 24px}
+.related-card{background:var(--ink2);border:1px solid var(--rule);border-radius:var(--r-lg);padding:14px 16px;text-decoration:none;display:block;transition:border-color .13s}
+.related-card:hover{border-color:rgba(26,255,107,.3);text-decoration:none}
+.rc-label{font-family:var(--mono);font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.3);margin-bottom:5px}
+.rc-title{font-family:var(--mono);font-size:13px;font-weight:700;color:#e8edf8;margin-bottom:3px}
+.rc-sub{font-family:var(--sans);font-size:12px;color:rgba(255,255,255,.35)}
+.team-grid{display:flex;flex-wrap:wrap;gap:6px;margin:12px 0 24px}
+.team-grid a{font-family:var(--mono);font-size:11px;font-weight:600;color:rgba(255,255,255,.5);border:1px solid rgba(255,255,255,.1);border-radius:999px;padding:4px 11px;text-decoration:none;transition:all .13s}
+.team-grid a:hover{border-color:var(--signal);color:var(--signal)}
+.cta-block{margin-top:36px;padding-top:24px;border-top:1px solid var(--rule)}
+.cta-btn{display:inline-flex;align-items:center;gap:6px;padding:12px 22px;background:var(--signal);color:var(--ink);font-family:var(--mono);font-size:13px;font-weight:700;border-radius:8px;text-decoration:none}
+.cta-btn:hover{filter:brightness(1.08);text-decoration:none}
+footer.site{border-top:1px solid var(--rule);padding:20px 0;margin-top:40px;font-family:var(--mono);font-size:11px;color:rgba(255,255,255,.2);display:flex;flex-wrap:wrap;gap:10px;justify-content:space-between;align-items:center}
+footer.site a{color:rgba(255,255,255,.3);text-decoration:none}
+</style>
+</head>
+<body>
+<nav class="nav">
+  <div class="nav-inner">
+    <a href="/" class="back-btn">← Home</a>
+    <a href="/" class="nav-logo">
+      <div class="nav-mono">TTS</div>
+      <div class="nav-word">TRACK THE <span>SEASON</span></div>
+    </a>
+  </div>
+</nav>
+<div class="wrap">
+  <nav class="breadcrumb" aria-label="Breadcrumb">
+    <a href="/">Home</a> &rsaquo; <a href="/pitching-board">Pitching Board</a> &rsaquo; MLB Starter Signal
+  </nav>
+  <article>
+    <div class="hero">
+      <div class="eyebrow">Track The Season Feature</div>
+      <h1>MLB Starter Signal</h1>
+      <p class="lead">Some games feel completely different depending on who starts. Starter Signal makes that measurable — tracking how each team's record, win pace, and run differential shift when specific pitchers take the mound.</p>
+    </div>
+
+    <h2>What is MLB Starter Signal?</h2>
+    <p>Starter Signal shows how an MLB team performs in games started by each of their pitchers. Instead of measuring a pitcher's individual ERA, strikeout rate, or WHIP, it measures the <strong>team's record, projected win pace, runs scored per game, and runs allowed per game</strong> when that pitcher starts.</p>
+    <p>This framing captures the full picture — including run support, defensive performance, and bullpen reliability — that ERA alone misses. A pitcher can have a mediocre ERA but still give their team a .700 win rate if the lineup consistently scores behind them.</p>
+
+    <h2>How does Track The Season calculate Starter Signal?</h2>
+    <p>For each starting pitcher with 3 or more starts in the current season:</p>
+    <ul>
+      <li><strong>Team record</strong> — wins and losses in that pitcher's starts</li>
+      <li><strong>Win percentage</strong> — wins divided by total starts</li>
+      <li><strong>162-game pace</strong> — win percentage projected over a full season</li>
+      <li><strong>Runs scored per game</strong> — team offense in those starts</li>
+      <li><strong>Runs allowed per game</strong> — total runs allowed (pitcher + bullpen)</li>
+      <li><strong>Run differential</strong> — total runs scored minus runs allowed</li>
+    </ul>
+    <p>The <strong>top two starters combined</strong> show the team's best-case rotation scenario. <strong>Everyone else</strong> shows the rest-of-rotation performance. The gap between these is the rotation cliff.</p>
+
+    <h2>What is the Phillies record when Wheeler starts?</h2>
+    <p>Track The Season's Starter Signal calculates the Phillies' exact team record in Zack Wheeler's starts — including win pace, runs scored, and runs allowed. Visit <a href="/phillies">tracktheseason.com/phillies</a> and tap the Starter Signal section to see current season data.</p>
+
+    <h2>Which teams rely most on their top starters?</h2>
+    <p>The <a href="/pitching-board">Pitching Board</a> answers this league-wide. It ranks all 30 teams by the gap between their top-two-starters pace and their everyone-else pace — identifying which teams have real rotation depth versus which teams are heavily dependent on their ace and number two.</p>
+
+    <h2>Which MLB teams have the biggest gap between their top starters and the rest of the rotation?</h2>
+    <p>This is the "rotation cliff" metric on the Pitching Board. A gap of 40+ projected wins means a team is essentially two different teams depending on the day's starter. Track The Season updates this every night with the latest boxscore data.</p>
+
+    <h2>Explore Starter Signal by team</h2>
+    <div class="team-grid">
+      <a href="/phillies">Phillies</a><a href="/braves">Braves</a><a href="/dodgers">Dodgers</a>
+      <a href="/yankees">Yankees</a><a href="/astros">Astros</a><a href="/cubs">Cubs</a>
+      <a href="/cardinals">Cardinals</a><a href="/mets">Mets</a><a href="/rays">Rays</a>
+      <a href="/red-sox">Red Sox</a><a href="/rangers">Rangers</a><a href="/orioles">Orioles</a>
+      <a href="/mariners">Mariners</a><a href="/twins">Twins</a><a href="/tigers">Tigers</a>
+      <a href="/brewers">Brewers</a><a href="/guardians">Guardians</a><a href="/padres">Padres</a>
+      <a href="/giants">Giants</a><a href="/blue-jays">Blue Jays</a>
+    </div>
+
+    <div class="related-grid">
+      <a class="related-card" href="/pitching-board">
+        <div class="rc-label">League-Wide</div>
+        <div class="rc-title">Pitching Board</div>
+        <div class="rc-sub">All 30 teams ranked by rotation signal</div>
+      </a>
+      <a class="related-card" href="/mlb-pitching-board">
+        <div class="rc-label">Explainer</div>
+        <div class="rc-title">Pitching Board Guide</div>
+        <div class="rc-sub">Rotation cliff and depth explained</div>
+      </a>
+      <a class="related-card" href="/pulse">
+        <div class="rc-label">Daily</div>
+        <div class="rc-title">Daily Pulse</div>
+        <div class="rc-sub">Starter Signal of the day</div>
+      </a>
+    </div>
+
+    <div class="cta-block">
+      <a href="/pitching-board" class="cta-btn">View Pitching Board &rarr;</a>
+    </div>
+  </article>
+</div>
+<footer class="site wrap">
+  <a href="/">TRACK THE <span style="color:var(--signal)">SEASON</span></a>
+  <span>Data: MLB Stats API &middot; Not affiliated with MLB &middot; <a href="mailto:support@tracktheseason.com">support@tracktheseason.com</a></span>
+</footer>
+</body>
+</html>
