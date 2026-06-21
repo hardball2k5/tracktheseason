@@ -272,8 +272,21 @@ async function loadLive(){
         gp:d.gamesAnalyzed||0, label:d.splits?.length>=2?'':'Staff in Flux',
         top1:d.splits?.[0]?{name:d.splits[0].name,starts:d.splits[0].starts,w:d.splits[0].wins,l:d.splits[0].losses,pace:d.splits[0].pace,rs:d.splits[0].avgScored,ra:d.splits[0].avgAllowed,diff:d.splits[0].runDiff}:null,
         top2:d.splits?.[1]?{name:d.splits[1].name,starts:d.splits[1].starts,w:d.splits[1].wins,l:d.splits[1].losses,pace:d.splits[1].pace,rs:d.splits[1].avgScored,ra:d.splits[1].avgAllowed,diff:d.splits[1].runDiff}:null,
-        duo:d.duo?{w:d.duo.wins,l:d.duo.losses,pace:d.duo.pace,rs:0,ra:0,diff:d.duo.runDiff}:{w:0,l:0,pace:0,rs:0,ra:0,diff:0},
-        rest:d.rest?{w:d.rest.wins,l:d.rest.losses,pace:d.rest.pace,rs:0,ra:0,diff:d.rest.runDiff}:{w:0,l:0,pace:0,rs:0,ra:0,diff:0},
+        duo:(()=>{
+          const s0=d.splits?.[0], s1=d.splits?.[1];
+          const starts=(s0?.starts||0)+(s1?.starts||0);
+          const rs=starts?Math.round(((s0?.avgScored||0)*(s0?.starts||0)+(s1?.avgScored||0)*(s1?.starts||0))/starts*10)/10:0;
+          const ra=starts?Math.round(((s0?.avgAllowed||0)*(s0?.starts||0)+(s1?.avgAllowed||0)*(s1?.starts||0))/starts*10)/10:0;
+          return d.duo?{w:d.duo.wins,l:d.duo.losses,pace:d.duo.pace,rs,ra,diff:d.duo.runDiff}:{w:0,l:0,pace:0,rs:0,ra:0,diff:0};
+        })(),
+        rest:(()=>{
+          const topIds=new Set([d.splits?.[0]?.id,d.splits?.[1]?.id].filter(Boolean));
+          const others=(d.splits||[]).slice(2);
+          const starts=others.reduce((s,p)=>s+(p.starts||0),0);
+          const rs=starts?Math.round(others.reduce((s,p)=>s+(p.avgScored||0)*(p.starts||0),0)/starts*10)/10:0;
+          const ra=starts?Math.round(others.reduce((s,p)=>s+(p.avgAllowed||0)*(p.starts||0),0)/starts*10)/10:0;
+          return d.rest?{w:d.rest.wins,l:d.rest.losses,pace:d.rest.pace,rs,ra,diff:d.rest.runDiff}:{w:0,l:0,pace:0,rs:0,ra:0,diff:0};
+        })(),
         gap:d.duo&&d.rest?d.duo.pace-d.rest.pace:null,
       };
     }));
