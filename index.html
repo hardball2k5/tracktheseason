@@ -271,14 +271,14 @@ body{font-family:var(--sans);background:var(--ink);color:#e8edf8;min-height:100v
 .team-card:active{transform:scale(.97)}
 .team-card.hidden-card{display:none}
 @keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
-.card-top{display:flex;align-items:center;gap:9px;padding:11px 11px 7px}
+.card-top{display:flex;align-items:center;gap:6px;padding:11px 11px 7px;min-width:0}
 .team-logo-wrap{width:40px;height:40px;flex-shrink:0;background:var(--logo-bg);border:1px solid var(--logo-border);border-radius:var(--r-sm);box-shadow:var(--logo-shadow);display:flex;align-items:center;justify-content:center;overflow:hidden}
 .team-logo-wrap img{width:30px;height:30px;object-fit:contain}
 .team-logo-wrap .emoji-fb{font-size:18px;display:none}
 .team-name-block{flex:1;min-width:0}
 .team-city{font-family:var(--mono);font-size:8px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.25);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .team-name{font-family:var(--mono);font-size:14px;font-weight:700;color:#e8edf8;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.momentum-chip{flex-shrink:0;padding:2px 7px;border-radius:var(--r-pill);font-family:var(--mono);font-size:9px;font-weight:600;letter-spacing:.02em;white-space:nowrap}
+.momentum-chip{flex-shrink:1;min-width:0;padding:2px 7px;border-radius:var(--r-pill);font-family:var(--mono);font-size:9px;font-weight:600;letter-spacing:.02em;overflow:hidden;max-width:100%}
 .chip-hot{background:var(--gain-bg);color:var(--gain-text);border:1px solid rgba(13,140,58,.2)}
 .chip-cold{background:var(--loss-bg);color:var(--loss-text);border:1px solid rgba(232,48,42,.2)}
 .chip-neutral{background:var(--ink3);color:var(--chalk);border:1px solid var(--rule)}
@@ -1728,11 +1728,11 @@ function buildCard(team,curGames,prevGames){
       <div class="team-name-block">
         <div class="team-city">${div.league} · ${div.divName}</div>
         <div class="team-name">${team.clubName||team.name}</div>
-      </div>
-      <div class="momentum-chip ${momentum.chipClass}" style="display:inline-flex;gap:3px;align-items:center;max-width:100%;overflow:hidden">
-        <span style="color:var(--chalk);font-size:9px;flex-shrink:0;white-space:nowrap">${momentum.paceLabel}</span>
-        <span style="color:rgba(255,255,255,.2);flex-shrink:0">·</span>
-        <span style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${momentum.trendEmoji} ${momentum.trendLabel}</span>
+        <div class="momentum-chip ${momentum.chipClass}" style="display:inline-flex;gap:3px;align-items:center;margin-top:3px;max-width:100%;overflow:hidden">
+          <span style="color:var(--chalk);font-size:9px;flex-shrink:0;white-space:nowrap">${momentum.paceLabel}</span>
+          <span style="color:rgba(255,255,255,.2);flex-shrink:0">·</span>
+          <span style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${momentum.trendEmoji} ${momentum.trendLabel}</span>
+        </div>
       </div>
       <button class="fav-star ${isFav?'active':''}" data-team-id="${team.id}" onclick="toggleFav(event,${team.id})" title="${isFav?'Remove':'Favorite'}">${isFav?'★':'☆'}</button>
     </div>
