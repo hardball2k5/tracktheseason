@@ -814,6 +814,29 @@ tr.cur-row td{background:rgba(26,255,107,.05)}
           </div>
         </div>
 
+        <!-- STARTER SIGNAL — primary insight, expanded by default -->
+        <div id="starter-signal"></div>
+        <div id="starterSignalCard" class="starter-signal-card" style="display:none">
+          <div class="ss-header" onclick="toggleStarterSignal()" id="ssHeader">
+            <div class="ss-header-left">
+              <div>
+                <div style="display:flex;align-items:center;gap:7px">
+                  <span class="ss-title">⚾ Starter Signal</span>
+                  <span class="ss-badge">NEW</span>
+                </div>
+                <div style="font-family:var(--sans);font-size:10px;color:rgba(255,255,255,.3);margin-top:1px">Team-level starter splits that power the Pitching Board</div>
+              </div>
+            </div>
+            <div style="display:flex;align-items:center;gap:8px">
+              <a href="/pitching-board" onclick="event.stopPropagation()" style="font-family:var(--mono);font-size:9px;font-weight:700;color:rgba(91,143,255,.8);letter-spacing:.06em;text-decoration:none;white-space:nowrap">Pitching Board →</a>
+              <span class="ss-toggle open" id="ssToggle">⌄</span>
+            </div>
+          </div>
+          <div class="ss-body open" id="ssBody">
+            <div class="ss-loading"><div class="ss-spinner"></div>Loading starter data…</div>
+          </div>
+        </div>
+
         <!-- Chart -->
         <div class="result-card">
           <div class="chart-wrap">
@@ -851,20 +874,6 @@ tr.cur-row td{background:rgba(26,255,107,.05)}
                 </table>
               </div>
             </div>
-          </div>
-        </div>
-
-        <!-- STARTER SIGNAL — populated by JS after update() -->
-        <div id="starterSignalCard" class="starter-signal-card" style="display:none">
-          <div class="ss-header" onclick="toggleStarterSignal()">
-            <div class="ss-header-left">
-              <span class="ss-title">⚾ Starter Signal</span>
-              <span class="ss-badge">NEW</span>
-            </div>
-            <span class="ss-toggle" id="ssToggle">⌄</span>
-          </div>
-          <div class="ss-body" id="ssBody">
-            <div class="ss-loading"><div class="ss-spinner"></div>Tap to load starter data</div>
           </div>
         </div>
 
@@ -1147,19 +1156,19 @@ function renderSSTable(splits){
 function renderSSContrast(data){
   if(!data.duo||!data.rest||data.duo.pace===0) return '';
   const gap=data.duo.pace-data.rest.pace;
-  if(gap<10) return '';
+  if(gap<5) return '';
   return `<div class="ss-contrast">
     <div class="ss-contrast-card ace">
       <div class="ss-contrast-label">Top 2 Starters</div>
       <div class="ss-contrast-pace ace">${data.duo.pace}W</div>
-      <div class="ss-contrast-rec">${data.duo.wins}–${data.duo.losses}</div>
+      <div class="ss-contrast-rec">${data.duo.wins}–${data.duo.losses} record</div>
       <div class="ss-contrast-names">${data.duo.names}</div>
     </div>
     <div class="ss-contrast-card rest">
       <div class="ss-contrast-label">Everyone Else</div>
       <div class="ss-contrast-pace rest">${data.rest.pace}W</div>
-      <div class="ss-contrast-rec">${data.rest.wins}–${data.rest.losses}</div>
-      <div class="ss-contrast-names">${gap>=20?`${gap}W gap`:`${gap}W difference`}</div>
+      <div class="ss-contrast-rec">${data.rest.wins}–${data.rest.losses} record</div>
+      <div class="ss-contrast-names" style="color:var(--loss-text);font-weight:700">${gap>=20?gap+'W gap':gap+'W diff'}</div>
     </div>
   </div>`;
 }
@@ -1174,6 +1183,7 @@ function renderSSContent(data){
     </div>
     ${renderSSTable(splits)}
     ${_ssView==='current'?renderSSContrast(data):''}
+    <div style="font-family:var(--sans);font-size:11px;color:rgba(255,255,255,.25);padding:8px 0 4px;line-height:1.5">Based on team record in games started by each pitcher. Pace calculated over 162 games.</div>
     <div class="ss-share-row">
       <button class="ss-share-btn primary" onclick="ssShare()">⬆ Share Starter Signal</button>
       <button class="ss-share-btn ghost" id="ssCopyBtn" onclick="ssCopyText()">⧉ Copy</button>
@@ -1187,9 +1197,15 @@ window.ssSetView=function(v){
 window.ssShare=async function(){
   if(!_ssData)return;
   const slug=teamSlugById(currentTeamId);
-  const url=slug?`https://tracktheseason.com/${slug}`:`https://tracktheseason.com`;
-  const text=(_ssData.narrative||`${_ssData.teamName} Starter Signal`)+`\n\n${url}\n\n#TrackTheSeason #MLB #StarterSignal`;
-  if(navigator.share)try{await navigator.share({title:'Starter Signal',text,url});}catch(e){}
+  const base=slug?`https://tracktheseason.com/${slug}`:`https://tracktheseason.com`;
+  const url=`${base}#starter-signal`;
+  const duo=_ssData.duo, rest=_ssData.rest;
+  const gap=duo&&rest?duo.pace-rest.pace:null;
+  const names=(duo&&duo.names)||'';
+  const text=duo&&rest&&gap
+    ?`Starter Signal — ${_ssData.teamName}:\nWhen ${names} starts, they're playing at a ${duo.pace}-win pace. Everyone else: ${rest.pace}-win pace. That's a ${gap}-win rotation gap.\n\n${url}\n\n#TrackTheSeason #MLB #StarterSignal`
+    :(_ssData.narrative||`${_ssData.teamName} Starter Signal`)+`\n\n${url}\n\n#TrackTheSeason #MLB #StarterSignal`;
+  if(navigator.share)try{await navigator.share({title:`Starter Signal — ${_ssData.teamName}`,text,url});}catch(e){}
   else await copyToClipboard(text);
 };
 window.ssCopyText=async function(){
@@ -1204,16 +1220,19 @@ window.ssCopyText=async function(){
 };
 
 function initStarterSignal(teamId,season,tName){
-  /* Card is already in the HTML — just show it and reset state */
   const card = document.getElementById('starterSignalCard');
   if(!card) return;
   card.style.display = 'block';
-  /* Reset so tapping re-fetches for new team */
+  card.id = 'starterSignalCard';
+  card.setAttribute('data-anchor','starter-signal');
+  /* Always expanded by default */
   _ssLoaded=false; _ssData=null;
   const body = document.getElementById('ssBody');
   const toggle = document.getElementById('ssToggle');
-  if(body){ body.classList.remove('open'); body.innerHTML='<div class="ss-loading"><div class="ss-spinner"></div>Tap to load starter data</div>'; }
-  if(toggle) toggle.classList.remove('open');
+  if(body){ body.classList.add('open'); body.innerHTML='<div class="ss-loading"><div class="ss-spinner"></div>Loading starter data…</div>'; }
+  if(toggle){ toggle.classList.add('open'); }
+  /* Auto-fetch immediately — no tap required */
+  toggleStarterSignal();
 }
 
 window.toggleStarterSignal=async function(){
