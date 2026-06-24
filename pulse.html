@@ -65,11 +65,12 @@ body{font-family:var(--sans);background:var(--ink);color:#e8edf8;min-height:100v
 .pulse-eyebrow{font-family:var(--mono);font-size:9px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--signal);margin-bottom:10px;display:flex;align-items:center;gap:8px}
 .pulse-dot{width:6px;height:6px;border-radius:50%;background:var(--signal);animation:pulseDot 2s ease-in-out infinite}
 @keyframes pulseDot{0%,100%{opacity:1}50%{opacity:.3}}
-.pulse-hed{font-family:var(--mono);font-size:clamp(26px,5vw,40px);font-weight:700;letter-spacing:-.03em;color:#e8edf8;line-height:1.1;margin-bottom:8px}
+.pulse-hed{font-family:var(--mono);font-size:clamp(22px,5vw,40px);font-weight:700;letter-spacing:-.03em;color:#e8edf8;line-height:1.1;margin-bottom:8px;overflow-wrap:break-word}
 .pulse-tagline{font-family:var(--sans);font-size:15px;color:rgba(255,255,255,.45);margin-bottom:12px;font-style:italic}
 .pulse-meta-row{display:flex;align-items:center;gap:16px;flex-wrap:wrap;margin-bottom:14px}
 .pulse-meta{font-family:var(--mono);font-size:11px;color:rgba(255,255,255,.3)}
 .pulse-cta-row{display:flex;gap:8px;flex-wrap:wrap}
+@media(max-width:400px){.pulse-cta{flex:1;justify-content:center}}
 .pulse-cta{display:inline-flex;align-items:center;gap:5px;padding:8px 14px;border-radius:var(--r-sm);font-family:var(--mono);font-size:11px;font-weight:700;text-decoration:none;transition:all .13s;letter-spacing:.03em}
 .pulse-cta.primary{background:var(--signal);color:var(--ink)}
 .pulse-cta.ghost{background:transparent;color:var(--chalk);border:1px solid var(--rule)}
@@ -91,7 +92,7 @@ body{font-family:var(--sans);background:var(--ink);color:#e8edf8;min-height:100v
 .story-hero{background:var(--ink2);border:1px solid rgba(26,255,107,.2);border-radius:var(--r-lg);overflow:hidden}
 .story-hero-top{padding:20px 20px 16px;border-bottom:1px solid var(--rule2)}
 .story-kicker{font-family:var(--mono);font-size:9px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--signal);margin-bottom:8px}
-.story-hed{font-family:var(--mono);font-size:clamp(18px,3.5vw,26px);font-weight:700;color:#e8edf8;letter-spacing:-.02em;line-height:1.2;margin-bottom:10px}
+.story-hed{font-family:var(--mono);font-size:clamp(16px,4vw,26px);font-weight:700;color:#e8edf8;letter-spacing:-.02em;line-height:1.2;margin-bottom:10px}
 .story-take{font-family:var(--sans);font-size:15px;color:rgba(255,255,255,.65);line-height:1.6}
 .story-take strong{color:#e8edf8}
 .story-hero-bottom{padding:14px 20px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
@@ -132,7 +133,7 @@ body{font-family:var(--sans);background:var(--ink);color:#e8edf8;min-height:100v
 .insight-card.rivalry{border-left:3px solid rgba(255,77,77,.5)}
 .insight-kicker{font-family:var(--mono);font-size:9px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.35);margin-bottom:6px;display:flex;align-items:center;gap:8px}
 .insight-hed{font-family:var(--mono);font-size:16px;font-weight:700;color:#e8edf8;letter-spacing:-.01em;line-height:1.25;margin-bottom:8px}
-.insight-take{font-family:var(--sans);font-size:14px;color:rgba(255,255,255,.6);line-height:1.55}
+.insight-take{font-family:var(--sans);font-size:14px;color:rgba(255,255,255,.6);line-height:1.55;overflow-wrap:break-word}
 .insight-take strong{color:#e8edf8}
 .insight-footer{display:flex;align-items:center;justify-content:space-between;margin-top:12px;flex-wrap:wrap;gap:8px}
 .insight-stats{display:flex;gap:12px;flex-wrap:wrap}
@@ -160,7 +161,7 @@ body{font-family:var(--sans);background:var(--ink);color:#e8edf8;min-height:100v
 .social-card{background:var(--ink2);border:1px solid var(--rule);border-radius:var(--r-lg);padding:14px 16px}
 .social-type{font-family:var(--mono);font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.3);margin-bottom:8px}
 .social-text{font-family:var(--sans);font-size:14px;color:rgba(255,255,255,.7);line-height:1.55;margin-bottom:10px}
-.social-copy-btn{display:inline-flex;align-items:center;gap:5px;padding:6px 12px;border-radius:var(--r-sm);font-family:var(--mono);font-size:10px;font-weight:700;background:transparent;border:1px solid var(--rule);color:var(--chalk);cursor:pointer;transition:all .13s}
+.social-copy-btn{display:inline-flex;align-items:center;gap:5px;padding:8px 14px;border-radius:var(--r-sm);font-family:var(--mono);font-size:11px;font-weight:700;background:transparent;border:1px solid var(--rule);color:var(--chalk);cursor:pointer;transition:all .13s;min-height:44px}
 .social-copy-btn:hover{border-color:var(--signal);color:var(--signal)}
 
 /* DEBATE */
@@ -214,7 +215,10 @@ body{font-family:var(--sans);background:var(--ink);color:#e8edf8;min-height:100v
 .pulse-footer a{color:rgba(255,255,255,.3);text-decoration:none}
 .pulse-footer a:hover{color:var(--signal)}
 
-@media(max-width:560px){.change-table th:nth-child(3),.change-table td:nth-child(3){display:none}}
+.movers-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media(max-width:480px){.movers-grid{grid-template-columns:1fr!important}}
+@media(max-width:560px){.change-table th:nth-child(3),.change-table td:nth-child(3),.change-table th:nth-child(5),.change-table td:nth-child(5){display:none}}
+@media(max-width:400px){.change-table th:nth-child(4),.change-table td:nth-child(4){display:none}}
 </style>
 </head>
 <body>
@@ -828,7 +832,7 @@ function renderArticle(data){
     ${hasPrev?`<div class="pulse-section">
       <div class="sec-eyebrow">Section 2</div>
       <div class="sec-title">📈 Biggest Movers</div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px" class="movers-grid">
         <div>
           <div style="font-family:var(--mono);font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--gain-text);margin-bottom:7px">↑ Rising</div>
           <div class="mover-list">${renderMovers(teams,'up',hasPrev)||'<div style="font-family:var(--mono);font-size:11px;color:var(--chalk)">No significant risers.</div>'}</div>
