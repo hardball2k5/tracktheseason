@@ -95,6 +95,16 @@ a:hover{text-decoration:underline}
 footer.site{border-top:1px solid var(--rule);padding:20px 0;margin-top:40px;font-family:var(--mono);font-size:11px;color:rgba(255,255,255,.2);display:flex;flex-wrap:wrap;gap:10px;justify-content:space-between;align-items:center}
 footer.site a{color:rgba(255,255,255,.3);text-decoration:none}
 footer.site a:hover{color:var(--signal)}
+
+html,body{overflow-x:hidden}
+h1{overflow-wrap:break-word;word-break:break-word}
+@media(max-width:600px){
+  .related-grid{grid-template-columns:1fr!important}
+  .rivalry-grid{grid-template-columns:1fr!important}
+  .label-grid{grid-template-columns:1fr!important}
+  .cta-btn{display:flex;justify-content:center;text-align:center}
+}
+
 </style>
 </head>
 <body>
