@@ -25,9 +25,16 @@ export const config = { runtime: 'edge' };
 const MLB          = 'https://statsapi.mlb.com/api/v1';
 const SEASON_GAMES = 162;
 const CURRENT_YEAR = new Date().getFullYear();
-const MIN_STARTS   = 5;   /* per pitcher */
-const MIN_DUO      = 10;  /* combined top-2 starts */
-const MIN_GAMES    = 20;  /* team games for qualification */
+const MIN_GAMES    = 20;  /* team games for qualification — always */
+
+/* Dynamic minimums based on how deep into the season we are.
+   More games = higher bar required for reliable signal. */
+function getMinimums(teamGamesPlayed) {
+  if (teamGamesPlayed >= 121) return { minStarts: 10, minDuo: 18 };
+  if (teamGamesPlayed >= 81)  return { minStarts: 8,  minDuo: 15 };
+  if (teamGamesPlayed >= 41)  return { minStarts: 6,  minDuo: 12 };
+  return                             { minStarts: 4,  minDuo: 8  };
+}
 
 const TEAM_IDS = [
   108,109,110,111,112,113,114,115,116,117,118,119,120,121,
@@ -105,6 +112,7 @@ async function getGameStarter(gamePk, teamId) {
 
 /* ── Rotation analysis ─────────────────────────────── */
 function computeRotation(games, starterMap, teamId) {
+  const { minStarts, minDuo } = getMinimums(games.length);
   const pitchers = {};
   for (const g of games) {
     const s = starterMap.get(g.gamePk);
@@ -121,9 +129,9 @@ function computeRotation(games, starterMap, teamId) {
     if (s.runsAllowed != null) p.runsAllowed += s.runsAllowed;
   }
 
-  /* Compute per-pitcher metrics, filter by MIN_STARTS */
+  /* Compute per-pitcher metrics, filter by dynamic MIN_STARTS */
   const all = Object.values(pitchers)
-    .filter(p => p.starts >= MIN_STARTS)
+    .filter(p => p.starts >= minStarts)
     .map(p => ({
       ...p,
       winPct:     p.starts ? p.wins / p.starts : 0,
@@ -163,7 +171,9 @@ function computeRotation(games, starterMap, teamId) {
   const rotGap   = duoPace - restPace;
 
   /* Qualified check */
-  const qualified = duoStarts >= MIN_DUO && games.length >= MIN_GAMES;
+  const qualified = duoStarts >= minDuo && games.length >= MIN_GAMES;
+  /* Small sample warning — qualified but borderline */
+  const smallSample = qualified && duoStarts < minDuo + 4;
 
   /* Signal label */
   let label = 'Staff in Flux';
@@ -184,7 +194,10 @@ function computeRotation(games, starterMap, teamId) {
     rotationGap: rotGap,
     label,
     qualified,
+    smallSample,
     gamesAnalyzed: games.length,
+    duoStarts,
+    minDuo,
   };
 }
 
@@ -293,7 +306,7 @@ export default async function handler(req) {
         duo?.wins||0, duo?.losses||0, duo?.pace||0, duo?.rs||0, duo?.ra||0, duo?.diff||0,
         rest?.wins||0, rest?.losses||0, rest?.pace||0, rest?.rs||0, rest?.ra||0, rest?.diff||0,
         rotation?.rotationGap||0, rotation?.label||'Staff in Flux',
-        rotation?.qualified?1:0, rotation?.gamesAnalyzed||0,
+        rotation?.qualified?1:0, rotation?.smallSample?1:0, rotation?.gamesAnalyzed||0, rotation?.duoStarts||0,
       ]);
     }
     console.log(`[pitching-board] Processed batch ${i/BATCH+1}`);
