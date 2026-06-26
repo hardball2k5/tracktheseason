@@ -170,6 +170,7 @@ body{font-family:var(--sans);background:var(--ink);color:#e8edf8;min-height:100v
     <p class="hero-sub">Which teams have the best 1–2 punch, the biggest rotation cliff, and the deepest rotations?</p>
     <p class="hero-tagline">Starter Signal compares how each team performs based on who starts. The Pitching Board turns that into a league-wide view.</p>
     <div class="hero-meta" id="heroMeta">Loading…</div>
+    <div id="sampleNote" style="display:none;font-family:var(--sans);font-size:12px;color:rgba(249,217,110,.6);margin-top:6px;line-height:1.5"></div>
     <div class="share-row">
       <button class="share-btn primary" onclick="sharePage()">⬆ Share Board</button>
       <a class="share-btn ghost" href="/chaos-report">📊 Social Graphics</a>
@@ -196,6 +197,13 @@ const SEASON_GAMES = 162;
 
 /* Published CSV URL for PitchingBoard tab — set after first refresh run */
 const PITCHING_CSV = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTXMt3G9Q0ZroM_P5jUaetEBCqag8q8KTzlNIzH7LM7euuEQWH7LHa-VFbzpIkTrB911K70L39v5Zd3/pub?gid=PITCHING_GID&single=true&output=csv';
+
+function getMinimums(gp){
+  if(gp>=121) return{minStarts:10,minDuo:18};
+  if(gp>=81)  return{minStarts:8, minDuo:15};
+  if(gp>=41)  return{minStarts:6, minDuo:12};
+  return             {minStarts:4, minDuo:8};
+}
 
 const TEAM_SLUGS = {
   108:'angels',109:'diamondbacks',110:'orioles',111:'red-sox',112:'cubs',
@@ -234,9 +242,11 @@ function parseRow(r){
     duo:       {w:n('duow'),l:n('duol'),pace:n('duopace'),rs:n('duors'),ra:n('duora'),diff:n('duodiff')},
     rest:      {w:n('restw'),l:n('restl'),pace:n('restpace'),rs:n('restrs'),ra:n('restra'),diff:n('restdiff')},
     gap:       n('rotationgap'),
-    label:     r.signallabel||'Staff in Flux',
-    qualified: r.qualified==='1'||r.qualified===1,
-    gp:        n('gamesanalyzed'),
+    label:      r.signallabel||'Staff in Flux',
+    qualified:  r.qualified==='1'||r.qualified===1,
+    smallSample:r.smallsample==='1'||r.smallsample===1,
+    duoStarts:  n('duostarts')||0,
+    gp:         n('gamesanalyzed'),
   };
 }
 
@@ -267,8 +277,14 @@ async function loadLive(){
       const res=await fetch(`/api/pitcher-splits?teamId=${id}&season=${CURRENT_YEAR}`);
       const d=await res.json();
       if(d.error) return null;
+      const gp2=d.gamesAnalyzed||0;
+      const {minDuo:md}=getMinimums(gp2);
+      const duoStarts2=(d.splits?.[0]?.starts||0)+(d.splits?.[1]?.starts||0);
+      const qualified2=duoStarts2>=md&&gp2>=20;
+      const smallSample2=qualified2&&duoStarts2<md+4;
       return{
-        teamId:id, teamName:TEAM_NAMES[id]||'', teamSlug:TEAM_SLUGS[id]||'', date:'live', qualified:true,
+        teamId:id, teamName:TEAM_NAMES[id]||'', teamSlug:TEAM_SLUGS[id]||'', date:'live',
+        qualified:qualified2, smallSample:smallSample2, duoStarts:duoStarts2,
         gp:d.gamesAnalyzed||0, label:d.splits?.length>=2?'':'Staff in Flux',
         top1:d.splits?.[0]?{name:d.splits[0].name,starts:d.splits[0].starts,w:d.splits[0].wins,l:d.splits[0].losses,pace:d.splits[0].pace,rs:d.splits[0].avgScored,ra:d.splits[0].avgAllowed,diff:d.splits[0].runDiff}:null,
         top2:d.splits?.[1]?{name:d.splits[1].name,starts:d.splits[1].starts,w:d.splits[1].wins,l:d.splits[1].losses,pace:d.splits[1].pace,rs:d.splits[1].avgScored,ra:d.splits[1].avgAllowed,diff:d.splits[1].runDiff}:null,
@@ -355,6 +371,7 @@ function renderRanking(teams, sortFn, cols, title, sub, sectionLabel, n=10){
       </div>
       <div class="rank-stats">${cols.map(c=>c(t)).join('')}</div>
       <span class="signal-badge ${badgeCls(t.label)}">${t.label}</span>
+      ${t.smallSample?'<span class="signal-badge badge-sample" style="font-size:8px;padding:1px 6px">⚠️ Small sample</span>':''}
     </div>`;
   }).join('');
 
@@ -399,7 +416,7 @@ function renderTable(teams){
       <td>${dr}</td>
       <td class="${paceClass(t.rest.pace||0)}">${t.rest.pace||'—'}W</td>
       <td class="${gapClass(t.gap||0)}">${t.gap!=null?(t.gap>=0?'+':'')+t.gap+'W':'—'}</td>
-      <td><span class="signal-badge ${badgeCls(t.label)}">${t.label}</span></td>
+      <td><span class="signal-badge ${badgeCls(t.label)}">${t.label}</span>${t.smallSample?" ⚠️":""}</td>
     </tr>`;
   }).join('');
 
@@ -460,6 +477,11 @@ async function main(){
   _allTeams=teams;
   const date=teams[0]?.date||'live';
   const qualified=teams.filter(t=>t.qualified).length;
+  const smallCount=teams.filter(t=>t.smallSample).length;
+  if(smallCount>0){
+    const note=document.getElementById('sampleNote');
+    if(note){note.style.display='block';note.textContent=`⚠️ ${smallCount} team${smallCount!==1?'s':''} flagged as small sample — duo has fewer than required starts for this point in the season.`;}
+  }
   document.getElementById('heroMeta').textContent=`${qualified} of 30 teams · ${date==='live'?'Live data':'Data from '+date} · Completed games only`;
 
   const q=teams.filter(t=>t.qualified&&t.duo.pace>0&&t.rest.pace>0&&t.gap!=null);
