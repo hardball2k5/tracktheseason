@@ -343,7 +343,7 @@ input[type="number"].ctrl-input::-webkit-inner-spin-button{-webkit-appearance:no
 .badge-warn{background:var(--caution-bg);color:var(--caution-text)}
 .pace-story-card{background:var(--ink3);border:1px solid rgba(26,255,107,.15);border-radius:var(--r-md);padding:14px;margin-bottom:10px}
 .pace-story-title{font-family:var(--mono);font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--signal);margin-bottom:8px}
-.pace-story-text{font-family:var(--sans);font-size:14px;line-height:1.6;color:#e8edf8}
+.pace-story-text{font-family:var(--sans);font-size:14px;line-height:1.6;color:#e8edf8;overflow-wrap:break-word;word-break:break-word}
 .pace-story-text strong{color:var(--signal);font-weight:600}
 .insight-share{display:flex;gap:7px;margin-top:12px;flex-wrap:wrap}
 .share-btn{display:inline-flex;align-items:center;gap:5px;font-family:var(--mono);font-size:11px;font-weight:600;padding:6px 12px;border-radius:var(--r-sm);cursor:pointer;transition:all .13s;letter-spacing:.02em}
@@ -478,12 +478,12 @@ tr.cur-row td{background:rgba(26,255,107,.05)}
   font-family:var(--mono);font-size:12px;font-weight:700;
   letter-spacing:.02em;
 }
-.trend-horizon-rows{display:flex;gap:8px;flex-wrap:wrap}
+.trend-horizon-rows{display:flex;gap:6px;flex-wrap:nowrap;overflow-x:auto;-webkit-overflow-scrolling:touch}
 .trend-row{
   display:flex;align-items:center;gap:8px;
   background:var(--ink2);border:1px solid var(--rule);
-  border-radius:var(--r-sm);padding:8px 12px;
-  flex:1;min-width:0;
+  border-radius:var(--r-sm);padding:8px 10px;
+  flex:1;min-width:90px;flex-shrink:0;
 }
 .trend-n{font-family:var(--mono);font-size:10px;color:var(--chalk);white-space:nowrap}
 .trend-rec{font-family:var(--mono);font-size:15px;font-weight:700;color:#e8edf8;margin-left:auto}
@@ -652,8 +652,8 @@ tr.cur-row td{background:rgba(26,255,107,.05)}
       <div class="hero-eyebrow" id="heroEyebrow">MLB · — season</div>
       <div class="hero-name" id="heroName">—</div>
       <div class="hero-record" id="heroRecord"></div>
+      <span id="heroBadge" class="hero-badge badge-neu" style="display:inline-flex;margin-top:6px;font-size:10px;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap"></span>
     </div>
-    <span id="heroBadge" class="hero-badge badge-neu"></span>
     <a id="compareTeamBtn" href="/compare" class="compare-my-team-btn" style="display:none">⚔️ Compare My Team →</a>
   </div>
 
