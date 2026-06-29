@@ -1,0 +1,583 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>MLB Pace Standings — Who's Heating Up and Cooling Off | Track The Season</title>
+<meta name="description" content="See which MLB teams are outperforming or underperforming their season pace. Compare Season Pace vs Last 10, Last 20 and Last 30 pace to identify the hottest and coldest teams in baseball."/>
+<meta property="og:title" content="MLB Pace Standings | Track The Season"/>
+<meta property="og:description" content="Traditional standings tell you where teams are. Pace Standings show where they're headed."/>
+<meta property="og:url" content="https://tracktheseason.com/pace-standings"/>
+<meta property="og:site_name" content="Track The Season"/>
+<meta property="og:type" content="website"/>
+<link rel="canonical" href="https://tracktheseason.com/pace-standings"/>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-DCSQPGSY1D"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-DCSQPGSY1D',{send_page_view:false});</script>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --ink:#0f1014;--ink2:#1a1d24;--ink3:#252830;
+  --chalk:#8a8a82;--rule:rgba(255,255,255,.07);--rule2:rgba(255,255,255,.04);
+  --signal:#1aff6b;--gain:#4ecb77;--loss:#f47570;--caution:#f9d96e;
+  --logo-bg:#fff;--logo-border:rgba(0,0,0,.1);--logo-shadow:0 2px 8px rgba(0,0,0,.15);
+  --r-sm:6px;--r-md:10px;--r-lg:14px;--r-pill:999px;
+  --mono:'IBM Plex Mono',monospace;--sans:'IBM Plex Sans',sans-serif;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{width:100%;overflow-x:hidden}
+body{font-family:var(--sans);background:var(--ink);color:#e8edf8;min-height:100vh;
+  background-image:radial-gradient(ellipse 100% 30% at 50% -2%,rgba(26,255,107,.05) 0%,transparent 60%)}
+
+/* NAV */
+.nav{padding:11px 0;border-bottom:1px solid var(--rule);position:sticky;top:0;z-index:100;background:rgba(15,16,20,.96);backdrop-filter:blur(16px)}
+.nav-inner{max-width:980px;margin:0 auto;padding:0 16px;display:flex;align-items:center;gap:10px}
+.back-btn{font-family:var(--mono);font-size:12px;font-weight:600;color:var(--chalk);text-decoration:none;border:1px solid var(--rule);border-radius:var(--r-sm);padding:5px 11px;transition:all .13s}
+.back-btn:hover{color:#e8edf8;border-color:rgba(255,255,255,.2)}
+.nav-logo{display:flex;align-items:center;gap:8px;text-decoration:none;margin-left:auto}
+.nav-mono{width:28px;height:28px;background:var(--signal);border-radius:5px;display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:10px;font-weight:700;color:var(--ink)}
+.nav-word{font-family:var(--mono);font-size:13px;font-weight:700;color:#e8edf8}
+.nav-word span{color:var(--signal)}
+
+/* LAYOUT */
+.wrap{max-width:980px;margin:0 auto;padding:0 16px 80px}
+
+/* HERO */
+.hero{padding:28px 0 22px;border-bottom:1px solid var(--rule)}
+.eyebrow{font-family:var(--mono);font-size:9px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--signal);margin-bottom:10px}
+.hed{font-family:var(--mono);font-size:clamp(24px,5vw,44px);font-weight:700;letter-spacing:-.03em;line-height:1.05;margin-bottom:8px}
+.sub{font-family:var(--sans);font-size:15px;color:rgba(255,255,255,.45);max-width:600px;line-height:1.55;margin-bottom:14px}
+.hero-meta{font-family:var(--mono);font-size:11px;color:rgba(255,255,255,.25)}
+.share-row{display:flex;gap:7px;flex-wrap:wrap;margin-top:14px}
+.share-btn{display:inline-flex;align-items:center;gap:5px;padding:8px 14px;border-radius:var(--r-sm);font-family:var(--mono);font-size:11px;font-weight:700;cursor:pointer;border:none;transition:all .13s;text-decoration:none}
+.share-btn.primary{background:var(--signal);color:var(--ink)}
+.share-btn.ghost{background:transparent;color:var(--chalk);border:1px solid var(--rule)}
+.share-btn.ghost:hover{border-color:var(--signal);color:var(--signal)}
+
+/* EXPLAINER */
+.explainer{background:var(--ink2);border:1px solid var(--rule);border-radius:var(--r-lg);padding:16px 18px;margin-top:20px}
+.explainer-title{font-family:var(--mono);font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.3);margin-bottom:8px}
+.explainer-body{font-family:var(--sans);font-size:14px;color:rgba(255,255,255,.5);line-height:1.6}
+
+/* SECTION */
+.section{padding:24px 0 0}
+.sec-label{font-family:var(--mono);font-size:9px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:rgba(255,255,255,.25);margin-bottom:4px;display:flex;align-items:center;gap:8px}
+.sec-label::after{content:'';flex:1;height:1px;background:var(--rule)}
+.sec-title{font-family:var(--mono);font-size:18px;font-weight:700;color:#e8edf8;letter-spacing:-.02em;margin-bottom:12px}
+
+/* SUMMARY CARDS */
+.summary-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+@media(max-width:680px){.summary-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:360px){.summary-grid{grid-template-columns:1fr}}
+.sum-card{background:var(--ink2);border:1px solid var(--rule);border-radius:var(--r-lg);padding:14px 16px}
+.sum-card.heat{border-top:2px solid var(--gain)}
+.sum-card.cold{border-top:2px solid var(--loss)}
+.sum-card.steady{border-top:2px solid rgba(255,255,255,.2)}
+.sum-card.avg{border-top:2px solid var(--caution)}
+.sum-label{font-family:var(--mono);font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.3);margin-bottom:8px}
+.sum-logo{width:30px;height:30px;background:var(--logo-bg);border:1px solid var(--logo-border);border-radius:var(--r-sm);box-shadow:var(--logo-shadow);display:flex;align-items:center;justify-content:center;overflow:hidden;margin-bottom:6px}
+.sum-logo img{width:22px;height:22px;object-fit:contain}
+.sum-team{font-family:var(--mono);font-size:13px;font-weight:700;color:#e8edf8;margin-bottom:3px}
+.sum-delta{font-family:var(--mono);font-size:28px;font-weight:700;letter-spacing:-.03em;line-height:1;margin-bottom:3px}
+.sum-delta.pos{color:var(--gain)}
+.sum-delta.neg{color:var(--loss)}
+.sum-delta.neu{color:var(--chalk)}
+.sum-detail{font-family:var(--sans);font-size:12px;color:rgba(255,255,255,.35);line-height:1.4}
+.sum-link{font-family:var(--mono);font-size:9px;font-weight:700;color:var(--signal);text-decoration:none;letter-spacing:.06em;display:block;margin-top:7px}
+
+/* FILTERS */
+.filter-bar{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px}
+.filter-btn{padding:5px 12px;border-radius:var(--r-pill);border:1px solid var(--rule);background:transparent;color:var(--chalk);font-family:var(--mono);font-size:10px;font-weight:700;cursor:pointer;transition:all .13s;letter-spacing:.04em}
+.filter-btn.active{background:var(--signal);border-color:var(--signal);color:var(--ink)}
+.filter-btn:hover:not(.active){border-color:rgba(255,255,255,.2);color:#e8edf8}
+.filter-divider{width:1px;height:20px;background:var(--rule);flex-shrink:0;align-self:center}
+
+/* WINDOW SELECTOR */
+.window-row{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px}
+.win-btn{padding:4px 10px;border-radius:var(--r-pill);border:1px solid var(--rule);background:transparent;color:var(--chalk);font-family:var(--mono);font-size:10px;font-weight:700;cursor:pointer;transition:all .13s}
+.win-btn.active{background:rgba(26,255,107,.1);border-color:rgba(26,255,107,.4);color:var(--signal)}
+
+/* TREND BADGE */
+.trend-badge{display:inline-flex;align-items:center;padding:2px 8px;border-radius:var(--r-pill);font-family:var(--mono);font-size:9px;font-weight:700;letter-spacing:.05em;white-space:nowrap}
+.t-surge{background:rgba(26,255,107,.12);color:var(--gain);border:1px solid rgba(26,255,107,.2)}
+.t-heat{background:rgba(78,203,119,.1);color:#5bd88a;border:1px solid rgba(78,203,119,.2)}
+.t-steady{background:rgba(255,255,255,.05);color:rgba(255,255,255,.4);border:1px solid rgba(255,255,255,.1)}
+.t-cool{background:rgba(244,117,112,.08);color:var(--loss);border:1px solid rgba(244,117,112,.15)}
+.t-slide{background:rgba(244,117,112,.15);color:#f25b56;border:1px solid rgba(244,117,112,.25)}
+
+/* DELTA COLORS */
+.d-pos{color:var(--gain);font-weight:700}
+.d-neg{color:var(--loss);font-weight:700}
+.d-neu{color:var(--chalk)}
+
+/* TABLE */
+.table-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
+.ps-table{width:100%;border-collapse:collapse;font-family:var(--mono)}
+.ps-table th{font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.3);padding:7px 10px;text-align:right;border-bottom:1px solid var(--rule);white-space:nowrap;cursor:pointer;transition:color .13s;user-select:none}
+.ps-table th:first-child,.ps-table th:nth-child(2),.ps-table th:nth-child(3){text-align:left}
+.ps-table th:hover{color:rgba(26,255,107,.7)}
+.ps-table th.sorted{color:var(--signal)}
+.ps-table td{padding:10px 10px;font-size:12px;border-bottom:1px solid var(--rule2);text-align:right;color:rgba(255,255,255,.7);vertical-align:middle}
+.ps-table td:first-child,.ps-table td:nth-child(2),.ps-table td:nth-child(3){text-align:left}
+.ps-table tr:hover td{background:rgba(255,255,255,.02)}
+.ps-rank{font-size:14px;font-weight:700;color:rgba(255,255,255,.2);min-width:24px;display:inline-block;text-align:center}
+.ps-rank.top3{color:rgba(26,255,107,.5)}
+.ps-team-cell{display:flex;align-items:center;gap:8px}
+.ps-logo{width:26px;height:26px;background:var(--logo-bg);border:1px solid var(--logo-border);border-radius:4px;box-shadow:var(--logo-shadow);display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0}
+.ps-logo img{width:20px;height:20px;object-fit:contain}
+.ps-name{font-weight:700;color:#e8edf8;text-decoration:none}
+.ps-name:hover{color:var(--signal)}
+.pace-val{font-size:13px;font-weight:700}
+.pace-high{color:var(--gain)}
+.pace-mid{color:rgba(255,255,255,.65)}
+.pace-low{color:var(--loss)}
+
+/* MOBILE CARDS */
+.mobile-cards{display:none;flex-direction:column;gap:7px}
+@media(max-width:600px){
+  .table-wrap{display:none}
+  .mobile-cards{display:flex}
+}
+.mob-card{background:var(--ink2);border:1px solid var(--rule);border-radius:var(--r-lg);padding:12px 14px;display:flex;align-items:center;gap:12px;text-decoration:none;color:inherit;transition:border-color .13s}
+.mob-card:hover{border-color:rgba(255,255,255,.15)}
+.mob-logo{width:38px;height:38px;background:var(--logo-bg);border:1px solid var(--logo-border);border-radius:var(--r-sm);box-shadow:var(--logo-shadow);display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0}
+.mob-logo img{width:28px;height:28px;object-fit:contain}
+.mob-body{flex:1;min-width:0}
+.mob-name{font-family:var(--mono);font-size:14px;font-weight:700;color:#e8edf8;margin-bottom:3px}
+.mob-paces{font-family:var(--mono);font-size:11px;color:rgba(255,255,255,.4);margin-bottom:4px}
+.mob-right{display:flex;flex-direction:column;align-items:flex-end;gap:4px;flex-shrink:0}
+.mob-delta{font-family:var(--mono);font-size:22px;font-weight:700;letter-spacing:-.02em}
+
+/* DIVISION CARDS */
+.div-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:10px}
+.div-card{background:var(--ink2);border:1px solid var(--rule);border-radius:var(--r-lg);overflow:hidden}
+.div-header{padding:10px 14px;border-bottom:1px solid var(--rule2);font-family:var(--mono);font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.35)}
+.div-team{display:flex;align-items:center;gap:10px;padding:9px 14px;border-bottom:1px solid var(--rule2);text-decoration:none;transition:background .13s}
+.div-team:last-child{border-bottom:none}
+.div-team:hover{background:rgba(255,255,255,.02)}
+.div-team-logo{width:22px;height:22px;background:var(--logo-bg);border:1px solid var(--logo-border);border-radius:3px;box-shadow:var(--logo-shadow);display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0}
+.div-team-logo img{width:16px;height:16px;object-fit:contain}
+.div-name{font-family:var(--mono);font-size:12px;font-weight:700;color:#e8edf8;flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.div-pace-info{font-family:var(--mono);font-size:11px;color:rgba(255,255,255,.4);white-space:nowrap}
+.div-delta-pill{font-family:var(--mono);font-size:10px;font-weight:700;padding:2px 7px;border-radius:var(--r-pill);flex-shrink:0;white-space:nowrap}
+.dp-pos{background:rgba(26,255,107,.1);color:var(--gain)}
+.dp-neg{background:rgba(244,117,112,.1);color:var(--loss)}
+.dp-neu{background:rgba(255,255,255,.05);color:var(--chalk)}
+
+/* LOADING */
+.loading{text-align:center;padding:64px 20px}
+.spinner{width:32px;height:32px;border-radius:50%;border:3px solid var(--rule);border-top-color:var(--signal);animation:spin .75s linear infinite;margin:0 auto 14px}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loading-text{font-family:var(--mono);font-size:13px;color:var(--chalk)}
+
+footer.site{border-top:1px solid var(--rule);padding:20px 0;margin-top:40px;font-family:var(--mono);font-size:11px;color:rgba(255,255,255,.2);display:flex;flex-wrap:wrap;gap:10px;justify-content:space-between;align-items:center}
+footer.site a{color:rgba(255,255,255,.3);text-decoration:none}
+footer.site a:hover{color:var(--signal)}
+</style>
+</head>
+<body>
+<nav class="nav">
+  <div class="nav-inner">
+    <a href="/" class="back-btn">← Home</a>
+    <a href="/" class="nav-logo">
+      <div class="nav-mono">TTS</div>
+      <div class="nav-word">TRACK THE <span>SEASON</span></div>
+    </a>
+  </div>
+</nav>
+
+<div class="wrap">
+  <div class="hero">
+    <div class="eyebrow">Track The Season</div>
+    <h1 class="hed">Pace Standings</h1>
+    <p class="sub">Traditional standings tell you where teams are. Pace Standings show where they're headed — comparing full-season pace to recent form.</p>
+    <div class="hero-meta" id="heroMeta">Loading…</div>
+    <div class="share-row">
+      <button class="share-btn primary" onclick="sharePage()">⬆ Share</button>
+      <a class="share-btn ghost" href="/">All Teams</a>
+      <a class="share-btn ghost" href="/chaos-report">📊 Chaos Report</a>
+    </div>
+  </div>
+
+  <div class="explainer" style="margin-top:16px">
+    <div class="explainer-title">What are Pace Standings?</div>
+    <div class="explainer-body">Traditional standings reward what happened over the entire season. Pace Standings compare a team's full-season pace with how they've played recently — identifying clubs that are accelerating, cooling off, or holding steady before the standings fully reflect those changes. <strong style="color:#e8edf8">Momentum Delta = L20 Pace − Season Pace.</strong></div>
+  </div>
+
+  <div id="pageContent">
+    <div class="loading"><div class="spinner"></div><div class="loading-text">Loading Pace Standings…</div></div>
+  </div>
+</div>
+
+<footer class="site wrap">
+  <a href="/">TRACK THE <span style="color:var(--signal)">SEASON</span></a>
+  <span>Data: MLB Stats API · Not affiliated with MLB · <a href="mailto:support@tracktheseason.com">support@tracktheseason.com</a></span>
+</footer>
+
+<script>
+/* ══════════════════════════════════════════════════════════
+   PACE STANDINGS
+   Compares full-season pace to rolling window paces.
+   Windows are data-driven — add more without code changes.
+══════════════════════════════════════════════════════════ */
+const SEASON_GAMES = 162;
+const MLB_API      = 'https://statsapi.mlb.com/api/v1';
+const CURRENT_YEAR = new Date().getFullYear();
+
+const TEAM_SLUGS = {
+  108:'angels',109:'diamondbacks',110:'orioles',111:'red-sox',112:'cubs',
+  113:'reds',114:'guardians',115:'rockies',116:'tigers',117:'astros',
+  118:'royals',119:'dodgers',120:'nationals',121:'mets',133:'athletics',
+  134:'pirates',135:'padres',136:'mariners',137:'giants',138:'cardinals',
+  139:'rays',140:'rangers',141:'blue-jays',142:'twins',143:'phillies',
+  144:'braves',145:'white-sox',146:'marlins',147:'yankees',158:'brewers',
+};
+
+const DIVISIONS = [
+  {name:'AL East',  teams:[110,147,111,141,139]},
+  {name:'AL Central',teams:[145,114,118,116,142]},
+  {name:'AL West',  teams:[117,108,133,136,140]},
+  {name:'NL East',  teams:[144,143,121,146,120]},
+  {name:'NL Central',teams:[112,158,113,134,138]},
+  {name:'NL West',  teams:[119,109,137,135,115]},
+];
+
+/* ── Windows — extend this array to add more ────────── */
+const WINDOWS = [
+  {key:'l10',  label:'L10',  n:10},
+  {key:'l20',  label:'L20',  n:20},
+  {key:'l30',  label:'L30',  n:30},
+];
+
+/* ── Trend thresholds (based on L20 delta) ──────────── */
+function getTrend(delta) {
+  if (delta >=  20) return {label:'🔥 Surging',   cls:'t-surge'};
+  if (delta >=  10) return {label:'📈 Heating Up', cls:'t-heat'};
+  if (delta >= -9)  return {label:'➖ Steady',     cls:'t-steady'};
+  if (delta >= -19) return {label:'📉 Cooling',    cls:'t-cool'};
+  return                   {label:'❄️ Sliding',    cls:'t-slide'};
+}
+
+/* ── Pace color ─────────────────────────────────────── */
+function paceClass(p) {
+  if (p >= 95) return 'pace-high';
+  if (p >= 81) return 'pace-mid';
+  return 'pace-low';
+}
+
+function deltaClass(d) {
+  if (d > 0)  return 'd-pos';
+  if (d < 0)  return 'd-neg';
+  return 'd-neu';
+}
+
+function sign(n) { return n > 0 ? `+${n}` : String(n); }
+
+const logoUrl  = id => `https://www.mlbstatic.com/team-logos/${id}.svg`;
+const teamUrl  = id => { const s=TEAM_SLUGS[id]; return s ? `/${s}` : `/tracker.html?team=${id}`; };
+const projPace = (wins, games) => games > 0 ? Math.round((wins / games) * SEASON_GAMES) : 0;
+
+/* ── Data fetching ──────────────────────────────────── */
+async function fetchSchedule(teamId) {
+  const res  = await fetch(`${MLB_API}/schedule?sportId=1&teamId=${teamId}&season=${CURRENT_YEAR}&gameTypes=R`);
+  const data = await res.json();
+  const games = [];
+  for (const d of data.dates || []) {
+    for (const g of d.games || []) {
+      if (g.status?.abstractGameState !== 'Final') continue;
+      const h = g.teams?.home, a = g.teams?.away;
+      if (h?.score == null || a?.score == null || h.score === a.score) continue;
+      const isHome = String(h.team.id) === String(teamId);
+      games.push({ win: isHome ? h.score > a.score : a.score > h.score, teamId });
+    }
+  }
+  return games;
+}
+
+async function loadAllTeams() {
+  const TEAM_IDS = Object.keys(TEAM_SLUGS).map(Number);
+  const BATCH = 6;
+  const results = [];
+  for (let i = 0; i < TEAM_IDS.length; i += BATCH) {
+    const batch = TEAM_IDS.slice(i, i + BATCH);
+    const settled = await Promise.allSettled(batch.map(async id => {
+      const games = await fetchSchedule(id);
+      const gp    = games.length;
+      if (gp < 10) return null;
+      const wins  = games.filter(g => g.win).length;
+      const season = projPace(wins, gp);
+
+      /* Compute all window paces */
+      const windowPaces = {};
+      for (const w of WINDOWS) {
+        const slice = games.slice(-w.n);
+        const ww    = slice.filter(g => g.win).length;
+        windowPaces[w.key] = slice.length >= Math.min(w.n, gp) ? projPace(ww, slice.length) : null;
+      }
+
+      const l20Delta = windowPaces.l20 != null ? windowPaces.l20 - season : null;
+      const trend    = l20Delta != null ? getTrend(l20Delta) : {label:'➖ Steady',cls:'t-steady'};
+
+      return {
+        teamId: id,
+        teamName: games[0] ? getTeamName(id) : String(id),
+        gp, wins, season,
+        windowPaces,
+        l20Delta,
+        trend,
+      };
+    }));
+    for (const r of settled) if (r.status === 'fulfilled' && r.value) results.push(r.value);
+  }
+  return results.sort((a, b) => (b.l20Delta ?? -99) - (a.l20Delta ?? -99));
+}
+
+/* Team names embedded to avoid extra API call */
+const TEAM_NAMES = {
+  108:'Angels',109:'Diamondbacks',110:'Orioles',111:'Red Sox',112:'Cubs',
+  113:'Reds',114:'Guardians',115:'Rockies',116:'Tigers',117:'Astros',
+  118:'Royals',119:'Dodgers',120:'Nationals',121:'Mets',133:'Athletics',
+  134:'Pirates',135:'Padres',136:'Mariners',137:'Giants',138:'Cardinals',
+  139:'Rays',140:'Rangers',141:'Blue Jays',142:'Twins',143:'Phillies',
+  144:'Braves',145:'White Sox',146:'Marlins',147:'Yankees',158:'Brewers',
+};
+function getTeamName(id) { return TEAM_NAMES[id] || String(id); }
+
+/* ── State ──────────────────────────────────────────── */
+let _allTeams      = [];
+let _sortKey       = 'l20Delta';
+let _sortDir       = -1;
+let _divFilter     = 'all';
+let _activeWindow  = 'l20'; /* which window drives Momentum Delta display */
+
+/* ── Summary cards ──────────────────────────────────── */
+function renderSummaryCards(teams) {
+  const valid  = teams.filter(t => t.l20Delta != null);
+  if (!valid.length) return '';
+
+  const sorted = [...valid].sort((a, b) => b.l20Delta - a.l20Delta);
+  const heater = sorted[0];
+  const faller = sorted[sorted.length - 1];
+  const steady = [...valid].sort((a, b) => Math.abs(a.l20Delta) - Math.abs(b.l20Delta))[0];
+  const avgDelta = Math.round(valid.reduce((s, t) => s + t.l20Delta, 0) / valid.length);
+
+  const card = (cls, label, team, delta, detail) => `
+    <div class="sum-card ${cls}">
+      <div class="sum-label">${label}</div>
+      <div class="sum-logo"><img src="${logoUrl(team.teamId)}" width="22" height="22" style="object-fit:contain" onerror="this.style.display='none'"/></div>
+      <div class="sum-team">${team.teamName}</div>
+      <div class="sum-delta ${delta > 0 ? 'pos' : delta < 0 ? 'neg' : 'neu'}">${sign(delta)}W</div>
+      <div class="sum-detail">${detail}</div>
+      <a class="sum-link" href="${teamUrl(team.teamId)}">See team →</a>
+    </div>`;
+
+  return `<div class="summary-grid">
+    ${card('heat','🔥 Biggest Heater', heater, heater.l20Delta, `Season ${heater.season}W → L20 ${heater.windowPaces.l20}W`)}
+    ${card('cold','❄️ Biggest Drop',   faller, faller.l20Delta, `Season ${faller.season}W → L20 ${faller.windowPaces.l20}W`)}
+    ${card('steady','➖ Most Consistent',steady, steady.l20Delta, `Season ${steady.season}W ≈ L20 ${steady.windowPaces.l20}W`)}
+    <div class="sum-card avg">
+      <div class="sum-label">📊 League Avg Δ</div>
+      <div class="sum-delta ${avgDelta >= 0 ? 'pos' : 'neg'}" style="margin-top:14px">${sign(avgDelta)}W</div>
+      <div class="sum-detail">Average L20 Momentum Delta across all 30 teams</div>
+    </div>
+  </div>`;
+}
+
+/* ── Division cards ─────────────────────────────────── */
+function renderDivisionCards(teams) {
+  const byId = new Map(teams.map(t => [t.teamId, t]));
+  return `<div class="div-grid">${DIVISIONS.map(div => {
+    const rows = div.teams.map(id => {
+      const t = byId.get(id);
+      if (!t) return '';
+      const d    = t.l20Delta ?? 0;
+      const dcls = d > 3 ? 'dp-pos' : d < -3 ? 'dp-neg' : 'dp-neu';
+      return `<a class="div-team" href="${teamUrl(id)}">
+        <div class="div-team-logo"><img src="${logoUrl(id)}" width="16" height="16" style="object-fit:contain" onerror="this.style.display='none'"/></div>
+        <div class="div-name">${t.teamName}</div>
+        <div class="div-pace-info">${t.season}W → ${t.windowPaces.l20 ?? '—'}W</div>
+        <div class="div-delta-pill ${dcls}">${sign(d)}W</div>
+      </a>`;
+    }).join('');
+    return `<div class="div-card">
+      <div class="div-header">${div.name}</div>
+      ${rows}
+    </div>`;
+  }).join('')}</div>`;
+}
+
+/* ── Main sortable table ─────────────────────────────── */
+function renderTable(teams) {
+  const filtered = _divFilter === 'all'
+    ? teams
+    : teams.filter(t => {
+        const div = DIVISIONS.find(d => d.teams.includes(t.teamId));
+        return div?.name === _divFilter;
+      });
+
+  const sorted = [...filtered].sort((a, b) => {
+    const av = getVal(a, _sortKey), bv = getVal(b, _sortKey);
+    if (av == null && bv == null) return 0;
+    if (av == null) return 1;
+    if (bv == null) return -1;
+    return (bv - av) * _sortDir;
+  });
+
+  const th = (key, label, extra='') => `<th class="${_sortKey===key?'sorted':''}" onclick="sortBy('${key}')" ${extra}>${label}${_sortKey===key?(_sortDir<0?' ↓':' ↑'):''}</th>`;
+
+  const windowHeaders = WINDOWS.map(w =>
+    `${th(w.key, w.label+' Pace')}`
+  ).join('');
+
+  const windowCols = (t) => WINDOWS.map(w => {
+    const p = t.windowPaces[w.key];
+    return `<td class="${p != null ? paceClass(p) : 'd-neu'}">${p != null ? p+'W' : '—'}</td>`;
+  }).join('');
+
+  const rows = sorted.map((t, i) => {
+    const delta = t.l20Delta;
+    const activeWin = t.windowPaces[_activeWindow] ?? null;
+    return `<tr>
+      <td><span class="ps-rank ${i<3?'top3':''}">${i+1}</span></td>
+      <td><div class="ps-team-cell">
+        <div class="ps-logo"><img src="${logoUrl(t.teamId)}" width="20" height="20" style="object-fit:contain" onerror="this.style.display='none'"/></div>
+        <a class="ps-name" href="${teamUrl(t.teamId)}">${t.teamName}</a>
+      </div></td>
+      <td class="${paceClass(t.season)}">${t.season}W</td>
+      ${windowCols(t)}
+      <td class="${deltaClass(delta)}">${delta != null ? sign(delta)+'W' : '—'}</td>
+      <td><span class="trend-badge ${t.trend.cls}">${t.trend.label}</span></td>
+    </tr>`;
+  }).join('');
+
+  /* Mobile cards */
+  const mobCards = sorted.map(t => {
+    const delta = t.l20Delta;
+    const dcls  = delta != null ? (delta > 0 ? 'd-pos' : delta < 0 ? 'd-neg' : 'd-neu') : 'd-neu';
+    return `<a class="mob-card" href="${teamUrl(t.teamId)}">
+      <div class="mob-logo"><img src="${logoUrl(t.teamId)}" width="28" height="28" style="object-fit:contain" onerror="this.style.display='none'"/></div>
+      <div class="mob-body">
+        <div class="mob-name">${t.teamName}</div>
+        <div class="mob-paces">Season ${t.season}W · L20 ${t.windowPaces.l20 ?? '—'}W · L10 ${t.windowPaces.l10 ?? '—'}W</div>
+        <span class="trend-badge ${t.trend.cls}">${t.trend.label}</span>
+      </div>
+      <div class="mob-right">
+        <div class="mob-delta ${dcls}">${delta != null ? sign(delta)+'W' : '—'}</div>
+      </div>
+    </a>`;
+  }).join('');
+
+  return `<div class="table-wrap"><table class="ps-table">
+    <thead><tr>
+      ${th('rank','#')}
+      ${th('name','Team')}
+      ${th('season','Season Pace')}
+      ${windowHeaders}
+      ${th('l20Delta','Momentum Δ')}
+      <th>Trend</th>
+    </tr></thead>
+    <tbody>${rows}</tbody>
+  </table></div>
+  <div class="mobile-cards">${mobCards}</div>`;
+}
+
+function getVal(t, key) {
+  if (key === 'rank' || key === 'name') return null;
+  if (key === 'season')   return t.season;
+  if (key === 'l20Delta') return t.l20Delta;
+  const w = WINDOWS.find(w => w.key === key);
+  return w ? (t.windowPaces[w.key] ?? null) : null;
+}
+
+window.sortBy = function(key) {
+  if (_sortKey === key) _sortDir *= -1;
+  else { _sortKey = key; _sortDir = -1; }
+  refreshTable();
+};
+
+window.setDivFilter = function(div, btn) {
+  _divFilter = div;
+  document.querySelectorAll('.filter-btn[data-div]').forEach(b => b.classList.toggle('active', b === btn));
+  refreshTable();
+};
+
+window.setWindow = function(key, btn) {
+  _activeWindow = key;
+  _sortKey = key === 'l10' ? 'l10' : key === 'l30' ? 'l30' : 'l20Delta';
+  document.querySelectorAll('.win-btn').forEach(b => b.classList.toggle('active', b === btn));
+  refreshTable();
+};
+
+function refreshTable() {
+  const el = document.getElementById('tableSection');
+  if (el) el.innerHTML = renderTable(_allTeams);
+}
+
+/* ── Share ──────────────────────────────────────────── */
+window.sharePage = async function() {
+  const heater = [..._allTeams].filter(t=>t.l20Delta!=null).sort((a,b)=>b.l20Delta-a.l20Delta)[0];
+  const text = heater
+    ? `⚾ MLB Pace Standings — ${heater.teamName} are the biggest movers: ${sign(heater.l20Delta)}W L20 momentum delta.\n\nTraditional standings tell you where teams are. Pace Standings show where they're headed.\n\nhttps://tracktheseason.com/pace-standings\n\n#TrackTheSeason #MLB`
+    : `⚾ MLB Pace Standings — who's heating up and cooling off?\n\nhttps://tracktheseason.com/pace-standings\n\n#TrackTheSeason`;
+  if (navigator.share) try { await navigator.share({title:'MLB Pace Standings',text,url:'https://tracktheseason.com/pace-standings'}); } catch(e) {}
+  else navigator.clipboard?.writeText(text);
+};
+
+/* ── Main ───────────────────────────────────────────── */
+async function main() {
+  gtag('event','page_view',{page_title:'MLB Pace Standings | Track The Season',page_location:window.location.href});
+
+  let teams;
+  try { teams = await loadAllTeams(); }
+  catch(e) {
+    document.getElementById('pageContent').innerHTML = `<div class="loading"><div class="loading-text" style="color:var(--loss)">Could not load standings data.<br><small style="opacity:.5">${e.message}</small></div></div>`;
+    return;
+  }
+
+  _allTeams = teams;
+  const gp  = teams[0]?.gp || 0;
+  document.getElementById('heroMeta').textContent = `${teams.length} teams · Game ${gp} · ${CURRENT_YEAR} season · Momentum = L20 Pace − Season Pace`;
+
+  /* Build division filter buttons */
+  const divBtns = DIVISIONS.map(d =>
+    `<button class="filter-btn" data-div="${d.name}" onclick="setDivFilter('${d.name}',this)">${d.name}</button>`
+  ).join('');
+
+  /* Build window buttons */
+  const winBtns = WINDOWS.map((w,i) =>
+    `<button class="win-btn ${w.key==='l20'?'active':''}" onclick="setWindow('${w.key}',this)">${w.label}</button>`
+  ).join('');
+
+  document.getElementById('pageContent').innerHTML = `
+    <!-- Summary Cards -->
+    <div class="section">
+      <div class="sec-label">At a Glance</div>
+      ${renderSummaryCards(teams)}
+    </div>
+
+    <!-- Main Table -->
+    <div class="section">
+      <div class="sec-label">Full Board</div>
+      <div class="sec-title">📊 Pace Standings</div>
+      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:8px">
+        <div class="filter-bar" style="margin-bottom:0">
+          <button class="filter-btn active" data-div="all" onclick="setDivFilter('all',this)">All 30</button>
+          ${divBtns}
+        </div>
+        <div class="window-row" style="margin-bottom:0">${winBtns}</div>
+      </div>
+      <div id="tableSection">${renderTable(teams)}</div>
+    </div>
+
+    <!-- Division Cards -->
+    <div class="section">
+      <div class="sec-label">By Division</div>
+      <div class="sec-title">🗺️ Division Momentum</div>
+      ${renderDivisionCards(teams)}
+    </div>
+  `;
+}
+
+main();
+</script>
+</body>
+</html>

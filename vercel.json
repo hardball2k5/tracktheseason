@@ -136,11 +136,11 @@
     },
     {
       "source": "/hot-cold",
-      "destination": "/chaos-report.html"
+      "destination": "/pace-standings.html"
     },
     {
       "source": "/pace-leaders",
-      "destination": "/chaos-report.html"
+      "destination": "/pace-standings.html"
     },
     {
       "source": "/compare",
@@ -273,6 +273,10 @@
     {
       "source": "/llms.txt",
       "destination": "/llms.txt"
+    },
+    {
+      "source": "/pace-standings",
+      "destination": "/pace-standings.html"
     }
   ],
   "redirects": [
