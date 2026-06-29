@@ -375,9 +375,9 @@ function renderSummaryCards(teams) {
     ${card('cold','❄️ Biggest Drop',   faller, faller.l20Delta, `Season ${faller.season}W → L20 ${faller.windowPaces.l20}W`)}
     ${card('steady','➖ Most Consistent',steady, steady.l20Delta, `Season ${steady.season}W ≈ L20 ${steady.windowPaces.l20}W`)}
     <div class="sum-card avg">
-      <div class="sum-label">📊 League Avg Δ</div>
-      <div class="sum-delta ${avgDelta >= 0 ? 'pos' : 'neg'}" style="margin-top:14px">${sign(avgDelta)}W</div>
-      <div class="sum-detail">Average L20 Momentum Delta across all 30 teams</div>
+      <div class="sum-label">🔥 Teams Surging</div>
+      <div class="sum-delta pos" style="margin-top:14px">${valid.filter(t=>t.l20Delta>=10).length}</div>
+      <div class="sum-detail" style="margin-top:4px">${valid.filter(t=>t.l20Delta>=10).length} of 30 teams outperforming their season pace by 10+ wins over the last 20 games</div>
     </div>
   </div>`;
 }
