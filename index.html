@@ -2871,25 +2871,20 @@ function buildPanicMeter(allData){
     const l10=last10(td.curGames);
     const l10Games=l10.w+l10.l;
     const l10Pace=l10Games?Math.round(l10.w/l10Games*162):proj;
-    /* L20 used to confirm L10 isn't just noise from a short losing streak */
     const l20=td.curGames.slice(-20);
     const l20Games=l20.length;
     const l20w=l20.filter(g=>g.win).length;
     const l20Pace=l20Games?Math.round(l20w/l20Games*162):proj;
-    const delta=getDelta(td)||0;
 
-    /* Collapse factor uses L20 (more stable) as primary signal, L10 as a smaller add-on.
-       This prevents a single bad 10-game stretch from maxing out the score. */
+    /* IDENTICAL formula to /pace-standings — collapse-factor only, no YoY delta term,
+       so homepage and full page always agree on the same day. */
     const l20Collapse=Math.max(0,proj-l20Pace);
     const l10Collapse=Math.max(0,proj-l10Pace);
     const collapseFactor=l20Collapse*0.75+l10Collapse*0.25;
-    const deltaFactor=Math.max(0,-delta);
 
-    let score=Math.round(collapseFactor*1.1+deltaFactor*0.9);
-    score=Math.min(95,Math.max(5,score));
+    let score=Math.min(95,Math.max(5,Math.round(collapseFactor*1.3)));
     let why;
     if(l20Collapse>=20) why='Recent pace collapse';
-    else if(deltaFactor>=10) why='Season falling behind';
     else if(l20Collapse>=10) why='Cooling off fast';
     else why='Still in it, but uneven';
     return{td,score,why,proj};
