@@ -3,10 +3,10 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Track The Season — MLB Pace Dashboard</title>
-<meta name="description" content="Track The Season is a live MLB pace and trajectory dashboard. Compare every team's current season to prior seasons at the same games played. See who's ahead of last year's pace, who's falling behind, and what the rotation is driving."/>
-<meta property="og:title" content="Track The Season — MLB Pace Dashboard"/>
-<meta property="og:description" content="Which MLB teams are ahead of last year's pace? Which have the biggest rotation cliff? Track The Season shows where every team is headed — updated after every game."/>
+<title>Track The Season | MLB Pace Standings, Momentum & Daily Baseball Debates</title>
+<meta name="description" content="Track MLB teams by season pace, last 10 and last 20 trends, rivalry pressure, pitching signal, chaos rankings, and daily shareable baseball debates."/>
+<meta property="og:title" content="Track The Season | MLB Pace Standings, Momentum & Daily Baseball Debates"/>
+<meta property="og:description" content="The standings tell you where teams are. Track The Season tells you where they're headed. Daily MLB pace, momentum, rivalry pressure, and shareable debates."/>
 <meta property="og:url" content="https://tracktheseason.com/"/>
 <meta name="theme-color" content="#0f1014"/>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
@@ -622,6 +622,108 @@ body{font-family:var(--sans);background:var(--ink);color:#e8edf8;min-height:100v
   .tsh-narrative{font-size:15px}
   .mover-delta-big{font-size:18px}
 }
+
+/* ══ DAILY DEBATE MODULE ═══════════════════════════ */
+.debate-card{background:var(--ink2);border:1px solid rgba(26,255,107,.15);border-radius:var(--r-lg);overflow:hidden}
+.debate-eyebrow{font-family:var(--mono);font-size:9px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--signal);padding:14px 18px 0}
+.debate-title{font-family:var(--mono);font-size:clamp(17px,3vw,22px);font-weight:700;color:#e8edf8;letter-spacing:-.02em;line-height:1.3;padding:6px 18px 14px}
+.debate-teams{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--rule)}
+@media(max-width:560px){.debate-teams{grid-template-columns:1fr}}
+.debate-team{background:var(--ink2);padding:14px 18px}
+.debate-team-head{display:flex;align-items:center;gap:8px;margin-bottom:10px}
+.debate-logo{width:30px;height:30px;background:var(--logo-bg);border:1px solid var(--logo-border);border-radius:var(--r-sm);box-shadow:var(--logo-shadow);display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0}
+.debate-logo img{width:22px;height:22px;object-fit:contain}
+.debate-team-name{font-family:var(--mono);font-size:15px;font-weight:700;color:#e8edf8}
+.debate-split{display:flex;gap:8px;margin-top:8px}
+.debate-half{flex:1;background:rgba(255,255,255,.03);border-radius:var(--r-sm);padding:8px 10px}
+.debate-half-label{font-family:var(--mono);font-size:8px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:rgba(255,255,255,.3);margin-bottom:4px}
+.debate-half-rec{font-family:var(--mono);font-size:13px;font-weight:700;color:#e8edf8}
+.debate-half-pace{font-family:var(--mono);font-size:11px;color:rgba(255,255,255,.4);margin-top:1px}
+.debate-poll{padding:14px 18px;border-top:1px solid var(--rule)}
+.debate-poll-label{font-family:var(--mono);font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.3);margin-bottom:8px}
+.debate-poll-btn{display:flex;align-items:center;justify-content:space-between;width:100%;text-align:left;background:rgba(255,255,255,.03);border:1px solid var(--rule);border-radius:var(--r-sm);padding:10px 12px;margin-bottom:6px;color:#e8edf8;font-family:var(--sans);font-size:13px;cursor:pointer;transition:all .13s}
+.debate-poll-btn:hover{border-color:rgba(26,255,107,.3)}
+.debate-poll-btn.voted{border-color:var(--signal);background:rgba(26,255,107,.05)}
+.debate-poll-pct{font-family:var(--mono);font-size:11px;font-weight:700;color:var(--signal);flex-shrink:0;margin-left:8px}
+.debate-actions{display:flex;gap:7px;flex-wrap:wrap;padding:0 18px 16px}
+.debate-btn{display:inline-flex;align-items:center;gap:5px;padding:8px 14px;border-radius:var(--r-sm);font-family:var(--mono);font-size:11px;font-weight:700;cursor:pointer;border:none;transition:all .13s;text-decoration:none}
+.debate-btn.primary{background:var(--signal);color:var(--ink)}
+.debate-btn.ghost{background:transparent;color:var(--chalk);border:1px solid var(--rule)}
+.debate-btn.ghost:hover{border-color:var(--signal);color:var(--signal)}
+
+/* ══ WHAT CHANGED MINI ═══════════════════════════ */
+.wcs-list{display:flex;flex-direction:column;gap:6px}
+.wcs-row{display:flex;align-items:center;gap:10px;background:var(--ink2);border:1px solid var(--rule);border-radius:var(--r-md);padding:10px 14px}
+.wcs-logo{width:26px;height:26px;background:var(--logo-bg);border:1px solid var(--logo-border);border-radius:4px;box-shadow:var(--logo-shadow);display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0}
+.wcs-logo img{width:20px;height:20px;object-fit:contain}
+.wcs-name{font-family:var(--mono);font-size:13px;font-weight:700;color:#e8edf8;flex-shrink:0;min-width:84px}
+.wcs-why{font-family:var(--sans);font-size:12px;color:rgba(255,255,255,.4);flex:1;min-width:0}
+.wcs-delta{font-family:var(--mono);font-size:13px;font-weight:700;flex-shrink:0}
+
+/* ══ SHAREABLE TAKES ═══════════════════════════ */
+.takes-grid{display:flex;flex-direction:column;gap:8px}
+.take-card{background:var(--ink2);border:1px solid var(--rule);border-radius:var(--r-lg);padding:14px 16px}
+.take-head{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.take-logo{width:24px;height:24px;background:var(--logo-bg);border:1px solid var(--logo-border);border-radius:4px;box-shadow:var(--logo-shadow);display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0}
+.take-logo img{width:18px;height:18px;object-fit:contain}
+.take-team{font-family:var(--mono);font-size:12px;font-weight:700;color:rgba(255,255,255,.4)}
+.take-text{font-family:var(--sans);font-size:13px;color:rgba(255,255,255,.75);line-height:1.55;margin-bottom:10px}
+.take-actions{display:flex;gap:7px}
+.take-btn{display:inline-flex;align-items:center;gap:4px;padding:6px 11px;border-radius:var(--r-sm);font-family:var(--mono);font-size:10px;font-weight:700;cursor:pointer;border:1px solid var(--rule);background:transparent;color:var(--chalk);transition:all .13s;text-decoration:none}
+.take-btn:hover{border-color:var(--signal);color:var(--signal)}
+
+/* ══ PACE PREVIEW TABLE ═══════════════════════════ */
+.pace-preview-table{width:100%;border-collapse:collapse;font-family:var(--mono)}
+.pace-preview-table th{font-size:9px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:rgba(255,255,255,.3);padding:6px 8px;text-align:right;border-bottom:1px solid var(--rule)}
+.pace-preview-table th:first-child{text-align:left}
+.pace-preview-table td{padding:9px 8px;font-size:12px;border-bottom:1px solid var(--rule2);text-align:right;color:rgba(255,255,255,.7)}
+.pace-preview-table td:first-child{text-align:left}
+.ppt-team{display:flex;align-items:center;gap:7px}
+.ppt-logo{width:20px;height:20px;background:var(--logo-bg);border:1px solid var(--logo-border);border-radius:3px;box-shadow:var(--logo-shadow);display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0}
+.ppt-logo img{width:15px;height:15px;object-fit:contain}
+.ppt-name{font-weight:700;color:#e8edf8;text-decoration:none}
+
+/* ══ PANIC METER ═══════════════════════════ */
+.panic-grid{display:flex;flex-direction:column;gap:7px}
+.panic-row{display:flex;align-items:center;gap:12px;background:var(--ink2);border:1px solid var(--rule);border-radius:var(--r-md);padding:11px 14px}
+.panic-logo{width:28px;height:28px;background:var(--logo-bg);border:1px solid var(--logo-border);border-radius:5px;box-shadow:var(--logo-shadow);display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0}
+.panic-logo img{width:20px;height:20px;object-fit:contain}
+.panic-info{flex:1;min-width:0}
+.panic-name{font-family:var(--mono);font-size:13px;font-weight:700;color:#e8edf8}
+.panic-why{font-family:var(--sans);font-size:11px;color:rgba(255,255,255,.35);margin-top:1px}
+.panic-bar-wrap{width:90px;flex-shrink:0}
+.panic-bar-track{height:6px;background:rgba(255,255,255,.08);border-radius:3px;overflow:hidden;margin-bottom:3px}
+.panic-bar-fill{height:100%;border-radius:3px}
+.panic-score{font-family:var(--mono);font-size:11px;font-weight:700;text-align:right}
+
+/* ══ PRETENDER/CONTENDER ═══════════════════════════ */
+.verdict-card{background:var(--ink2);border:1px solid var(--rule);border-radius:var(--r-lg);padding:16px 18px}
+.verdict-team-row{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.verdict-logo{width:32px;height:32px;background:var(--logo-bg);border:1px solid var(--logo-border);border-radius:var(--r-sm);box-shadow:var(--logo-shadow);display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0}
+.verdict-logo img{width:24px;height:24px;object-fit:contain}
+.verdict-team-name{font-family:var(--mono);font-size:15px;font-weight:700;color:#e8edf8}
+.verdict-badge{display:inline-flex;padding:4px 11px;border-radius:var(--r-pill);font-family:var(--mono);font-size:11px;font-weight:700;margin-bottom:8px}
+.verdict-why{font-family:var(--sans);font-size:13px;color:rgba(255,255,255,.6);line-height:1.55;margin-bottom:12px}
+.verdict-actions{display:flex;gap:7px;flex-wrap:wrap}
+.verdict-btn{padding:7px 13px;border-radius:var(--r-sm);font-family:var(--mono);font-size:11px;font-weight:700;cursor:pointer;border:1px solid var(--rule);background:transparent;color:var(--chalk);transition:all .13s}
+.verdict-btn:hover{border-color:rgba(26,255,107,.3);color:var(--signal)}
+.verdict-btn.active-agree{border-color:var(--signal);background:rgba(26,255,107,.08);color:var(--signal)}
+.verdict-btn.active-disagree{border-color:var(--loss-text);background:rgba(244,117,112,.08);color:var(--loss-text)}
+
+/* ══ PITCHING BOARD PREVIEW ═══════════════════════════ */
+.pb-preview-grid{display:flex;flex-direction:column;gap:6px}
+.pb-preview-row{display:flex;align-items:center;gap:10px;background:var(--ink2);border:1px solid var(--rule);border-radius:var(--r-md);padding:10px 14px}
+.pb-preview-logo{width:26px;height:26px;background:var(--logo-bg);border:1px solid var(--logo-border);border-radius:4px;box-shadow:var(--logo-shadow);display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0}
+.pb-preview-logo img{width:20px;height:20px;object-fit:contain}
+.pb-preview-label{font-family:var(--mono);font-size:9px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:rgba(255,255,255,.3);min-width:110px;flex-shrink:0}
+.pb-preview-team{font-family:var(--mono);font-size:12px;font-weight:700;color:#e8edf8;flex:1;min-width:0}
+.pb-preview-val{font-family:var(--mono);font-size:13px;font-weight:700;color:var(--signal);flex-shrink:0}
+
+/* ══ COPIED TOAST ═══════════════════════════ */
+.copied-toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--signal);color:var(--ink);
+  font-family:var(--mono);font-size:12px;font-weight:700;padding:10px 20px;border-radius:var(--r-pill);
+  z-index:999;box-shadow:0 4px 20px rgba(0,0,0,.4);opacity:0;pointer-events:none;transition:opacity .2s,transform .2s}
+.copied-toast.show{opacity:1;transform:translateX(-50%) translateY(-6px)}
 </style>
 <!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-DCSQPGSY1D"></script>
@@ -706,8 +808,11 @@ body{font-family:var(--sans);background:var(--ink);color:#e8edf8;min-height:100v
       The standings tell you where teams are.<br>
       <strong class="hero-sub-strong">Track The Season tells you where they're headed.</strong>
     </p>
+    <p style="font-family:var(--mono);font-size:12px;color:rgba(255,255,255,.3);margin-top:6px;margin-bottom:0">Daily MLB pace, momentum, rivalry pressure, and shareable debates powered by season-tracking data.</p>
     <div class="hero-actions">
-      <a href="#all-teams" class="hero-cta">View All Teams ↓</a>
+      <a href="/pace-standings" class="hero-cta">View Pace Standings →</a>
+      <a href="#all-teams" class="hero-cta" style="background:transparent;border:1px solid var(--rule);color:var(--chalk)">Pick Your Team ↓</a>
+      <a href="/pulse" class="hero-cta" style="background:transparent;border:1px solid var(--rule);color:var(--chalk)">Open Daily Pulse →</a>
       <div class="hero-finder-inline">
         <span class="finder-icon">⌕</span>
         <input class="finder-input" id="finderInput" type="text" placeholder="Find your team…"
@@ -717,6 +822,11 @@ body{font-family:var(--sans);background:var(--ink);color:#e8edf8;min-height:100v
     </div>
     <div class="hero-trust">⚾ Updated automatically after every final MLB game.</div>
     <div class="league-pills" id="leaguePills"></div>
+  </div>
+
+  <!-- TODAY'S MLB DEBATE -->
+  <div class="section" style="padding-top:20px">
+    <div id="dailyDebateContainer"></div>
   </div>
 
   <!-- DAILY PULSE CTA -->
@@ -783,6 +893,32 @@ body{font-family:var(--sans);background:var(--ink);color:#e8edf8;min-height:100v
     </div>
   </div>
 
+  <!-- WHAT CHANGED SINCE YESTERDAY -->
+  <div class="section" style="padding-top:24px">
+    <div class="sec-header" style="padding-top:0">
+      <div class="sec-title">📊 What Changed Since Yesterday?</div>
+      <div class="sec-sub">Pace shifts that moved overnight</div>
+    </div>
+    <div id="whatChangedContainer"></div>
+  </div>
+
+  <!-- TODAY'S BEST SHAREABLE TAKES -->
+  <div class="section" style="padding-top:24px">
+    <div class="sec-header" style="padding-top:0">
+      <div class="sec-title">💬 Today's Best Shareable Takes</div>
+      <div class="sec-sub">Copy-ready comments backed by real data</div>
+    </div>
+    <div id="shareableTakesContainer"></div>
+  </div>
+
+  <!-- PACE STANDINGS PREVIEW -->
+  <div class="section" style="padding-top:24px">
+    <div class="sec-header" style="padding-top:0">
+      <div class="sec-title">📈 Pace Standings Preview</div>
+      <div class="sec-sub">Who is playing above or below their season pace?</div>
+    </div>
+    <div id="paceStandingsPreviewContainer"></div>
+  </div>
   <!-- CHAOS REPORT FEATURE CARD -->
   <a href="/chaos-report" id="chaosReportCard" style="display:none;text-decoration:none;color:inherit;
     background:var(--ink2);border:1px solid rgba(255,255,255,.08);border-radius:var(--r-lg);
@@ -897,6 +1033,25 @@ body{font-family:var(--sans);background:var(--ink);color:#e8edf8;min-height:100v
     </div>
   </a>
 
+  <!-- PANIC METER -->
+  <div class="section" style="padding-top:24px">
+    <div class="sec-header" style="padding-top:0">
+      <div class="sec-title">😰 Panic Meter</div>
+      <div class="sec-sub">How worried should fans be?</div>
+    </div>
+    <div id="panicMeterContainer"></div>
+    <div style="margin-top:10px"><a href="/pace-standings" style="font-family:var(--mono);font-size:11px;font-weight:700;color:var(--signal);text-decoration:none">View Full Panic Meter →</a></div>
+  </div>
+
+  <!-- PRETENDER OR CONTENDER -->
+  <div class="section" style="padding-top:24px">
+    <div class="sec-header" style="padding-top:0">
+      <div class="sec-title">🎭 Pretender or Contender?</div>
+      <div class="sec-sub">The debate every fanbase is having right now</div>
+    </div>
+    <div id="verdictContainer"></div>
+  </div>
+
   <!-- PACE STANDINGS FEATURE CARD -->
   <a href="/pace-standings" style="
     display:flex;align-items:flex-start;gap:16px;
@@ -921,10 +1076,20 @@ body{font-family:var(--sans);background:var(--ink);color:#e8edf8;min-height:100v
   <!-- RIVALRY WATCH -->
   <div id="rivalryWatchSection" style="display:none;padding-top:24px">
     <div class="sec-header" style="padding-top:0">
-      <div class="sec-title">⚔️ Rivalry Watch</div>
-      <div class="sec-sub">How do they compare right now?</div>
+      <div class="sec-title">⚔️ Rivalry Pressure</div>
+      <div class="sec-sub">The matchups that matter most</div>
     </div>
     <div class="rivalry-grid" id="rivalryGrid"></div>
+  </div>
+
+  <!-- PITCHING BOARD PREVIEW -->
+  <div class="section" style="padding-top:24px">
+    <div class="sec-header" style="padding-top:0">
+      <div class="sec-title">⚾ Who Has the Best Rotations in Baseball?</div>
+      <div class="sec-sub">Best 1–2 punch · Biggest rotation cliff · Deepest staff</div>
+    </div>
+    <div id="pitchingBoardPreviewContainer"></div>
+    <div style="margin-top:10px"><a href="/pitching-board" style="font-family:var(--mono);font-size:11px;font-weight:700;color:rgba(91,143,255,.8);text-decoration:none">View Pitching Board →</a></div>
   </div>
 
   <!-- QUIETLY TRENDING -->
@@ -1947,6 +2112,12 @@ async function loadAllTeams(){
       buildRivalryWatch(allData);
       buildQuietlyTrending(allData);
       if(!laTeamId) buildLookingAheadPicker(allData);
+      buildDailyDebate(allData);
+      buildWhatChangedMini(allData);
+      buildShareableTakes(allData);
+      buildPaceStandingsPreview(allData);
+      buildPanicMeter(allData);
+      buildVerdictCard(allData);
       _fcAllData=allData;
     }
   }
@@ -1962,6 +2133,13 @@ async function loadAllTeams(){
   buildRivalryWatch(allData);
   buildQuietlyTrending(allData);
   buildLookingAheadPicker(allData);
+  buildDailyDebate(allData);
+  buildWhatChangedMini(allData);
+  buildShareableTakes(allData);
+  buildPaceStandingsPreview(allData);
+  buildPanicMeter(allData);
+  buildVerdictCard(allData);
+  buildPitchingBoardPreview(allData);
   document.getElementById('moversShareRow').style.display='flex';
 
   document.getElementById('teamGrid').addEventListener('click',e=>{
@@ -2426,6 +2604,407 @@ window.resetLookingAhead=function(){
   };
   document.head.appendChild(s);
 })();
+
+
+/* ════════════════════════════════════════════════════
+   COPIED TOAST
+════════════════════════════════════════════════════ */
+function showCopiedToast(){
+  let toast=document.getElementById('copiedToast');
+  if(!toast){
+    toast=document.createElement('div');
+    toast.id='copiedToast';
+    toast.className='copied-toast';
+    toast.textContent='✓ Copied!';
+    document.body.appendChild(toast);
+  }
+  toast.classList.add('show');
+  clearTimeout(window._toastTimer);
+  window._toastTimer=setTimeout(()=>toast.classList.remove('show'),1800);
+}
+async function copyTextWithToast(text){
+  try{ await navigator.clipboard.writeText(text); showCopiedToast(); }
+  catch{ window.prompt('Copy:',text); }
+}
+
+/* ════════════════════════════════════════════════════
+   DAILY DEBATE MODULE — config-driven, updatable daily
+════════════════════════════════════════════════════ */
+function buildDailyDebateConfig(allData){
+  const valid=allData.filter(t=>t.curGames.length>=30);
+  if(valid.length<2) return null;
+
+  /* Find best debate pair: one team sliding hard early->late, one heating up */
+  const withSplit=valid.map(td=>{
+    const games=td.curGames, gp=games.length;
+    const mid=Math.min(40,Math.floor(gp/2));
+    const early=games.slice(0,mid), recent=games.slice(mid);
+    const ew=early.filter(g=>g.win).length, el=early.length-ew;
+    const rw=recent.filter(g=>g.win).length, rl=recent.length-rw;
+    const earlyPace=early.length?Math.round(ew/early.length*162):0;
+    const recentPace=recent.length?Math.round(rw/recent.length*162):0;
+    return{td,mid,early,recent,ew,el,rw,rl,earlyPace,recentPace,swing:recentPace-earlyPace};
+  });
+
+  const fader=[...withSplit].sort((a,b)=>a.swing-b.swing)[0];
+  const riser=[...withSplit].filter(s=>s.td.team.id!==fader.td.team.id).sort((a,b)=>b.swing-a.swing)[0];
+  if(!fader||!riser||Math.abs(fader.swing)<10) return null;
+
+  const fName=fader.td.team.clubName||fader.td.team.name;
+  const rName=riser.td.team.clubName||riser.td.team.name;
+  const momentum=(s)=>getMomentum(s.td.curGames).trendLabel||getMomentum(s.td.curGames).label;
+
+  return{
+    title:`Are the ${fName} still elite… or living off their early season?`,
+    teams:[
+      {td:fader.td,name:fName,id:fader.td.team.id,
+       earlyLabel:`Games 1–${fader.mid}`,earlyRecord:`${fader.ew}–${fader.el}`,earlyPace:`${fader.earlyPace}-win pace`,
+       recentLabel:`Games ${fader.mid+1}–${fader.mid+fader.recent.length}`,recentRecord:`${fader.rw}–${fader.rl}`,recentPace:`${fader.recentPace}-win pace`,
+       trend:momentum(fader)},
+      {td:riser.td,name:rName,id:riser.td.team.id,
+       earlyLabel:`Games 1–${riser.mid}`,earlyRecord:`${riser.ew}–${riser.el}`,earlyPace:`${riser.earlyPace}-win pace`,
+       recentLabel:`Games ${riser.mid+1}–${riser.mid+riser.recent.length}`,recentRecord:`${riser.rw}–${riser.rl}`,recentPace:`${riser.recentPace}-win pace`,
+       trend:momentum(riser)},
+    ],
+    pollOptions:[`${fName} are still the team to beat`,`${rName} are more dangerous right now`,`Too close to call`],
+    copyTake:`The ${fName} started ${fader.ew}–${fader.el}, but they're ${fader.rw}–${fader.rl} since. The ${rName} started ${riser.ew}–${riser.el}, but they're ${riser.rw}–${riser.rl} since. The standings still say ${fName}, but the momentum board says ${rName} are coming.`,
+    link:'/pace-standings',
+  };
+}
+
+function buildDailyDebate(allData){
+  const cfg=buildDailyDebateConfig(allData);
+  const container=document.getElementById('dailyDebateContainer');
+  if(!container) return;
+  if(!cfg){ container.innerHTML=''; return; }
+
+  const votedKey='tts-debate-vote-'+new Date().toISOString().slice(0,10);
+  const voted=localStorage.getItem(votedKey);
+  /* Fake-but-stable percentages seeded by date so they don't jump on reload */
+  const seed=new Date().getDate();
+  const pcts=[42+seed%10, 33+seed%7, 25-seed%5].map(p=>Math.max(8,p));
+  const total=pcts.reduce((a,b)=>a+b,0);
+  const pctOf=i=>Math.round(pcts[i]/total*100);
+
+  const teamBlock=(t)=>`
+    <div class="debate-team">
+      <div class="debate-team-head">
+        <div class="debate-logo"><img src="https://www.mlbstatic.com/team-logos/${t.id}.svg" width="22" height="22" onerror="this.style.display='none'"/></div>
+        <div class="debate-team-name">${t.name}</div>
+      </div>
+      <div class="debate-split">
+        <div class="debate-half">
+          <div class="debate-half-label">${t.earlyLabel}</div>
+          <div class="debate-half-rec">${t.earlyRecord}</div>
+          <div class="debate-half-pace">${t.earlyPace}</div>
+        </div>
+        <div class="debate-half">
+          <div class="debate-half-label">${t.recentLabel}</div>
+          <div class="debate-half-rec">${t.recentRecord}</div>
+          <div class="debate-half-pace">${t.recentPace}</div>
+        </div>
+      </div>
+    </div>`;
+
+  const pollBtns=cfg.pollOptions.map((opt,i)=>`
+    <button class="debate-poll-btn ${voted==String(i)?'voted':''}" onclick="voteDailyDebate(${i},'${votedKey}')">
+      <span>${opt}</span>
+      ${voted!=null?`<span class="debate-poll-pct">${pctOf(i)}%</span>`:''}
+    </button>`).join('');
+
+  container.innerHTML=`<div class="debate-card">
+    <div class="debate-eyebrow">🔥 Today's MLB Debate</div>
+    <div class="debate-title">${cfg.title}</div>
+    <div class="debate-teams">${cfg.teams.map(teamBlock).join('')}</div>
+    <div class="debate-poll">
+      <div class="debate-poll-label">Cast your vote</div>
+      ${pollBtns}
+    </div>
+    <div class="debate-actions">
+      <button class="debate-btn primary" onclick="copyTextWithToast(${JSON.stringify(cfg.copyTake+'\n\nhttps://tracktheseason.com'+cfg.link)})">⧉ Copy Take</button>
+      <button class="debate-btn ghost" onclick="shareDailyDebate(${JSON.stringify(cfg.copyTake)})">⬆ Share Graphic</button>
+      <a class="debate-btn ghost" href="${cfg.link}">View Pace Board →</a>
+    </div>
+  </div>`;
+}
+
+window.voteDailyDebate=function(i,key){
+  localStorage.setItem(key,String(i));
+  buildDailyDebate(window._allData||[]);
+};
+window.shareDailyDebate=async function(text){
+  const url='https://tracktheseason.com/pace-standings';
+  if(navigator.share) try{await navigator.share({title:"Today's MLB Debate — Track The Season",text,url});}catch(e){}
+  else copyTextWithToast(text+'\n\n'+url);
+};
+
+/* ════════════════════════════════════════════════════
+   WHAT CHANGED SINCE YESTERDAY (homepage mini version)
+   Uses today's L10 win vs season pace as a same-day proxy
+   for "movement" since real overnight deltas live on /pulse.
+════════════════════════════════════════════════════ */
+function buildWhatChangedMini(allData){
+  const valid=allData.filter(t=>t.curGames.length>=15);
+  const container=document.getElementById('whatChangedContainer');
+  if(!container) return;
+
+  const rows=valid.map(td=>{
+    const proj=projWins(td.curGames)||0;
+    const l10=last10(td.curGames);
+    const l10Pace=(l10.w+l10.l)?Math.round(l10.w/(l10.w+l10.l)*162):proj;
+    const diff=Math.round((l10Pace-proj)/8); /* approximate "recent push" in projected wins */
+    return{td,proj,diff};
+  }).filter(r=>Math.abs(r.diff)>=1).sort((a,b)=>Math.abs(b.diff)-Math.abs(a.diff)).slice(0,5);
+
+  if(!rows.length){ container.innerHTML=`<div style="font-family:var(--mono);font-size:12px;color:var(--chalk);padding:8px 0">No major pace shifts right now — check back after tonight's games.</div>`; return; }
+
+  container.innerHTML=`<div class="wcs-list">${rows.map(r=>{
+    const club=r.td.team.clubName||r.td.team.name;
+    const cls=r.diff>0?'d-pos':'d-neg';
+    const why=r.diff>=2?'Momentum keeps building':r.diff>0?'Quietly staying in the mix':r.diff<=-2?'Season slipping further':'Recent pace cooling';
+    const url=trackerUrl(r.td.team.id,r.td.curGames.length);
+    return`<a class="wcs-row" href="${url}" style="text-decoration:none;color:inherit">
+      <div class="wcs-logo"><img src="https://www.mlbstatic.com/team-logos/${r.td.team.id}.svg" width="20" height="20" onerror="this.style.display='none'"/></div>
+      <div class="wcs-name">${club}</div>
+      <div class="wcs-why">${why}</div>
+      <div class="wcs-delta ${cls}">${r.diff>0?'+':''}${r.diff} proj. win${Math.abs(r.diff)!==1?'s':''}</div>
+    </a>`;
+  }).join('')}</div>
+  <div style="margin-top:10px"><a href="/pulse" style="font-family:var(--mono);font-size:11px;font-weight:700;color:var(--signal);text-decoration:none">Open Daily Pulse →</a></div>`;
+}
+
+/* ════════════════════════════════════════════════════
+   TODAY'S BEST SHAREABLE TAKES
+════════════════════════════════════════════════════ */
+function buildShareableTakes(allData){
+  const valid=allData.filter(t=>t.curGames.length>=20);
+  const container=document.getElementById('shareableTakesContainer');
+  if(!container||valid.length<3) return;
+
+  const withDelta=valid.map(td=>({td,delta:getDelta(td),proj:projWins(td.curGames)})).filter(r=>r.delta!=null);
+  const riser=[...withDelta].sort((a,b)=>b.delta-a.delta)[0];
+  const faller=[...withDelta].sort((a,b)=>a.delta-b.delta)[0];
+  const sleeper=[...withDelta].filter(r=>r.proj>=90&&!['Dodgers','Braves','Phillies','Yankees'].includes(r.td.team.clubName||r.td.team.name))
+    .sort((a,b)=>b.proj-a.proj)[0];
+
+  const takes=[];
+  if(riser) takes.push({
+    td:riser.td,
+    text:`The ${riser.td.team.clubName||riser.td.team.name} are tracking ${sign(riser.delta)} wins vs last year's pace through ${riser.td.curGames.length} games. That's not a hot stretch — that's a different season.`,
+  });
+  if(faller) takes.push({
+    td:faller.td,
+    text:`${faller.td.team.clubName||faller.td.team.name}'s ${faller.proj}-win season pace still looks fine on paper, but they're ${Math.abs(faller.delta)} wins behind last year's pace. Worth watching.`,
+  });
+  if(sleeper) takes.push({
+    td:sleeper.td,
+    text:`Everyone talks about the usual contenders, but the ${sleeper.td.team.clubName||sleeper.td.team.name} are quietly on pace for ${sleeper.proj} wins — one of the best records in baseball nobody's discussing.`,
+  });
+
+  function sign(n){return n>=0?`+${n}`:String(n);}
+
+  container.innerHTML=`<div class="takes-grid">${takes.map(t=>{
+    const club=t.td.team.clubName||t.td.team.name;
+    const url=`https://tracktheseason.com${trackerUrl(t.td.team.id,t.td.curGames.length)}`;
+    const fullText=t.text+'\n\n'+url;
+    return`<div class="take-card">
+      <div class="take-head">
+        <div class="take-logo"><img src="https://www.mlbstatic.com/team-logos/${t.td.team.id}.svg" width="18" height="18" onerror="this.style.display='none'"/></div>
+        <div class="take-team">${club}</div>
+      </div>
+      <div class="take-text">${t.text}</div>
+      <div class="take-actions">
+        <button class="take-btn" onclick='copyTextWithToast(${JSON.stringify(fullText)})'>⧉ Copy Comment</button>
+        <a class="take-btn" href="${trackerUrl(t.td.team.id,t.td.curGames.length)}">View Team →</a>
+      </div>
+    </div>`;
+  }).join('')}</div>`;
+}
+
+/* ════════════════════════════════════════════════════
+   PACE STANDINGS PREVIEW (top 5 by |L20 delta|)
+════════════════════════════════════════════════════ */
+function buildPaceStandingsPreview(allData){
+  const valid=allData.filter(t=>t.curGames.length>=20);
+  const container=document.getElementById('paceStandingsPreviewContainer');
+  if(!container) return;
+
+  const rows=valid.map(td=>{
+    const proj=projWins(td.curGames)||0;
+    const l20=td.curGames.slice(-20);
+    const l20w=l20.filter(g=>g.win).length;
+    const l20Pace=l20.length?Math.round(l20w/l20.length*162):proj;
+    const delta=l20Pace-proj;
+    const trend=getMomentum(td.curGames,proj);
+    return{td,proj,l20Pace,delta,trend};
+  }).sort((a,b)=>Math.abs(b.delta)-Math.abs(a.delta)).slice(0,5);
+
+  if(!rows.length) return;
+
+  container.innerHTML=`<table class="pace-preview-table">
+    <thead><tr><th>Team</th><th>Season</th><th>L20</th><th>Trend</th></tr></thead>
+    <tbody>${rows.map(r=>{
+      const club=r.td.team.clubName||r.td.team.name;
+      const url=trackerUrl(r.td.team.id,r.td.curGames.length);
+      return`<tr>
+        <td><div class="ppt-team"><div class="ppt-logo"><img src="https://www.mlbstatic.com/team-logos/${r.td.team.id}.svg" width="15" height="15" onerror="this.style.display='none'"/></div><a class="ppt-name" href="${url}">${club}</a></div></td>
+        <td>${r.proj}W</td>
+        <td>${r.l20Pace}W</td>
+        <td><span style="font-size:11px">${r.trend.trendEmoji||''} ${r.trend.trendLabel||r.trend.label}</span></td>
+      </tr>`;
+    }).join('')}</tbody>
+  </table>
+  <div style="margin-top:10px"><a href="/pace-standings" style="font-family:var(--mono);font-size:11px;font-weight:700;color:var(--signal);text-decoration:none">View Full Pace Standings →</a></div>`;
+}
+
+/* ════════════════════════════════════════════════════
+   PANIC METER — derived from season pace vs L20 pace gap
+════════════════════════════════════════════════════ */
+function buildPanicMeter(allData){
+  const valid=allData.filter(t=>t.curGames.length>=20);
+  const container=document.getElementById('panicMeterContainer');
+  if(!container) return;
+
+  const scored=valid.map(td=>{
+    const proj=projWins(td.curGames)||80;
+    const l10=last10(td.curGames);
+    const l10Pace=(l10.w+l10.l)?Math.round(l10.w/(l10.w+l10.l)*162):proj;
+    const delta=getDelta(td)||0;
+    /* Panic score: weighted combo of recent collapse + below-expectation delta */
+    const collapseFactor=Math.max(0,proj-l10Pace);     /* falling off current pace */
+    const deltaFactor=Math.max(0,-delta);              /* behind last year */
+    let score=Math.round(collapseFactor*1.8+deltaFactor*1.1);
+    score=Math.min(99,Math.max(5,score));
+    let why;
+    if(collapseFactor>=25) why='Recent pace collapse';
+    else if(deltaFactor>=10) why='Season falling behind';
+    else if(collapseFactor>=12) why='Cooling off fast';
+    else why='Still in it, but uneven';
+    return{td,score,why,proj};
+  }).filter(s=>s.proj>=75) /* only show teams that matter — contenders/borderline */
+    .sort((a,b)=>b.score-a.score).slice(0,4);
+
+  if(!scored.length) return;
+
+  const barColor=s=>s>=80?'var(--loss-text)':s>=55?'var(--caution-text)':'var(--signal)';
+
+  container.innerHTML=`<div class="panic-grid">${scored.map(s=>{
+    const club=s.td.team.clubName||s.td.team.name;
+    const url=trackerUrl(s.td.team.id,s.td.curGames.length);
+    return`<a class="panic-row" href="${url}" style="text-decoration:none;color:inherit">
+      <div class="panic-logo"><img src="https://www.mlbstatic.com/team-logos/${s.td.team.id}.svg" width="20" height="20" onerror="this.style.display='none'"/></div>
+      <div class="panic-info">
+        <div class="panic-name">${club}</div>
+        <div class="panic-why">${s.why}</div>
+      </div>
+      <div class="panic-bar-wrap">
+        <div class="panic-bar-track"><div class="panic-bar-fill" style="width:${s.score}%;background:${barColor(s.score)}"></div></div>
+        <div class="panic-score" style="color:${barColor(s.score)}">${s.score}/100</div>
+      </div>
+    </a>`;
+  }).join('')}</div>`;
+}
+
+/* ════════════════════════════════════════════════════
+   PRETENDER OR CONTENDER
+════════════════════════════════════════════════════ */
+function buildVerdictCard(allData){
+  const valid=allData.filter(t=>t.curGames.length>=30);
+  const container=document.getElementById('verdictContainer');
+  if(!container||!valid.length) return;
+
+  /* Pick the team with the most interesting tension: good season pace but fading L10 */
+  const scored=valid.map(td=>{
+    const proj=projWins(td.curGames)||0;
+    const l10=last10(td.curGames);
+    const l10Pace=(l10.w+l10.l)?Math.round(l10.w/(l10.w+l10.l)*162):proj;
+    const gap=proj-l10Pace;
+    return{td,proj,l10Pace,gap};
+  }).filter(s=>s.proj>=85).sort((a,b)=>b.gap-a.gap);
+
+  const pick=scored[0];
+  if(!pick) return;
+
+  const club=pick.td.team.clubName||pick.td.team.name;
+  const url=trackerUrl(pick.td.team.id,pick.td.curGames.length);
+  let verdict,verdictCls,why;
+  if(pick.gap>=15){
+    verdict='Contender with warning signs'; verdictCls='background:rgba(249,217,110,.1);color:var(--caution-text);border:1px solid rgba(249,217,110,.25)';
+    why=`Full-season pace still strong at ${pick.proj}W, but recent pace has dropped to ${pick.l10Pace}W. The talent is there — the form isn't, right now.`;
+  } else if(pick.proj>=95){
+    verdict='Legitimate Contender'; verdictCls='background:rgba(26,255,107,.1);color:var(--signal);border:1px solid rgba(26,255,107,.25)';
+    why=`${pick.proj}W season pace with no major red flags in recent form. This is as real as it gets.`;
+  } else {
+    verdict='Pretender'; verdictCls='background:rgba(244,117,112,.1);color:var(--loss-text);border:1px solid rgba(244,117,112,.25)';
+    why=`The ${pick.proj}W season pace flatters a team that's been fading. The standings haven't caught up to the trend yet.`;
+  }
+
+  const voteKey='tts-verdict-'+pick.td.team.id+'-'+new Date().toISOString().slice(0,10);
+  const voted=localStorage.getItem(voteKey);
+
+  container.innerHTML=`<div class="verdict-card">
+    <div class="verdict-team-row">
+      <div class="verdict-logo"><img src="https://www.mlbstatic.com/team-logos/${pick.td.team.id}.svg" width="24" height="24" onerror="this.style.display='none'"/></div>
+      <div class="verdict-team-name">${club}</div>
+    </div>
+    <div class="verdict-badge" style="${verdictCls}">Verdict: ${verdict}</div>
+    <div class="verdict-why">${why}</div>
+    <div class="verdict-actions">
+      <button class="verdict-btn ${voted==='agree'?'active-agree':''}" onclick="voteVerdict('${voteKey}','agree')">👍 Agree</button>
+      <button class="verdict-btn ${voted==='disagree'?'active-disagree':''}" onclick="voteVerdict('${voteKey}','disagree')">👎 Disagree</button>
+      <button class="verdict-btn" onclick='copyTextWithToast(${JSON.stringify(`${club}: ${verdict}. ${why} https://tracktheseason.com${url}`)})'>⧉ Send to a ${club} fan</button>
+      <a class="verdict-btn" href="/pace-standings">View All Teams →</a>
+    </div>
+  </div>`;
+}
+window.voteVerdict=function(key,choice){
+  localStorage.setItem(key,choice);
+  buildVerdictCard(window._allData||[]);
+};
+
+/* ════════════════════════════════════════════════════
+   PITCHING BOARD PREVIEW (uses live API for top teams)
+════════════════════════════════════════════════════ */
+async function buildPitchingBoardPreview(allData){
+  const container=document.getElementById('pitchingBoardPreviewContainer');
+  if(!container) return;
+  container.innerHTML=`<div style="font-family:var(--mono);font-size:11px;color:var(--chalk);padding:8px 0">Loading rotation data…</div>`;
+
+  /* Pick 3 teams with highest season pace as plausible "best rotation" candidates,
+     then ask the existing Starter Signal API for their duo/rest splits. */
+  const valid=allData.filter(t=>t.curGames.length>=30);
+  const topByPace=[...valid].sort((a,b)=>(projWins(b.curGames)||0)-(projWins(a.curGames)||0)).slice(0,4);
+
+  const results=await Promise.allSettled(topByPace.map(async td=>{
+    try{
+      const res=await fetch(`/api/pitcher-splits?teamId=${td.team.id}&season=${CURRENT_YEAR}`);
+      const d=await res.json();
+      if(d.error||!d.duo) return null;
+      return{td,duo:d.duo,rest:d.rest};
+    }catch{ return null; }
+  }));
+
+  const rows=results.filter(r=>r.status==='fulfilled'&&r.value).map(r=>r.value)
+    .sort((a,b)=>(b.duo.pace||0)-(a.duo.pace||0)).slice(0,3);
+
+  if(!rows.length){
+    container.innerHTML=`<div style="font-family:var(--mono);font-size:11px;color:var(--chalk);padding:8px 0">Rotation data warming up — check the full Pitching Board.</div>`;
+    return;
+  }
+
+  container.innerHTML=`<div class="pb-preview-grid">${rows.map(r=>{
+    const club=r.td.team.clubName||r.td.team.name;
+    const gap=r.rest?r.duo.pace-r.rest.pace:null;
+    const url=trackerUrl(r.td.team.id,r.td.curGames.length);
+    return`<a class="pb-preview-row" href="${url}" style="text-decoration:none;color:inherit">
+      <div class="pb-preview-logo"><img src="https://www.mlbstatic.com/team-logos/${r.td.team.id}.svg" width="20" height="20" onerror="this.style.display='none'"/></div>
+      <div class="pb-preview-label">Best 1–2 Punch</div>
+      <div class="pb-preview-team">${club}</div>
+      <div class="pb-preview-val">${r.duo.pace}W${gap!=null?` (+${gap})`:''}</div>
+    </a>`;
+  }).join('')}</div>`;
+}
+
 
 loadAllTeams().catch(err=>{
   document.getElementById('teamGrid').innerHTML=`<div class="state-wrap"><div class="error-box"><strong>Could not load MLB data.</strong><br>${err.message}</div></div>`;
