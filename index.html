@@ -2736,8 +2736,8 @@ function buildDailyDebate(allData){
       ${pollBtns}
     </div>
     <div class="debate-actions">
-      <button class="debate-btn primary" onclick="copyTextWithToast(${JSON.stringify(cfg.copyTake+'\n\nhttps://tracktheseason.com'+cfg.link)})">⧉ Copy Take</button>
-      <button class="debate-btn ghost" onclick="shareDailyDebate(${JSON.stringify(cfg.copyTake)})">⬆ Share Graphic</button>
+      <button class="debate-btn primary" onclick='copyTextWithToast(${JSON.stringify(cfg.copyTake+'\n\nhttps://tracktheseason.com'+cfg.link)})'>⧉ Copy Take</button>
+      <button class="debate-btn ghost" onclick='shareDailyDebate(${JSON.stringify(cfg.copyTake)})'>⬆ Share Graphic</button>
       <a class="debate-btn ghost" href="${cfg.link}">View Pace Board →</a>
     </div>
   </div>`;
