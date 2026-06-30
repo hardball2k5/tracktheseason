@@ -409,6 +409,11 @@ function renderDivisionCards(teams) {
 function renderTable(teams) {
   const filtered = _divFilter === 'all'
     ? teams
+    : (_divFilter === 'AL' || _divFilter === 'NL')
+    ? teams.filter(t => {
+        const div = DIVISIONS.find(d => d.teams.includes(t.teamId));
+        return div?.name.startsWith(_divFilter);
+      })
     : teams.filter(t => {
         const div = DIVISIONS.find(d => d.teams.includes(t.teamId));
         return div?.name === _divFilter;
@@ -561,6 +566,9 @@ async function main() {
       <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:8px">
         <div class="filter-bar" style="margin-bottom:0">
           <button class="filter-btn active" data-div="all" onclick="setDivFilter('all',this)">All 30</button>
+          <button class="filter-btn" data-div="AL" onclick="setDivFilter('AL',this)">AL</button>
+          <button class="filter-btn" data-div="NL" onclick="setDivFilter('NL',this)">NL</button>
+          <span class="filter-divider"></span>
           ${divBtns}
         </div>
         <div class="window-row" style="margin-bottom:0">${winBtns}</div>
