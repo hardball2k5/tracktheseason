@@ -165,7 +165,7 @@ body{font-family:var(--sans);background:var(--ink);color:#e8edf8;min-height:100v
 <div class="wrap">
   <!-- HERO -->
   <div class="hero">
-    <div class="hero-eyebrow">⚾ Track The Season</div>
+    <div class="hero-eyebrow"><svg width="12" height="12" viewBox="0 0 13 13" style="vertical-align:-2px;margin-right:5px"><circle cx="6.5" cy="6.5" r="5" fill="none" stroke="#1aff6b" stroke-width="1.2"/><path d="M3.5 4 Q6.5 6 3.5 9" fill="none" stroke="#1aff6b" stroke-width="0.9" stroke-linecap="round"/><path d="M9.5 4 Q6.5 6 9.5 9" fill="none" stroke="#1aff6b" stroke-width="0.9" stroke-linecap="round"/></svg>Track The Season</div>
     <h1 class="hero-hed">Pitching Board</h1>
     <p class="hero-sub">Which teams have the best 1–2 punch, the biggest rotation cliff, and the deepest rotations?</p>
     <p class="hero-tagline">Starter Signal compares how each team performs based on who starts. The Pitching Board turns that into a league-wide view.</p>
@@ -348,10 +348,10 @@ function renderSpotlights(teams){
     </div>`;
 
   return`<div class="spotlight-grid">
-    ${byDuoPace?card('green','🏆 Best 1–2 Punch',byDuoPace,`${byDuoPace.duo.pace}W`,'green',`${[byDuoPace.top1?.name,byDuoPace.top2?.name].filter(Boolean).map(n=>n.split(' ').pop()).join(' + ')} · ${fmtRecord(byDuoPace.duo.w,byDuoPace.duo.l)}`):''}
-    ${byGap?card('amber','📉 Biggest Cliff',byGap,`+${byGap.gap}W gap`,'amber',`Top 2: ${byGap.duo.pace}W vs Rest: ${byGap.rest.pace}W`):''}
-    ${byDepth?card('blue','🛡️ Deepest Rotation',byDepth,`${byDepth.rest.pace}W`,'green',`Rest pace · Gap: only ${byDepth.gap}W`):''}
-    ${mostExposed?card('red','⚠️ Most Exposed',mostExposed,`${mostExposed.rest.pace}W`,'red',`Rest pace · Top 2: ${mostExposed.duo.pace}W`):''}
+    ${byDuoPace?card('green','<svg width="13" height="13" viewBox="0 0 13 13" style="vertical-align:-2px"><path d="M4 2 L9 2 L9 5.5 Q9 8 6.5 8 Q4 8 4 5.5 Z" fill="none" stroke="#1aff6b" stroke-width="1.3" stroke-linejoin="round"/><line x1="6.5" y1="8" x2="6.5" y2="10" stroke="#1aff6b" stroke-width="1.3"/><line x1="4.5" y1="10.5" x2="8.5" y2="10.5" stroke="#1aff6b" stroke-width="1.3" stroke-linecap="round"/></svg> Best 1–2 Punch',byDuoPace,`${byDuoPace.duo.pace}W`,'green',`${[byDuoPace.top1?.name,byDuoPace.top2?.name].filter(Boolean).map(n=>n.split(' ').pop()).join(' + ')} · ${fmtRecord(byDuoPace.duo.w,byDuoPace.duo.l)}`):''}
+    ${byGap?card('amber','<svg width="13" height="13" viewBox="0 0 13 13" style="vertical-align:-2px"><path d="M2 3 L6 9 L11 9" fill="none" stroke="#f9d96e" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg> Biggest Cliff',byGap,`+${byGap.gap}W gap`,'amber',`Top 2: ${byGap.duo.pace}W vs Rest: ${byGap.rest.pace}W`):''}
+    ${byDepth?card('blue','<svg width="13" height="13" viewBox="0 0 13 13" style="vertical-align:-2px"><path d="M6.5 1.5 L11 3.5 L11 7 Q11 10.5 6.5 11.5 Q2 10.5 2 7 L2 3.5 Z" fill="none" stroke="#5b8fff" stroke-width="1.3" stroke-linejoin="round"/></svg> Deepest Rotation',byDepth,`${byDepth.rest.pace}W`,'green',`Rest pace · Gap: only ${byDepth.gap}W`):''}
+    ${mostExposed?card('red','<svg width="13" height="13" viewBox="0 0 13 13" style="vertical-align:-2px"><path d="M6.5 1.5 L11.5 10.5 L1.5 10.5 Z" fill="none" stroke="#f47570" stroke-width="1.3" stroke-linejoin="round"/><line x1="6.5" y1="5" x2="6.5" y2="7.5" stroke="#f47570" stroke-width="1.3" stroke-linecap="round"/><circle cx="6.5" cy="9" r="0.6" fill="#f47570"/></svg> Most Exposed',mostExposed,`${mostExposed.rest.pace}W`,'red',`Rest pace · Top 2: ${mostExposed.duo.pace}W`):''}
   </div>`;
 }
 
@@ -371,7 +371,7 @@ function renderRanking(teams, sortFn, cols, title, sub, sectionLabel, n=10){
       </div>
       <div class="rank-stats">${cols.map(c=>c(t)).join('')}</div>
       <span class="signal-badge ${badgeCls(t.label)}">${t.label}</span>
-      ${t.smallSample?'<span class="signal-badge badge-sample" style="font-size:8px;padding:1px 6px">⚠️ Small sample</span>':''}
+      ${t.smallSample?'<span class="signal-badge badge-sample" style="font-size:8px;padding:1px 6px"><svg width="13" height="13" viewBox="0 0 13 13" style="vertical-align:-2px"><path d="M6.5 1.5 L11.5 10.5 L1.5 10.5 Z" fill="none" stroke="#f47570" stroke-width="1.3" stroke-linejoin="round"/><line x1="6.5" y1="5" x2="6.5" y2="7.5" stroke="#f47570" stroke-width="1.3" stroke-linecap="round"/><circle cx="6.5" cy="9" r="0.6" fill="#f47570"/></svg> Small sample</span>':''}
     </div>`;
   }).join('');
 
@@ -416,13 +416,13 @@ function renderTable(teams){
       <td>${dr}</td>
       <td class="${paceClass(t.rest.pace||0)}">${t.rest.pace||'—'}W</td>
       <td class="${gapClass(t.gap||0)}">${t.gap!=null?(t.gap>=0?'+':'')+t.gap+'W':'—'}</td>
-      <td><span class="signal-badge ${badgeCls(t.label)}">${t.label}</span>${t.smallSample?" ⚠️":""}</td>
+      <td><span class="signal-badge ${badgeCls(t.label)}">${t.label}</span>${t.smallSample?'<svg width="13" height="13" viewBox="0 0 13 13" style="vertical-align:-2px"><path d="M6.5 1.5 L11.5 10.5 L1.5 10.5 Z" fill="none" stroke="#f47570" stroke-width="1.3" stroke-linejoin="round"/><line x1="6.5" y1="5" x2="6.5" y2="7.5" stroke="#f47570" stroke-width="1.3" stroke-linecap="round"/><circle cx="6.5" cy="9" r="0.6" fill="#f47570"/></svg>':''}</td>
     </tr>`;
   }).join('');
 
   return`<div class="section">
     <div class="sec-label">Full Board</div>
-    <div class="sec-title">📋 Full Pitching Board</div>
+    <div class="sec-title"><svg width="14" height="14" viewBox="0 0 14 14" style="vertical-align:-2.5px;margin-right:5px"><rect x="3" y="2" width="8" height="11" rx="1" fill="none" stroke="#e8edf8" stroke-width="1.2"/><rect x="5" y="1" width="4" height="2" rx="0.5" fill="#e8edf8"/><line x1="5" y1="6" x2="9" y2="6" stroke="#e8edf8" stroke-width="0.9"/><line x1="5" y1="8.5" x2="9" y2="8.5" stroke="#e8edf8" stroke-width="0.9"/></svg>Full Pitching Board</div>
     <div class="sec-sub">All 30 teams — click headers to sort</div>
     <div class="sort-row">
       <button class="sort-btn ${_sortKey==='duopace'?'active':''}" onclick="tableSort('duopace')">Top 2 Pace</button>
@@ -480,7 +480,7 @@ async function main(){
   const smallCount=teams.filter(t=>t.smallSample).length;
   if(smallCount>0){
     const note=document.getElementById('sampleNote');
-    if(note){note.style.display='block';note.textContent=`⚠️ ${smallCount} team${smallCount!==1?'s':''} flagged as small sample — duo has fewer than required starts for this point in the season.`;}
+    if(note){note.style.display='block';note.textContent=`<svg width="13" height="13" viewBox="0 0 13 13" style="vertical-align:-2px"><path d="M6.5 1.5 L11.5 10.5 L1.5 10.5 Z" fill="none" stroke="#f9d96e" stroke-width="1.3" stroke-linejoin="round"/><line x1="6.5" y1="5" x2="6.5" y2="7.5" stroke="#f9d96e" stroke-width="1.3" stroke-linecap="round"/><circle cx="6.5" cy="9" r="0.6" fill="#f9d96e"/></svg> ${smallCount} team${smallCount!==1?'s':''} flagged as small sample — duo has fewer than required starts for this point in the season.`;}
   }
   document.getElementById('heroMeta').textContent=`${qualified} of 30 teams · ${date==='live'?'Live data':'Data from '+date} · Completed games only`;
 
@@ -493,25 +493,25 @@ async function main(){
       t=>stat('Top 2 W',`${t.duo.pace}W`,'green'),
       t=>stat('Record',fmtRecord(t.duo.w,t.duo.l)),
       t=>stat('R/G',t.duo.rs??'—'),
-    ],'🏆 Best 1–2 Punch','Teams ranked by win pace when their top two starters take the mound.','Section 1',10)}
+    ],'<svg width="13" height="13" viewBox="0 0 13 13" style="vertical-align:-2px"><path d="M4 2 L9 2 L9 5.5 Q9 8 6.5 8 Q4 8 4 5.5 Z" fill="none" stroke="#1aff6b" stroke-width="1.3" stroke-linejoin="round"/><line x1="6.5" y1="8" x2="6.5" y2="10" stroke="#1aff6b" stroke-width="1.3"/><line x1="4.5" y1="10.5" x2="8.5" y2="10.5" stroke="#1aff6b" stroke-width="1.3" stroke-linecap="round"/></svg> Best 1–2 Punch','Teams ranked by win pace when their top two starters take the mound.','Section 1',10)}
 
     ${renderRanking(q,(a,b)=>b.gap-a.gap,[
       t=>stat('Top 2',`${t.duo.pace}W`,'green'),
       t=>stat('Everyone Else',`${t.rest.pace}W`,'red'),
       t=>stat('Gap',`+${t.gap}W`,'amber'),
-    ],'📉 Biggest Rotation Cliff','How much does the team fall off after the top two starters?','Section 2',10)}
+    ],'<svg width="13" height="13" viewBox="0 0 13 13" style="vertical-align:-2px"><path d="M2 3 L6 9 L11 9" fill="none" stroke="#f9d96e" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg> Biggest Rotation Cliff','How much does the team fall off after the top two starters?','Section 2',10)}
 
     ${renderRanking(q.filter(t=>t.rest.pace>=81),(a,b)=>a.gap-b.gap,[
       t=>stat('Top 2',`${t.duo.pace}W`,'green'),
       t=>stat('Rest Pace',`${t.rest.pace}W`,'green'),
       t=>stat('Gap',`${t.gap}W`),
-    ],'🛡️ Best Rotation Depth','Teams where the rest of the rotation holds up — smallest gap with qualifying rest pace (81W+).','Section 3',8)}
+    ],'<svg width="13" height="13" viewBox="0 0 13 13" style="vertical-align:-2px"><path d="M6.5 1.5 L11 3.5 L11 7 Q11 10.5 6.5 11.5 Q2 10.5 2 7 L2 3.5 Z" fill="none" stroke="#5b8fff" stroke-width="1.3" stroke-linejoin="round"/></svg> Best Rotation Depth','Teams where the rest of the rotation holds up — smallest gap with qualifying rest pace (81W+).','Section 3',8)}
 
     ${renderRanking(q,(a,b)=>a.rest.pace-b.rest.pace,[
       t=>stat('Rest Pace',`${t.rest.pace}W`,'red'),
       t=>stat('Top 2',`${t.duo.pace}W`,'green'),
       t=>stat('Gap',`+${t.gap}W`,'amber'),
-    ],'⚠️ Most Exposed Rotations','Teams most dependent on their top two starters to stay competitive.','Section 4',8)}
+    ],'<svg width="13" height="13" viewBox="0 0 13 13" style="vertical-align:-2px"><path d="M6.5 1.5 L11.5 10.5 L1.5 10.5 Z" fill="none" stroke="#f47570" stroke-width="1.3" stroke-linejoin="round"/><line x1="6.5" y1="5" x2="6.5" y2="7.5" stroke="#f47570" stroke-width="1.3" stroke-linecap="round"/><circle cx="6.5" cy="9" r="0.6" fill="#f47570"/></svg> Most Exposed Rotations','Teams most dependent on their top two starters to stay competitive.','Section 4',8)}
 
     <div id="fullTable">${renderTable(teams)}</div>`;
 

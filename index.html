@@ -1327,6 +1327,20 @@ function last10(games){const s=games.slice(-10);const w=s.filter(g=>g.win).lengt
      5. L20 ≤.400 AND L10 ≥.600           → Recovering
      6. everything else                    → Steady
 ────────────────────────────────────────────────────── */
+/* ── Custom SVG trend icons — shared across homepage + team pages ── */
+function trendIcon(kind, color) {
+  const c = color || 'currentColor';
+  const icons = {
+    surge: `<path d="M2 8 L5 4 L7.5 6 L11 1" fill="none" stroke="${c}" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M8 1 L11 1 L11 4" fill="none" stroke="${c}" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>`,
+    heat:  `<path d="M2 8 L6 3 L11 3" fill="none" stroke="${c}" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M8 3 L11 3 L11 6" fill="none" stroke="${c}" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>`,
+    steady:`<line x1="2" y1="6" x2="11" y2="6" stroke="${c}" stroke-width="1.6" stroke-linecap="round"/>`,
+    cool:  `<path d="M2 3 L6 8 L11 8" fill="none" stroke="${c}" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M8 8 L11 8 L11 5" fill="none" stroke="${c}" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>`,
+    slide: `<path d="M1 2 L4 6 L2.5 7.5 L7 11" fill="none" stroke="${c}" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M4 11 L7 11 L7 8" fill="none" stroke="${c}" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>`,
+    recover:`<path d="M2 8 L6 4 L11 4" fill="none" stroke="${c}" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M8 4 L11 4 L11 7" fill="none" stroke="${c}" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>`,
+  };
+  return `<svg width="12" height="12" viewBox="0 0 13 13" style="vertical-align:-1.5px">${icons[kind]||''}</svg>`;
+}
+
 function getTwoLabelMomentum(games, projectedWins){
   const winsOf = arr => arr.filter(g=>g.win||g===true).length;
   const pct    = arr => arr.length ? winsOf(arr)/arr.length : 0;
@@ -1347,14 +1361,14 @@ function getTwoLabelMomentum(games, projectedWins){
     const p10  = pct(l10);
     const p20  = pct(l20);
 
-    if(p10>=.650 && p20>=.600)      { trendLabel='Surging';    trendCls='badge-good'; trendEmoji='🔥'; }
-    else if(p20<=.400 && p10<=.400) { trendLabel='Sliding';    trendCls='badge-bad';  trendEmoji='📉'; }
-    else if(p20>=.600 && p10>=.500) { trendLabel='Heating up'; trendCls='badge-good'; trendEmoji='📈'; }
-    else if(p20>=.600 && p10<.500)  { trendLabel='Fading';     trendCls='badge-bad';  trendEmoji='⬇️'; }
-    else if(p20<=.400 && p10>=.600) { trendLabel='Recovering'; trendCls='badge-good'; trendEmoji='⬆️'; }
-    else                            { trendLabel='Steady';     trendCls='badge-warn'; trendEmoji='➡️'; }
+    if(p10>=.650 && p20>=.600)      { trendLabel='Surging';    trendCls='badge-good'; trendEmoji=trendIcon('surge','#1aff6b'); }
+    else if(p20<=.400 && p10<=.400) { trendLabel='Sliding';    trendCls='badge-bad';  trendEmoji=trendIcon('slide','#f25b56'); }
+    else if(p20>=.600 && p10>=.500) { trendLabel='Heating up'; trendCls='badge-good'; trendEmoji=trendIcon('heat','#4ecb77'); }
+    else if(p20>=.600 && p10<.500)  { trendLabel='Fading';     trendCls='badge-bad';  trendEmoji=trendIcon('cool','#f47570'); }
+    else if(p20<=.400 && p10>=.600) { trendLabel='Recovering'; trendCls='badge-good'; trendEmoji=trendIcon('recover','#4ecb77'); }
+    else                            { trendLabel='Steady';     trendCls='badge-warn'; trendEmoji=trendIcon('steady','rgba(255,255,255,.5)'); }
   } else {
-    trendLabel='Steady'; trendCls='badge-warn'; trendEmoji='➡️';
+    trendLabel='Steady'; trendCls='badge-warn'; trendEmoji=trendIcon('steady','rgba(255,255,255,.5)');
   }
 
   return {
@@ -1691,7 +1705,7 @@ function buildSnapshot(allData){
       cls:'green',
       context: best?`${best.curGames[best.curGames.length-1]?.cumWins}–${best.curGames[best.curGames.length-1]?.cumLosses}`:'',
       href: best?trackerUrl(best.team.id, best.curGames.length):'#',
-      icon:'🏆'
+      icon:'<svg width="13" height="13" viewBox="0 0 13 13" style="vertical-align:-2px"><path d="M4 2 L9 2 L9 5.5 Q9 8 6.5 8 Q4 8 4 5.5 Z" fill="none" stroke="#1aff6b" stroke-width="1.3" stroke-linejoin="round"/><line x1="6.5" y1="8" x2="6.5" y2="10" stroke="#1aff6b" stroke-width="1.3"/><line x1="4.5" y1="10.5" x2="8.5" y2="10.5" stroke="#1aff6b" stroke-width="1.3" stroke-linecap="round"/><path d="M4 3 L2.5 3 L2.5 5 Q2.5 6.5 4 6.5" fill="none" stroke="#1aff6b" stroke-width="1.1"/><path d="M9 3 L10.5 3 L10.5 5 Q10.5 6.5 9 6.5" fill="none" stroke="#1aff6b" stroke-width="1.1"/></svg>'
     },
     {
       label:'Worst Pace',
@@ -1700,7 +1714,7 @@ function buildSnapshot(allData){
       cls:'red',
       context: worst?`${worst.curGames[worst.curGames.length-1]?.cumWins}–${worst.curGames[worst.curGames.length-1]?.cumLosses}`:'',
       href: worst?trackerUrl(worst.team.id, worst.curGames.length):'#',
-      icon:'📉'
+      icon:'<svg width="13" height="13" viewBox="0 0 13 13" style="vertical-align:-2px"><path d="M2 3 L6.5 8 L11 3" fill="none" stroke="#f47570" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>'
     },
     {
       label:'Hottest Team',
@@ -1709,7 +1723,7 @@ function buildSnapshot(allData){
       cls: l10hot.w>=7?'green':'',
       context: hottest?`${projWins(hottest.curGames)||'—'}W pace`:'',
       href: hottest?trackerUrl(hottest.team.id, hottest.curGames.length):'#',
-      icon:'🔥'
+      icon:'<svg width="13" height="13" viewBox="0 0 13 13" style="vertical-align:-2px"><circle cx="6.5" cy="6.5" r="5" fill="rgba(26,255,107,.12)"/><path d="M3.5 8 L6 4.5 L7.5 6 L9.5 3" fill="none" stroke="#1aff6b" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>'
     },
     {
       label:'Teams Surging',
@@ -1717,7 +1731,7 @@ function buildSnapshot(allData){
       cls:'green',
       context:`+5W or more vs last season`,
       href:'#all-teams',
-      icon:'📈'
+      icon:'<svg width="13" height="13" viewBox="0 0 13 13" style="vertical-align:-2px"><path d="M2 9 L6.5 4 L11 9" fill="none" stroke="#4ecb77" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>'
     },
     closestDiv ? {
       label:'Closest Race',
@@ -1794,10 +1808,10 @@ function buildStoriesGrid(allData){
   const fader=byFade[0],faderDelta=getDelta(fader);
 
   const cards=[
-    {eyebrow:'Pace leader',    icon:'🔥',team:top.team.clubName||top.team.name,   teamId:top.team.id,   gp:top.curGames.length,  stat:`${topProj}W pace`,statClass:'green',detail:`${topLast.cumWins}–${topLast.cumLosses} · ${fmtPct(winPct(topLast.cumWins,topLast.cumLosses))}`},
-    {eyebrow:`vs ${COMPARE_YEAR}`,icon:'📈',team:gainer.team.clubName||gainer.team.name,teamId:gainer.team.id,gp:gainer.curGames.length,stat:`+${gainerDelta}W`,statClass:'green',detail:"ahead of last year's pace"},
+    {eyebrow:'Pace leader',    icon:'<svg width="13" height="13" viewBox="0 0 13 13" style="vertical-align:-2px"><circle cx="6.5" cy="6.5" r="5" fill="rgba(26,255,107,.12)"/><path d="M3.5 8 L6 4.5 L7.5 6 L9.5 3" fill="none" stroke="#1aff6b" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>',team:top.team.clubName||top.team.name,   teamId:top.team.id,   gp:top.curGames.length,  stat:`${topProj}W pace`,statClass:'green',detail:`${topLast.cumWins}–${topLast.cumLosses} · ${fmtPct(winPct(topLast.cumWins,topLast.cumLosses))}`},
+    {eyebrow:`vs ${COMPARE_YEAR}`,icon:'<svg width="13" height="13" viewBox="0 0 13 13" style="vertical-align:-2px"><path d="M2 9 L6.5 4 L11 9" fill="none" stroke="#4ecb77" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>',team:gainer.team.clubName||gainer.team.name,teamId:gainer.team.id,gp:gainer.curGames.length,stat:`+${gainerDelta}W`,statClass:'green',detail:"ahead of last year's pace"},
     {eyebrow:'Last 10 games',  icon:'⚡',team:bestL10.team.clubName||bestL10.team.name,teamId:bestL10.team.id,gp:bestL10.curGames.length,stat:`${bestL10rec.w}–${bestL10rec.l}`,statClass:'green',detail:'best last-10 in MLB'},
-    {eyebrow:'Fading',         icon:'📉',team:fader.team.clubName||fader.team.name,  teamId:fader.team.id,  gp:fader.curGames.length, stat:`${faderDelta}W`,  statClass:'red',  detail:"behind last year's pace"},
+    {eyebrow:'Fading',         icon:'<svg width="13" height="13" viewBox="0 0 13 13" style="vertical-align:-2px"><path d="M2 3 L6.5 8 L11 3" fill="none" stroke="#f47570" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>',team:fader.team.clubName||fader.team.name,  teamId:fader.team.id,  gp:fader.curGames.length, stat:`${faderDelta}W`,  statClass:'red',  detail:"behind last year's pace"},
   ];
 
   document.getElementById('storiesGrid').innerHTML=cards.map(s=>`
