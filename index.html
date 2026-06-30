@@ -2623,6 +2623,14 @@ window.resetLookingAhead=function(){
 /* ════════════════════════════════════════════════════
    COPIED TOAST
 ════════════════════════════════════════════════════ */
+/* UTF-8 safe base64 helpers — used to pass text through HTML onclick
+   attributes without any risk of quote characters breaking the markup */
+function b64enc(str){
+  return btoa(encodeURIComponent(str).replace(/%([0-9A-F]{2})/g,(_,p)=>String.fromCharCode('0x'+p)));
+}
+function b64dec(str){
+  return decodeURIComponent(atob(str).split('').map(c=>'%'+('00'+c.charCodeAt(0).toString(16)).slice(-2)).join(''));
+}
 function showCopiedToast(){
   let toast=document.getElementById('copiedToast');
   if(!toast){
@@ -2736,8 +2744,8 @@ function buildDailyDebate(allData){
       ${pollBtns}
     </div>
     <div class="debate-actions">
-      <button class="debate-btn primary" onclick='copyTextWithToast(${JSON.stringify(cfg.copyTake+'\n\nhttps://tracktheseason.com'+cfg.link)})'>⧉ Copy Take</button>
-      <button class="debate-btn ghost" onclick='shareDailyDebate(${JSON.stringify(cfg.copyTake)})'>⬆ Share Graphic</button>
+      <button class="debate-btn primary" onclick="copyTextWithToast(b64dec('${b64enc(cfg.copyTake+'\n\nhttps://tracktheseason.com'+cfg.link)}'))">⧉ Copy Take</button>
+      <button class="debate-btn ghost" onclick="shareDailyDebate(b64dec('${b64enc(cfg.copyTake)}'))">⬆ Share Graphic</button>
       <a class="debate-btn ghost" href="${cfg.link}">View Pace Board →</a>
     </div>
   </div>`;
