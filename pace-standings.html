@@ -200,7 +200,7 @@ footer.site a:hover{color:var(--signal)}
 
   <div class="explainer" style="margin-top:16px">
     <div class="explainer-title">What are Pace Standings?</div>
-    <div class="explainer-body">Traditional standings reward what happened over the entire season. Pace Standings compare a team's full-season pace with how they've played recently — identifying clubs that are accelerating, cooling off, or holding steady before the standings fully reflect those changes. <strong style="color:#e8edf8">Momentum Delta = L20 Pace − Season Pace.</strong></div>
+    <div class="explainer-body">Traditional standings reward what happened over the entire season. Pace Standings compare a team's full-season pace with how they've played recently — identifying clubs that are accelerating, cooling off, or holding steady before the standings fully reflect those changes. <strong style="color:#e8edf8">Momentum Delta = L20 Pace − Season Pace.</strong> <strong style="color:#e8edf8">😰 Panic Score</strong> (0-99) measures how sharply a contending team's recent pace has dropped from its season pace — shown only for teams with a 75W+ season pace, since panic isn't meaningful for teams already out of contention.</div>
   </div>
 
   <div id="pageContent">
@@ -317,6 +317,20 @@ async function loadAllTeams() {
       const l20Delta = windowPaces.l20 != null ? windowPaces.l20 - season : null;
       const trend    = l20Delta != null ? getTrend(l20Delta) : {label:'➖ Steady',cls:'t-steady'};
 
+      /* Panic Score — only meaningful for teams still in contention (75W+ pace).
+         Uses L20 (stable) as primary signal, L10 (noisier) as a smaller add-on,
+         so a single bad 10-game stretch can't spike the score artificially. */
+      let panicScore = null, panicWhy = null;
+      if (season >= 75 && windowPaces.l20 != null) {
+        const l20Collapse = Math.max(0, season - windowPaces.l20);
+        const l10Collapse = windowPaces.l10 != null ? Math.max(0, season - windowPaces.l10) : l20Collapse;
+        const collapseFactor = l20Collapse * 0.75 + l10Collapse * 0.25;
+        panicScore = Math.min(95, Math.max(5, Math.round(collapseFactor * 1.3)));
+        panicWhy = l20Collapse >= 20 ? 'Recent pace collapse'
+                 : l20Collapse >= 10 ? 'Cooling off fast'
+                 : 'Still in it, but uneven';
+      }
+
       return {
         teamId: id,
         teamName: games[0] ? getTeamName(id) : String(id),
@@ -324,6 +338,8 @@ async function loadAllTeams() {
         windowPaces,
         l20Delta,
         trend,
+        panicScore,
+        panicWhy,
       };
     }));
     for (const r of settled) if (r.status === 'fulfilled' && r.value) results.push(r.value);
@@ -441,6 +457,9 @@ function renderTable(teams) {
   const rows = sorted.map((t, i) => {
     const delta = t.l20Delta;
     const activeWin = t.windowPaces[_activeWindow] ?? null;
+    const panicCell = t.panicScore != null
+      ? `<td><span class="trend-badge" style="background:${panicBg(t.panicScore)};color:${panicColor(t.panicScore)};border:1px solid ${panicColor(t.panicScore)}33">${t.panicScore}</span></td>`
+      : `<td><span style="font-family:var(--mono);font-size:10px;color:rgba(255,255,255,.2)" title="Already out of contention">N/A</span></td>`;
     return `<tr>
       <td><span class="ps-rank ${i<3?'top3':''}">${i+1}</span></td>
       <td><div class="ps-team-cell">
@@ -451,6 +470,7 @@ function renderTable(teams) {
       ${windowCols(t)}
       <td class="${deltaClass(delta)}">${delta != null ? sign(delta)+'W' : '—'}</td>
       <td><span class="trend-badge ${t.trend.cls}">${t.trend.label}</span></td>
+      ${panicCell}
     </tr>`;
   }).join('');
 
@@ -458,12 +478,16 @@ function renderTable(teams) {
   const mobCards = sorted.map(t => {
     const delta = t.l20Delta;
     const dcls  = delta != null ? (delta > 0 ? 'd-pos' : delta < 0 ? 'd-neg' : 'd-neu') : 'd-neu';
+    const panicLine = t.panicScore != null
+      ? `<span style="color:${panicColor(t.panicScore)};font-weight:700">😰 ${t.panicScore}/100</span>`
+      : `<span style="color:rgba(255,255,255,.25)">😰 N/A</span>`;
     return `<a class="mob-card" href="${teamUrl(t.teamId)}">
       <div class="mob-logo"><img src="${logoUrl(t.teamId)}" width="28" height="28" style="object-fit:contain" onerror="this.style.display='none'"/></div>
       <div class="mob-body">
         <div class="mob-name">${t.teamName}</div>
         <div class="mob-paces">Season ${t.season}W · L20 ${t.windowPaces.l20 ?? '—'}W · L10 ${t.windowPaces.l10 ?? '—'}W</div>
         <span class="trend-badge ${t.trend.cls}">${t.trend.label}</span>
+        <span style="margin-left:6px;font-family:var(--mono);font-size:10px">${panicLine}</span>
       </div>
       <div class="mob-right">
         <div class="mob-delta ${dcls}">${delta != null ? sign(delta)+'W' : '—'}</div>
@@ -479,16 +503,29 @@ function renderTable(teams) {
       ${windowHeaders}
       ${th('l20Delta','Momentum Δ')}
       <th>Trend</th>
+      ${th('panicScore','😰 Panic')}
     </tr></thead>
     <tbody>${rows}</tbody>
   </table></div>
   <div class="mobile-cards">${mobCards}</div>`;
 }
 
+function panicColor(score) {
+  if (score >= 70) return 'var(--loss)';
+  if (score >= 45) return 'var(--caution)';
+  return 'var(--gain)';
+}
+function panicBg(score) {
+  if (score >= 70) return 'rgba(244,117,112,.1)';
+  if (score >= 45) return 'rgba(249,217,110,.1)';
+  return 'rgba(78,203,119,.1)';
+}
+
 function getVal(t, key) {
   if (key === 'rank' || key === 'name') return null;
-  if (key === 'season')   return t.season;
-  if (key === 'l20Delta') return t.l20Delta;
+  if (key === 'season')     return t.season;
+  if (key === 'l20Delta')   return t.l20Delta;
+  if (key === 'panicScore') return t.panicScore;
   const w = WINDOWS.find(w => w.key === key);
   return w ? (t.windowPaces[w.key] ?? null) : null;
 }
