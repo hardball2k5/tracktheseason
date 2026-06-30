@@ -653,7 +653,12 @@ body{font-family:var(--sans);background:var(--ink);color:#e8edf8;min-height:100v
 
 /* ══ WHAT CHANGED MINI ═══════════════════════════ */
 .wcs-list{display:flex;flex-direction:column;gap:6px}
-.wcs-row{display:flex;align-items:center;gap:10px;background:var(--ink2);border:1px solid var(--rule);border-radius:var(--r-md);padding:10px 14px}
+.wcs-row{display:flex;align-items:center;gap:10px;background:var(--ink2);border:1px solid var(--rule);border-radius:var(--r-md);padding:10px 14px;flex-wrap:wrap}
+@media(max-width:480px){
+  .wcs-row{flex-wrap:wrap}
+  .wcs-why{flex:1 1 100%;order:3;margin-top:2px}
+  .wcs-delta{margin-left:auto}
+}
 .wcs-logo{width:26px;height:26px;background:var(--logo-bg);border:1px solid var(--logo-border);border-radius:4px;box-shadow:var(--logo-shadow);display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0}
 .wcs-logo img{width:20px;height:20px;object-fit:contain}
 .wcs-name{font-family:var(--mono);font-size:13px;font-weight:700;color:#e8edf8;flex-shrink:0;min-width:84px}
@@ -893,11 +898,11 @@ body{font-family:var(--sans);background:var(--ink);color:#e8edf8;min-height:100v
     </div>
   </div>
 
-  <!-- WHAT CHANGED SINCE YESTERDAY -->
+  <!-- RECENT MOMENTUM WATCH (homepage preview — real overnight deltas live on /pulse) -->
   <div class="section" style="padding-top:24px">
     <div class="sec-header" style="padding-top:0">
-      <div class="sec-title">📊 What Changed Since Yesterday?</div>
-      <div class="sec-sub">Pace shifts that moved overnight</div>
+      <div class="sec-title">📊 Recent Momentum Watch</div>
+      <div class="sec-sub">Teams whose last 10 games are pulling away from their season pace</div>
     </div>
     <div id="whatChangedContainer"></div>
   </div>
@@ -2784,16 +2789,16 @@ function buildWhatChangedMini(allData){
   container.innerHTML=`<div class="wcs-list">${rows.map(r=>{
     const club=r.td.team.clubName||r.td.team.name;
     const cls=r.diff>0?'d-pos':'d-neg';
-    const why=r.diff>=2?'Momentum keeps building':r.diff>0?'Quietly staying in the mix':r.diff<=-2?'Season slipping further':'Recent pace cooling';
+    const why=r.diff>=2?'Last 10 running well ahead of season pace':r.diff>0?'Trending slightly above season pace':r.diff<=-2?'Last 10 running well below season pace':'Trending slightly below season pace';
     const url=trackerUrl(r.td.team.id,r.td.curGames.length);
     return`<a class="wcs-row" href="${url}" style="text-decoration:none;color:inherit">
       <div class="wcs-logo"><img src="https://www.mlbstatic.com/team-logos/${r.td.team.id}.svg" width="20" height="20" onerror="this.style.display='none'"/></div>
       <div class="wcs-name">${club}</div>
       <div class="wcs-why">${why}</div>
-      <div class="wcs-delta ${cls}">${r.diff>0?'+':''}${r.diff} proj. win${Math.abs(r.diff)!==1?'s':''}</div>
+      <div class="wcs-delta ${cls}">${r.diff>0?'+':''}${r.diff}W L10 pace gap</div>
     </a>`;
   }).join('')}</div>
-  <div style="margin-top:10px"><a href="/pulse" style="font-family:var(--mono);font-size:11px;font-weight:700;color:var(--signal);text-decoration:none">Open Daily Pulse →</a></div>`;
+  <div style="margin-top:10px"><a href="/pulse" style="font-family:var(--mono);font-size:11px;font-weight:700;color:var(--signal);text-decoration:none">See real overnight changes on Daily Pulse →</a></div>`;
 }
 
 /* ════════════════════════════════════════════════════
