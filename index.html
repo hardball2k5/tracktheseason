@@ -2679,7 +2679,8 @@ function buildDailyDebate(allData){
   if(!cfg){ container.innerHTML=''; return; }
 
   const votedKey='tts-debate-vote-'+new Date().toISOString().slice(0,10);
-  const voted=localStorage.getItem(votedKey);
+  const votedRaw=localStorage.getItem(votedKey);
+  const voted=(votedRaw==='0'||votedRaw==='1'||votedRaw==='2')?votedRaw:null;
   /* Fake-but-stable percentages seeded by date so they don't jump on reload */
   const seed=new Date().getDate();
   const pcts=[42+seed%10, 33+seed%7, 25-seed%5].map(p=>Math.max(8,p));
