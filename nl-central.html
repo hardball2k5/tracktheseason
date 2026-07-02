@@ -100,7 +100,7 @@ footer.site a{color:rgba(255,255,255,.3);text-decoration:none}
           <div class="dtr-loading" id="pace-112">Loading…</div>
         </div>
         <div class="dtr-actions">
-          <a href="/cubs" class="dtr-btn">View Team →</a>
+          <span href="/cubs" class="dtr-btn">View Team →</span>
         </div>
       </a>
       <a class="div-team-row" href="/reds">
@@ -110,7 +110,7 @@ footer.site a{color:rgba(255,255,255,.3);text-decoration:none}
           <div class="dtr-loading" id="pace-113">Loading…</div>
         </div>
         <div class="dtr-actions">
-          <a href="/reds" class="dtr-btn">View Team →</a>
+          <span href="/reds" class="dtr-btn">View Team →</span>
         </div>
       </a>
       <a class="div-team-row" href="/brewers">
@@ -120,7 +120,7 @@ footer.site a{color:rgba(255,255,255,.3);text-decoration:none}
           <div class="dtr-loading" id="pace-158">Loading…</div>
         </div>
         <div class="dtr-actions">
-          <a href="/brewers" class="dtr-btn">View Team →</a>
+          <span href="/brewers" class="dtr-btn">View Team →</span>
         </div>
       </a>
       <a class="div-team-row" href="/pirates">
@@ -130,7 +130,7 @@ footer.site a{color:rgba(255,255,255,.3);text-decoration:none}
           <div class="dtr-loading" id="pace-134">Loading…</div>
         </div>
         <div class="dtr-actions">
-          <a href="/pirates" class="dtr-btn">View Team →</a>
+          <span href="/pirates" class="dtr-btn">View Team →</span>
         </div>
       </a>
       <a class="div-team-row" href="/cardinals">
@@ -140,7 +140,7 @@ footer.site a{color:rgba(255,255,255,.3);text-decoration:none}
           <div class="dtr-loading" id="pace-138">Loading…</div>
         </div>
         <div class="dtr-actions">
-          <a href="/cardinals" class="dtr-btn">View Team →</a>
+          <span href="/cardinals" class="dtr-btn">View Team →</span>
         </div>
       </a>
   </div>
@@ -258,10 +258,10 @@ async function loadDivisionPaces(){
   const container = document.getElementById('divisionTeams');
   if(container && rows.length){
     rows.sort((a,b)=>b.d.seasonPace-a.d.seasonPace);
-    const allRows = Array.from(container.querySelectorAll('.div-team-row'));
     rows.forEach(r=>{
-      const el = allRows.find(row=>row.querySelector(`#pace-${r.id}`));
-      if(el) container.appendChild(el);
+      const paceEl = document.getElementById('pace-'+r.id);
+      const row = paceEl?.closest('.div-team-row');
+      if(row) container.appendChild(row);
     });
   }
 }
