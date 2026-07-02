@@ -286,18 +286,6 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000}
 @keyframes fadeIn{from{opacity:0}to{opacity:1}}
 
 /* ── CONTROLS ─────────────────────────────────────── */
-.controls{
-  position:fixed;bottom:24px;left:50%;transform:translateX(-50%);
-  display:flex;gap:12px;z-index:100;
-}
-.ctrl-btn{
-  padding:10px 20px;border-radius:8px;
-  background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);
-  color:#fff;font-family:monospace;font-size:13px;font-weight:600;
-  cursor:pointer;transition:all .13s;
-}
-.ctrl-btn:hover{background:rgba(255,255,255,.2)}
-.ctrl-btn.playing{background:rgba(34,255,119,.15);border-color:rgba(34,255,119,.4);color:#22FF77}
 </style>
 <link rel="canonical" href="https://tracktheseason.com/reel"/>
 </head>
@@ -588,14 +576,6 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000}
 
 </div><!-- /stage -->
 </div><!-- /stage-wrap -->
-
-<!-- CONTROLS -->
-<div class="controls">
-  <button class="ctrl-btn" id="prevBtn" onclick="prevSlide()">← Prev</button>
-  <button class="ctrl-btn playing" id="playBtn" onclick="togglePlay()">⏸ Pause</button>
-  <button class="ctrl-btn" id="nextBtn" onclick="nextSlide()">Next →</button>
-  <button class="ctrl-btn" onclick="restartReel()">↺ Restart</button>
-</div>
 
 <script>
 /* ══════════════════════════════════════════════════════
@@ -950,6 +930,34 @@ function scaleStage(){
 }
 window.addEventListener('resize',scaleStage);
 scaleStage();
+
+/* ── Tap / swipe / keyboard navigation (replaces button controls) ── */
+const stageEl = document.getElementById('stage');
+let _touchStartX = 0;
+
+/* Tap right half = next, tap left half = prev */
+stageEl.addEventListener('click', e => {
+  const half = stageEl.getBoundingClientRect().width / 2;
+  const x = e.clientX - stageEl.getBoundingClientRect().left;
+  if(x > half) { clearTimeout(timer); goTo(currentIdx + 1); }
+  else          { clearTimeout(timer); goTo(currentIdx - 1); }
+});
+
+/* Swipe left = next, swipe right = prev */
+stageEl.addEventListener('touchstart', e => { _touchStartX = e.touches[0].clientX; }, {passive:true});
+stageEl.addEventListener('touchend',   e => {
+  const dx = e.changedTouches[0].clientX - _touchStartX;
+  if(Math.abs(dx) > 40){
+    clearTimeout(timer);
+    goTo(dx < 0 ? currentIdx + 1 : currentIdx - 1);
+  }
+}, {passive:true});
+
+/* Keyboard */
+document.addEventListener('keydown', e => {
+  if(e.key==='ArrowRight'||e.key===' '){ clearTimeout(timer); goTo(currentIdx+1); }
+  if(e.key==='ArrowLeft')               { clearTimeout(timer); goTo(currentIdx-1); }
+});
 
 /* ══ Logo loading — fetch as blob URL ════════════════════ */
 const logoCache = new Map();
