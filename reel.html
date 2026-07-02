@@ -89,6 +89,19 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000}
 @keyframes pulseDot{0%,100%{opacity:1}50%{opacity:.3}}
 
 /* ── FOOTER BAR ───────────────────────────────────── */
+
+/* ── Per-slide share button ─────────────────────── */
+.slide-share-btn{
+  display:inline-flex;align-items:center;gap:10px;
+  padding:14px 28px;border-radius:50px;
+  background:rgba(26,255,107,.12);border:1.5px solid rgba(26,255,107,.35);
+  font-family:'IBM Plex Mono',monospace;font-size:20px;font-weight:700;
+  color:#1aff6b;letter-spacing:.04em;cursor:pointer;
+  transition:background .15s,border-color .15s;
+}
+.slide-share-btn:hover{background:rgba(26,255,107,.22);border-color:rgba(26,255,107,.6)}
+.slide-share-btn.copied{background:rgba(26,255,107,.25);border-color:#1aff6b;color:#0f1014;background:#1aff6b}
+
 .slide-footer{
   display:flex;align-items:center;justify-content:space-between;
   margin-top:auto;padding-top:40px;flex-shrink:0;
@@ -322,6 +335,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000}
 
     <div class="slide-footer fade-in fade-in-d3">
       <div class="footer-url">TrackTheSeason.com</div>
+      <button class="slide-share-btn" onclick="shareSlide('slide-0',this)"><svg width="22" height="22" viewBox="0 0 22 22" fill="none"><path d="M11 3L11 15M5 9L11 3L17 9" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/><line x1="4" y1="19" x2="18" y2="19" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg> Share Caption</button>
       <div class="footer-slide-num">01 / 07</div>
     </div>
   </div>
@@ -361,6 +375,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000}
 
     <div class="slide-footer fade-in fade-in-d3">
       <div class="footer-url">TrackTheSeason.com</div>
+      <button class="slide-share-btn" onclick="shareSlide('slide-1',this)"><svg width="22" height="22" viewBox="0 0 22 22" fill="none"><path d="M11 3L11 15M5 9L11 3L17 9" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/><line x1="4" y1="19" x2="18" y2="19" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg> Share Caption</button>
       <div class="footer-slide-num">02 / 07</div>
     </div>
   </div>
@@ -400,6 +415,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000}
 
     <div class="slide-footer fade-in fade-in-d3">
       <div class="footer-url">TrackTheSeason.com</div>
+      <button class="slide-share-btn" onclick="shareSlide('slide-2',this)"><svg width="22" height="22" viewBox="0 0 22 22" fill="none"><path d="M11 3L11 15M5 9L11 3L17 9" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/><line x1="4" y1="19" x2="18" y2="19" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg> Share Caption</button>
       <div class="footer-slide-num">03 / 07</div>
     </div>
   </div>
@@ -445,6 +461,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000}
 
     <div class="slide-footer fade-in fade-in-d3">
       <div class="footer-url">TrackTheSeason.com</div>
+      <button class="slide-share-btn" onclick="shareSlide('slide-3',this)"><svg width="22" height="22" viewBox="0 0 22 22" fill="none"><path d="M11 3L11 15M5 9L11 3L17 9" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/><line x1="4" y1="19" x2="18" y2="19" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg> Share Caption</button>
       <div class="footer-slide-num">04 / 07</div>
     </div>
   </div>
@@ -494,6 +511,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000}
 
     <div class="slide-footer fade-in fade-in-d3">
       <div class="footer-url">TrackTheSeason.com</div>
+      <button class="slide-share-btn" onclick="shareSlide('slide-4',this)"><svg width="22" height="22" viewBox="0 0 22 22" fill="none"><path d="M11 3L11 15M5 9L11 3L17 9" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/><line x1="4" y1="19" x2="18" y2="19" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg> Share Caption</button>
       <div class="footer-slide-num">05 / 07</div>
     </div>
   </div>
@@ -531,6 +549,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000}
 
     <div class="slide-footer fade-in fade-in-d3">
       <div class="footer-url">TrackTheSeason.com</div>
+      <button class="slide-share-btn" onclick="shareSlide('slide-5',this)"><svg width="22" height="22" viewBox="0 0 22 22" fill="none"><path d="M11 3L11 15M5 9L11 3L17 9" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/><line x1="4" y1="19" x2="18" y2="19" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg> Share Caption</button>
       <div class="footer-slide-num">06 / 07</div>
     </div>
   </div>
@@ -559,6 +578,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000}
 
     <div class="slide-footer fade-in fade-in-d3">
       <div class="footer-url">TrackTheSeason.com</div>
+      <button class="slide-share-btn" onclick="shareSlide('slide-6',this)"><svg width="22" height="22" viewBox="0 0 22 22" fill="none"><path d="M11 3L11 15M5 9L11 3L17 9" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/><line x1="4" y1="19" x2="18" y2="19" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg> Share Caption</button>
       <div class="footer-slide-num">07 / 07</div>
     </div>
   </div>
@@ -1020,6 +1040,73 @@ async function boot(){
   console.log(`Reel: ${ACTIVE_SLIDES.length}/7 slides active`);
   buildProgress(); goTo(0);
 }
+
+
+/* ── Per-slide share ─────────────────────────────── */
+window.shareSlide = async function(slideId, btn){
+  const texts = {
+    'slide-0': `⚾ Track The Season — where every MLB team is actually headed.\n\nSee pace, momentum, and daily stories at tracktheseason.com\n\n#TrackTheSeason #MLB`,
+    'slide-1': null, /* built dynamically */
+    'slide-2': null,
+    'slide-3': null,
+    'slide-4': null,
+    'slide-5': null,
+    'slide-6': `⚾ Track The Season — pace standings, momentum, and daily MLB debates.\n\ntracktheseason.com\n\n#TrackTheSeason #MLB`,
+  };
+
+  let text = texts[slideId];
+
+  /* Build dynamic texts from live DOM content */
+  if(slideId === 'slide-1'){
+    const name  = document.getElementById('riser-name')?.textContent || '—';
+    const delta = document.getElementById('riser-delta')?.textContent || '';
+    const proj  = document.getElementById('riser-proj')?.textContent || '';
+    const rec   = document.getElementById('riser-record')?.textContent || '';
+    text = `📈 ${name} are the biggest mover in baseball right now.\n\n${rec} · ${proj} · ${delta}\n\ntracktheseason.com/${name.toLowerCase().replace(/\s+/g,'-')}\n\n#TrackTheSeason #MLB #${name.replace(/\s+/g,'')}`;
+  }
+  if(slideId === 'slide-2'){
+    const name  = document.getElementById('faller-name')?.textContent || '—';
+    const delta = document.getElementById('faller-delta')?.textContent || '';
+    const proj  = document.getElementById('faller-proj')?.textContent || '';
+    const rec   = document.getElementById('faller-record')?.textContent || '';
+    text = `📉 ${name} are the biggest fader in baseball right now.\n\n${rec} · ${proj} · ${delta}\n\ntracktheseason.com/${name.toLowerCase().replace(/\s+/g,'-')}\n\n#TrackTheSeason #MLB #${name.replace(/\s+/g,'')}`;
+  }
+  if(slideId === 'slide-3'){
+    const label = document.getElementById('rivalry-label')?.textContent || 'Rivalry Watch';
+    const name1 = document.getElementById('rivalry-name1')?.textContent || '—';
+    const name2 = document.getElementById('rivalry-name2')?.textContent || '—';
+    const pace1 = document.getElementById('rivalry-pace1')?.textContent || '—';
+    const pace2 = document.getElementById('rivalry-pace2')?.textContent || '—';
+    const gap   = document.getElementById('rivalry-gap')?.textContent?.replace('\napart','W apart') || '';
+    const narr  = document.getElementById('rivalry-narrative')?.textContent || '';
+    const slug  = name1.toLowerCase().replace(/\s+/g,'-')+'-vs-'+name2.toLowerCase().replace(/\s+/g,'-');
+    text = `⚔️ ${label} — ${gap}\n\n${name1}: ${pace1} · ${name2}: ${pace2}\n\n${narr}\n\ntracktheseason.com/${slug}\n\n#TrackTheSeason #MLB`;
+  }
+  if(slideId === 'slide-4'){
+    const bName = document.getElementById('best-name')?.textContent || '—';
+    const bCpw  = document.getElementById('best-cpw')?.textContent || '—';
+    const wName = document.getElementById('worst-name')?.textContent || '—';
+    const wCpw  = document.getElementById('worst-cpw')?.textContent || '—';
+    text = `💰 MLB Payroll Efficiency today:\n\nBest value: ${bName} at ${bCpw} per win\nWorst value: ${wName} at ${wCpw} per win\n\ntracktheseason.com/payroll-efficiency\n\n#TrackTheSeason #MLB`;
+  }
+  if(slideId === 'slide-5'){
+    const num = document.getElementById('chaos-num')?.textContent || '—';
+    const pct = document.getElementById('chaos-pct-line')?.textContent || '';
+    text = `🌀 MLB Chaos Index: ${num} of 30 teams (${pct}) are running 5+ wins ahead or behind last year's pace.\n\nThe standings are lying to you.\n\ntracktheseason.com/chaos-report\n\n#TrackTheSeason #MLB`;
+  }
+
+  if(!text) return;
+
+  /* Copy + show feedback */
+  try{
+    await navigator.clipboard.writeText(text);
+    if(btn){ btn.textContent='✓ Copied!'; btn.classList.add('copied');
+      setTimeout(()=>{ btn.innerHTML='<svg width="22" height="22" viewBox="0 0 22 22" fill="none"><path d="M11 3L11 15M5 9L11 3L17 9" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/><line x1="4" y1="19" x2="18" y2="19" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg> Share Caption'; btn.classList.remove('copied'); }, 2000);
+    }
+  } catch(e){
+    if(navigator.share) await navigator.share({text,title:'Track The Season'});
+  }
+};
 
 boot();
 
