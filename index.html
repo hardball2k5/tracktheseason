@@ -864,6 +864,29 @@ body{font-family:var(--sans);background:var(--ink);color:#e8edf8;min-height:100v
   </a>
   <style>@keyframes pulseDot{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(.7)}}</style>
 
+  <!-- TODAY'S REEL -->
+  <a href="/reel" style="
+    display:flex;align-items:flex-start;gap:16px;
+    background:var(--ink2);border:1px solid rgba(255,255,255,.07);
+    border-left:3px solid rgba(249,217,110,.6);
+    border-radius:var(--r-lg);padding:16px 18px;margin-top:10px;
+    text-decoration:none;transition:border-color .15s;
+  " onmouseover="this.style.borderColor='rgba(249,217,110,.3)'"
+     onmouseout="this.style.borderColor='rgba(255,255,255,.07)'">
+    <div style="flex:1;min-width:0">
+      <div style="font-family:var(--mono);font-size:9px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:rgba(249,217,110,.8);margin-bottom:6px;display:flex;align-items:center;gap:7px">
+        <svg width="10" height="10" viewBox="0 0 18 18" fill="none" style="flex-shrink:0"><polyline points="2,9 5,9 7,4 9,14 11,7 13,9 16,9" stroke="rgba(249,217,110,.8)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Today's Story Reel
+      </div>
+      <div style="font-family:var(--mono);font-size:15px;font-weight:700;color:#e8edf8;margin-bottom:5px;letter-spacing:-.01em">7 slides. The MLB story of the day.</div>
+      <div style="font-family:var(--sans);font-size:13px;color:rgba(255,255,255,.4);line-height:1.5">Biggest riser · Biggest collapse · Chaos Index · Rivalry gap · Best value team · Shareable graphics</div>
+    </div>
+    <div style="flex-shrink:0;display:flex;flex-direction:column;align-items:flex-end;gap:4px;padding-top:2px">
+      <div style="font-family:var(--mono);font-size:11px;font-weight:700;color:rgba(249,217,110,.8);white-space:nowrap">Watch the Reel →</div>
+      <div style="font-family:var(--mono);font-size:9px;color:rgba(255,255,255,.2);white-space:nowrap;letter-spacing:.04em">LIVE DATA</div>
+    </div>
+  </a>
+
   <!-- SCOUT ENTRY CARD -->
   <div id="scout-home-container"></div>
 
