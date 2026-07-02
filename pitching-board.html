@@ -10,6 +10,25 @@
 <meta property="og:image"       content="https://tracktheseason.com/api/chaos-report"/>
 <meta property="og:site_name"   content="Track The Season"/>
 <meta name="twitter:card"       content="summary_large_image"/>
+<script type="application/ld+json">
+{
+  "@context":"https://schema.org",
+  "@graph":[
+    {"@type":"WebPage","@id":"https://tracktheseason.com/pitching-board",
+     "name":"MLB Pitching Board","url":"https://tracktheseason.com/pitching-board",
+     "description":"Ranks all 30 MLB teams by best 1-2 starter punch, biggest rotation cliff, and deepest rotations.",
+     "isPartOf":{"@id":"https://tracktheseason.com"}},
+    {"@type":"FAQPage","mainEntity":[
+      {"@type":"Question","name":"Which MLB team has the biggest rotation cliff?",
+       "acceptedAnswer":{"@type":"Answer","text":"Track The Season's Pitching Board ranks all 30 teams by the gap between their top-two starters pace and their everyone-else pace. Visit tracktheseason.com/pitching-board for current rankings."}},
+      {"@type":"Question","name":"Which MLB teams have the best 1-2 starting pitcher combination?",
+       "acceptedAnswer":{"@type":"Answer","text":"The Pitching Board Best 1-2 Punch section ranks teams by combined win pace when their top two starters pitch. Based on actual team record in those starts, not ERA."}},
+      {"@type":"Question","name":"What does rotation cliff mean in baseball?",
+       "acceptedAnswer":{"@type":"Answer","text":"A rotation cliff is when a team's win pace drops dramatically when their top starters are not pitching. Track The Season quantifies this as the gap between top-two-starters pace and everyone-else pace."}}
+    ]}
+  ]
+}
+</script>
 <link rel="canonical"           href="https://tracktheseason.com/pitching-board"/>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet"/>
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-DCSQPGSY1D"></script>
@@ -149,9 +168,38 @@ body{font-family:var(--sans);background:var(--ink);color:#e8edf8;min-height:100v
   .board-table th:nth-child(n+5),.board-table td:nth-child(n+5){display:none}
   .spotlight-grid{grid-template-columns:1fr 1fr}
 }
+
+/* ── BOTTOM NAV (mobile) ─────────────────────────────── */
+.bottom-nav{display:none;position:fixed;bottom:0;left:0;right:0;z-index:200;
+  background:rgba(15,16,20,.96);backdrop-filter:blur(16px);
+  border-top:1px solid rgba(255,255,255,.07);
+  padding:8px 0 max(8px,env(safe-area-inset-bottom));
+}
+.bottom-nav-inner{display:flex;justify-content:space-around;align-items:center;max-width:480px;margin:0 auto}
+.bn-item{display:flex;flex-direction:column;align-items:center;gap:2px;padding:4px 10px;
+  border-radius:8px;text-decoration:none;color:rgba(255,255,255,.4);
+  font-family:var(--mono,monospace);font-size:9px;font-weight:700;letter-spacing:.06em;
+  min-width:52px;min-height:44px;justify-content:center;transition:color .13s}
+.bn-item.active,.bn-item:hover{color:var(--signal,#1aff6b)}
+.bn-item svg{flex-shrink:0}
+@media(max-width:680px){.bottom-nav{display:block}}
+@media(max-width:680px){body{padding-bottom:68px}}
+
 </style>
+<meta property="og:image" content="https://tracktheseason.com/api/card/phillies"/>
+<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:title" content="MLB Pitching Board | Track The Season"/>
+<meta name="twitter:description" content="Which MLB teams have the best rotations? Best 1-2 punch, rotation cliff, and deepest staffs ranked."/>
+<meta name="twitter:image" content="https://tracktheseason.com/api/card/phillies"/>
 </head>
 <body>
+<div id="staticContent" style="position:absolute;left:-9999px;top:auto;width:1px;height:1px;overflow:hidden" aria-hidden="true">
+<h2>MLB Pitching Board 2026</h2>
+<p>The Track The Season Pitching Board ranks all 30 MLB teams by rotation performance using Starter Signal data. Key metrics include Best 1-2 Punch (combined win pace for the top two starters), Rotation Cliff (gap between top-two pace and everyone-else pace), and Rotation Depth (how well the team performs beyond its top two starters).</p>
+<h3>What is a rotation cliff in baseball?</h3>
+<p>A rotation cliff is when a team's win pace drops dramatically when their top starters are not pitching. Track The Season quantifies this gap using actual team record in each pitcher's starts, not ERA or WHIP.</p>
+<p>Visit tracktheseason.com/pitching-board for the full live Pitching Board updated after every game.</p>
+</div>
 <nav class="nav">
   <div class="nav-inner">
     <a href="/" class="back-btn">← Home</a>
@@ -324,7 +372,7 @@ function badgeCls(l){
   if(l==='Small Sample')      return 'badge-sample';
   return 'badge-flux';
 }
-function logoImg(id,sz=28){return `<img src="${logoUrl(id)}" width="${sz}" height="${sz}" style="object-fit:contain" onerror="this.style.display='none'"/>`;}
+function logoImg(id,sz=28){return `<img loading="lazy" src="${logoUrl(id)}" width="${sz}" height="${sz}" style="object-fit:contain" onerror="this.style.display='none'"/>`;}
 function fmtRecord(w,l){return`${w??'—'}–${l??'—'}`;}
 
 /* ── Render spotlight cards ──────────────────────────── */
@@ -527,5 +575,10 @@ async function main(){
 
 main();
 </script>
+<nav class="bottom-nav" aria-label="Main navigation">
+  <div class="bottom-nav-inner">
+    <a href="/" class="bn-item" aria-label="Home"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M3 9L9 3L15 9V15H11V11H7V15H3V9Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg><span>Home</span></a><a href="/pace-standings" class="bn-item" aria-label="Pace"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><rect x="3" y="10" width="3" height="5" rx="1" fill="currentColor"/><rect x="7.5" y="7" width="3" height="8" rx="1" fill="currentColor"/><rect x="12" y="4" width="3" height="11" rx="1" fill="currentColor"/></svg><span>Pace</span></a><a href="/pulse" class="bn-item" aria-label="Pulse"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><polyline points="2,9 5,9 7,4 9,14 11,7 13,9 16,9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Pulse</span></a><a href="/pitching-board" class="bn-item active" aria-label="Pitching"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><circle cx="9" cy="9" r="6.5" stroke="currentColor" stroke-width="1.4"/><path d="M5 6.5Q9 8.5 5 12" stroke="currentColor" stroke-width="1.1" stroke-linecap="round"/><path d="M13 6.5Q9 8.5 13 12" stroke="currentColor" stroke-width="1.1" stroke-linecap="round"/></svg><span>Pitching</span></a><a href="/chaos-report" class="bn-item" aria-label="Chaos"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M4 14L4 7L9 3L14 7V14" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><line x1="2" y1="14" x2="16" y2="14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M8 14V10H10V14" stroke="currentColor" stroke-width="1.2"/></svg><span>Chaos</span></a>
+  </div>
+</nav>
 </body>
 </html>

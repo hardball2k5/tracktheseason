@@ -151,9 +151,48 @@ body{background:var(--ink);color:#e8edf8;font-family:var(--mono);min-height:100v
   .share-bar{gap:6px}
   .share-btn{padding:9px 12px;font-size:11px}
 }
+
+/* ── BOTTOM NAV (mobile) ─────────────────────────────── */
+.bottom-nav{display:none;position:fixed;bottom:0;left:0;right:0;z-index:200;
+  background:rgba(15,16,20,.96);backdrop-filter:blur(16px);
+  border-top:1px solid rgba(255,255,255,.07);
+  padding:8px 0 max(8px,env(safe-area-inset-bottom));
+}
+.bottom-nav-inner{display:flex;justify-content:space-around;align-items:center;max-width:480px;margin:0 auto}
+.bn-item{display:flex;flex-direction:column;align-items:center;gap:2px;padding:4px 10px;
+  border-radius:8px;text-decoration:none;color:rgba(255,255,255,.4);
+  font-family:var(--mono,monospace);font-size:9px;font-weight:700;letter-spacing:.06em;
+  min-width:52px;min-height:44px;justify-content:center;transition:color .13s}
+.bn-item.active,.bn-item:hover{color:var(--signal,#1aff6b)}
+.bn-item svg{flex-shrink:0}
+@media(max-width:680px){.bottom-nav{display:block}}
+@media(max-width:680px){body{padding-bottom:68px}}
+
 </style>
+<script type="application/ld+json">
+{
+  "@context":"https://schema.org",
+  "@graph":[
+    {"@type":"WebPage","@id":"https://tracktheseason.com/chaos-report",
+     "name":"MLB Chaos Report","url":"https://tracktheseason.com/chaos-report",
+     "description":"The MLB Chaos Index tracks how many teams are running meaningfully ahead or behind last year's pace. Track The Season's signature volatility metric.",
+     "isPartOf":{"@id":"https://tracktheseason.com"}},
+    {"@type":"FAQPage","mainEntity":[
+      {"@type":"Question","name":"What is the MLB Chaos Index?",
+       "acceptedAnswer":{"@type":"Answer","text":"The Chaos Index counts how many of the 30 MLB teams are tracking 5 or more wins ahead or behind their pace at the same point last season. Updated after every game at tracktheseason.com/chaos-report."}},
+      {"@type":"Question","name":"Which MLB season is the most chaotic?",
+       "acceptedAnswer":{"@type":"Answer","text":"Track The Season tracks the Chaos Index historically. A higher index means more teams are diverging from last year's script, indicating a more unpredictable season."}}
+    ]}
+  ]
+}
+</script>
 </head>
 <body>
+<div id="staticContent" style="position:absolute;left:-9999px;top:auto;width:1px;height:1px;overflow:hidden" aria-hidden="true">
+<h2>MLB Chaos Report 2026</h2>
+<p>The Track The Season Chaos Report shows how many MLB teams are tracking meaningfully differently from last season at the same point. The Chaos Index counts teams whose current win total is 5 or more wins ahead or behind their win total through the same number of games last year.</p>
+<p>A Chaos Index above 18 means most of the league is off last year's script. Below 10 means the standings are following a predictable pattern. Updated after every game at tracktheseason.com/chaos-report.</p>
+</div>
 
 <nav class="nav">
   <a href="/" class="nav-back">← All Teams</a>
@@ -196,7 +235,7 @@ body{background:var(--ink);color:#e8edf8;font-family:var(--mono);min-height:100v
       <div class="load-label" id="loadLabel">Loading live MLB data…</div>
       <div class="load-eta" id="loadEta">THIS MAY TAKE UP TO 30 SECONDS</div>
     </div>
-    <img id="cardImg" src="" alt="MLB Chaos Report" onload="onLoad()" onerror="onError()"/>
+    <img loading="lazy" id="cardImg" src="" alt="MLB Chaos Report" onload="onLoad()" onerror="onError()"/>
   </div>
 
   <!-- Share bar -->
@@ -379,5 +418,10 @@ document.getElementById('copyBtn').addEventListener('click',async()=>{
   &nbsp;·&nbsp;
   <a href="mailto:support@tracktheseason.com" style="color:rgba(255,255,255,.25);text-decoration:none">support@tracktheseason.com</a>
 </div>
+<nav class="bottom-nav" aria-label="Main navigation">
+  <div class="bottom-nav-inner">
+    <a href="/" class="bn-item" aria-label="Home"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M3 9L9 3L15 9V15H11V11H7V15H3V9Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg><span>Home</span></a><a href="/pace-standings" class="bn-item" aria-label="Pace"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><rect x="3" y="10" width="3" height="5" rx="1" fill="currentColor"/><rect x="7.5" y="7" width="3" height="8" rx="1" fill="currentColor"/><rect x="12" y="4" width="3" height="11" rx="1" fill="currentColor"/></svg><span>Pace</span></a><a href="/pulse" class="bn-item" aria-label="Pulse"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><polyline points="2,9 5,9 7,4 9,14 11,7 13,9 16,9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Pulse</span></a><a href="/pitching-board" class="bn-item" aria-label="Pitching"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><circle cx="9" cy="9" r="6.5" stroke="currentColor" stroke-width="1.4"/><path d="M5 6.5Q9 8.5 5 12" stroke="currentColor" stroke-width="1.1" stroke-linecap="round"/><path d="M13 6.5Q9 8.5 13 12" stroke="currentColor" stroke-width="1.1" stroke-linecap="round"/></svg><span>Pitching</span></a><a href="/chaos-report" class="bn-item active" aria-label="Chaos"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M4 14L4 7L9 3L14 7V14" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><line x1="2" y1="14" x2="16" y2="14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M8 14V10H10V14" stroke="currentColor" stroke-width="1.2"/></svg><span>Chaos</span></a>
+  </div>
+</nav>
 </body>
 </html>

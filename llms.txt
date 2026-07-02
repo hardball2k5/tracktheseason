@@ -254,3 +254,12 @@ Data is updated automatically after every final regular-season game.
 
 Contact: support@tracktheseason.com
 Sitemap: https://tracktheseason.com/sitemap.xml
+
+## Division Pace Standing Pages
+
+https://tracktheseason.com/al-east
+https://tracktheseason.com/al-central
+https://tracktheseason.com/al-west
+https://tracktheseason.com/nl-east
+https://tracktheseason.com/nl-central
+https://tracktheseason.com/nl-west

@@ -302,6 +302,23 @@ body{font-family:var(--sans);background:var(--ink);color:#e8edf8;min-height:100v
   .selector-bar{flex-direction:column}
   .compare-btn{width:100%}
 }
+
+/* ── BOTTOM NAV (mobile) ─────────────────────────────── */
+.bottom-nav{display:none;position:fixed;bottom:0;left:0;right:0;z-index:200;
+  background:rgba(15,16,20,.96);backdrop-filter:blur(16px);
+  border-top:1px solid rgba(255,255,255,.07);
+  padding:8px 0 max(8px,env(safe-area-inset-bottom));
+}
+.bottom-nav-inner{display:flex;justify-content:space-around;align-items:center;max-width:480px;margin:0 auto}
+.bn-item{display:flex;flex-direction:column;align-items:center;gap:2px;padding:4px 10px;
+  border-radius:8px;text-decoration:none;color:rgba(255,255,255,.4);
+  font-family:var(--mono,monospace);font-size:9px;font-weight:700;letter-spacing:.06em;
+  min-width:52px;min-height:44px;justify-content:center;transition:color .13s}
+.bn-item.active,.bn-item:hover{color:var(--signal,#1aff6b)}
+.bn-item svg{flex-shrink:0}
+@media(max-width:680px){.bottom-nav{display:block}}
+@media(max-width:680px){body{padding-bottom:68px}}
+
 </style>
 <!-- Google tag -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-DCSQPGSY1D"></script>
@@ -338,7 +355,7 @@ body{font-family:var(--sans);background:var(--ink);color:#e8edf8;min-height:100v
     <div class="picker-wrap" id="picker1Wrap">
       <div class="team-picker" id="picker1">
         <div class="picker-logo" id="picker1Logo">
-          <img id="picker1LogoImg" src="" alt="" style="display:none"/>
+          <img loading="lazy" id="picker1LogoImg" src="" alt="" style="display:none"/>
           <span id="picker1Emoji" style="font-size:16px">⚾</span>
         </div>
         <input class="picker-input" id="picker1Input" type="text" placeholder="Team 1…" autocomplete="off" autocorrect="off" spellcheck="false"/>
@@ -349,7 +366,7 @@ body{font-family:var(--sans);background:var(--ink);color:#e8edf8;min-height:100v
     <div class="picker-wrap" id="picker2Wrap">
       <div class="team-picker" id="picker2">
         <div class="picker-logo" id="picker2Logo">
-          <img id="picker2LogoImg" src="" alt="" style="display:none"/>
+          <img loading="lazy" id="picker2LogoImg" src="" alt="" style="display:none"/>
           <span id="picker2Emoji" style="font-size:16px">⚾</span>
         </div>
         <input class="picker-input" id="picker2Input" type="text" placeholder="Team 2…" autocomplete="off" autocorrect="off" spellcheck="false"/>
@@ -616,7 +633,7 @@ function renderDropdown(n,teams){
   if(!teams.length){dd.classList.remove('open');return;}
   dd.innerHTML=teams.map(t=>`
     <div class="picker-option" data-id="${t.id}" data-n="${n}">
-      <img src="https://www.mlbstatic.com/team-logos/${t.id}.svg" width="24" height="24" onerror="this.style.display='none'"/>
+      <img loading="lazy" src="https://www.mlbstatic.com/team-logos/${t.id}.svg" width="24" height="24" onerror="this.style.display='none'"/>
       <div>
         <div class="picker-option-name">${t.club}</div>
         <div class="picker-option-city">${t.city}</div>
@@ -708,7 +725,7 @@ async function runComparison(){
     const winner1=(s1.proj||0)>=(s2.proj||0);
     document.getElementById('teamHeaders').innerHTML=`
       <div class="team-header ${winner1?'winner':'loser'}">
-        <div class="th-logo"><img src="https://www.mlbstatic.com/team-logos/${t1.id}.svg" width="44" height="44" onerror="this.style.display='none'"/></div>
+        <div class="th-logo"><img loading="lazy" src="https://www.mlbstatic.com/team-logos/${t1.id}.svg" width="44" height="44" onerror="this.style.display='none'"/></div>
         <div class="th-name">${t1.club}</div>
         <div class="th-record">${s1.w}–${s1.l}</div>
         <div class="th-sub">${t1.city}</div>
@@ -718,7 +735,7 @@ async function runComparison(){
         <div class="vs-gp">THROUGH ${gp} GAMES</div>
       </div>
       <div class="team-header ${!winner1?'winner':'loser'}">
-        <div class="th-logo"><img src="https://www.mlbstatic.com/team-logos/${t2.id}.svg" width="44" height="44" onerror="this.style.display='none'"/></div>
+        <div class="th-logo"><img loading="lazy" src="https://www.mlbstatic.com/team-logos/${t2.id}.svg" width="44" height="44" onerror="this.style.display='none'"/></div>
         <div class="th-name">${t2.club}</div>
         <div class="th-record">${s2.w}–${s2.l}</div>
         <div class="th-sub">${t2.city}</div>
@@ -1108,5 +1125,10 @@ function renderRivalryHeader(t1, t2, label){
 /* ── Keyboard shortcut ──────────────────────────── */
 document.addEventListener('keydown',e=>{if(e.key==='Enter'&&selected[0]&&selected[1])runComparison();});
 </script>
+<nav class="bottom-nav" aria-label="Main navigation">
+  <div class="bottom-nav-inner">
+    <a href="/" class="bn-item active" aria-label="Home"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M3 9L9 3L15 9V15H11V11H7V15H3V9Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg><span>Home</span></a><a href="/pace-standings" class="bn-item" aria-label="Pace"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><rect x="3" y="10" width="3" height="5" rx="1" fill="currentColor"/><rect x="7.5" y="7" width="3" height="8" rx="1" fill="currentColor"/><rect x="12" y="4" width="3" height="11" rx="1" fill="currentColor"/></svg><span>Pace</span></a><a href="/pulse" class="bn-item" aria-label="Pulse"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><polyline points="2,9 5,9 7,4 9,14 11,7 13,9 16,9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Pulse</span></a><a href="/pitching-board" class="bn-item" aria-label="Pitching"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><circle cx="9" cy="9" r="6.5" stroke="currentColor" stroke-width="1.4"/><path d="M5 6.5Q9 8.5 5 12" stroke="currentColor" stroke-width="1.1" stroke-linecap="round"/><path d="M13 6.5Q9 8.5 13 12" stroke="currentColor" stroke-width="1.1" stroke-linecap="round"/></svg><span>Pitching</span></a><a href="/chaos-report" class="bn-item" aria-label="Chaos"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M4 14L4 7L9 3L14 7V14" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><line x1="2" y1="14" x2="16" y2="14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M8 14V10H10V14" stroke="currentColor" stroke-width="1.2"/></svg><span>Chaos</span></a>
+  </div>
+</nav>
 </body>
 </html>

@@ -786,6 +786,11 @@ body{font-family:var(--sans);background:var(--ink);color:#e8edf8;min-height:100v
   ]
 }
 </script>
+<meta property="og:image" content="https://tracktheseason.com/api/card/phillies"/>
+<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:title" content="Track The Season | MLB Pace Standings, Momentum & Daily Debates"/>
+<meta name="twitter:description" content="The standings tell you where teams are. Track The Season tells you where they're headed."/>
+<meta name="twitter:image" content="https://tracktheseason.com/api/card/phillies"/>
 </head>
 <body>
 
@@ -884,7 +889,7 @@ body{font-family:var(--sans);background:var(--ink);color:#e8edf8;min-height:100v
       </div>
     </div>
     <div id="ytCard" class="your-team-card" style="display:none">
-      <div class="yt-logo"><img id="ytLogo" src="" alt=""/></div>
+      <div class="yt-logo"><img loading="lazy" id="ytLogo" src="" alt=""/></div>
       <div class="yt-info">
         <div class="yt-name" id="ytName">—</div>
         <div class="yt-record" id="ytRecord">—</div>
@@ -992,7 +997,7 @@ body{font-family:var(--sans);background:var(--ink);color:#e8edf8;min-height:100v
       <div class="fc-row">
         <div class="fc-wrap" id="fcWrap1">
           <div class="fc-picker" id="fcPicker1">
-            <div class="fc-picker-logo"><img id="fcLogo1" src="" alt="" style="display:none"/><span id="fcEmoji1" style="font-size:14px">⚾</span></div>
+            <div class="fc-picker-logo"><img loading="lazy" id="fcLogo1" src="" alt="" style="display:none"/><span id="fcEmoji1" style="font-size:14px">⚾</span></div>
             <input class="fc-picker-input" id="fcInput1" placeholder="Your team…" autocomplete="off" autocorrect="off" spellcheck="false"/>
           </div>
           <div class="fc-picker-dd" id="fcDd1"></div>
@@ -1000,7 +1005,7 @@ body{font-family:var(--sans);background:var(--ink);color:#e8edf8;min-height:100v
         <div class="fc-vs">VS</div>
         <div class="fc-wrap" id="fcWrap2">
           <div class="fc-picker" id="fcPicker2">
-            <div class="fc-picker-logo"><img id="fcLogo2" src="" alt="" style="display:none"/><span id="fcEmoji2" style="font-size:14px">⚾</span></div>
+            <div class="fc-picker-logo"><img loading="lazy" id="fcLogo2" src="" alt="" style="display:none"/><span id="fcEmoji2" style="font-size:14px">⚾</span></div>
             <input class="fc-picker-input" id="fcInput2" placeholder="Their team…" autocomplete="off" autocorrect="off" spellcheck="false"/>
           </div>
           <div class="fc-picker-dd" id="fcDd2"></div>
@@ -1119,7 +1124,7 @@ body{font-family:var(--sans);background:var(--ink);color:#e8edf8;min-height:100v
       </div>
       <div class="la-content" id="laContent">
         <div class="la-header">
-          <div class="la-logo"><img id="laLogoImg" src="" alt=""/></div>
+          <div class="la-logo"><img loading="lazy" id="laLogoImg" src="" alt=""/></div>
           <div>
             <div class="la-team-name" id="laTeamName">—</div>
             <div class="la-record" id="laRecord">—</div>
@@ -1224,7 +1229,7 @@ body{font-family:var(--sans);background:var(--ink);color:#e8edf8;min-height:100v
     <div class="modal-handle"></div>
     <div class="modal-header">
       <div class="modal-team-logo">
-        <img id="modalLogoImg" src="" alt="" onerror="this.style.display='none';document.getElementById('modalLogoEmoji').style.display='block'"/>
+        <img loading="lazy" id="modalLogoImg" src="" alt="" onerror="this.style.display='none';document.getElementById('modalLogoEmoji').style.display='block'"/>
         <span id="modalLogoEmoji" style="display:none;font-size:20px">⚾</span>
       </div>
       <div class="modal-title-block">
@@ -1416,7 +1421,7 @@ function trackerUrl(teamId,gp){
   return `${TRACKER_PAGE}?team=${teamId}&season=${CURRENT_YEAR}&rs=${rs}&re=${gp}`;
 }
 function logoImg(teamId,size=26){
-  return `<img src="https://www.mlbstatic.com/team-logos/${teamId}.svg" width="${size}" height="${size}" style="object-fit:contain" onerror="this.style.display='none'"/>`;
+  return `<img loading="lazy" src="https://www.mlbstatic.com/team-logos/${teamId}.svg" width="${size}" height="${size}" style="object-fit:contain" onerror="this.style.display='none'"/>`;
 }
 
 /* ── Share helpers ─────────────────────────────── */
@@ -1616,7 +1621,7 @@ function buildTodaysStory(allData){
     <div class="tsh-inner">
       <div class="tsh-eyebrow">${heroEyebrow}</div>
       <div class="tsh-top">
-        <div class="tsh-logo"><img src="${logoUrl}" alt="${hname}" onerror="this.style.display='none'"/></div>
+        <div class="tsh-logo"><img loading="lazy" src="${logoUrl}" alt="${hname}" onerror="this.style.display='none'"/></div>
         <div class="tsh-text">
           <div class="tsh-team">${hname}</div>
           <div class="tsh-narrative">${heroNarrative}</div>
@@ -1771,7 +1776,7 @@ function buildSnapshot(allData){
     tierStrip.innerHTML = TIER_DEFS.map(tier=>{
       const teams = tierTeams[tier.key];
       const logos = teams.slice(0,6).map(t=>
-        `<div class="tier-logo"><img src="https://www.mlbstatic.com/team-logos/${t.team.id}.svg" width="14" height="14" style="object-fit:contain" onerror="this.style.display='none'"/></div>`
+        `<div class="tier-logo"><img loading="lazy" src="https://www.mlbstatic.com/team-logos/${t.team.id}.svg" width="14" height="14" style="object-fit:contain" onerror="this.style.display='none'"/></div>`
       ).join('');
       return `<div class="tier-card tier-${tier.key}" onclick="filterByTier('${tier.key}')">
         <div class="tier-count ${tier.cls}">${teams.length}</div>
@@ -1787,7 +1792,7 @@ function buildSnapshot(allData){
       <div class="snap-label">${s.icon} ${s.label}</div>
       ${s.team ? `
       <div class="snap-team">
-        <div class="snap-logo"><img src="https://www.mlbstatic.com/team-logos/${s.team.team.id}.svg" width="22" height="22" style="object-fit:contain" onerror="this.style.display='none'"/></div>
+        <div class="snap-logo"><img loading="lazy" src="https://www.mlbstatic.com/team-logos/${s.team.team.id}.svg" width="22" height="22" style="object-fit:contain" onerror="this.style.display='none'"/></div>
         <div class="snap-name">${s.team.team.clubName||s.team.team.name}</div>
       </div>` : ''}
       <div class="snap-val ${s.cls}">${s.val}</div>
@@ -1927,7 +1932,7 @@ function buildCard(team,curGames,prevGames){
     data-gp="${gp}">
     <div class="card-top">
       <div class="team-logo-wrap">
-        <img src="${logoUrl}" alt="${team.name}" onerror="this.style.display='none';this.nextElementSibling.style.display='block'"/>
+        <img loading="lazy" src="${logoUrl}" alt="${team.name}" onerror="this.style.display='none';this.nextElementSibling.style.display='block'"/>
         <span class="emoji-fb">${emoji}</span>
       </div>
       <div class="team-name-block">
@@ -2332,7 +2337,7 @@ function fcRenderDropdown(n,teams){
   if(!teams.length){dd.classList.remove('open');return;}
   dd.innerHTML=teams.slice(0,8).map(t=>`
     <div class="fc-picker-option" data-id="${t.id}" data-n="${n}">
-      <img src="https://www.mlbstatic.com/team-logos/${t.id}.svg" width="20" height="20" onerror="this.style.display='none'"/>
+      <img loading="lazy" src="https://www.mlbstatic.com/team-logos/${t.id}.svg" width="20" height="20" onerror="this.style.display='none'"/>
       ${t.club}
     </div>`).join('');
   dd.classList.add('open');
@@ -2496,8 +2501,8 @@ function buildRivalryWatch(allData){
     return`<a class="rivalry-card" href="${url}">
       <div class="rivalry-card-top">
         <div class="rivalry-logos">
-          <div class="rivalry-logo"><img src="https://www.mlbstatic.com/team-logos/${r.t1}.svg" width="24" height="24" onerror="this.style.display='none'"/></div>
-          <div class="rivalry-logo"><img src="https://www.mlbstatic.com/team-logos/${r.t2}.svg" width="24" height="24" onerror="this.style.display='none'"/></div>
+          <div class="rivalry-logo"><img loading="lazy" src="https://www.mlbstatic.com/team-logos/${r.t1}.svg" width="24" height="24" onerror="this.style.display='none'"/></div>
+          <div class="rivalry-logo"><img loading="lazy" src="https://www.mlbstatic.com/team-logos/${r.t2}.svg" width="24" height="24" onerror="this.style.display='none'"/></div>
         </div>
         <div class="rivalry-label">${r.label} · ${n1} vs ${n2}</div>
       </div>
@@ -2548,7 +2553,7 @@ function buildQuietlyTrending(allData){
   if(!top.length) return;
   document.getElementById('trendingList').innerHTML=top.map(s=>`
     <a class="trending-card" href="${s.url}">
-      <div class="trending-logo"><img src="https://www.mlbstatic.com/team-logos/${s.id}.svg" width="28" height="28" onerror="this.style.display='none'"/></div>
+      <div class="trending-logo"><img loading="lazy" src="https://www.mlbstatic.com/team-logos/${s.id}.svg" width="28" height="28" onerror="this.style.display='none'"/></div>
       <div class="trending-text">
         <div class="trending-insight">${s.text}</div>
       </div>
@@ -2574,7 +2579,7 @@ function buildLookingAheadPicker(allData){
   const sorted=[...allData].sort((a,b)=>(a.team.name||'').localeCompare(b.team.name||''));
   document.getElementById('laTeamPicker').innerHTML=sorted.map(td=>`
     <button class="la-team-btn" onclick="showLookingAhead(${td.team.id},window._allData)">
-      <img src="https://www.mlbstatic.com/team-logos/${td.team.id}.svg" width="16" height="16" onerror="this.style.display='none'"/>
+      <img loading="lazy" src="https://www.mlbstatic.com/team-logos/${td.team.id}.svg" width="16" height="16" onerror="this.style.display='none'"/>
       ${td.team.clubName||td.team.name}
     </button>`).join('');
 }
@@ -2717,7 +2722,7 @@ function buildDailyDebate(allData){
   const teamBlock=(t)=>`
     <div class="debate-team">
       <div class="debate-team-head">
-        <div class="debate-logo"><img src="https://www.mlbstatic.com/team-logos/${t.id}.svg" width="22" height="22" onerror="this.style.display='none'"/></div>
+        <div class="debate-logo"><img loading="lazy" src="https://www.mlbstatic.com/team-logos/${t.id}.svg" width="22" height="22" onerror="this.style.display='none'"/></div>
         <div class="debate-team-name">${t.name}</div>
       </div>
       <div class="debate-split">
@@ -2792,7 +2797,7 @@ function buildWhatChangedMini(allData){
     const why=r.diff>=2?'Last 10 running well ahead of season pace':r.diff>0?'Trending slightly above season pace':r.diff<=-2?'Last 10 running well below season pace':'Trending slightly below season pace';
     const url=trackerUrl(r.td.team.id,r.td.curGames.length);
     return`<a class="wcs-row" href="${url}" style="text-decoration:none;color:inherit">
-      <div class="wcs-logo"><img src="https://www.mlbstatic.com/team-logos/${r.td.team.id}.svg" width="20" height="20" onerror="this.style.display='none'"/></div>
+      <div class="wcs-logo"><img loading="lazy" src="https://www.mlbstatic.com/team-logos/${r.td.team.id}.svg" width="20" height="20" onerror="this.style.display='none'"/></div>
       <div class="wcs-name">${club}</div>
       <div class="wcs-why">${why}</div>
       <div class="wcs-delta ${cls}">${r.diff>0?'+':''}${r.diff}W L10 pace gap</div>
@@ -2837,7 +2842,7 @@ function buildShareableTakes(allData){
     const fullText=t.text+'\n\n'+url;
     return`<div class="take-card">
       <div class="take-head">
-        <div class="take-logo"><img src="https://www.mlbstatic.com/team-logos/${t.td.team.id}.svg" width="18" height="18" onerror="this.style.display='none'"/></div>
+        <div class="take-logo"><img loading="lazy" src="https://www.mlbstatic.com/team-logos/${t.td.team.id}.svg" width="18" height="18" onerror="this.style.display='none'"/></div>
         <div class="take-team">${club}</div>
       </div>
       <div class="take-text">${t.text}</div>
@@ -2875,7 +2880,7 @@ function buildPaceStandingsPreview(allData){
       const club=r.td.team.clubName||r.td.team.name;
       const url=trackerUrl(r.td.team.id,r.td.curGames.length);
       return`<tr>
-        <td><div class="ppt-team"><div class="ppt-logo"><img src="https://www.mlbstatic.com/team-logos/${r.td.team.id}.svg" width="15" height="15" onerror="this.style.display='none'"/></div><a class="ppt-name" href="${url}">${club}</a></div></td>
+        <td><div class="ppt-team"><div class="ppt-logo"><img loading="lazy" src="https://www.mlbstatic.com/team-logos/${r.td.team.id}.svg" width="15" height="15" onerror="this.style.display='none'"/></div><a class="ppt-name" href="${url}">${club}</a></div></td>
         <td>${r.proj}W</td>
         <td>${r.l20Pace}W</td>
         <td><span style="font-size:11px">${r.trend.trendEmoji||''} ${r.trend.trendLabel||r.trend.label}</span></td>
@@ -2926,7 +2931,7 @@ function buildPanicMeter(allData){
     const club=s.td.team.clubName||s.td.team.name;
     const url=trackerUrl(s.td.team.id,s.td.curGames.length);
     return`<a class="panic-row" href="${url}" style="text-decoration:none;color:inherit">
-      <div class="panic-logo"><img src="https://www.mlbstatic.com/team-logos/${s.td.team.id}.svg" width="20" height="20" onerror="this.style.display='none'"/></div>
+      <div class="panic-logo"><img loading="lazy" src="https://www.mlbstatic.com/team-logos/${s.td.team.id}.svg" width="20" height="20" onerror="this.style.display='none'"/></div>
       <div class="panic-info">
         <div class="panic-name">${club}</div>
         <div class="panic-why">${s.why}</div>
@@ -2978,7 +2983,7 @@ function buildVerdictCard(allData){
 
   container.innerHTML=`<div class="verdict-card">
     <div class="verdict-team-row">
-      <div class="verdict-logo"><img src="https://www.mlbstatic.com/team-logos/${pick.td.team.id}.svg" width="24" height="24" onerror="this.style.display='none'"/></div>
+      <div class="verdict-logo"><img loading="lazy" src="https://www.mlbstatic.com/team-logos/${pick.td.team.id}.svg" width="24" height="24" onerror="this.style.display='none'"/></div>
       <div class="verdict-team-name">${club}</div>
     </div>
     <div class="verdict-badge" style="${verdictCls}">Verdict: ${verdict}</div>
@@ -3031,7 +3036,7 @@ async function buildPitchingBoardPreview(allData){
     const gap=r.rest?r.duo.pace-r.rest.pace:null;
     const url=trackerUrl(r.td.team.id,r.td.curGames.length);
     return`<a class="pb-preview-row" href="${url}" style="text-decoration:none;color:inherit">
-      <div class="pb-preview-logo"><img src="https://www.mlbstatic.com/team-logos/${r.td.team.id}.svg" width="20" height="20" onerror="this.style.display='none'"/></div>
+      <div class="pb-preview-logo"><img loading="lazy" src="https://www.mlbstatic.com/team-logos/${r.td.team.id}.svg" width="20" height="20" onerror="this.style.display='none'"/></div>
       <div class="pb-preview-label">Best 1–2 Punch</div>
       <div class="pb-preview-team">${club}</div>
       <div class="pb-preview-val">${r.duo.pace}W${gap!=null?` (+${gap})`:''}</div>

@@ -277,6 +277,30 @@
     {
       "source": "/pace-standings",
       "destination": "/pace-standings.html"
+    },
+    {
+      "source": "/al-east",
+      "destination": "/al-east.html"
+    },
+    {
+      "source": "/al-central",
+      "destination": "/al-central.html"
+    },
+    {
+      "source": "/al-west",
+      "destination": "/al-west.html"
+    },
+    {
+      "source": "/nl-east",
+      "destination": "/nl-east.html"
+    },
+    {
+      "source": "/nl-central",
+      "destination": "/nl-central.html"
+    },
+    {
+      "source": "/nl-west",
+      "destination": "/nl-west.html"
     }
   ],
   "redirects": [

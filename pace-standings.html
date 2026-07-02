@@ -10,6 +10,31 @@
 <meta property="og:url" content="https://tracktheseason.com/pace-standings"/>
 <meta property="og:site_name" content="Track The Season"/>
 <meta property="og:type" content="website"/>
+<script type="application/ld+json">
+{
+  "@context":"https://schema.org",
+  "@graph":[
+    {"@type":"WebPage","@id":"https://tracktheseason.com/pace-standings",
+     "name":"MLB Pace Standings","url":"https://tracktheseason.com/pace-standings",
+     "description":"Compare every MLB team by season pace vs last 10, 20 and 30 game pace. See who is heating up and cooling off.",
+     "isPartOf":{"@id":"https://tracktheseason.com"}},
+    {"@type":"Dataset","name":"MLB Team Pace Standings 2026",
+     "description":"162-game win pace, L10/L20/L30 pace, momentum delta, and panic score for all 30 MLB teams.",
+     "url":"https://tracktheseason.com/pace-standings",
+     "creator":{"@type":"Organization","name":"Track The Season","url":"https://tracktheseason.com"},
+     "license":"https://tracktheseason.com","temporalCoverage":"2026",
+     "variableMeasured":["Win Pace","L10 Pace","L20 Pace","L30 Pace","Momentum Delta","Panic Score"]},
+    {"@type":"FAQPage","mainEntity":[
+      {"@type":"Question","name":"Which MLB teams are heating up right now?",
+       "acceptedAnswer":{"@type":"Answer","text":"Track The Season Pace Standings ranks all 30 MLB teams by Momentum Delta — the difference between their last 20 game pace and their full-season pace. Teams with a positive delta are heating up. Visit tracktheseason.com/pace-standings for live data."}},
+      {"@type":"Question","name":"What is the MLB Chaos Index?",
+       "acceptedAnswer":{"@type":"Answer","text":"The Chaos Index counts how many MLB teams are tracking 5 or more wins ahead or behind last year's pace at the same point in the season. A higher number means a more unpredictable season."}},
+      {"@type":"Question","name":"What does Momentum Delta mean in baseball?",
+       "acceptedAnswer":{"@type":"Answer","text":"Momentum Delta is the difference between a team's last 20 game win pace and their full-season win pace. A positive number means the team is playing better recently than their season average."}}
+    ]}
+  ]
+}
+</script>
 <link rel="canonical" href="https://tracktheseason.com/pace-standings"/>
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-DCSQPGSY1D"></script>
 <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-DCSQPGSY1D',{send_page_view:false});</script>
@@ -172,9 +197,39 @@ body{font-family:var(--sans);background:var(--ink);color:#e8edf8;min-height:100v
 footer.site{border-top:1px solid var(--rule);padding:20px 0;margin-top:40px;font-family:var(--mono);font-size:11px;color:rgba(255,255,255,.2);display:flex;flex-wrap:wrap;gap:10px;justify-content:space-between;align-items:center}
 footer.site a{color:rgba(255,255,255,.3);text-decoration:none}
 footer.site a:hover{color:var(--signal)}
+
+/* ── BOTTOM NAV (mobile) ─────────────────────────────── */
+.bottom-nav{display:none;position:fixed;bottom:0;left:0;right:0;z-index:200;
+  background:rgba(15,16,20,.96);backdrop-filter:blur(16px);
+  border-top:1px solid rgba(255,255,255,.07);
+  padding:8px 0 max(8px,env(safe-area-inset-bottom));
+}
+.bottom-nav-inner{display:flex;justify-content:space-around;align-items:center;max-width:480px;margin:0 auto}
+.bn-item{display:flex;flex-direction:column;align-items:center;gap:2px;padding:4px 10px;
+  border-radius:8px;text-decoration:none;color:rgba(255,255,255,.4);
+  font-family:var(--mono,monospace);font-size:9px;font-weight:700;letter-spacing:.06em;
+  min-width:52px;min-height:44px;justify-content:center;transition:color .13s}
+.bn-item.active,.bn-item:hover{color:var(--signal,#1aff6b)}
+.bn-item svg{flex-shrink:0}
+@media(max-width:680px){.bottom-nav{display:block}}
+@media(max-width:680px){body{padding-bottom:68px}}
+
 </style>
+<meta property="og:image" content="https://tracktheseason.com/api/card/phillies"/>
+<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:title" content="MLB Pace Standings | Track The Season"/>
+<meta name="twitter:description" content="See which MLB teams are heating up and cooling off. Compare Season Pace vs Last 10, 20 and 30."/>
+<meta name="twitter:image" content="https://tracktheseason.com/api/card/phillies"/>
 </head>
 <body>
+<div id="staticContent" style="position:absolute;left:-9999px;top:auto;width:1px;height:1px;overflow:hidden" aria-hidden="true">
+<h2>MLB Pace Standings 2026</h2>
+<p>Track The Season's MLB Pace Standings compare every team's current season win pace to their last 10, 20 and 30 game pace. The Momentum Delta shows which teams are heating up or cooling off relative to their full-season pace.</p>
+<p>Pace Standings are updated automatically after every completed regular-season game using the official MLB Stats API. Teams with a positive Momentum Delta are outperforming their season average recently. Teams with a negative delta are underperforming.</p>
+<h3>How to read Pace Standings</h3>
+<p>Season Pace: the team's current win total projected over 162 games. L20 Pace: what their win pace would be if they played 162 games at their last-20-game rate. Momentum Delta: L20 Pace minus Season Pace. Trend labels: Surging (+20 or more), Heating Up (+10 to +19), Steady (-9 to +9), Cooling (-10 to -19), Sliding (-20 or worse).</p>
+<p>Visit tracktheseason.com/pace-standings for full sortable standings by division, league, or trend.</p>
+</div>
 <nav class="nav">
   <div class="nav-inner">
     <a href="/" class="back-btn">← Home</a>
@@ -392,7 +447,7 @@ function renderSummaryCards(teams) {
   const card = (cls, label, team, delta, detail) => `
     <div class="sum-card ${cls}">
       <div class="sum-label">${label}</div>
-      <div class="sum-logo"><img src="${logoUrl(team.teamId)}" width="22" height="22" style="object-fit:contain" onerror="this.style.display='none'"/></div>
+      <div class="sum-logo"><img loading="lazy" src="${logoUrl(team.teamId)}" width="22" height="22" style="object-fit:contain" onerror="this.style.display='none'"/></div>
       <div class="sum-team">${team.teamName}</div>
       <div class="sum-delta ${delta > 0 ? 'pos' : delta < 0 ? 'neg' : 'neu'}">${sign(delta)}W</div>
       <div class="sum-detail">${detail}</div>
@@ -421,7 +476,7 @@ function renderDivisionCards(teams) {
       const d    = t.l20Delta ?? 0;
       const dcls = d > 3 ? 'dp-pos' : d < -3 ? 'dp-neg' : 'dp-neu';
       return `<a class="div-team" href="${teamUrl(id)}">
-        <div class="div-team-logo"><img src="${logoUrl(id)}" width="16" height="16" style="object-fit:contain" onerror="this.style.display='none'"/></div>
+        <div class="div-team-logo"><img loading="lazy" src="${logoUrl(id)}" width="16" height="16" style="object-fit:contain" onerror="this.style.display='none'"/></div>
         <div class="div-name">${t.teamName}</div>
         <div class="div-pace-info">${t.season}W → ${t.windowPaces.l20 ?? '—'}W</div>
         <div class="div-delta-pill ${dcls}">${sign(d)}W</div>
@@ -476,7 +531,7 @@ function renderTable(teams) {
     return `<tr>
       <td><span class="ps-rank ${i<3?'top3':''}">${i+1}</span></td>
       <td><div class="ps-team-cell">
-        <div class="ps-logo"><img src="${logoUrl(t.teamId)}" width="20" height="20" style="object-fit:contain" onerror="this.style.display='none'"/></div>
+        <div class="ps-logo"><img loading="lazy" src="${logoUrl(t.teamId)}" width="20" height="20" style="object-fit:contain" onerror="this.style.display='none'"/></div>
         <a class="ps-name" href="${teamUrl(t.teamId)}">${t.teamName}</a>
       </div></td>
       <td class="${paceClass(t.season)}">${t.season}W</td>
@@ -495,7 +550,7 @@ function renderTable(teams) {
       ? `<span style="color:${panicColor(t.panicScore)};font-weight:700"><svg width="13" height="13" viewBox="0 0 13 13" style="vertical-align:-2px;margin-right:4px"><circle cx="6.5" cy="6.5" r="5" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M6.5 3.5 L6.5 6.5 L8.5 8" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>${t.panicScore}/100</span>`
       : `<span style="color:rgba(255,255,255,.25)"><svg width="13" height="13" viewBox="0 0 13 13" style="vertical-align:-2px;margin-right:4px"><circle cx="6.5" cy="6.5" r="5" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M6.5 3.5 L6.5 6.5 L8.5 8" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>N/A</span>`;
     return `<a class="mob-card" href="${teamUrl(t.teamId)}">
-      <div class="mob-logo"><img src="${logoUrl(t.teamId)}" width="28" height="28" style="object-fit:contain" onerror="this.style.display='none'"/></div>
+      <div class="mob-logo"><img loading="lazy" src="${logoUrl(t.teamId)}" width="28" height="28" style="object-fit:contain" onerror="this.style.display='none'"/></div>
       <div class="mob-body">
         <div class="mob-name">${t.teamName}</div>
         <div class="mob-paces">Season ${t.season}W · L20 ${t.windowPaces.l20 ?? '—'}W · L10 ${t.windowPaces.l10 ?? '—'}W</div>
@@ -637,5 +692,10 @@ async function main() {
 
 main();
 </script>
+<nav class="bottom-nav" aria-label="Main navigation">
+  <div class="bottom-nav-inner">
+    <a href="/" class="bn-item" aria-label="Home"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M3 9L9 3L15 9V15H11V11H7V15H3V9Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg><span>Home</span></a><a href="/pace-standings" class="bn-item active" aria-label="Pace"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><rect x="3" y="10" width="3" height="5" rx="1" fill="currentColor"/><rect x="7.5" y="7" width="3" height="8" rx="1" fill="currentColor"/><rect x="12" y="4" width="3" height="11" rx="1" fill="currentColor"/></svg><span>Pace</span></a><a href="/pulse" class="bn-item" aria-label="Pulse"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><polyline points="2,9 5,9 7,4 9,14 11,7 13,9 16,9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Pulse</span></a><a href="/pitching-board" class="bn-item" aria-label="Pitching"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><circle cx="9" cy="9" r="6.5" stroke="currentColor" stroke-width="1.4"/><path d="M5 6.5Q9 8.5 5 12" stroke="currentColor" stroke-width="1.1" stroke-linecap="round"/><path d="M13 6.5Q9 8.5 13 12" stroke="currentColor" stroke-width="1.1" stroke-linecap="round"/></svg><span>Pitching</span></a><a href="/chaos-report" class="bn-item" aria-label="Chaos"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M4 14L4 7L9 3L14 7V14" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><line x1="2" y1="14" x2="16" y2="14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M8 14V10H10V14" stroke="currentColor" stroke-width="1.2"/></svg><span>Chaos</span></a>
+  </div>
+</nav>
 </body>
 </html>
