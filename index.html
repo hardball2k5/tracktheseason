@@ -2635,6 +2635,11 @@ window.resetLookingAhead=function(){
 ════════════════════════════════════════════════════ */
 /* UTF-8 safe base64 helpers — used to pass text through HTML onclick
    attributes without any risk of quote characters breaking the markup */
+/* Local date string — resets at midnight user's time, not midnight UTC */
+function localDateStr(){
+  const d=new Date();
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+}
 function b64enc(str){
   return btoa(encodeURIComponent(str).replace(/%([0-9A-F]{2})/g,(_,p)=>String.fromCharCode('0x'+p)));
 }
@@ -2710,7 +2715,7 @@ function buildDailyDebate(allData){
   if(!container) return;
   if(!cfg){ container.innerHTML=''; return; }
 
-  const votedKey='tts-debate-vote-'+new Date().toISOString().slice(0,10);
+  const votedKey='tts-debate-vote-'+localDateStr();
   const votedRaw=localStorage.getItem(votedKey);
   const voted=(votedRaw==='0'||votedRaw==='1'||votedRaw==='2')?votedRaw:null;
   /* Fake-but-stable percentages seeded by date so they don't jump on reload */
@@ -2978,7 +2983,7 @@ function buildVerdictCard(allData){
     why=`The ${pick.proj}W season pace flatters a team that's been fading. The standings haven't caught up to the trend yet.`;
   }
 
-  const voteKey='tts-verdict-'+pick.td.team.id+'-'+new Date().toISOString().slice(0,10);
+  const voteKey='tts-verdict-'+pick.td.team.id+'-'+localDateStr();
   const voted=localStorage.getItem(voteKey);
 
   container.innerHTML=`<div class="verdict-card">
