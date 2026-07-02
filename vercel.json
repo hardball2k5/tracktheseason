@@ -301,6 +301,14 @@
     {
       "source": "/nl-west",
       "destination": "/nl-west.html"
+    },
+    {
+      "source": "/blog/mlb-june-2026-pace-report",
+      "destination": "/blog-june-2026.html"
+    },
+    {
+      "source": "/blog",
+      "destination": "/blog-june-2026.html"
     }
   ],
   "redirects": [
