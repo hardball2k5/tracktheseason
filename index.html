@@ -2716,7 +2716,11 @@ function buildDailyDebateConfig(allData){
   const valid=allData.filter(t=>t.curGames.length>=30);
   if(valid.length<2) return null;
 
-  /* Find best debate pair: one team sliding hard early->late, one heating up */
+  /* Day-of-year — changes debate TYPE every day, 7 types cycling */
+  const now=new Date();
+  const dayOfYear=Math.floor((now-(new Date(now.getFullYear(),0,0)))/864e5);
+  const dtype=dayOfYear%7;
+
   const withSplit=valid.map(td=>{
     const games=td.curGames, gp=games.length;
     const mid=Math.min(40,Math.floor(gp/2));
@@ -2725,34 +2729,92 @@ function buildDailyDebateConfig(allData){
     const rw=recent.filter(g=>g.win).length, rl=recent.length-rw;
     const earlyPace=early.length?Math.round(ew/early.length*162):0;
     const recentPace=recent.length?Math.round(rw/recent.length*162):0;
-    return{td,mid,early,recent,ew,el,rw,rl,earlyPace,recentPace,swing:recentPace-earlyPace};
+    const proj=projWins(td.curGames)||0;
+    const l20=td.curGames.slice(-20);
+    const l20p=l20.length?Math.round(l20.filter(g=>g.win).length/l20.length*162):proj;
+    const l10=td.curGames.slice(-10);
+    const l10p=l10.length?Math.round(l10.filter(g=>g.win).length/l10.length*162):proj;
+    const delta=getDelta(td)||0;
+    return{td,mid,early,recent,ew,el,rw,rl,earlyPace,recentPace,swing:recentPace-earlyPace,proj,l20p,l10p,delta};
   });
 
-  const fader=[...withSplit].sort((a,b)=>a.swing-b.swing)[0];
-  const riser=[...withSplit].filter(s=>s.td.team.id!==fader.td.team.id).sort((a,b)=>b.swing-a.swing)[0];
-  if(!fader||!riser||Math.abs(fader.swing)<10) return null;
+  const byFade  =[...withSplit].sort((a,b)=>a.swing-b.swing);
+  const bySurge =[...withSplit].sort((a,b)=>b.swing-a.swing);
+  const byProj  =[...withSplit].sort((a,b)=>b.proj-a.proj);
+  const byDelta =[...withSplit].sort((a,b)=>b.delta-a.delta);
+  const byL10   =[...withSplit].sort((a,b)=>b.l10p-a.l10p);
+  const nm=(s)=>s.td.team.clubName||s.td.team.name;
+  const sl=(s)=>nm(s).toLowerCase().replace(/\s+/g,'-').replace(/[^a-z0-9-]/g,'');
+  const mom=(s)=>getMomentum(s.td.curGames,s.proj).trendLabel||'Steady';
+  const other=(pool,id)=>pool.find(s=>s.td.team.id!==id);
+  const mkTeam=(s)=>({td:s.td,name:nm(s),id:s.td.team.id,
+    earlyLabel:`Games 1-${s.mid}`,earlyRecord:`${s.ew}-${s.el}`,earlyPace:`${s.earlyPace}-win pace`,
+    recentLabel:`Games ${s.mid+1}-${s.mid+s.recent.length}`,recentRecord:`${s.rw}-${s.rl}`,recentPace:`${s.recentPace}-win pace`,
+    trend:mom(s)});
 
-  const fName=fader.td.team.clubName||fader.td.team.name;
-  const rName=riser.td.team.clubName||riser.td.team.name;
-  const momentum=(s)=>getMomentum(s.td.curGames).trendLabel||getMomentum(s.td.curGames).label;
+  let A,B,title,opts,take,link='/pace-standings';
 
-  return{
-    title:`Are the ${fName} still elite… or living off their early season?`,
-    teams:[
-      {td:fader.td,name:fName,id:fader.td.team.id,
-       earlyLabel:`Games 1–${fader.mid}`,earlyRecord:`${fader.ew}–${fader.el}`,earlyPace:`${fader.earlyPace}-win pace`,
-       recentLabel:`Games ${fader.mid+1}–${fader.mid+fader.recent.length}`,recentRecord:`${fader.rw}–${fader.rl}`,recentPace:`${fader.recentPace}-win pace`,
-       trend:momentum(fader)},
-      {td:riser.td,name:rName,id:riser.td.team.id,
-       earlyLabel:`Games 1–${riser.mid}`,earlyRecord:`${riser.ew}–${riser.el}`,earlyPace:`${riser.earlyPace}-win pace`,
-       recentLabel:`Games ${riser.mid+1}–${riser.mid+riser.recent.length}`,recentRecord:`${riser.rw}–${riser.rl}`,recentPace:`${riser.recentPace}-win pace`,
-       trend:momentum(riser)},
-    ],
-    pollOptions:[`${fName} are still the team to beat`,`${rName} are more dangerous right now`,`Too close to call`],
-    copyTake:`The ${fName} started ${fader.ew}–${fader.el}, but they're ${fader.rw}–${fader.rl} since. The ${rName} started ${riser.ew}–${riser.el}, but they're ${riser.rw}–${riser.rl} since. The standings still say ${fName}, but the momentum board says ${rName} are coming.`,
-    link:'/pace-standings',
-  };
+  if(dtype===0){/* Classic fader vs riser */
+    A=byFade[0]; B=other(bySurge,A.td.team.id);
+    title=`Are the ${nm(A)} still elite, or living off their early season?`;
+    opts=[`${nm(A)} are still the team to beat`,`${nm(B)} are more dangerous right now`,`Too close to call`];
+    take=`The ${nm(A)} started ${A.ew}-${A.el} but are ${A.rw}-${A.rl} since. The ${nm(B)} started ${B.ew}-${B.el} but are ${B.rw}-${B.rl} since. The standings say ${nm(A)}. The pace board says ${nm(B)}.`;
+  }
+  else if(dtype===1){/* Best pace vs fastest rising */
+    A=byProj[0]; B=byDelta.find(s=>s.td.team.id!==A.td.team.id&&s.delta>3)||byProj[1];
+    title=`${nm(A)} lead the league in pace — but is ${nm(B)} the team to worry about?`;
+    opts=[`${nm(A)} are in a league of their own`,`${nm(B)} has better momentum right now`,`Check back in August`];
+    take=`${nm(A)} are on a ${A.proj}-win pace. But ${nm(B)} have the most positive momentum delta in baseball — ${B.delta>0?'+':''}${B.delta}W vs last year. Which number actually matters more right now?`;
+  }
+  else if(dtype===2){/* YoY delta debate */
+    A=byDelta[0]; B=byDelta[byDelta.length-1];
+    const gapA=A.delta>0?`+${A.delta}W`:`${A.delta}W`, gapB=`${B.delta}W`;
+    title=`${nm(A)} are ${gapA} vs last year. ${nm(B)} are ${gapB}. Which story defines this season?`;
+    opts=[`${nm(A)}'s surge is the real story`,`${nm(B)}'s collapse is more surprising`,`Both tell an overrated story`];
+    take=`${nm(A)} are ${gapA} ahead of last year through the same games. ${nm(B)} are ${gapB} behind. Track The Season's year-over-year data reveals a completely different MLB season than the standings suggest.`;
+    link=`/pace-standings`;
+  }
+  else if(dtype===3){/* Contender fading */
+    const fading=withSplit.filter(s=>s.proj>=88&&s.l20p<s.proj-12).sort((a,b)=>(a.l20p-a.proj)-(b.l20p-b.proj));
+    A=fading[0]||byFade[0]; B=other(bySurge,A.td.team.id);
+    title=`${nm(A)} are fading at the worst possible time. Is July make-or-break?`;
+    opts=[`${nm(A)} will turn it around`,`This is who they really are`,`Too early to call`];
+    take=`${nm(A)} have a ${A.proj}-win season pace but their last 20 games project to just ${A.l20p}W — a ${A.proj-A.l20p}-win gap. The standings still look fine. The pace data is flashing red.`;
+    link=`/${sl(A)}`;
+  }
+  else if(dtype===4){/* Surprise team */
+    const surprises=withSplit.filter(s=>s.delta>8&&s.proj<93).sort((a,b)=>b.delta-a.delta);
+    A=surprises[0]||bySurge[0]; B=byProj.find(s=>s.td.team.id!==A.td.team.id&&s.proj>=92)||byProj[0];
+    title=`${nm(A)} are up +${A.delta}W vs last year. Is this a new identity or a hot streak?`;
+    opts=[`${nm(A)} are the real deal this year`,`A correction is coming`,`They'll land somewhere in between`];
+    take=`${nm(A)} are +${A.delta}W ahead of last year's pace. Nobody saw this coming at the start of the season. But the pace data shows the recent form is holding. Real or regression?`;
+    link=`/${sl(A)}`;
+  }
+  else if(dtype===5){/* Rivalry gap */
+    const PAIRS=[[143,144],[147,111],[119,137],[112,138],[117,136]];
+    let best=0;
+    for(const [idA,idB] of PAIRS){
+      const a=withSplit.find(s=>s.td.team.id===idA), b=withSplit.find(s=>s.td.team.id===idB);
+      if(a&&b&&Math.abs(a.proj-b.proj)>best){best=Math.abs(a.proj-b.proj);A=a.proj>b.proj?a:b;B=a.proj>b.proj?b:a;}
+    }
+    if(!A){A=byProj[0];B=byProj[1];}
+    const gap=Math.abs(A.proj-(B?.proj||0));
+    title=`${nm(A)} vs ${nm(B)}: a ${gap}-win pace gap. Is this rivalry already over?`;
+    opts=[`${nm(A)} are in a different league`,`${nm(B)} will close the gap by September`,`It's closer than the pace shows`];
+    take=`${nm(A)} hold a ${gap}-win pace advantage over ${nm(B)} right now. The standings might call this a rivalry. The pace data calls it a gap.`;
+    link=`/${sl(A)}-vs-${sl(B)}`;
+  }
+  else{/* dtype===6: L10 hottest teams */
+    A=byL10[0]; B=byL10.find(s=>s.td.team.id!==A.td.team.id)||byL10[1];
+    title=`${nm(A)} and ${nm(B)} are the two hottest teams in baseball. Who keeps it up through July?`;
+    opts=[`${nm(A)} — this is real momentum`,`${nm(B)} — they're more sustainable`,`Both cool off — it's baseball`];
+    take=`Over the last 10 games, ${nm(A)} (${A.l10p}W pace) and ${nm(B)} (${B.l10p}W pace) are running the hottest baseball in the sport. One of these stretches is real. Which do you trust?`;
+  }
+
+  if(!A||!B) return null;
+  return{title, teams:[mkTeam(A),mkTeam(B)], pollOptions:opts, copyTake:take, link};
 }
+
 
 function buildDailyDebate(allData){
   const cfg=buildDailyDebateConfig(allData);
