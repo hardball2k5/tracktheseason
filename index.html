@@ -736,7 +736,19 @@ body{font-family:var(--sans);background:var(--ink);color:#e8edf8;min-height:100v
   window.dataLayer=window.dataLayer||[];
   function gtag(){dataLayer.push(arguments);}
   gtag('js',new Date());
-  gtag('config','G-DCSQPGSY1D');
+  gtag('config','G-DCSQPGSY1D',{send_page_view:false});
+  /* ── GA4 production-only guard ─────────────────────────────────────
+     Prevents Vercel preview deploys (*.vercel.app, localhost) from
+     sending hits to the production GA4 property. */
+  (function(){
+    const host = window.location.hostname;
+    const isProd = host === 'tracktheseason.com' || host === 'www.tracktheseason.com';
+    if(!isProd){
+      /* Stub out gtag so all calls are silently no-ops on non-prod */
+      window.gtag = function(){};
+      console.info('[GA4] Analytics disabled on non-production hostname:', host);
+    }
+  })();
 </script>
 <link rel="canonical" href="https://tracktheseason.com/"/>
 <script type="application/ld+json">

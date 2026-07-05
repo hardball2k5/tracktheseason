@@ -17,7 +17,20 @@
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet"/>
 <!-- Google tag -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-DCSQPGSY1D"></script>
-<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-DCSQPGSY1D');</script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-DCSQPGSY1D',{send_page_view:false});  /* ── GA4 production-only guard ─────────────────────────────────────
+     Prevents Vercel preview deploys (*.vercel.app, localhost) from
+     sending hits to the production GA4 property. */
+  (function(){
+    const host = window.location.hostname;
+    const isProd = host === 'tracktheseason.com' || host === 'www.tracktheseason.com';
+    if(!isProd){
+      /* Stub out gtag so all calls are silently no-ops on non-prod */
+      window.gtag = function(){};
+      console.info('[GA4] Analytics disabled on non-production hostname:', host);
+    }
+  })();
+  gtag('event','page_view',{page_title:'MLB Chaos Report | Track The Season',page_location:window.location.href,page_path:window.location.pathname});
+</script>
 <style>
 :root{
   --ink:#0f1014;--ink2:#1a1d24;--ink3:#252830;

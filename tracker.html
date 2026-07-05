@@ -617,6 +617,16 @@ tr.cur-row td{background:rgba(26,255,107,.05)}
   function gtag(){dataLayer.push(arguments);}
   gtag('js', new Date());
   gtag('config', 'G-DCSQPGSY1D', { send_page_view: false });
+
+  /* ── GA4 production-only guard ─────────────────────────────── */
+  (function(){
+    const host = window.location.hostname;
+    const isProd = host === 'tracktheseason.com' || host === 'www.tracktheseason.com';
+    if(!isProd){
+      window.gtag = function(){};
+      console.info('[GA4] Analytics disabled on non-production hostname:', host);
+    }
+  })();
 </script>
 <!-- Team page view tracking — fires team_id as a custom dimension on every tracker page load -->
 <script>
@@ -995,14 +1005,16 @@ function updateMetaTags(teamName, w, l, gp, proj, l10w, l10l, delta, compareYear
 
   document.title = `${teamName} Tracker | Track The Season`;
 
-  /* Fire GA4 page_view NOW — when we have the real title and URL */
   /* Update canonical URL per team */
   const canonicalEl = document.querySelector('link[rel="canonical"]');
   if(canonicalEl){
     const slug = getSlug ? getSlug(currentTeamId) : null;
     canonicalEl.href = slug ? 'https://tracktheseason.com/'+slug : window.location.href;
   }
-  if(typeof gtag === 'function'){
+  /* Fire GA4 page_view ONLY when team changes — not on range/season refresh
+     to avoid inflating page_view counts for non-navigation interactions */
+  if(typeof gtag === 'function' && currentTeamId !== window._lastGaTeamId){
+    window._lastGaTeamId = currentTeamId;
     gtag('event', 'page_view', {
       page_title:    document.title,
       page_location: window.location.href,
