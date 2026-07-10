@@ -2840,11 +2840,7 @@ function buildDailyDebate(allData){
   const votedKey='tts-debate-vote-'+localDateStr();
   const votedRaw=localStorage.getItem(votedKey);
   const voted=(votedRaw==='0'||votedRaw==='1'||votedRaw==='2')?votedRaw:null;
-  /* Fake-but-stable percentages seeded by date so they don't jump on reload */
-  const seed=new Date().getDate();
-  const pcts=[42+seed%10, 33+seed%7, 25-seed%5].map(p=>Math.max(8,p));
-  const total=pcts.reduce((a,b)=>a+b,0);
-  const pctOf=i=>Math.round(pcts[i]/total*100);
+  const hasVoted = voted !== null;
 
   const teamBlock=(t)=>`
     <div class="debate-team">
@@ -2869,20 +2865,25 @@ function buildDailyDebate(allData){
   const pollBtns=cfg.pollOptions.map((opt,i)=>`
     <button class="debate-poll-btn ${voted==String(i)?'voted':''}" onclick="voteDailyDebate(${i},'${votedKey}')">
       <span>${opt}</span>
-      ${voted!=null?`<span class="debate-poll-pct">${pctOf(i)}%</span>`:''}
+      ${voted==String(i)?`<span style="font-family:var(--mono);font-size:12px;color:var(--signal);margin-left:8px;flex-shrink:0">✓ Your pick</span>`:''}
     </button>`).join('');
+
+  /* Copy/Share buttons — active after voting, dimmed before */
+  const btnStyle = hasVoted ? '' : 'opacity:.4;pointer-events:none;cursor:default';
+  const voteHint = hasVoted ? '' : `<div style="font-family:var(--sans);font-size:11px;color:rgba(255,255,255,.3);margin-bottom:10px">Pick a side to unlock the shareable take</div>`;
 
   container.innerHTML=`<div class="debate-card">
     <div class="debate-eyebrow">🔥 Today's MLB Debate</div>
     <div class="debate-title">${cfg.title}</div>
     <div class="debate-teams">${cfg.teams.map(teamBlock).join('')}</div>
     <div class="debate-poll">
-      <div class="debate-poll-label">Cast your vote</div>
+      <div class="debate-poll-label">${hasVoted ? 'Your vote is in' : 'Cast your vote'}</div>
       ${pollBtns}
     </div>
     <div class="debate-actions">
-      <button class="debate-btn primary" onclick="copyTextWithToast(b64dec('${b64enc(cfg.copyTake+'\n\nhttps://tracktheseason.com'+cfg.link)}'))">⧉ Copy Take</button>
-      <button class="debate-btn ghost" onclick="shareDailyDebate(b64dec('${b64enc(cfg.copyTake)}'))">⬆ Share Graphic</button>
+      ${voteHint}
+      <button class="debate-btn primary" style="${btnStyle}" onclick="copyTextWithToast(b64dec('${b64enc(cfg.copyTake+'\n\nhttps://tracktheseason.com'+cfg.link)}'))">⧉ Copy Take</button>
+      <button class="debate-btn ghost" style="${btnStyle}" onclick="shareDailyDebate(b64dec('${b64enc(cfg.copyTake)}'))">⬆ Share Graphic</button>
       <a class="debate-btn ghost" href="${cfg.link}">${cfg.linkLabel}</a>
     </div>
   </div>`;
