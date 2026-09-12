@@ -1227,7 +1227,7 @@ body{font-family:var(--sans);background:var(--ink);color:#e8edf8;min-height:100v
           <div class="explainer-row"><span class="explainer-chip hot">📈 Heating up</span><span class="explainer-text">Last 20 ≥ 60% and Last 10 ≥ 50%.</span></div>
           <div class="explainer-row"><span class="explainer-chip hot">⬆️ Recovering</span><span class="explainer-text">Last 20 ≤ 40% but Last 10 ≥ 60% — turning it around.</span></div>
           <div class="explainer-row"><span class="explainer-chip neutral">➡️ Steady</span><span class="explainer-text">No strong trend in either direction.</span></div>
-          <div class="explainer-row"><span class="explainer-chip cold">⬇️ Fading</span><span class="explainer-text">Last 20 ≥ 60% but Last 10 < 50% — momentum slipping.</span></div>
+          <div class="explainer-row"><span class="explainer-chip cold">⬇️ Fading</span><span class="explainer-text">Last 20 ≥ 60% but Last 10 &lt; 50% — momentum slipping.</span></div>
           <div class="explainer-row"><span class="explainer-chip cold">📉 Sliding</span><span class="explainer-text">Last 20 ≤ 40% and Last 10 ≤ 40%.</span></div>
         </div>
       </div>
@@ -1331,9 +1331,9 @@ const MOMENTUM_RANK = {
 };
 const MOMENTUM_HOT_LABELS    = new Set(['Surging','Heating up','Recovering']);
 const MOMENTUM_RISING_LABELS = new Set(['Surging','Heating up']);
-const MOMENTUM_STABLE_LABELS = new Set(['Stable']);
+const MOMENTUM_STABLE_LABELS = new Set(['Steady']);
 const MOMENTUM_FALLING_LABELS= new Set(['Fading','Sliding']);
-const MOMENTUM_COLD_LABELS   = new Set(['Struggling','Cooling off']);
+const MOMENTUM_COLD_LABELS   = new Set(['Sliding']);
 
 const TEAM_DIV = {};
 for(const[k,d] of Object.entries(DIVISIONS)){
@@ -1859,10 +1859,15 @@ function buildSnapshot(allData){
 
 /* ═══════════════════════════════════════════════════
    4 SUPPORTING STORY CARDS
-=══════════════════════════════════════════════════ */
+   NOTE: not currently wired into loadAllTeams(); kept as
+   an available section for a future homepage revision.
+   Requires a <div id="storiesGrid"> container if enabled.
+═══════════════════════════════════════════════════ */
 function buildStoriesGrid(allData){
   const valid=allData.filter(t=>t.curGames.length>=10);
   if(!valid.length) return;
+  const grid=document.getElementById('storiesGrid');
+  if(!grid) return; /* section not present on this page — no-op instead of throwing */
 
   const byProj =[...valid].sort((a,b)=>(projWins(b.curGames)||0)-(projWins(a.curGames)||0));
   const byGain =[...valid].sort((a,b)=>getDelta(b)-getDelta(a));
@@ -1881,7 +1886,7 @@ function buildStoriesGrid(allData){
     {eyebrow:'Fading',         icon:'<svg width="13" height="13" viewBox="0 0 13 13" style="vertical-align:-2px"><path d="M2 3 L6.5 8 L11 3" fill="none" stroke="#f47570" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>',team:fader.team.clubName||fader.team.name,  teamId:fader.team.id,  gp:fader.curGames.length, stat:`${faderDelta}W`,  statClass:'red',  detail:"behind last year's pace"},
   ];
 
-  document.getElementById('storiesGrid').innerHTML=cards.map(s=>`
+  grid.innerHTML=cards.map(s=>`
     <a class="story-card" href="${trackerUrl(s.teamId,s.gp)}">
       <div class="story-card-eyebrow"><span class="story-card-icon">${s.icon}</span>${s.eyebrow}</div>
       <div class="story-team">${s.team}</div>
@@ -2326,38 +2331,6 @@ window.resetYourTeam=function(){
 };
 
 /* ════════════════════════════════════════════════════
-   DAILY DEBATE — one question per day
-════════════════════════════════════════════════════ */
-function buildDailyDebate(allData){
-  const valid=allData.filter(t=>t.curGames.length>=15);
-  if(!valid.length) return;
-  const byDelta=[...valid].sort((a,b)=>getDelta(b)-getDelta(a));
-  const byFall=[...valid].sort((a,b)=>getDelta(a)-getDelta(b));
-  const byL10=[...valid].sort((a,b)=>last10(b.curGames).w-last10(a.curGames).w);
-  const top=byDelta[0],fader=byFall[0],hotTeam=byL10[0];
-  const topClub=top.team.clubName||top.team.name;
-  const faderClub=fader.team.clubName||fader.team.name;
-  const hotClub=hotTeam.team.clubName||hotTeam.team.name;
-  const chaotic=valid.filter(t=>Math.abs(getDelta(t))>=CHAOS_THRESHOLD);
-
-  const debates=[
-    {q:`Are the ${topClub} actually a contender this year?`,context:`They're ${getDelta(top)}W ahead of last year's pace.`,id:top.team.id,gp:top.curGames.length},
-    {q:`Can the ${faderClub} turn this season around?`,context:`They're ${Math.abs(getDelta(fader))}W behind last year's pace.`,id:fader.team.id,gp:fader.curGames.length},
-    {q:`Is ${hotClub} the most underrated team right now?`,context:`${last10(hotTeam.curGames).w}–${last10(hotTeam.curGames).l} in their last 10.`,id:hotTeam.team.id,gp:hotTeam.curGames.length},
-    chaotic.length>=15?{q:`With ${chaotic.length} teams off last year's pace — who do you actually trust?`,context:`This is one of the most chaotic MLB seasons in years.`,id:null,gp:0}:null,
-  ].filter(Boolean);
-
-  const d=debates[new Date().getDate()%debates.length];
-  document.getElementById('ddQuestion').textContent=d.q;
-  document.getElementById('ddLink').href=d.id?trackerUrl(d.id,d.gp):'/chaos-report';
-  const shareText=`${d.q}\n\n${d.context}\n\ntracktheseason.com\n\n#TrackTheSeason #MLB`;
-  document.getElementById('ddShareBtn').onclick=function(){
-    doShare(this,shareText,shareText,'https://tracktheseason.com',`Daily Debate — Track The Season`);
-  };
-  document.getElementById('dailyDebateSection').style.display='block';
-}
-
-/* ════════════════════════════════════════════════════
    FAN CHALLENGE — quick compare + share
 ════════════════════════════════════════════════════ */
 let fcSelected=[null,null];
@@ -2590,7 +2563,7 @@ function buildQuietlyTrending(allData){
     if(delta>=10&&!bigMarket.has(id))
       stories.push({score:delta*2,badge:'🚀 Surprise',id,url,
         text:`<strong>${club}</strong> are ${delta} wins ahead of last year's pace. Nobody's talking about this.`});
-    if(l10.w>=8&&['Sustained Surge','Heating Up','Hot Streak'].includes(mom.label))
+    if(l10.w>=8&&MOMENTUM_HOT_LABELS.has(mom.trendLabel))
       stories.push({score:l10.w*3,badge:'🔥 On Fire',id,url,
         text:`<strong>${club}</strong> have won ${l10.w} of their last 10 — and it's real. They've been doing this for weeks.`});
     if(delta!==null&&Math.abs(delta)<=1&&gp>=30)
@@ -2791,7 +2764,8 @@ function buildDailyDebateConfig(allData){
   else if(dtype===3){/* Contender fading */
     const fading=withSplit.filter(s=>s.proj>=88&&s.l20p<s.proj-12).sort((a,b)=>(a.l20p-a.proj)-(b.l20p-b.proj));
     A=fading[0]||byFade[0]; B=other(bySurge,A.td.team.id);
-    title=`${nm(A)} are fading at the worst possible time. Is July make-or-break?`;
+    const monthName=now.toLocaleDateString('en-US',{month:'long'});
+    title=`${nm(A)} are fading at the worst possible time. Is ${monthName} make-or-break?`;
     opts=[`${nm(A)} will turn it around`,`This is who they really are`,`Too early to call`];
     take=`${nm(A)} have a ${A.proj}-win season pace but their last 20 games project to just ${A.l20p}W — a ${A.proj-A.l20p}-win gap. The standings still look fine. The pace data is flashing red.`;
     link=`/${sl(A)}`; linkLabel=`Track ${nm(A)} →`;
@@ -2975,7 +2949,7 @@ function buildShareableTakes(allData){
       </div>
       <div class="take-text">${t.text}</div>
       <div class="take-actions">
-        <button class="take-btn" onclick='copyTextWithToast(${JSON.stringify(fullText)})'>⧉ Copy Comment</button>
+        <button class="take-btn" onclick="copyTextWithToast(b64dec('${b64enc(fullText)}'))">⧉ Copy Comment</button>
         <a class="take-btn" href="${trackerUrl(t.td.team.id,t.td.curGames.length)}">View Team →</a>
       </div>
     </div>`;
@@ -3109,6 +3083,8 @@ function buildVerdictCard(allData){
   const voteKey='tts-verdict-'+pick.td.team.id+'-'+localDateStr();
   const voted=localStorage.getItem(voteKey);
 
+  const sendText=`${club}: ${verdict}. ${why} https://tracktheseason.com${url}`;
+
   container.innerHTML=`<div class="verdict-card">
     <div class="verdict-team-row">
       <div class="verdict-logo"><img loading="lazy" src="https://www.mlbstatic.com/team-logos/${pick.td.team.id}.svg" width="24" height="24" onerror="this.style.display='none'"/></div>
@@ -3119,7 +3095,7 @@ function buildVerdictCard(allData){
     <div class="verdict-actions">
       <button class="verdict-btn ${voted==='agree'?'active-agree':''}" onclick="voteVerdict('${voteKey}','agree')">👍 Agree</button>
       <button class="verdict-btn ${voted==='disagree'?'active-disagree':''}" onclick="voteVerdict('${voteKey}','disagree')">👎 Disagree</button>
-      <button class="verdict-btn" onclick='copyTextWithToast(${JSON.stringify(`${club}: ${verdict}. ${why} https://tracktheseason.com${url}`)})'>⧉ Send to a ${club} fan</button>
+      <button class="verdict-btn" onclick="copyTextWithToast(b64dec('${b64enc(sendText)}'))">⧉ Send to a ${club} fan</button>
       <a class="verdict-btn" href="/pace-standings">View All Teams →</a>
     </div>
   </div>`;
@@ -3179,3 +3155,5 @@ loadAllTeams().catch(err=>{
 </script>
 </body>
 </html>
+TTSEOF
+wc -l /home/claude/index.html
